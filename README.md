@@ -96,6 +96,9 @@ Direct writes to `index.json`, `.md` files, and `.resx` files are only available
 ## Tech Stack
 
 - **Framework**: Blazor WebAssembly (.NET 10)
+- **Social Preview**: Open Graph and Twitter Cards for rich social sharing.
+  - Preview image: `wwwroot/assets/social-preview.svg` (1200x630).
+  - To update the preview: Replace or edit the SVG file and ensure `index.html` meta tags reflect any size changes.
 - **UI Components**: [MudBlazor](https://mudblazor.com/)
 - **Markdown Rendering**: [Markdig](https://github.com/xoofx/markdig)
 - **Icons**: Material Icons & Custom Brands via MudBlazor

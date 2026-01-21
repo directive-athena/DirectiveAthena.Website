@@ -1,0 +1,227 @@
+﻿<svg viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs>
+    <!-- Background Gradient -->
+    <radialGradient id="bgGradient" cx="50%" cy="50%" r="70%" fx="50%" fy="50%">
+      <stop offset="0%" stop-color="#111827" />
+      <stop offset="100%" stop-color="#0A0E1C" />
+    </radialGradient>
+
+    <!-- Nebula Gradients -->
+    <radialGradient id="nebulaMagenta" cx="30%" cy="40%" r="50%">
+      <stop offset="0%" stop-color="#802040" stop-opacity="0.3" />
+      <stop offset="100%" stop-color="#802040" stop-opacity="0" />
+    </radialGradient>
+    <radialGradient id="nebulaCyan" cx="75%" cy="30%" r="45%">
+      <stop offset="0%" stop-color="#00E5FF" stop-opacity="0.18" />
+      <stop offset="100%" stop-color="#00E5FF" stop-opacity="0" />
+    </radialGradient>
+    <radialGradient id="nebulaPurple" cx="60%" cy="70%" r="45%">
+      <stop offset="0%" stop-color="#802080" stop-opacity="0.2" />
+      <stop offset="100%" stop-color="#802080" stop-opacity="0" />
+    </radialGradient>
+
+    <!-- Moon Gradient -->
+    <linearGradient id="moonGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b" />
+      <stop offset="100%" stop-color="#0f172a" />
+    </linearGradient>
+
+    <!-- Glow Halo Gradient -->
+    <radialGradient id="haloGradient" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#00E5FF" stop-opacity="0.2" />
+      <stop offset="70%" stop-color="#802040" stop-opacity="0.1" />
+      <stop offset="100%" stop-color="#0A0E1C" stop-opacity="0" />
+    </radialGradient>
+
+    <!-- Glow Filter -->
+    <filter id="softGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="5" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+    
+    <filter id="haloBlur" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="40" />
+    </filter>
+
+    <!-- Logo Gradients (Extracted from logo.svg) -->
+    <linearGradient id="logo-silver" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0" stop-color="#fff"/>
+      <stop offset="1" stop-color="#d9d9d9"/>
+    </linearGradient>
+    <linearGradient id="logo-depth" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0" stop-color="#fff" stop-opacity="0"/>
+      <stop offset="1" stop-color="#9e9e9e"/>
+    </linearGradient>
+    <linearGradient id="logo-accent" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0" stop-color="#fff" stop-opacity="0"/>
+      <stop offset="1" stop-color="#060040"/>
+    </linearGradient>
+
+      <style>
+          .cls-1 {
+          fill: url(#linear-gradient-2);
+          }
+
+          .cls-2 {
+          fill: url(#linear-gradient-10);
+          }
+
+          .cls-3 {
+          fill: #fff;
+          }
+
+          .cls-4 {
+          fill: url(#linear-gradient-4);
+          }
+
+          .cls-4, .cls-5, .cls-6, .cls-7, .cls-8, .cls-9 {
+          mix-blend-mode: multiply;
+          }
+
+          .cls-5 {
+          opacity: .4;
+          }
+
+          .cls-10 {
+          isolation: isolate;
+          }
+
+          .cls-11 {
+          fill: url(#linear-gradient-8);
+          }
+
+          .cls-6 {
+          fill: url(#linear-gradient-5);
+          }
+
+          .cls-12 {
+          fill: url(#linear-gradient-9);
+          }
+
+          .cls-13 {
+          fill: url(#linear-gradient-11);
+          }
+
+          .cls-7 {
+          fill: url(#linear-gradient-3);
+          }
+
+          .cls-14 {
+          fill: #7a0035;
+          }
+
+          .cls-15 {
+          fill: url(#linear-gradient);
+          }
+
+          .cls-8 {
+          fill: url(#linear-gradient-6);
+          }
+
+          .cls-9 {
+          fill: url(#linear-gradient-7);
+          }
+      </style>
+      <linearGradient id="linear-gradient" x1="460.88" y1="480.62" x2="860.88" y2="880.62" gradientUnits="userSpaceOnUse">
+          <stop offset="0" stop-color="#fff"/>
+          <stop offset="1" stop-color="#d9d9d9"/>
+      </linearGradient>
+      <linearGradient id="linear-gradient-2" x1="563.12" y1="480.62" x2="163.12" y2="880.62" gradientUnits="userSpaceOnUse">
+          <stop offset="0" stop-color="#fff"/>
+          <stop offset="1" stop-color="#d9d9d9"/>
+      </linearGradient>
+      <linearGradient id="linear-gradient-3" x1="512" y1="459.5" x2="512" y2="714.5" gradientUnits="userSpaceOnUse">
+          <stop offset="0" stop-color="#fff" stop-opacity="0"/>
+          <stop offset="1" stop-color="#9e9e9e"/>
+      </linearGradient>
+      <linearGradient id="linear-gradient-4" y1="714.5" y2="784.9" xlink:href="#linear-gradient-3"/>
+      <linearGradient id="linear-gradient-5" y1="784.9" y2="864.5" xlink:href="#linear-gradient-3"/>
+      <linearGradient id="linear-gradient-6" y1="159.5" y2="277" xlink:href="#linear-gradient-3"/>
+      <linearGradient id="linear-gradient-7" y1="249.5" y2="497.18" xlink:href="#linear-gradient-3"/>
+      <linearGradient id="linear-gradient-8" x1="727" y1="364.5" x2="727" y2="864.5" gradientUnits="userSpaceOnUse">
+          <stop offset="0" stop-color="#fff" stop-opacity="0"/>
+          <stop offset=".49" stop-color="#f7f7f9" stop-opacity=".03"/>
+          <stop offset=".67" stop-color="#dddce5" stop-opacity=".14"/>
+          <stop offset=".8" stop-color="#afadc1" stop-opacity=".32"/>
+          <stop offset=".9" stop-color="#6d6a8f" stop-opacity=".58"/>
+          <stop offset=".98" stop-color="#19134e" stop-opacity=".92"/>
+          <stop offset="1" stop-color="#060040"/>
+      </linearGradient>
+      <linearGradient id="linear-gradient-9" x1="297" x2="297" xlink:href="#linear-gradient-8"/>
+      <linearGradient id="linear-gradient-10" x1="352" y1="319.12" x2="352" y2="710.27" xlink:href="#linear-gradient-8"/>
+      <linearGradient id="linear-gradient-11" x1="672" y1="319.12" x2="672" y2="710.27" xlink:href="#linear-gradient-8"/>
+  </defs>
+
+  <!-- 1. Background -->
+  <rect width="1200" height="630" fill="url(#bgGradient)" />
+
+  <!-- 2. Nebula -->
+  <rect width="1200" height="630" fill="url(#nebulaMagenta)" style="mix-blend-mode: screen;" />
+  <rect width="1200" height="630" fill="url(#nebulaCyan)" style="mix-blend-mode: screen;" />
+  <rect width="1200" height="630" fill="url(#nebulaPurple)" style="mix-blend-mode: screen;" />
+
+  <!-- 3. Stars (simplified representation) -->
+  <g fill="white" opacity="0.6">
+    <circle cx="100" cy="80" r="1" />
+    <circle cx="250" cy="150" r="1.5" />
+    <circle cx="400" cy="50" r="1" />
+    <circle cx="550" cy="120" r="0.8" />
+    <circle cx="700" cy="90" r="1.2" />
+    <circle cx="850" cy="160" r="1" />
+    <circle cx="1050" cy="70" r="1.5" />
+    <circle cx="150" cy="300" r="0.8" />
+    <circle cx="320" cy="250" r="1" />
+    <circle cx="900" cy="350" r="1.2" />
+    <circle cx="1100" cy="280" r="1" />
+    <circle cx="50" cy="500" r="1" />
+    <circle cx="1150" cy="550" r="1" />
+  </g>
+
+  <!-- 4. Moon Horizon -->
+  <g transform="translate(0, 480)">
+    <path d="M0,150 Q600,-50 1200,150 L1200,150 L0,150 Z" fill="url(#moonGradient)" opacity="0.7" filter="url(#softGlow)" />
+  </g>
+
+  <!-- 5. Logo Halo -->
+  <circle cx="600" cy="280" r="220" fill="url(#haloGradient)" filter="haloBlur" />
+
+  <!-- 6. Logo (Centered and Scaled) -->
+  <g transform="translate(210,-80) scale(0.75)">
+    <g class="cls-10">
+        <g id="logo">
+            <g>
+                <g>
+                    <path class="cls-3" d="M247,602c0-134.26,100.36-245.5,230-262.69v-20.2c-62.87,7.65-121.03,35.87-166.53,81.36-53.83,53.83-83.47,125.4-83.47,201.53,0,37.75,7.3,74.37,21.21,108.27,4.49-6.89,9.02-13.89,13.57-21-9.56-27.34-14.78-56.71-14.78-87.27Z"/>
+                    <path class="cls-3" d="M777,602c0,30.57-5.22,59.93-14.78,87.27,4.56,7.1,9.08,14.11,13.57,21,13.91-33.9,21.21-70.52,21.21-108.27,0-76.13-29.65-147.7-83.47-201.53-45.49-45.49-103.65-73.71-166.53-81.36v20.2c129.64,17.18,230,128.43,230,262.69Z"/>
+                </g>
+                <g>
+                    <path class="cls-15" d="M771.01,721.23h0c-4.35-6.65-8.75-13.42-13.18-20.3-81.94-127.14-175.07-288.92-180.83-336.43v150s125.55,156.83,125.55,259.96c0,4.2-.29,8.32-.85,12.36-2.18,15.89-8.51,30.45-17.85,42.57,0,0,0,0,0,0-13.96,18.1-34.65,30.74-58.32,34.16-4.25.61-8.59.94-13.01.94h264.48c-14.77-10.21-57.36-68.94-105.99-143.27Z"/>
+                    <path class="cls-1" d="M447,364.5c-5.76,47.51-98.89,209.29-180.83,336.43-4.43,6.88-8.83,13.65-13.18,20.3h0c-48.63,74.33-91.22,133.06-105.99,143.27h264.48c-4.42,0-8.76-.32-13.01-.94-23.68-3.43-44.37-16.06-58.32-34.16t0,0c-9.35-12.12-15.67-26.68-17.85-42.57-.56-4.04-.85-8.17-.85-12.36,0-103.14,125.55-259.96,125.55-259.96v-150Z"/>
+                </g>
+                <g>
+                    <polygon class="cls-14" points="544.5 497.18 522.75 459.5 501.25 459.5 479.5 497.18 479.5 497.18 469.5 514.5 469.5 514.5 469.5 714.5 554.5 714.5 554.5 514.5 544.5 497.18"/>
+                    <polygon class="cls-14" points="577 739.5 577 714.5 554.5 714.5 469.5 714.5 447 714.5 447 739.5 420.79 784.9 447 784.9 473.21 784.9 550.79 784.9 577 784.9 603.21 784.9 577 739.5"/>
+                    <polygon class="cls-14" points="603.21 784.9 577 784.9 550.79 784.9 473.21 784.9 447 784.9 420.79 784.9 347 784.9 347 794.9 399.41 841.85 424.68 864.5 447 864.5 475.68 864.5 548.32 864.5 577 864.5 599.68 864.5 625.11 841.61 677 794.9 677 784.9 603.21 784.9"/>
+                    <path class="cls-14" d="M517,184.5v25h-10v-50c-2.93,2.93-4.57,4.57-7.5,7.5v110l25-25v-60c-2.93-2.93-4.57-4.57-7.5-7.5Z"/>
+                    <polygon class="cls-14" points="542 445.17 537 436.51 537 338.19 537 338.19 537 318.1 537 299.5 537 294.5 537 289.5 537 249.5 527 249.5 524.5 252 499.5 277 487 289.5 487 294.5 487 299.5 487 318.1 487 338.19 487 338.19 487 436.51 482 445.17 479.5 449.5 479.5 459.5 479.5 497.18 501.25 459.5 522.75 459.5 544.5 497.18 544.5 459.5 544.5 449.5 542 445.17"/>
+                </g>
+                <g>
+                    <polygon class="cls-7" points="544.5 497.18 522.75 459.5 501.25 459.5 479.5 497.18 479.5 497.18 469.5 514.5 469.5 514.5 469.5 714.5 554.5 714.5 554.5 514.5 544.5 497.18"/>
+                    <polygon class="cls-4" points="577 739.5 577 714.5 554.5 714.5 469.5 714.5 447 714.5 447 739.5 420.79 784.9 447 784.9 473.21 784.9 550.79 784.9 577 784.9 603.21 784.9 577 739.5"/>
+                    <polygon class="cls-6" points="603.21 784.9 577 784.9 550.79 784.9 473.21 784.9 447 784.9 420.79 784.9 347 784.9 347 794.9 399.41 841.85 424.68 864.5 447 864.5 475.68 864.5 548.32 864.5 577 864.5 599.68 864.5 625.11 841.61 677 794.9 677 784.9 603.21 784.9"/>
+                    <path class="cls-8" d="M517,184.5v25h-10v-50c-2.93,2.93-4.57,4.57-7.5,7.5v110l25-25v-60c-2.93-2.93-4.57-4.57-7.5-7.5Z"/>
+                    <polygon class="cls-9" points="542 445.17 537 436.51 537 338.19 537 338.19 537 318.1 537 299.5 537 294.5 537 289.5 537 249.5 527 249.5 524.5 252 499.5 277 487 289.5 487 294.5 487 299.5 487 318.1 487 338.19 487 338.19 487 436.51 482 445.17 479.5 449.5 479.5 459.5 479.5 497.18 501.25 459.5 522.75 459.5 544.5 497.18 544.5 459.5 544.5 449.5 542 445.17"/>
+                </g>
+                <g class="cls-5">
+                    <path class="cls-11" d="M771.01,721.23c-4.35-6.65-8.75-13.42-13.18-20.3-81.94-127.14-175.07-288.92-180.83-336.43v150s125.55,156.83,125.55,259.96c0,4.2-.29,8.32-.85,12.36-2.18,15.89-8.51,30.45-17.85,42.57,0,0,0,0,0,0-13.96,18.1-34.65,30.74-58.32,34.16-4.25.61-8.59.94-13.01.94h264.48c-14.77-10.21-57.36-68.94-105.99-143.27Z"/>
+                    <path class="cls-12" d="M252.99,721.23c-48.63,74.33-91.22,133.06-105.99,143.27h264.48c-4.42,0-8.76-.32-13.01-.94-23.68-3.43-44.37-16.06-58.32-34.16t0,0c-9.35-12.12-15.67-26.68-17.85-42.57-.56-4.04-.85-8.17-.85-12.36,0-103.14,125.55-259.96,125.55-259.96v-150c-5.76,47.51-98.89,209.29-180.83,336.43-4.43,6.88-8.83,13.65-13.18,20.3Z"/>
+                </g>
+                <g class="cls-5">
+                    <path class="cls-2" d="M227,602c0,37.75,7.3,74.37,21.21,108.27,4.49-6.89,9.02-13.89,13.57-21-9.56-27.34-14.78-56.71-14.78-87.27,0-134.26,100.36-245.5,230-262.69v-20.2c-62.87,7.65-121.03,35.87-166.53,81.36-53.83,53.83-83.47,125.4-83.47,201.53Z"/>
+                    <path class="cls-13" d="M713.53,400.47c-45.49-45.49-103.65-73.71-166.53-81.36v20.2c129.64,17.18,230,128.43,230,262.69,0,30.57-5.22,59.93-14.78,87.27,4.56,7.1,9.08,14.11,13.57,21,13.91-33.9,21.21-70.52,21.21-108.27,0-76.13-29.65-147.7-83.47-201.53Z"/>
+                </g>
+            </g>
+        </g>
+    </g>
+  </g>
+</svg>
