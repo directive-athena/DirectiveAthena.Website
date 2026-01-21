@@ -4,9 +4,6 @@
         <TargetFramework>net10.0</TargetFramework>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
-        <OverrideHtmlAssetPlaceholders>true</OverrideHtmlAssetPlaceholders>
-        <BlazorWebAssemblyLoadAllGlobalizationData>true</BlazorWebAssemblyLoadAllGlobalizationData>
-        <RootNamespace>DirectiveAthena.Website</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
