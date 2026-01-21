@@ -1,0 +1,46 @@
+﻿@page "/"
+@using DirectiveAthena.Website.Resources
+@using Microsoft.Extensions.Localization
+@using DirectiveAthena.Website.Components
+@inject IStringLocalizer<Shared> L
+
+<PageTitle>@L["Home.Title"]</PageTitle>
+
+<MudStack Spacing="8">
+    <Hero />
+
+    <MudSpacer/>
+
+    <section id="writings" class="py-32">
+        <MudContainer MaxWidth="MaxWidth.Large">
+            <div class="d-flex justify-space-between align-end mb-12">
+                <div>
+                    <MudText Typo="Typo.h2" Class="mb-4">@L["Home.Writings.Title"]</MudText>
+                    <MudText Typo="Typo.body1" Class="text-secondary opacity-70">@L["Home.Writings.Subtitle"]</MudText>
+                </div>
+                <MudButton Variant="Variant.Text" Color="Color.Secondary" Href="/writings"
+                           EndIcon="@Icons.Material.Filled.ArrowForward"
+                           Class="d-none d-sm-flex">@L["Home.Writings.ViewArchive"]</MudButton>
+            </div>
+
+            <MudGrid Spacing="6">
+                <MudItem xs="12">
+                    <LatestWritingHighlight />
+                </MudItem>
+                <RecentWritingsGrid />
+            </MudGrid>
+            
+            <div class="d-flex justify-center mt-12 d-sm-none">
+                <MudButton Variant="Variant.Outlined" Color="Color.Secondary"
+                           Href="/writings">@L["Home.Writings.ViewAll"]</MudButton>
+            </div>
+        </MudContainer>
+    </section>
+
+    <MudSpacer/>
+
+    <TwitchSection/>
+</MudStack>
+
+@code {
+}

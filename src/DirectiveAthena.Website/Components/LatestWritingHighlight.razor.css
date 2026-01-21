@@ -1,0 +1,13 @@
+.featured-card {
+    transition: transform 0.3s ease;
+    border: 1px solid rgba(128, 32, 64, 0.3);
+}
+
+.featured-card:hover {
+    transform: translateY(-5px);
+    border-color: rgba(128, 32, 64, 0.6);
+}
+
+.bg-glow {
+    background: radial-gradient(circle at center, rgba(128, 32, 64, 0.15) 0%, transparent 70%);
+}

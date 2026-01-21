@@ -1,0 +1,52 @@
+@using DirectiveAthena.Website.Resources
+@using Microsoft.Extensions.Localization
+@inject WritingsService WritingsService
+@inject NavigationManager Nav
+@inject IStringLocalizer<Shared> L
+
+@if (_post != null) {
+    <MudCard Class="card-glass featured-card overflow-hidden"
+             @onclick="ViewPost" Style="cursor: pointer;">
+        <MudGrid Spacing="0">
+            <MudItem xs="12" md="7" Class="pa-8 d-flex flex-column justify-center">
+                <MudText Typo="Typo.caption" Color="Color.Primary"
+                         Style="letter-spacing: 0.2em; text-transform: uppercase;"
+                         Class="mb-4">@L["Home.Writings.LatestLabel"]</MudText>
+                <MudText Typo="Typo.h3"
+                         Class="mb-4 SpaceGrotesk">@WritingsService.GetLocalizedTitle(_post)</MudText>
+                <MudText Typo="Typo.body1" Class="text-secondary mb-8"
+                         Style="font-size: 1.1rem;">@WritingsService.GetLocalizedSummary(_post)</MudText>
+                <div class="d-flex align-center gap-4">
+                    <MudButton Variant="Variant.Filled" Color="Color.Primary"
+                               Class="px-6">@L["Home.Writings.ReadFull"]</MudButton>
+                    <MudText Typo="Typo.caption" Class="opacity-50">@_post.Date</MudText>
+                </div>
+            </MudItem>
+            <MudItem xs="12" md="5"
+                     Class="d-none d-md-flex align-center justify-center bg-glow pa-12">
+                <MudIcon Icon="@Icons.Material.Filled.AutoStories" Size="Size.Large"
+                         Style="font-size: 8rem; opacity: 0.2;"/>
+            </MudItem>
+        </MudGrid>
+    </MudCard>
+}
+else if (_isLoaded) {
+    <EmptyWritingsState />
+}
+
+@code {
+    private Post? _post;
+    private bool _isLoaded;
+
+    protected override async Task OnInitializedAsync() {
+        var posts = await WritingsService.GetPostsAsync();
+        _post = posts.FirstOrDefault();
+        _isLoaded = true;
+    }
+
+    private void ViewPost() {
+        if (_post != null) {
+            Nav.NavigateTo($"/writings/{_post.Slug}");
+        }
+    }
+}

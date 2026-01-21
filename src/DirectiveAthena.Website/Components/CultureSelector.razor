@@ -1,0 +1,49 @@
+﻿@using System.Globalization
+@inject IJSRuntime JsRuntime
+@inject NavigationManager NavManager
+
+<MudMenu AnchorOrigin="Origin.BottomCenter" TransformOrigin="Origin.TopCenter" Dense="true" Class="ml-2">
+    <ActivatorContent>
+        <MudButton Variant="Variant.Text" Color="Color.Inherit">
+            <div class="d-flex align-center gap-2">
+                @if (!string.IsNullOrEmpty(CurrentCulture.FlagPath)) {
+                    <img src="@CurrentCulture.FlagPath" alt="@CurrentCulture.Abbreviation"
+                         style="width: 24px; height: auto;"/>
+                }
+                else {
+                    <MudBadge Content="@CurrentCulture.Abbreviation" Color="Color.Primary" Overlap="false"/>
+                }
+                <MudText>@CurrentCulture.Abbreviation</MudText>
+            </div>
+        </MudButton>
+    </ActivatorContent>
+    <ChildContent>
+        @foreach (var culture in LocalizationConfig.SupportedCultures) {
+            <MudMenuItem OnClick="@(() => ChangeCulture(culture.Code))">
+                <div class="d-flex align-center gap-2">
+                    @if (!string.IsNullOrEmpty(culture.FlagPath)) {
+                        <img src="@culture.FlagPath" alt="@culture.DisplayName" style="width: 24px; height: auto;"/>
+                    }
+                    else {
+                        <MudBadge Content="@culture.Abbreviation" Color="Color.Secondary" Overlap="false"/>
+                    }
+                    <MudText>@culture.DisplayName</MudText>
+                </div>
+            </MudMenuItem>
+        }
+    </ChildContent>
+</MudMenu>
+
+@code {
+
+    private CultureConfig CurrentCulture => LocalizationConfig.SupportedCultures.FirstOrDefault(c => c.Code == CultureInfo.CurrentUICulture.TwoLetterISOLanguageName)
+                                           ?? LocalizationConfig.DefaultCulture;
+
+    private async Task ChangeCulture(string culture) {
+        if (CultureInfo.CurrentUICulture.TwoLetterISOLanguageName != culture) {
+            await JsRuntime.InvokeVoidAsync("localStorage.setItem", "culture", culture);
+            NavManager.NavigateTo(NavManager.Uri, forceLoad: true);
+        }
+    }
+
+}

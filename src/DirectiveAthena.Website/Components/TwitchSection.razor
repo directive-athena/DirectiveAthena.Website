@@ -1,0 +1,38 @@
+@* TwitchSection.razor *@
+@using DirectiveAthena.Website.Resources
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<Shared> L
+@inject NavigationManager Nav
+
+<section id="live" class="py-24" style="background: rgba(100, 65, 165, 0.1);">
+    <MudContainer MaxWidth="MaxWidth.Large">
+        <div class="text-center mb-12">
+            <MudText Typo="Typo.h2" Class="mb-4">@L["Home.Live.Title"]</MudText>
+            <MudText Typo="Typo.body1" Class="text-secondary opacity-70">@L["Home.Live.Subtitle"]</MudText>
+        </div>
+        <div class="twitch-wrapper">
+            <div class="twitch-container card-glass twitch-aspect-ratio">
+                <iframe
+                    src="https://player.twitch.tv/?channel=AnnaSasDev&parent=@HostName&muted=true"
+                    allowfullscreen="allowfullscreen">
+                </iframe>
+            </div>
+        </div>
+        <div class="mt-8 text-center">
+            <MudButton Variant="Variant.Text" Color="Color.Secondary" EndIcon="@Icons.Material.Filled.OpenInNew"
+                       Href="https://twitch.tv/AnnaSasDev" Target="_blank">@L["Home.Live.Follow"]</MudButton>
+        </div>
+    </MudContainer>
+</section>
+
+@code {
+    private string HostName { get; set; } = "localhost";
+
+    protected override void OnInitialized() {
+        base.OnInitialized();
+        
+        // Extract hostname for Twitch embed parent requirement
+        var uri = new Uri(Nav.BaseUri);
+        HostName = uri.Host;
+    }
+}

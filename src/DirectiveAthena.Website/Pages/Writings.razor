@@ -1,0 +1,172 @@
+@page "/writings"
+@page "/writings/{Slug}"
+@using DirectiveAthena.Website.Resources
+@using Markdig
+@using Microsoft.Extensions.Localization
+@inject WritingsService WritingsService
+@inject HttpClient Http
+@inject NavigationManager Nav
+@inject IStringLocalizer<Shared> L
+
+<PageTitle>@L["Writings.Title"]</PageTitle>
+
+<div class="min-vh-100 py-32">
+    <MudContainer MaxWidth="MaxWidth.Large">
+        @if (string.IsNullOrEmpty(Slug)) {
+            @* Archive View *@
+            <div class="text-center mb-16">
+                <MudText Typo="Typo.h2" Class="mb-4">@L["Writings.Archive.Title"]</MudText>
+                <MudText Typo="Typo.body1" Class="text-secondary opacity-70">@L["Writings.Archive.Subtitle"]
+                </MudText>
+            </div>
+
+            <div class="d-flex flex-wrap justify-center gap-2 mb-12">
+                <MudChip T="string" Variant="@(string.IsNullOrEmpty(_selectedTag) ? Variant.Filled : Variant.Outlined)"
+                         Color="Color.Secondary" OnClick="@ClearTag">@L["Writings.Archive.AllPosts"]
+                </MudChip>
+                @if (_posts != null) {
+                    @foreach (string tag in _posts.SelectMany(p => p.Tags).Distinct()) {
+                        <MudChip T="string" Variant="@(_selectedTag == tag ? Variant.Filled : Variant.Outlined)"
+                                 Color="Color.Secondary" OnClick="@(() => FilterByTag(tag))">@WritingsService.GetLocalizedTagName(tag)</MudChip>
+                    }
+                }
+            </div>
+
+            @if (_posts == null) {
+                <div class="d-flex justify-center py-12">
+                    <MudProgressCircular Color="Color.Secondary" Indeterminate="true" Size="Size.Large"/>
+                </div>
+            }
+            else {
+                <MudGrid Spacing="6">
+                    @foreach (Post post in FilteredPosts) {
+                        <MudItem xs="12" md="6">
+                            <MudCard Class="card-glass h-100 d-flex flex-column" @onclick="@(() => ViewPost(post.Slug))"
+                                     Style="cursor: pointer;">
+                                <MudCardContent Class="flex-grow-1 pa-8">
+                                    <div class="d-flex justify-space-between align-center mb-4">
+                                        <MudText Typo="Typo.caption" Color="Color.Secondary"
+                                                 Style="letter-spacing: 0.1em; text-transform: uppercase;">@post.Date</MudText>
+                                        <div class="d-flex gap-1">
+                                            @foreach (string tag in post.Tags.Take(2)) {
+                                                <span class="px-2 py-0 rounded"
+                                                      style="background: rgba(0, 229, 255, 0.1); color: var(--neon-cyan); font-size: 0.7rem; border: 1px solid rgba(0, 229, 255, 0.2);">@WritingsService.GetLocalizedTagName(tag)</span>
+                                            }
+                                        </div>
+                                    </div>
+                                    <MudText Typo="Typo.h4" Class="mb-4 SpaceGrotesk">@WritingsService.GetLocalizedTitle(post)</MudText>
+                                    <MudText Typo="Typo.body2" Class="text-secondary mb-6"
+                                             Style="line-height: 1.6;">@WritingsService.GetLocalizedSummary(post)</MudText>
+                                    <MudButton Variant="Variant.Text" Color="Color.Secondary"
+                                               EndIcon="@Icons.Material.Filled.ArrowForward" Class="pa-0">@L["Writings.Archive.ReadArticle"]
+                                    </MudButton>
+                                </MudCardContent>
+                            </MudCard>
+                        </MudItem>
+                    }
+                </MudGrid>
+            }
+        }
+        else {
+            @* Detail View *@
+            <MudButton StartIcon="@Icons.Material.Filled.ArrowBack" Color="Color.Secondary" OnClick="@BackToList"
+                       Class="mb-12">@L["Writings.Detail.Back"]
+            </MudButton>
+
+            @if (_loading) {
+                <div class="d-flex justify-center py-12">
+                    <MudProgressCircular Color="Color.Secondary" Indeterminate="true" Size="Size.Large"/>
+                </div>
+            }
+            else if (_error || _currentPost == null) {
+                <MudAlert Severity="Severity.Error" Variant="Variant.Filled" Class="card-glass">@L["Writings.Detail.Error"]
+                </MudAlert>
+            }
+            else {
+                <article class="fade-in mx-auto" style="max-width: 800px;">
+                    <MudText Typo="Typo.caption" Color="Color.Secondary" Class="d-block mb-2"
+                             Style="letter-spacing: 0.2em; text-transform: uppercase;">@_currentPost.Date</MudText>
+                    <MudText Typo="Typo.h2" Class="mb-8 SpaceGrotesk">@WritingsService.GetLocalizedTitle(_currentPost)</MudText>
+                    <div class="d-flex gap-2 mb-12">
+                        @foreach (string tag in _currentPost.Tags) {
+                            <MudChip T="string" Size="Size.Small" Color="Color.Secondary"
+                                     Variant="Variant.Outlined">@WritingsService.GetLocalizedTagName(tag)</MudChip>
+                        }
+                    </div>
+                    <div class="markdown-content">
+                        @((MarkupString)_renderedMarkdown)
+                    </div>
+                </article>
+
+                <MudDivider Class="my-16 opacity-10"/>
+                <div class="d-flex justify-center">
+                    <MudButton Variant="Variant.Outlined" Color="Color.Secondary" OnClick="@BackToList">@L["Writings.Detail.BackBottom"]
+                    </MudButton>
+                </div>
+            }
+        }
+    </MudContainer>
+</div>
+
+@code {
+    [Parameter] public string? Slug { get; set; }
+
+    private Post[]? _posts;
+    private Post? _currentPost;
+    private string _renderedMarkdown = "";
+    private bool _loading;
+    private bool _error;
+    private string? _selectedTag;
+
+    protected override async Task OnInitializedAsync() {
+        _posts = await WritingsService.GetPostsAsync();
+    }
+
+    protected override async Task OnParametersSetAsync() {
+        if (!string.IsNullOrEmpty(Slug)) {
+            await LoadPost(Slug);
+        }
+    }
+
+    private IEnumerable<Post> FilteredPosts =>
+        string.IsNullOrEmpty(_selectedTag)
+            ? _posts ?? []
+            : (_posts ?? []).Where(p => p.Tags.Contains(_selectedTag));
+
+    private void FilterByTag(string tag) => _selectedTag = tag;
+    private void ClearTag() => _selectedTag = null;
+
+    private async Task LoadPost(string slug) {
+        _loading = true;
+        _error = false;
+        _currentPost = await WritingsService.GetPostBySlugAsync(slug);
+
+        if (_currentPost == null) {
+            _error = true;
+            _loading = false;
+            return;
+        }
+
+        try {
+            string path = WritingsService.GetLocalizedFilePath(_currentPost);
+            string markdown = await Http.GetStringAsync(path);
+            MarkdownPipeline pipeline = new MarkdownPipelineBuilder().UseAdvancedExtensions().Build();
+            _renderedMarkdown = Markdown.ToHtml(markdown, pipeline);
+        }
+        catch (Exception) {
+            _error = true;
+        }
+        finally {
+            _loading = false;
+        }
+    }
+
+    private void ViewPost(string slug) {
+        Nav.NavigateTo($"/writings/{slug}");
+    }
+
+    private void BackToList() {
+        Nav.NavigateTo("/writings");
+    }
+
+}

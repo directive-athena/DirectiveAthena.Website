@@ -1,0 +1,112 @@
+@inject WritingsService WritingsService
+@inject DevFileSystemService DevFs
+@inject IJSRuntime JsRuntime
+@inject ISnackbar Snackbar
+
+<MudPaper Class="pa-6 card-glass">
+    <div class="d-flex justify-space-between align-center mb-4">
+        <MudText Typo="Typo.h5">Markdown Editor</MudText>
+        <div class="d-flex gap-2">
+            <MudSelect T="string" Label="Locale" @bind-Value="_selectedLocale" Class="width-100">
+                @foreach (var culture in LocalizationConfig.SupportedCultures) {
+                    <MudSelectItem Value="@culture.Code">@culture.DisplayName</MudSelectItem>
+                }
+            </MudSelect>
+        </div>
+    </div>
+
+    @if (Post == null) {
+        <MudAlert Severity="Severity.Info">Select a post to edit its markdown.</MudAlert>
+    }
+    else {
+        <MudText Typo="Typo.subtitle1" Class="mb-2">Editing: <b>@(_selectedLocale)/@Post.File</b></MudText>
+        
+        <MudTextField T="string" @bind-Value="_content" Label="Markdown Content" 
+                      Lines="20" Variant="Variant.Outlined" Class="mb-4" />
+
+        <div class="d-flex gap-4">
+            @if (DevFs.IsLocalhost) {
+                <MudButton Variant="Variant.Filled" Color="Color.Success" OnClick="SaveMarkdown" StartIcon="@Icons.Material.Filled.Save">
+                    Save to Disk
+                </MudButton>
+            }
+            else {
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="DownloadMarkdown" StartIcon="@Icons.Material.Filled.Download">
+                    Download Markdown
+                </MudButton>
+                <MudButton Variant="Variant.Outlined" Color="Color.Info" OnClick="CopyToClipboard" StartIcon="@Icons.Material.Filled.ContentCopy">
+                    Copy to Clipboard
+                </MudButton>
+            }
+            <MudButton Variant="Variant.Text" Color="Color.Default" OnClick="LoadContent" StartIcon="@Icons.Material.Filled.Refresh">
+                Reload Original
+            </MudButton>
+        </div>
+    }
+</MudPaper>
+
+@code {
+    [Parameter] public Post? Post { get; set; }
+
+    private string _selectedLocale = "en";
+    private string _content = "";
+    private Post? _lastPost;
+    private string _lastLocale = "";
+
+    protected override async Task OnParametersSetAsync() {
+        if (Post != _lastPost || _selectedLocale != _lastLocale) {
+            _lastPost = Post;
+            _lastLocale = _selectedLocale;
+            await LoadContent();
+        }
+    }
+
+    private async Task LoadContent() {
+        if (Post == null) {
+            _content = "";
+            return;
+        }
+
+        // Try to load from disk first if on localhost and has access
+        if (DevFs.IsLocalhost && await DevFs.HasAccessAsync()) {
+            var diskContent = await DevFs.ReadFileAsync(DevFileSystemService.GetMarkdownPath(_selectedLocale, Post.File));
+            if (diskContent != null) {
+                _content = diskContent;
+                return;
+            }
+        }
+
+        _content = await WritingsService.GetRawMarkdownAsync(_selectedLocale, Post.File);
+        if (string.IsNullOrEmpty(_content)) {
+            _content = $"# {Post.Title.GetValueOrDefault(_selectedLocale)}\n\n(New content for {Post.Slug} in {_selectedLocale})";
+        }
+    }
+
+    private async Task SaveMarkdown() {
+        if (Post == null || !DevFs.IsLocalhost) return;
+
+        if (!await DevFs.VerifyPermissionAsync()) {
+            Snackbar.Add("Filesystem access required.", Severity.Warning);
+            return;
+        }
+
+        string path = DevFileSystemService.GetMarkdownPath(_selectedLocale, Post.File);
+        bool success = await DevFs.WriteFileAsync(path, _content);
+        
+        if (success) {
+            Snackbar.Add($"Saved {_selectedLocale}/{Post.File} to disk!", Severity.Success);
+        } else {
+            Snackbar.Add("Failed to save markdown file.", Severity.Error);
+        }
+    }
+
+    private async Task DownloadMarkdown() {
+        if (Post == null) return;
+        string path = $"{_selectedLocale}/{Post.File}";
+        await JsRuntime.InvokeVoidAsync("downloadFile", path, _content);
+    }
+
+    private async Task CopyToClipboard() {
+        await JsRuntime.InvokeVoidAsync("navigator.clipboard.writeText", _content);
+    }
+}

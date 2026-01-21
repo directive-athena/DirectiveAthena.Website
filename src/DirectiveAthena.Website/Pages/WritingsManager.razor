@@ -1,0 +1,267 @@
+﻿@page "/writings-manager"
+@using System.Text.Json
+@using System.Xml.Linq
+@using DirectiveAthena.Website.Components
+@inject WritingsService WritingsService
+@inject DevFileSystemService DevFs
+@inject IJSRuntime JsRuntime
+@inject ISnackbar Snackbar
+
+<PageTitle>Writings Manager - Directive Athena</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.Large" Class="py-12">
+    <div class="d-flex justify-space-between align-center mb-8">
+        <MudText Typo="Typo.h3">Writings Manager</MudText>
+
+        @if (DevFs.IsLocalhost) {
+            <div class="d-flex align-center gap-4">
+                @if (_fsSupported) {
+                    <MudChip T="string" Color="@(_hasAccess ? Color.Success : Color.Warning)"
+                             Icon="@(_hasAccess ? Icons.Material.Filled.CheckCircle : Icons.Material.Filled.Warning)">
+                        Write Access: @(_hasAccess ? "Granted" : "Required")
+                    </MudChip>
+                    if (!_hasAccess) {
+                        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="@RequestAccess">Grant
+                            Access
+                        </MudButton>
+                    }
+                    else {
+                        <MudButton Variant="Variant.Outlined" Color="Color.Secondary" Size="Size.Small"
+                                   OnClick="ResetAccess">Reset Access
+                        </MudButton>
+                    }
+                }
+                else {
+                    <MudAlert Severity="Severity.Error" Dense="true">FS API Not Supported</MudAlert>
+                }
+            </div>
+        }
+    </div>
+
+    @if (_posts == null) {
+        <MudProgressCircular Color="Color.Primary" Indeterminate="true"/>
+    }
+    else {
+        if (!DevFs.IsLocalhost) {
+            <MudAlert Severity="Severity.Info" Variant="Variant.Filled" Class="mb-6">
+                <b>Read-Only Mode:</b> Direct filesystem writes are only available on <code>localhost</code> and in <code>DEBUG</code> mode.
+            </MudAlert>
+        }
+        else {
+            <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
+                <MudTabPanel Text="Posts" Icon="@Icons.Material.Filled.List">
+                    <MudGrid>
+                        <MudItem xs="12" md="4">
+                            <PostList Posts="_posts" SelectedPost="_selectedPost"
+                                      OnPostSelected="OnPostSelected" OnCreatePost="CreateNewPost"/>
+
+                            @switch (DevFs.IsLocalhost) {
+                                case true when _hasAccess:
+                                    <MudButton Variant="Variant.Filled" Color="Color.Success" FullWidth="true"
+                                               OnClick="@SaveAll"
+                                               StartIcon="@Icons.Material.Filled.Save" Class="mb-4">
+                                        Save index.json
+                                    </MudButton>
+                                    break;
+                                case false:
+                                    <MudButton Variant="Variant.Filled" Color="Color.Secondary" FullWidth="true"
+                                               OnClick="@ExportJson"
+                                               StartIcon="@Icons.Material.Filled.Download" Class="mb-4">
+                                        Download index.json
+                                    </MudButton>
+                                    <MudButton Variant="Variant.Outlined" Color="Color.Info" FullWidth="true"
+                                               OnClick="@CopyJson"
+                                               StartIcon="@Icons.Material.Filled.ContentCopy">
+                                        Copy index.json to Clipboard
+                                    </MudButton>
+                                    break;
+                            }
+                        </MudItem>
+
+                        <MudItem xs="12" md="8">
+                            @if (_selectedPost != null) {
+                                <PostEditor Post="_selectedPost" OnDeletePost="DeletePost"
+                                            OnGenerateStubs="GenerateStubs"/>
+                            }
+                            else {
+                                <MudAlert Severity="Severity.Info" Variant="Variant.Outlined">Select a post or create a
+                                    new
+                                    one.
+                                </MudAlert>
+                            }
+                        </MudItem>
+                    </MudGrid>
+                </MudTabPanel>
+
+                <MudTabPanel Text="Markdown" Icon="@Icons.Material.Filled.EditNote">
+                    <MarkdownEditor Post="_selectedPost"/>
+                </MudTabPanel>
+
+                <MudTabPanel Text="Tags" Icon="@Icons.Material.Filled.Label">
+                    <TagsEditor Posts="_posts"/>
+                </MudTabPanel>
+            </MudTabs>
+        }
+    }
+</MudContainer>
+
+@code {
+    private List<Post>? _posts;
+    private Post? _selectedPost;
+    private bool _fsSupported;
+    private bool _hasAccess;
+
+    protected override async Task OnInitializedAsync() {
+        var posts = await WritingsService.GetPostsAsync();
+        _posts = posts.ToList();
+
+        if (!DevFs.IsLocalhost) return;
+        _fsSupported = await DevFs.IsSupportedAsync();
+
+        if (!_fsSupported) return;
+        _hasAccess = await DevFs.HasAccessAsync();
+
+        if (!_hasAccess) return;
+        await EnsureResxFilesExist();
+    }
+
+    private async Task EnsureResxFilesExist() {
+        foreach (string path in LocalizationConfig.SupportedCultures.Select(culture => DevFileSystemService.GetResxPath(culture.Code))) {
+            string? content = await DevFs.ReadFileAsync(path);
+            if (content != null) continue;
+
+            XDocument newResx = CreateNewResx();
+            await DevFs.WriteFileAsync(path, newResx.ToString());
+            Snackbar.Add($"Created missing RESX: {path}", Severity.Info);
+        }
+    }
+
+    private XDocument CreateNewResx() {
+        return new XDocument(
+            new XElement("root",
+                new XElement("resheader", new XAttribute("name", "resmimetype"), new XElement("value", "text/microsoft-resx")),
+                new XElement("resheader", new XAttribute("name", "version"), new XElement("value", "2.0")),
+                new XElement("resheader", new XAttribute("name", "reader"), new XElement("value", "System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089")),
+                new XElement("resheader", new XAttribute("name", "writer"), new XElement("value", "System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"))
+            )
+        );
+    }
+
+    private async Task RequestAccess() {
+        if (await DevFs.RequestAccessAsync()) {
+            _hasAccess = true;
+            await EnsureResxFilesExist();
+            Snackbar.Add("Access granted!", Severity.Success);
+        }
+        else {
+            Snackbar.Add("Failed to get access.", Severity.Error);
+        }
+    }
+
+    private async Task ResetAccess() {
+        await DevFs.ResetAccessAsync();
+        _hasAccess = false;
+        Snackbar.Add("Access reset.", Severity.Info);
+    }
+
+    private void OnPostSelected(Post? post) {
+        _selectedPost = post;
+    }
+
+    private void CreateNewPost() {
+        var newPost = new Post {
+            Slug = "new-post-" + Guid.NewGuid().ToString().Substring(0, 8),
+            Date = DateTime.Now.ToString("yyyy-MM-dd"),
+            Title = new Dictionary<string, string> { ["en"] = "New Post", ["nl"] = "" },
+            Summary = new Dictionary<string, string> { ["en"] = "Summary here", ["nl"] = "" },
+            File = "new-post.md",
+            Tags = new List<string>()
+        };
+        _posts?.Insert(0, newPost);
+        _selectedPost = newPost;
+    }
+
+    private void DeletePost() {
+        if (_selectedPost == null) return;
+
+        _posts?.Remove(_selectedPost);
+        _selectedPost = null;
+    }
+
+    private async Task SaveAll() {
+        if (_posts == null || !DevFs.IsLocalhost || !_hasAccess) return;
+
+        if (!await DevFs.VerifyPermissionAsync()) {
+            _hasAccess = false;
+            return;
+        }
+
+        // Simple validation
+        if (_posts.Any(p => string.IsNullOrWhiteSpace(p.Slug) || string.IsNullOrWhiteSpace(p.File))) {
+            Snackbar.Add("Some posts have missing Slug or File!", Severity.Error);
+            return;
+        }
+
+        string json = JsonSerializer.Serialize(_posts, new JsonSerializerOptions { WriteIndented = true, PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
+        bool success = await DevFs.WriteFileAsync(DevFileSystemService.GetIndexPath(), json);
+
+        if (success) {
+            Snackbar.Add("index.json saved to disk!", Severity.Success);
+        }
+        else {
+            Snackbar.Add("Failed to save index.json.", Severity.Error);
+        }
+    }
+
+    private async Task ExportJson() {
+        if (_posts == null) return;
+
+        // Simple validation
+        if (_posts.Any(p => string.IsNullOrWhiteSpace(p.Slug) || string.IsNullOrWhiteSpace(p.File))) {
+            Snackbar.Add("Some posts have missing Slug or File!", Severity.Error);
+            return;
+        }
+
+        string json = JsonSerializer.Serialize(_posts, new JsonSerializerOptions { WriteIndented = true, PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
+        await DownloadFile("index.json", json);
+    }
+
+    private async Task CopyJson() {
+        string json = JsonSerializer.Serialize(_posts, new JsonSerializerOptions { WriteIndented = true, PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
+        await JsRuntime.InvokeVoidAsync("navigator.clipboard.writeText", json);
+        Snackbar.Add("JSON copied to clipboard", Severity.Success);
+    }
+
+    private async Task GenerateStubs() {
+        if (_selectedPost == null) return;
+
+        var enContent = $"# {_selectedPost.Title.GetValueOrDefault("en")}\n\nContent for {_selectedPost.Slug} in English.";
+        var nlContent = $"# {_selectedPost.Title.GetValueOrDefault("nl")}\n\nInhoud voor {_selectedPost.Slug} in het Nederlands.";
+
+        if (DevFs.IsLocalhost && _hasAccess) {
+            if (!await DevFs.VerifyPermissionAsync()) {
+                _hasAccess = false;
+                return;
+            }
+
+            bool enSuccess = await DevFs.WriteFileAsync(DevFileSystemService.GetMarkdownPath("en", _selectedPost.File), enContent);
+            bool nlSuccess = await DevFs.WriteFileAsync(DevFileSystemService.GetMarkdownPath("nl", _selectedPost.File), nlContent);
+
+            if (enSuccess && nlSuccess) {
+                Snackbar.Add("Markdown stubs saved to disk!", Severity.Success);
+            }
+            else {
+                Snackbar.Add("Failed to save one or more stubs.", Severity.Error);
+            }
+        }
+        else {
+            await DownloadFile("en/" + _selectedPost.File, enContent);
+            await DownloadFile("nl/" + _selectedPost.File, nlContent);
+        }
+    }
+
+    private async Task DownloadFile(string fileName, string content) {
+        await JsRuntime.InvokeVoidAsync("downloadFile", fileName, content);
+    }
+
+}

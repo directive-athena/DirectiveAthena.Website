@@ -1,0 +1,28 @@
+@using DirectiveAthena.Website.Resources
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<Shared> L
+
+<MudItem xs="12">
+    <MudCard Class="card-glass pa-8 text-center border-dashed">
+        <MudStack AlignItems="AlignItems.Center" Spacing="4">
+            <MudIcon Icon="@Icons.Material.Filled.HistoryEdu" Size="Size.Large" 
+                     Style="font-size: 4rem; opacity: 0.3;" />
+            
+            <div style="width: 100%; max-width: 400px;">
+                <MudText Typo="Typo.h6" Class="mb-2 opacity-50">@L["Home.Writings.Empty"]</MudText>
+                
+                @* Loading bar placeholders as requested *@
+                <MudProgressLinear Color="Color.Secondary" Value="0" Indeterminate="false" 
+                                   Class="my-4 opacity-10" Style="height: 4px; border-radius: 2px;" />
+                <MudProgressLinear Color="Color.Primary" Value="0" Indeterminate="false" 
+                                   Class="my-2 opacity-10" Style="height: 4px; border-radius: 2px; width: 60%; margin: 0 auto;" />
+            </div>
+        </MudStack>
+    </MudCard>
+</MudItem>
+
+<style>
+    .border-dashed {
+        border: 2px dashed rgba(255, 255, 255, 0.1) !important;
+    }
+</style>

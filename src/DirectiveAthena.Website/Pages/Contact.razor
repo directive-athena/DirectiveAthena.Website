@@ -1,0 +1,52 @@
+@page "/contact"
+@using DirectiveAthena.Website.Resources
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<Shared> L
+
+<PageTitle>@L["Contact.Title"]</PageTitle>
+
+<div class="min-vh-100 py-32 d-flex align-center">
+    <MudContainer MaxWidth="MaxWidth.Small" Class="text-center">
+        <MudText Typo="Typo.h2" Class="mb-6">@L["Contact.Heading"]</MudText>
+        <MudText Typo="Typo.body1" Class="text-secondary mb-12">
+            @L["Contact.Subtitle"]
+        </MudText>
+
+        <MudGrid Spacing="4">
+            <MudItem xs="12">
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="true"
+                           StartIcon="@Icons.Custom.Brands.Twitter" Href="https://twitter.com/placeholder"
+                           Target="_blank" Class="py-4 card-glass">
+                    Twitter / X
+                </MudButton>
+            </MudItem>
+            <MudItem xs="12">
+                <MudButton Variant="Variant.Filled" Color="Color.Surface" FullWidth="true"
+                           StartIcon="@Icons.Custom.Brands.GitHub" Href="https://github.com/placeholder" Target="_blank"
+                           Class="py-4 card-glass">
+                    GitHub
+                </MudButton>
+            </MudItem>
+            <MudItem xs="12">
+                <MudButton Variant="Variant.Filled" Color="Color.Secondary" FullWidth="true"
+                           StartIcon="@Icons.Material.Filled.Email" Href="mailto:contact@placeholder.com"
+                           Class="py-4 card-glass">
+                    Email
+                </MudButton>
+            </MudItem>
+            <MudItem xs="12">
+                <MudButton Variant="Variant.Filled" Color="Color.Error" FullWidth="true"
+                           StartIcon="@Icons.Material.Filled.VideogameAsset" Href="https://twitch.tv/AnnaSasDev"
+                           Target="_blank" Class="py-4 card-glass">
+                    Twitch
+                </MudButton>
+            </MudItem>
+        </MudGrid>
+
+        <div class="mt-16">
+            <MudButton Variant="Variant.Text" Color="Color.Secondary" Href="/"
+                       StartIcon="@Icons.Material.Filled.ArrowBack">@L["Contact.Return"]
+            </MudButton>
+        </div>
+    </MudContainer>
+</div>

@@ -1,0 +1,208 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Nav.Home" xml:space="preserve">
+    <value>Home</value>
+  </data>
+  <data name="Nav.Story" xml:space="preserve">
+    <value>Verhaal</value>
+  </data>
+  <data name="Nav.Writings" xml:space="preserve">
+    <value>Geschriften</value>
+  </data>
+  <data name="Nav.Contact" xml:space="preserve">
+    <value>Contact</value>
+  </data>
+  <data name="Brand.Name" xml:space="preserve">
+    <value>Directive Athena</value>
+  </data>
+  <data name="Footer.Description" xml:space="preserve">
+    <value>Een project van Anna Sas om haar visie te laten zien op een sciencefictionwereld waarin er geen goede of slechte uitkomsten zijn. Alleen geschiedenis, die voortschrijdt.</value>
+  </data>
+  <data name="Footer.Copyright" xml:space="preserve">
+    <value>© {0} Anna Sas. Gebouwd met Blazor &amp; MudBlazor.</value>
+  </data>
+  <data name="Tag.Project" xml:space="preserve">
+    <value>Project</value>
+  </data>
+  <data name="Tag.Announcement" xml:space="preserve">
+    <value>Aankondiging</value>
+  </data>
+  <data name="Tag.Technology" xml:space="preserve">
+    <value>Technologie</value>
+  </data>
+  <data name="Tag.AI" xml:space="preserve">
+    <value>AI</value>
+  </data>
+  <data name="Tag.Architecture" xml:space="preserve">
+    <value>Architectuur</value>
+  </data>
+  <data name="Tag.Sovereignty" xml:space="preserve">
+    <value>Soevereiniteit</value>
+  </data>
+  <data name="Home.Title" xml:space="preserve">
+    <value>Directive Athena</value>
+  </data>
+  <data name="Home.Hero.Title" xml:space="preserve">
+    <value>Directive Athena</value>
+  </data>
+  <data name="Home.Hero.Subtitle" xml:space="preserve">
+    <value>Een sciencefictionproject waarin technologie en politieke intriges de boventoon voeren.</value>
+  </data>
+  <data name="Home.Hero.Body" xml:space="preserve">
+    <value>Een persoonlijk schrijfproject van Anna Sas, dat bedoeld is om een verzameling verhalen en video-spelletjes te worden.</value>
+  </data>
+  <data name="Home.Hero.Explore" xml:space="preserve">
+    <value>Verken Directive Athena</value>
+  </data>
+  <data name="Home.Hero.Read" xml:space="preserve">
+    <value>Lees de Geschriften</value>
+  </data>
+  <data name="Home.Live.Title" xml:space="preserve">
+    <value>Live Ontwikkeling</value>
+  </data>
+  <data name="Home.Live.Subtitle" xml:space="preserve">
+    <value>Bekijk het ontwikkelingsproces live op Twitch.</value>
+  </data>
+  <data name="Home.Live.Follow" xml:space="preserve">
+    <value>Volg op Twitch</value>
+  </data>
+  <data name="Home.Writings.Title" xml:space="preserve">
+    <value>Laatste Intel</value>
+  </data>
+  <data name="Home.Writings.Subtitle" xml:space="preserve">
+    <value>Recente berichten van het front.</value>
+  </data>
+  <data name="Home.Writings.ViewArchive" xml:space="preserve">
+    <value>Bekijk Archief</value>
+  </data>
+  <data name="Home.Writings.LatestLabel" xml:space="preserve">
+    <value>Nieuwste Bericht</value>
+  </data>
+  <data name="Home.Writings.ReadFull" xml:space="preserve">
+    <value>Lees Volledig Bericht</value>
+  </data>
+  <data name="Home.Writings.ReadMore" xml:space="preserve">
+    <value>Lees Meer</value>
+  </data>
+  <data name="Home.Writings.ViewAll" xml:space="preserve">
+    <value>Bekijk Alle Geschriften</value>
+  </data>
+  <data name="Home.Writings.Empty" xml:space="preserve">
+    <value>Momenteel geen berichten beschikbaar. Kom later terug voor updates van het front.</value>
+  </data>
+  <data name="Writings.Title" xml:space="preserve">
+    <value>Geschriften - Directive Athena</value>
+  </data>
+  <data name="Writings.Archive.Title" xml:space="preserve">
+    <value>Archief</value>
+  </data>
+  <data name="Writings.Archive.Subtitle" xml:space="preserve">
+    <value>Een verzameling van alle geschriften en fragmenten die tot nu toe zijn gepubliceerd. Blijf op de hoogte voor meer nieuws.</value>
+  </data>
+  <data name="Writings.Archive.AllPosts" xml:space="preserve">
+    <value>Alle Berichten</value>
+  </data>
+  <data name="Writings.Archive.ReadArticle" xml:space="preserve">
+    <value>Lees Artikel</value>
+  </data>
+  <data name="Writings.Detail.Back" xml:space="preserve">
+    <value>Terug naar Archief</value>
+  </data>
+  <data name="Writings.Detail.Error" xml:space="preserve">
+    <value>Kan de inhoud van dit bericht niet laden.</value>
+  </data>
+  <data name="Writings.Detail.BackBottom" xml:space="preserve">
+    <value>Terug naar alle geschriften</value>
+  </data>
+  <data name="Story.Title" xml:space="preserve">
+    <value>Verhaal - Directive Athena</value>
+  </data>
+  <data name="Story.Heading" xml:space="preserve">
+    <value>Wat is Directive Athena?</value>
+  </data>
+  <data name="Story.Section1" xml:space="preserve">
+    <value>Het hoofdverhaal volgt het koppel Gray en Ruby terwijl ze zich een weg banen door het leger van de UAC. Hun relatie komt onder druk te staan wanneer Ruby zich aansluit bij het verzet en Gray moet omgaan met het feit dat hij lid is van een van de machtigste families op aarde. Ondertussen raken de machinaties op de maan langzaam maar zeker steeds meer verweven met de aarde en verstoren ze de eeuwigdurende oorlog die op aarde woedt. </value>
+  </data>
+  <data name="Story.Back" xml:space="preserve">
+    <value>Terug naar Home</value>
+  </data>
+  <data name="Contact.Title" xml:space="preserve">
+    <value>Contact - Directive Athena</value>
+  </data>
+  <data name="Contact.Heading" xml:space="preserve">
+    <value>Contact</value>
+  </data>
+  <data name="Contact.Subtitle" xml:space="preserve">
+    <value>Neem contact met ons op via onze officiële kanalen of volg onze voortgang op sociale media.</value>
+  </data>
+  <data name="Contact.Return" xml:space="preserve">
+    <value>Terug naar Hoofdkwartier</value>
+  </data>
+  <data name="NotFound.Title" xml:space="preserve">
+    <value>Niet Gevonden</value>
+  </data>
+  <data name="NotFound.Message" xml:space="preserve">
+    <value>Sorry, de inhoud die u zoekt bestaat niet.</value>
+  </data>
+  <data name="Story.Section2" xml:space="preserve">
+    <value>Volg mee om het verhaal voort te zetten</value>
+  </data>
+</root>

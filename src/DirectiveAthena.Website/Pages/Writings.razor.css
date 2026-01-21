@@ -1,0 +1,30 @@
+/* Writings Content Styles */
+.markdown-content {
+    line-height: 1.7;
+}
+
+.markdown-content h1, .markdown-content h2, .markdown-content h3 {
+    font-family: 'Space Grotesk', sans-serif;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+    color: var(--neon-cyan);
+}
+
+.markdown-content p {
+    margin-bottom: 1.5rem;
+}
+
+.markdown-content code {
+    background-color: rgba(255, 255, 255, 0.1);
+    padding: 0.2rem 0.4rem;
+    border-radius: 4px;
+    color: var(--neon-cyan);
+}
+
+.markdown-content blockquote {
+    border-left: 4px solid var(--magenta-rose);
+    padding-left: 1.5rem;
+    font-style: italic;
+    margin: 2rem 0;
+    color: #9CA3AF;
+}
