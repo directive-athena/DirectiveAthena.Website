@@ -36,7 +36,7 @@ jobs:
         run: dotnet restore DirectiveAthena.Website.slnx
 
       - name: Publish docs site
-        run: dotnet publish src/DirectiveAthena.Website -c Release -o ./out -p:BaseHref=/DirectiveAthena.Website/ -p:StaticWebAssetBasePath=/DirectiveAthena.Website/
+        run: dotnet publish src/DirectiveAthena.Website -c Release -o ./out
       
       - name: List published files
         # sanity check so you can see what will be uploaded (optional)
