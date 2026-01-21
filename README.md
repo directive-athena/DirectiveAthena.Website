@@ -102,3 +102,7 @@ Direct writes to `index.json`, `.md` files, and `.resx` files are only available
 - **UI Components**: [MudBlazor](https://mudblazor.com/)
 - **Markdown Rendering**: [Markdig](https://github.com/xoofx/markdig)
 - **Icons**: Material Icons & Custom Brands via MudBlazor
+
+## Package Management
+
+Packages are centrally managed in `Directory.Packages.props`. Add new `PackageVersion` entries there; project `PackageReferences` omit versions.

@@ -1,3 +1,13 @@
 <Solution>
-  <Project Path="src/DirectiveAthena.Website/DirectiveAthena.Website.csproj" />
+  <Folder Name="/.dev-tools/">
+    <File Path="Directory.Packages.props" />
+    <File Path="README.md" />
+  </Folder>
+  <Folder Name="/.dev-tools/github/">
+    <File Path=".github/dependabot.yml" />
+    <File Path=".github/workflows/publishGithubPages.yml" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="src/DirectiveAthena.Website/DirectiveAthena.Website.csproj" />
+  </Folder>
 </Solution>
