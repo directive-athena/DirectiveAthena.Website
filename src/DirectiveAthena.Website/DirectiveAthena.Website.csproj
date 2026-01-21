@@ -21,6 +21,9 @@
       <EmbeddedResource Update="Resources\Shared.nl.resx">
         <DependentUpon>Shared.cs</DependentUpon>
       </EmbeddedResource>
+      <EmbeddedResource Update="Resources\Tags.nl.resx">
+        <DependentUpon>Tags.cs</DependentUpon>
+      </EmbeddedResource>
     </ItemGroup>
 
 </Project>

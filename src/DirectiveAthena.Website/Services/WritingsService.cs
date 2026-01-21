@@ -12,7 +12,7 @@ namespace DirectiveAthena.Website.Services;
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
-public class WritingsService(HttpClient http, IStringLocalizer<Shared> localizer) {
+public class WritingsService(HttpClient http, IStringLocalizer<Tags> tagsLocalizer) {
     private Post[]? _posts;
 
     // -----------------------------------------------------------------------------------------------------------------
@@ -54,7 +54,7 @@ public class WritingsService(HttpClient http, IStringLocalizer<Shared> localizer
     }
 
     public string GetLocalizedTagName(string tagId) {
-        LocalizedString localized = localizer[tagId];
+        LocalizedString localized = tagsLocalizer[tagId];
         return localized.ResourceNotFound ? tagId : localized.Value;
     }
 

@@ -18,7 +18,7 @@
         </MudButton>
     </ActivatorContent>
     <ChildContent>
-        @foreach (var culture in LocalizationConfig.SupportedCultures) {
+        @foreach (CultureConfig culture in LocalizationConfig.SupportedCultures) {
             <MudMenuItem OnClick="@(() => ChangeCulture(culture.Code))">
                 <div class="d-flex align-center gap-2">
                     @if (!string.IsNullOrEmpty(culture.FlagPath)) {

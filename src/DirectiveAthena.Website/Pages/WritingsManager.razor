@@ -27,7 +27,7 @@
                     }
                     else {
                         <MudButton Variant="Variant.Outlined" Color="Color.Secondary" Size="Size.Small"
-                                   OnClick="ResetAccess">Reset Access
+                                   OnClick="@ResetAccess">Reset Access
                         </MudButton>
                     }
                 }
@@ -112,7 +112,7 @@
     private bool _hasAccess;
 
     protected override async Task OnInitializedAsync() {
-        var posts = await WritingsService.GetPostsAsync();
+        Post[] posts = await WritingsService.GetPostsAsync();
         _posts = posts.ToList();
 
         if (!DevFs.IsLocalhost) return;
@@ -126,7 +126,7 @@
     }
 
     private async Task EnsureResxFilesExist() {
-        foreach (string path in LocalizationConfig.SupportedCultures.Select(culture => DevFileSystemService.GetResxPath(culture.Code))) {
+        foreach (string path in LocalizationConfig.SupportedCultures.Select(culture => DevFileSystemService.GetSharedResxPath(culture.Code))) {
             string? content = await DevFs.ReadFileAsync(path);
             if (content != null) continue;
 
@@ -136,7 +136,7 @@
         }
     }
 
-    private XDocument CreateNewResx() {
+    private static XDocument CreateNewResx() {
         return new XDocument(
             new XElement("root",
                 new XElement("resheader", new XAttribute("name", "resmimetype"), new XElement("value", "text/microsoft-resx")),
@@ -235,8 +235,8 @@
     private async Task GenerateStubs() {
         if (_selectedPost == null) return;
 
-        var enContent = $"# {_selectedPost.Title.GetValueOrDefault("en")}\n\nContent for {_selectedPost.Slug} in English.";
-        var nlContent = $"# {_selectedPost.Title.GetValueOrDefault("nl")}\n\nInhoud voor {_selectedPost.Slug} in het Nederlands.";
+        string enContent = $"# {_selectedPost.Title.GetValueOrDefault("en")}\n\nContent for {_selectedPost.Slug} in English.";
+        string nlContent = $"# {_selectedPost.Title.GetValueOrDefault("nl")}\n\nInhoud voor {_selectedPost.Slug} in het Nederlands.";
 
         if (DevFs.IsLocalhost && _hasAccess) {
             if (!await DevFs.VerifyPermissionAsync()) {

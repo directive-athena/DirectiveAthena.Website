@@ -41,7 +41,7 @@ else if (_isLoaded) {
     private bool _isLoaded;
 
     protected override async Task OnInitializedAsync() {
-        var posts = await WritingsService.GetPostsAsync();
+        Post[] posts = await WritingsService.GetPostsAsync();
         _post = posts.FirstOrDefault();
         _isLoaded = true;
     }

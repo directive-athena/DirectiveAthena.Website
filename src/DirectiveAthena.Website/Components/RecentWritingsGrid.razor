@@ -31,7 +31,7 @@
     private IEnumerable<Post>? _posts;
 
     protected override async Task OnInitializedAsync() {
-        var posts = await WritingsService.GetPostsAsync();
+        Post[] posts = await WritingsService.GetPostsAsync();
         _posts = posts.Skip(1).Take(3);
     }
 

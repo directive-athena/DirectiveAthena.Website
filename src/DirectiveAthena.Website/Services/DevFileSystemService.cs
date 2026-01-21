@@ -4,11 +4,11 @@ using DirectiveAthena.Website.Models;
 
 namespace DirectiveAthena.Website.Services;
 
-public class DevFileSystemService(IJSRuntime js, NavigationManager nav) {
+public class DevFileSystemService(IJSRuntime jsRuntime, NavigationManager navigationManager) {
     public bool IsLocalhost {
         get {
 #if DEBUG
-            return nav.BaseUri.Contains("localhost") || nav.BaseUri.Contains("127.0.0.1");
+            return navigationManager.BaseUri.Contains("localhost") || navigationManager.BaseUri.Contains("127.0.0.1");
 #else
             return false;
 #endif
@@ -16,25 +16,25 @@ public class DevFileSystemService(IJSRuntime js, NavigationManager nav) {
     }
 
     public async ValueTask<bool> IsSupportedAsync() 
-        => await js.InvokeAsync<bool>("fsApi.isSupported");
+        => await jsRuntime.InvokeAsync<bool>("fsApi.isSupported");
 
     public async ValueTask<bool> RequestAccessAsync() 
-        => await js.InvokeAsync<bool>("fsApi.requestAccess");
+        => await jsRuntime.InvokeAsync<bool>("fsApi.requestAccess");
 
     public async ValueTask<bool> HasAccessAsync() 
-        => await js.InvokeAsync<bool>("fsApi.hasAccess");
+        => await jsRuntime.InvokeAsync<bool>("fsApi.hasAccess");
 
     public async ValueTask<bool> VerifyPermissionAsync() 
-        => await js.InvokeAsync<bool>("fsApi.verifyPermission");
+        => await jsRuntime.InvokeAsync<bool>("fsApi.verifyPermission");
 
     public async ValueTask ResetAccessAsync() 
-        => await js.InvokeVoidAsync("fsApi.resetAccess");
+        => await jsRuntime.InvokeVoidAsync("fsApi.resetAccess");
 
     public async ValueTask<bool> WriteFileAsync(string relativePath, string content) 
-        => await js.InvokeAsync<bool>("fsApi.writeFile", relativePath, content);
+        => await jsRuntime.InvokeAsync<bool>("fsApi.writeFile", relativePath, content);
 
     public async ValueTask<string?> ReadFileAsync(string relativePath) 
-        => await js.InvokeAsync<string?>("fsApi.readFile", relativePath);
+        => await jsRuntime.InvokeAsync<string?>("fsApi.readFile", relativePath);
 
     public static string GetIndexPath() 
         => "src/DirectiveAthena.Website/wwwroot/content/writings/index.json";
@@ -42,8 +42,13 @@ public class DevFileSystemService(IJSRuntime js, NavigationManager nav) {
     public static string GetMarkdownPath(string locale, string fileName) 
         => $"src/DirectiveAthena.Website/wwwroot/content/writings/{locale}/{fileName}";
 
-    public static string GetResxPath(string locale) 
+    public static string GetSharedResxPath(string locale) 
         => locale == LocalizationConfig.DefaultCulture.Code
             ? "src/DirectiveAthena.Website/Resources/Shared.resx"
             : $"src/DirectiveAthena.Website/Resources/Shared.{locale}.resx";
+
+    public static string GetTagsResxPath(string locale)
+        => locale == LocalizationConfig.DefaultCulture.Code
+            ? "src/DirectiveAthena.Website/Resources/Tags.resx"
+            : $"src/DirectiveAthena.Website/Resources/Tags.{locale}.resx";
 }

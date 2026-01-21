@@ -1,8 +1,7 @@
 @using System.Xml.Linq
 @using DirectiveAthena.Website.Resources
-@using DirectiveAthena.Website.Models
 @using Microsoft.Extensions.Localization
-@inject IStringLocalizer<Shared> L
+@inject IStringLocalizer<Tags> Localizer
 @inject DevFileSystemService DevFs
 @inject IJSRuntime JsRuntime
 @inject ISnackbar Snackbar
@@ -13,7 +12,7 @@
     <MudTable Items="@_tagModels" Hover="true" Breakpoint="Breakpoint.Sm" Dense="true" Class="mb-6">
         <HeaderContent>
             <MudTh>Tag ID</MudTh>
-            @foreach (var culture in LocalizationConfig.SupportedCultures) {
+            @foreach (CultureConfig culture in LocalizationConfig.SupportedCultures) {
                 <MudTh>@culture.DisplayName (@culture.Code)</MudTh>
             }
             <MudTh>Actions</MudTh>
@@ -23,10 +22,10 @@
                 <MudTextField @bind-Value="context.Id" Label="ID" Required="true"
                               ReadOnly="@context.IsOriginal"/>
             </MudTd>
-            @foreach (var culture in LocalizationConfig.SupportedCultures) {
+            @foreach (CultureConfig culture in LocalizationConfig.SupportedCultures) {
                 <MudTd DataLabel="@culture.DisplayName">
-                    <MudTextField Value="@context.Translations.GetValueOrDefault(culture.Code)"
-                                  ValueChanged="@((string s) => context.Translations[culture.Code] = s)"
+                <MudTextField Value="@context.Translations.GetValueOrDefault(culture.Code)"
+                              ValueChanged="@((string? s) => context.Translations[culture.Code] = s ?? throw new ArgumentNullException(s))"
                                   Label="@culture.Abbreviation" Required="true"/>
                 </MudTd>
             }
@@ -36,15 +35,15 @@
             </MudTd>
         </RowTemplate>
         <FooterContent>
-            <MudButton StartIcon="@Icons.Material.Filled.Add" OnClick="AddNewTag" Color="Color.Primary" Class="ma-2">
+            <MudButton StartIcon="@Icons.Material.Filled.Add" OnClick="@AddNewTag" Color="Color.Primary" Class="ma-2">
                 Add Tag
             </MudButton>
         </FooterContent>
     </MudTable>
 
     <div class="d-flex flex-wrap gap-4">
-        @foreach (var culture in LocalizationConfig.SupportedCultures) {
-            @if (DevFs.IsLocalhost) {
+        @foreach (CultureConfig culture in LocalizationConfig.SupportedCultures) {
+            if (DevFs.IsLocalhost) {
                 <MudButton Variant="Variant.Filled" Color="Color.Success"
                            OnClick="@(() => SaveResxToDisk(culture.Code))" StartIcon="@Icons.Material.Filled.Save">
                     Save Resx (@culture.Code)
@@ -67,10 +66,10 @@
 </MudPaper>
 
 @code {
-    [Parameter] public List<Post> Posts { get; set; } = new();
+    [Parameter] public List<Post> Posts { get; set; } = [];
 
-    private List<TagModel> _tagModels = new();
-    private HashSet<string> _inUseTags = new();
+    private readonly List<TagModel> _tagModels = [];
+    private HashSet<string> _inUseTags = [];
 
     protected override void OnInitialized() {
         LoadTags();
@@ -79,9 +78,14 @@
     private void LoadTags() {
         _inUseTags = Posts.SelectMany(p => p.Tags).ToHashSet();
 
-        foreach (var tagId in _inUseTags) {
+        foreach (string tagId in _inUseTags) {
             AddTagToModel(tagId, true);
         }
+
+        // Also add any other tags found in the default Tags.resx if not already added
+        // Since we can't easily iterate all keys in IStringLocalizer for all cultures here,
+        // we'll rely on the fact that if it's in use, it's loaded.
+        // If we wanted to load ALL tags from resx, we'd need to parse the resx file.
 
         StateHasChanged();
     }
@@ -94,10 +98,10 @@
             IsOriginal = isOriginal
         };
 
-        foreach (var culture in LocalizationConfig.SupportedCultures) {
+        foreach (CultureConfig culture in LocalizationConfig.SupportedCultures) {
             // This is a bit tricky since IStringLocalizer doesn't easily let us switch culture per call
             // But we can assume it's already set up or just use the current one as a base
-            var localized = L.GetString($"Tag.{tagId}");
+            LocalizedString localized = Localizer.GetString(tagId);
             model.Translations[culture.Code] = localized.ResourceNotFound ? tagId : localized.Value;
         }
 
@@ -106,7 +110,7 @@
 
     private async Task AddNewTag() {
         var newTag = new TagModel { Id = "NewTag", IsOriginal = false };
-        foreach (var culture in LocalizationConfig.SupportedCultures) {
+        foreach (CultureConfig culture in LocalizationConfig.SupportedCultures) {
             newTag.Translations[culture.Code] = "";
         }
 
@@ -128,7 +132,7 @@
             return;
         }
 
-        string path = DevFileSystemService.GetResxPath(locale);
+        string path = DevFileSystemService.GetTagsResxPath(locale);
         string existingContent = await DevFs.ReadFileAsync(path) ?? "";
         string newContent = GenerateResx(locale, existingContent);
 
@@ -142,8 +146,8 @@
     }
 
     private async Task DownloadResx(string locale) {
-        var content = GenerateResx(locale, "");
-        string fileName = locale == LocalizationConfig.DefaultCulture.Code ? "Shared.resx" : $"Shared.{locale}.resx";
+        string content = GenerateResx(locale, "");
+        string fileName = locale == LocalizationConfig.DefaultCulture.Code ? "Tags.resx" : $"Tags.{locale}.resx";
         await JsRuntime.InvokeVoidAsync("downloadFile", fileName, content);
     }
 
@@ -163,14 +167,14 @@
             doc = CreateNewResx();
         }
 
-        var root = doc.Root;
+        XElement? root = doc.Root;
         if (root == null) return doc.ToString();
 
-        foreach (var tag in _tagModels) {
+        foreach (TagModel tag in _tagModels) {
             string key = $"Tag.{tag.Id}";
             string value = tag.Translations.GetValueOrDefault(locale) ?? "";
 
-            var existingData = root.Elements("data").FirstOrDefault(e => e.Attribute("name")?.Value == key);
+            XElement? existingData = root.Elements("data").FirstOrDefault(e => e.Attribute("name")?.Value == key);
             if (existingData != null) {
                 existingData.Element("value")!.Value = value;
             }

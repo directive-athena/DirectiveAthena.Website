@@ -29,7 +29,7 @@ public static class Program {
         WebAssemblyHost host = builder.Build();
 
         var jsInterop = host.Services.GetRequiredService<IJSRuntime>();
-        var result = await jsInterop.InvokeAsync<string>("localStorage.getItem", "culture");
+        string result = await jsInterop.InvokeAsync<string>("localStorage.getItem", "culture");
         
         string culture = LocalizationConfig.SupportedCultures.Any(c => c.Code == result) 
             ? result

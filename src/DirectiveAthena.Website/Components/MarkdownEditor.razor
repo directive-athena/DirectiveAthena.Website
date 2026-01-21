@@ -8,7 +8,7 @@
         <MudText Typo="Typo.h5">Markdown Editor</MudText>
         <div class="d-flex gap-2">
             <MudSelect T="string" Label="Locale" @bind-Value="_selectedLocale" Class="width-100">
-                @foreach (var culture in LocalizationConfig.SupportedCultures) {
+                @foreach (CultureConfig culture in LocalizationConfig.SupportedCultures) {
                     <MudSelectItem Value="@culture.Code">@culture.DisplayName</MudSelectItem>
                 }
             </MudSelect>
@@ -69,7 +69,7 @@
 
         // Try to load from disk first if on localhost and has access
         if (DevFs.IsLocalhost && await DevFs.HasAccessAsync()) {
-            var diskContent = await DevFs.ReadFileAsync(DevFileSystemService.GetMarkdownPath(_selectedLocale, Post.File));
+            string? diskContent = await DevFs.ReadFileAsync(DevFileSystemService.GetMarkdownPath(_selectedLocale, Post.File));
             if (diskContent != null) {
                 _content = diskContent;
                 return;
