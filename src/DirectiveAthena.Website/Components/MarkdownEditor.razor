@@ -1,8 +1,17 @@
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Imports
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@namespace DirectiveAthena.Website.Components
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Descriptors
+@* ------------------------------------------------------------------------------------------------------------------ *@
 @inject WritingsService WritingsService
 @inject DevFileSystemService DevFs
 @inject IJSRuntime JsRuntime
 @inject ISnackbar Snackbar
-
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Html
+@* ------------------------------------------------------------------------------------------------------------------ *@
 <MudPaper Class="pa-6 card-glass">
     <div class="d-flex justify-space-between align-center mb-4">
         <MudText Typo="Typo.h5">Markdown Editor</MudText>
@@ -20,30 +29,38 @@
     }
     else {
         <MudText Typo="Typo.subtitle1" Class="mb-2">Editing: <b>@(_selectedLocale)/@Post.File</b></MudText>
-        
-        <MudTextField T="string" @bind-Value="_content" Label="Markdown Content" 
-                      Lines="20" Variant="Variant.Outlined" Class="mb-4" />
+
+        <MudTextField T="string" @bind-Value="_content" Label="Markdown Content"
+                      Lines="20" Variant="Variant.Outlined" Class="mb-4"/>
 
         <div class="d-flex gap-4">
             @if (DevFs.IsLocalhost) {
-                <MudButton Variant="Variant.Filled" Color="Color.Success" OnClick="SaveMarkdown" StartIcon="@Icons.Material.Filled.Save">
+                <MudButton Variant="Variant.Filled" Color="Color.Success" OnClick="@SaveMarkdown"
+                           StartIcon="@Icons.Material.Filled.Save">
                     Save to Disk
                 </MudButton>
             }
             else {
-                <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="DownloadMarkdown" StartIcon="@Icons.Material.Filled.Download">
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="@DownloadMarkdown"
+                           StartIcon="@Icons.Material.Filled.Download">
                     Download Markdown
                 </MudButton>
-                <MudButton Variant="Variant.Outlined" Color="Color.Info" OnClick="CopyToClipboard" StartIcon="@Icons.Material.Filled.ContentCopy">
+                <MudButton Variant="Variant.Outlined" Color="Color.Info" OnClick="@CopyToClipboard"
+                           StartIcon="@Icons.Material.Filled.ContentCopy">
                     Copy to Clipboard
                 </MudButton>
             }
-            <MudButton Variant="Variant.Text" Color="Color.Default" OnClick="LoadContent" StartIcon="@Icons.Material.Filled.Refresh">
+            <MudButton Variant="Variant.Text" Color="Color.Default" OnClick="@LoadContent"
+                       StartIcon="@Icons.Material.Filled.Refresh">
                 Reload Original
             </MudButton>
         </div>
     }
 </MudPaper>
+
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Code
+@* ------------------------------------------------------------------------------------------------------------------ *@
 
 @code {
     [Parameter] public Post? Post { get; set; }
@@ -92,16 +109,18 @@
 
         string path = DevFileSystemService.GetMarkdownPath(_selectedLocale, Post.File);
         bool success = await DevFs.WriteFileAsync(path, _content);
-        
+
         if (success) {
             Snackbar.Add($"Saved {_selectedLocale}/{Post.File} to disk!", Severity.Success);
-        } else {
+        }
+        else {
             Snackbar.Add("Failed to save markdown file.", Severity.Error);
         }
     }
 
     private async Task DownloadMarkdown() {
         if (Post == null) return;
+
         string path = $"{_selectedLocale}/{Post.File}";
         await JsRuntime.InvokeVoidAsync("downloadFile", path, _content);
     }

@@ -1,15 +1,26 @@
-@page "/contact"
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Imports
+@* ------------------------------------------------------------------------------------------------------------------ *@
 @using DirectiveAthena.Website.Resources
 @using Microsoft.Extensions.Localization
-@inject IStringLocalizer<Shared> L
 
-<PageTitle>@L["Contact.Title"]</PageTitle>
+@namespace DirectiveAthena.Website.Pages
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Descriptors
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@page "/contact"
+
+@inject IStringLocalizer<Shared> Localizer
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Html
+@* ------------------------------------------------------------------------------------------------------------------ *@
+<PageTitle>@Localizer["Contact.Title"]</PageTitle>
 
 <div class="min-vh-100 py-32 d-flex align-center">
     <MudContainer MaxWidth="MaxWidth.Small" Class="text-center">
-        <MudText Typo="Typo.h2" Class="mb-6">@L["Contact.Heading"]</MudText>
+        <MudText Typo="Typo.h2" Class="mb-6">@Localizer["Contact.Heading"]</MudText>
         <MudText Typo="Typo.body1" Class="text-secondary mb-12">
-            @L["Contact.Subtitle"]
+            @Localizer["Contact.Subtitle"]
         </MudText>
 
         <MudGrid Spacing="4">
@@ -45,8 +56,12 @@
 
         <div class="mt-16">
             <MudButton Variant="Variant.Text" Color="Color.Secondary" Href="/"
-                       StartIcon="@Icons.Material.Filled.ArrowBack">@L["Contact.Return"]
+                       StartIcon="@Icons.Material.Filled.ArrowBack">@Localizer["Contact.Return"]
             </MudButton>
         </div>
     </MudContainer>
 </div>
+
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Code
+@* ------------------------------------------------------------------------------------------------------------------ *@

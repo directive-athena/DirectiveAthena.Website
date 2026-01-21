@@ -1,20 +1,31 @@
-@* DrawerMenu.razor *@
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Imports
+@* ------------------------------------------------------------------------------------------------------------------ *@
 @using DirectiveAthena.Website.Resources
 @using Microsoft.Extensions.Localization
-@inject IStringLocalizer<Shared> L
 
+@namespace DirectiveAthena.Website.Components
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Descriptors
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@inject IStringLocalizer<Shared> Localizer
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Html
+@* ------------------------------------------------------------------------------------------------------------------ *@
 <MudDrawer Open="Open" OpenChanged="OpenChanged" ClipMode="DrawerClipMode.Always" Elevation="2" Anchor="Anchor.Left"
            Variant="@DrawerVariant.Temporary" Class="drawer-glass">
     <div class="pa-4 d-flex flex-column align-center">
         <MudImage Src="assets/logo.svg" Width="64" Height="64" Alt="Logo" Class="mb-4"/>
-        <MudText Typo="Typo.h6" Class="mb-8">@L["Brand.Name"]</MudText>
+        <MudText Typo="Typo.h6" Class="mb-8">@Localizer["Brand.Name"]</MudText>
     </div>
     <MudNavMenu>
         <MudStack Spacing="3">
-            <MudNavLink Href="/" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">@L["Nav.Home"]</MudNavLink>
-            <MudNavLink Href="/story" Icon="@Icons.Material.Filled.AutoStories">@L["Nav.Story"]</MudNavLink>
-            <MudNavLink Href="/writings" Icon="@Icons.Material.Filled.Article">@L["Nav.Writings"]</MudNavLink>
-            <MudNavLink Href="/contact" Icon="@Icons.Material.Filled.ContactSupport">@L["Nav.Contact"]</MudNavLink>
+            <MudNavLink Href="/" Match="NavLinkMatch.All"
+                        Icon="@Icons.Material.Filled.Home">@Localizer["Nav.Home"]</MudNavLink>
+            <MudNavLink Href="/story" Icon="@Icons.Material.Filled.AutoStories">@Localizer["Nav.Story"]</MudNavLink>
+            <MudNavLink Href="/writings" Icon="@Icons.Material.Filled.Article">@Localizer["Nav.Writings"]</MudNavLink>
+            <MudNavLink Href="/contact"
+                        Icon="@Icons.Material.Filled.ContactSupport">@Localizer["Nav.Contact"]</MudNavLink>
 
             <div class="pa-2 flex justify-center">
                 <CultureSelector/>
@@ -22,6 +33,10 @@
         </MudStack>
     </MudNavMenu>
 </MudDrawer>
+
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Code
+@* ------------------------------------------------------------------------------------------------------------------ *@
 
 @code {
     [Parameter] public bool Open { get; set; }

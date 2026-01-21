@@ -1,7 +1,18 @@
-﻿@using DirectiveAthena.Website.Components
+﻿@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Imports
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@using DirectiveAthena.Website.Components
+
+@namespace DirectiveAthena.Website.Layout
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Descriptors
+@* ------------------------------------------------------------------------------------------------------------------ *@
 @inherits LayoutComponentBase
 @implements IDisposable
-
+@inject IJSRuntime JsRuntime
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Html
+@* ------------------------------------------------------------------------------------------------------------------ *@
 <MudLayout Class="min-vh-100 d-flex flex-column">
     <BackgroundLayer />
 
@@ -14,16 +25,17 @@
             @Body
         </div>
         
-        <Footer />
+        <PageFooter />
     </MudMainContent>
 </MudLayout>
 
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Code
+@* ------------------------------------------------------------------------------------------------------------------ *@
+
 @code {
-    bool _drawerOpen;
-    bool _isScrolled;
-
-    [Inject] private IJSRuntime JsRuntime { get; set; } = null!;
-
+    private bool _drawerOpen;
+    private bool _isScrolled;
     private DotNetObjectReference<MainLayout>? _objRef;
 
     protected override async Task OnAfterRenderAsync(bool firstRender) {

@@ -1,17 +1,23 @@
-@* PostList.razor *@
-@using DirectiveAthena.Website.Resources
-@using Microsoft.Extensions.Localization
-@inject IStringLocalizer<Shared> L
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Imports
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@namespace DirectiveAthena.Website.Components
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Descriptors
+@* ------------------------------------------------------------------------------------------------------------------ *@
 
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Html
+@* ------------------------------------------------------------------------------------------------------------------ *@
 <MudPaper Class="pa-4 card-glass mb-4">
     <div class="d-flex justify-space-between align-center mb-4">
         <MudText Typo="Typo.h6">Posts</MudText>
-        <MudIconButton Icon="@Icons.Material.Filled.Add" Color="Color.Primary" OnClick="OnCreatePost"/>
+        <MudIconButton Icon="@Icons.Material.Filled.Add" Color="Color.Primary" OnClick="@OnCreatePost"/>
     </div>
     <MudList T="Post" SelectedValue="SelectedPost" SelectedValueChanged="OnPostSelected"
              Color="Color.Primary">
         @if (Posts != null) {
-            @foreach (Post post in Posts) {
+            foreach (Post post in Posts) {
                 <MudListItem Value="post">
                     <div class="d-flex flex-column">
                         <MudText
@@ -28,6 +34,10 @@
         }
     </MudList>
 </MudPaper>
+
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Code
+@* ------------------------------------------------------------------------------------------------------------------ *@
 
 @code {
     [Parameter] public List<Post>? Posts { get; set; }

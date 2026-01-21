@@ -1,7 +1,17 @@
-﻿@using System.Globalization
-@inject IJSRuntime JsRuntime
-@inject NavigationManager NavManager
+﻿@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Imports
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@using System.Globalization
 
+@namespace DirectiveAthena.Website.Components
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Descriptors
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@inject IJSRuntime JsRuntime
+@inject NavigationManager NavigationManager
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Html
+@* ------------------------------------------------------------------------------------------------------------------ *@
 <MudMenu AnchorOrigin="Origin.BottomCenter" TransformOrigin="Origin.TopCenter" Dense="true" Class="ml-2">
     <ActivatorContent>
         <MudButton Variant="Variant.Text" Color="Color.Inherit">
@@ -34,15 +44,18 @@
     </ChildContent>
 </MudMenu>
 
-@code {
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Code
+@* ------------------------------------------------------------------------------------------------------------------ *@
 
-    private CultureConfig CurrentCulture => LocalizationConfig.SupportedCultures.FirstOrDefault(c => c.Code == CultureInfo.CurrentUICulture.TwoLetterISOLanguageName)
-                                           ?? LocalizationConfig.DefaultCulture;
+@code {
+    private static CultureConfig CurrentCulture => LocalizationConfig.SupportedCultures.FirstOrDefault(c => c.Code == CultureInfo.CurrentUICulture.TwoLetterISOLanguageName)
+        ?? LocalizationConfig.DefaultCulture;
 
     private async Task ChangeCulture(string culture) {
         if (CultureInfo.CurrentUICulture.TwoLetterISOLanguageName != culture) {
             await JsRuntime.InvokeVoidAsync("localStorage.setItem", "culture", culture);
-            NavManager.NavigateTo(NavManager.Uri, forceLoad: true);
+            NavigationManager.NavigateTo(NavigationManager.Uri, forceLoad: true);
         }
     }
 

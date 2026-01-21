@@ -1,11 +1,21 @@
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Imports
+@* ------------------------------------------------------------------------------------------------------------------ *@
 @using System.Xml.Linq
 @using DirectiveAthena.Website.Resources
 @using Microsoft.Extensions.Localization
+
+@namespace DirectiveAthena.Website.Components
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Descriptors
+@* ------------------------------------------------------------------------------------------------------------------ *@
 @inject IStringLocalizer<Tags> Localizer
 @inject DevFileSystemService DevFs
 @inject IJSRuntime JsRuntime
 @inject ISnackbar Snackbar
-
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Html
+@* ------------------------------------------------------------------------------------------------------------------ *@
 <MudPaper Class="pa-6 card-glass">
     <MudText Typo="Typo.h5" Class="mb-4">Tags Management</MudText>
 
@@ -24,8 +34,8 @@
             </MudTd>
             @foreach (CultureConfig culture in LocalizationConfig.SupportedCultures) {
                 <MudTd DataLabel="@culture.DisplayName">
-                <MudTextField Value="@context.Translations.GetValueOrDefault(culture.Code)"
-                              ValueChanged="@((string? s) => context.Translations[culture.Code] = s ?? throw new ArgumentNullException(s))"
+                    <MudTextField Value="@context.Translations.GetValueOrDefault(culture.Code)"
+                                  ValueChanged="@((string? s) => context.Translations[culture.Code] = s ?? throw new ArgumentNullException(s))"
                                   Label="@culture.Abbreviation" Required="true"/>
                 </MudTd>
             }
@@ -64,6 +74,10 @@
         </MudAlert>
     }
 </MudPaper>
+
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Code
+@* ------------------------------------------------------------------------------------------------------------------ *@
 
 @code {
     [Parameter] public List<Post> Posts { get; set; } = [];

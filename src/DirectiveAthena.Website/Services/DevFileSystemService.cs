@@ -1,9 +1,14 @@
+// ---------------------------------------------------------------------------------------------------------------------
+// Imports
+// ---------------------------------------------------------------------------------------------------------------------
 using Microsoft.JSInterop;
 using Microsoft.AspNetCore.Components;
 using DirectiveAthena.Website.Models;
 
 namespace DirectiveAthena.Website.Services;
-
+// ---------------------------------------------------------------------------------------------------------------------
+// Code
+// ---------------------------------------------------------------------------------------------------------------------
 public class DevFileSystemService(IJSRuntime jsRuntime, NavigationManager navigationManager) {
     public bool IsLocalhost {
         get {
@@ -15,6 +20,9 @@ public class DevFileSystemService(IJSRuntime jsRuntime, NavigationManager naviga
         }
     }
 
+    // -----------------------------------------------------------------------------------------------------------------
+    // Methods
+    // -----------------------------------------------------------------------------------------------------------------
     public async ValueTask<bool> IsSupportedAsync() 
         => await jsRuntime.InvokeAsync<bool>("fsApi.isSupported");
 

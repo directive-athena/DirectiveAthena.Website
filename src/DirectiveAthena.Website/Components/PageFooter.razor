@@ -1,18 +1,27 @@
-@* Footer.razor *@
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Imports
+@* ------------------------------------------------------------------------------------------------------------------ *@
 @using DirectiveAthena.Website.Resources
 @using Microsoft.Extensions.Localization
-@inject IStringLocalizer<Shared> L
 
+@namespace DirectiveAthena.Website.Components
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Descriptors
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@inject IStringLocalizer<Shared> Localizer
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Html
+@* ------------------------------------------------------------------------------------------------------------------ *@
 <footer class="mt-12 py-12">
     <MudContainer MaxWidth="MaxWidth.Large">
         <MudGrid Justify="Justify.SpaceBetween">
             <MudItem xs="12" sm="6">
                 <div class="d-flex align-center mb-4">
                     <MudImage Src="assets/logo.svg" Width="32" Height="32" Alt="Logo" Class="mr-3"/>
-                    <MudText Typo="Typo.h6" Class="SpaceGrotesk">@L["Brand.Name"]</MudText>
+                    <MudText Typo="Typo.h6" Class="SpaceGrotesk">@Localizer["Brand.Name"]</MudText>
                 </div>
                 <MudText Typo="Typo.body2" Class="text-secondary">
-                    @L["Footer.Description"]
+                    @Localizer["Footer.Description"]
                 </MudText>
             </MudItem>
             <MudItem xs="12" sm="6" Class="d-flex justify-sm-end align-center">
@@ -28,7 +37,11 @@
         </MudGrid>
         <MudDivider Class="my-8 opacity-10"/>
         <MudText Typo="Typo.caption" Class="d-block opacity-60" Align="Align.Center">
-            @string.Format(L["Footer.Copyright"], DateTime.Now.Year)
+            @string.Format(Localizer["Footer.Copyright"], DateTime.Now.Year)
         </MudText>
     </MudContainer>
 </footer>
+
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Code
+@* ------------------------------------------------------------------------------------------------------------------ *@

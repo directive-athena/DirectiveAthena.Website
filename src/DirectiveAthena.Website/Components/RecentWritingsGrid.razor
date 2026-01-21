@@ -1,9 +1,19 @@
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Imports
+@* ------------------------------------------------------------------------------------------------------------------ *@
 @using DirectiveAthena.Website.Resources
 @using Microsoft.Extensions.Localization
+
+@namespace DirectiveAthena.Website.Components
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Descriptors
+@* ------------------------------------------------------------------------------------------------------------------ *@
 @inject WritingsService WritingsService
 @inject NavigationManager Nav
-@inject IStringLocalizer<Shared> L
-
+@inject IStringLocalizer<Shared> Localizer
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Html
+@* ------------------------------------------------------------------------------------------------------------------ *@
 @if (_posts != null && _posts.Any()) {
     foreach (Post post in _posts) {
         <MudItem xs="12" md="4">
@@ -20,12 +30,16 @@
                         @WritingsService.GetLocalizedSummary(post)
                     </MudText>
                     <MudButton Variant="Variant.Text" Color="Color.Secondary"
-                               Class="pa-0">@L["Home.Writings.ReadMore"]</MudButton>
+                               Class="pa-0">@Localizer["Home.Writings.ReadMore"]</MudButton>
                 </MudCardContent>
             </MudCard>
         </MudItem>
     }
 }
+
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Code
+@* ------------------------------------------------------------------------------------------------------------------ *@
 
 @code {
     private IEnumerable<Post>? _posts;

@@ -1,33 +1,45 @@
-@page "/writings"
-@page "/writings/{Slug}"
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Imports
+@* ------------------------------------------------------------------------------------------------------------------ *@
 @using DirectiveAthena.Website.Resources
 @using Markdig
 @using Microsoft.Extensions.Localization
-@inject WritingsService WritingsService
-@inject HttpClient Http
-@inject NavigationManager Nav
-@inject IStringLocalizer<Shared> L
 
-<PageTitle>@L["Writings.Title"]</PageTitle>
+@namespace DirectiveAthena.Website.Pages
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Descriptors
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@page "/writings"
+@page "/writings/{Slug}"
+
+@inject WritingsService WritingsService
+@inject HttpClient HttpClient
+@inject NavigationManager NavigationManager
+@inject IStringLocalizer<Shared> Localizer
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Html
+@* ------------------------------------------------------------------------------------------------------------------ *@
+<PageTitle>@Localizer["Writings.Title"]</PageTitle>
 
 <div class="min-vh-100 py-32">
     <MudContainer MaxWidth="MaxWidth.Large">
         @if (string.IsNullOrEmpty(Slug)) {
             @* Archive View *@
             <div class="text-center mb-16">
-                <MudText Typo="Typo.h2" Class="mb-4">@L["Writings.Archive.Title"]</MudText>
-                <MudText Typo="Typo.body1" Class="text-secondary opacity-70">@L["Writings.Archive.Subtitle"]
+                <MudText Typo="Typo.h2" Class="mb-4">@Localizer["Writings.Archive.Title"]</MudText>
+                <MudText Typo="Typo.body1" Class="text-secondary opacity-70">@Localizer["Writings.Archive.Subtitle"]
                 </MudText>
             </div>
 
             <div class="d-flex flex-wrap justify-center gap-2 mb-12">
                 <MudChip T="string" Variant="@(string.IsNullOrEmpty(_selectedTag) ? Variant.Filled : Variant.Outlined)"
-                         Color="Color.Secondary" OnClick="@ClearTag">@L["Writings.Archive.AllPosts"]
+                         Color="Color.Secondary" OnClick="@ClearTag">@Localizer["Writings.Archive.AllPosts"]
                 </MudChip>
                 @if (_posts != null) {
                     @foreach (string tag in _posts.SelectMany(p => p.Tags).Distinct()) {
                         <MudChip T="string" Variant="@(_selectedTag == tag ? Variant.Filled : Variant.Outlined)"
-                                 Color="Color.Secondary" OnClick="@(() => FilterByTag(tag))">@WritingsService.GetLocalizedTagName(tag)</MudChip>
+                                 Color="Color.Secondary"
+                                 OnClick="@(() => FilterByTag(tag))">@WritingsService.GetLocalizedTagName(tag)</MudChip>
                     }
                 }
             </div>
@@ -54,13 +66,15 @@
                                             }
                                         </div>
                                     </div>
-                                    <MudText Typo="Typo.h4" Class="mb-4 SpaceGrotesk">@WritingsService.GetLocalizedTitle(post)</MudText>
+                                    <MudText Typo="Typo.h4"
+                                             Class="mb-4 SpaceGrotesk">@WritingsService.GetLocalizedTitle(post)</MudText>
                                     <MudText Typo="Typo.body2" Class="text-secondary mb-6"
                                              Style="line-height: 1.6;">
                                         @WritingsService.GetLocalizedSummary(post)
                                     </MudText>
                                     <MudButton Variant="Variant.Text" Color="Color.Secondary"
-                                               EndIcon="@Icons.Material.Filled.ArrowForward" Class="pa-0">@L["Writings.Archive.ReadArticle"]
+                                               EndIcon="@Icons.Material.Filled.ArrowForward"
+                                               Class="pa-0">@Localizer["Writings.Archive.ReadArticle"]
                                     </MudButton>
                                 </MudCardContent>
                             </MudCard>
@@ -72,7 +86,7 @@
         else {
             @* Detail View *@
             <MudButton StartIcon="@Icons.Material.Filled.ArrowBack" Color="Color.Secondary" OnClick="@BackToList"
-                       Class="mb-12">@L["Writings.Detail.Back"]
+                       Class="mb-12">@Localizer["Writings.Detail.Back"]
             </MudButton>
 
             @if (_loading) {
@@ -81,14 +95,16 @@
                 </div>
             }
             else if (_error || _currentPost == null) {
-                <MudAlert Severity="Severity.Error" Variant="Variant.Filled" Class="card-glass">@L["Writings.Detail.Error"]
+                <MudAlert Severity="Severity.Error" Variant="Variant.Filled"
+                          Class="card-glass">@Localizer["Writings.Detail.Error"]
                 </MudAlert>
             }
             else {
                 <article class="fade-in mx-auto" style="max-width: 800px;">
                     <MudText Typo="Typo.caption" Color="Color.Secondary" Class="d-block mb-2"
                              Style="letter-spacing: 0.2em; text-transform: uppercase;">@_currentPost.Date</MudText>
-                    <MudText Typo="Typo.h2" Class="mb-8 SpaceGrotesk">@WritingsService.GetLocalizedTitle(_currentPost)</MudText>
+                    <MudText Typo="Typo.h2"
+                             Class="mb-8 SpaceGrotesk">@WritingsService.GetLocalizedTitle(_currentPost)</MudText>
                     <div class="d-flex gap-2 mb-12">
                         @foreach (string tag in _currentPost.Tags) {
                             <MudChip T="string" Size="Size.Small" Color="Color.Secondary"
@@ -102,13 +118,18 @@
 
                 <MudDivider Class="my-16 opacity-10"/>
                 <div class="d-flex justify-center">
-                    <MudButton Variant="Variant.Outlined" Color="Color.Secondary" OnClick="@BackToList">@L["Writings.Detail.BackBottom"]
+                    <MudButton Variant="Variant.Outlined" Color="Color.Secondary"
+                               OnClick="@BackToList">@Localizer["Writings.Detail.BackBottom"]
                     </MudButton>
                 </div>
             }
         }
     </MudContainer>
 </div>
+
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Code
+@* ------------------------------------------------------------------------------------------------------------------ *@
 
 @code {
     [Parameter] public string? Slug { get; set; }
@@ -151,7 +172,7 @@
 
         try {
             string path = WritingsService.GetLocalizedFilePath(_currentPost);
-            string markdown = await Http.GetStringAsync(path);
+            string markdown = await HttpClient.GetStringAsync(path);
             MarkdownPipeline pipeline = new MarkdownPipelineBuilder().UseAdvancedExtensions().Build();
             _renderedMarkdown = Markdown.ToHtml(markdown, pipeline);
         }
@@ -164,11 +185,11 @@
     }
 
     private void ViewPost(string slug) {
-        Nav.NavigateTo($"/writings/{slug}");
+        NavigationManager.NavigateTo($"/writings/{slug}");
     }
 
     private void BackToList() {
-        Nav.NavigateTo("/writings");
+        NavigationManager.NavigateTo("/writings");
     }
 
 }
