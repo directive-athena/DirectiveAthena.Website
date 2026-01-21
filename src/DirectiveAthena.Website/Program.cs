@@ -1,3 +1,6 @@
+// ---------------------------------------------------------------------------------------------------------------------
+// Imports
+// ---------------------------------------------------------------------------------------------------------------------
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using MudBlazor.Services;
@@ -8,6 +11,9 @@ using DirectiveAthena.Website.Models;
 
 namespace DirectiveAthena.Website;
 
+// ---------------------------------------------------------------------------------------------------------------------
+// Code
+// ---------------------------------------------------------------------------------------------------------------------
 public static class Program {
     public static async Task Main(string[] args) {
         var builder = WebAssemblyHostBuilder.CreateDefault(args);
@@ -26,7 +32,7 @@ public static class Program {
         var result = await jsInterop.InvokeAsync<string>("localStorage.getItem", "culture");
         
         string culture = LocalizationConfig.SupportedCultures.Any(c => c.Code == result) 
-            ? result! 
+            ? result
             : LocalizationConfig.DefaultCulture.Code;
         
         var cultureInfo = new CultureInfo(culture);

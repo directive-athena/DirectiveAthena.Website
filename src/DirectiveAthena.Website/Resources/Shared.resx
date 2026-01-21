@@ -79,25 +79,7 @@
   <data name="Footer.Copyright" xml:space="preserve">
     <value>© {0} Anna Sas. Built with Blazor &amp; MudBlazor.</value>
   </data>
-  <data name="Tag.Project" xml:space="preserve">
-    <value>Project</value>
-  </data>
-  <data name="Tag.Announcement" xml:space="preserve">
-    <value>Announcement</value>
-  </data>
-  <data name="Tag.Technology" xml:space="preserve">
-    <value>Technology</value>
-  </data>
-  <data name="Tag.AI" xml:space="preserve">
-    <value>AI</value>
-  </data>
-  <data name="Tag.Architecture" xml:space="preserve">
-    <value>Architecture</value>
-  </data>
-  <data name="Tag.Sovereignty" xml:space="preserve">
-    <value>Sovereignty</value>
-  </data>
-  <data name="Home.Title" xml:space="preserve">
+    <data name="Home.Title" xml:space="preserve">
     <value>Directive Athena</value>
   </data>
   <data name="Home.Hero.Title" xml:space="preserve">
