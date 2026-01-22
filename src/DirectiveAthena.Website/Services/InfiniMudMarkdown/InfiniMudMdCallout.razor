@@ -3,6 +3,7 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @using InfiniBlazor.Markdown.Parsers.Blazor
 @using InfiniBlazor.Markdown.Syntax.Nodes
+@using MudBlazor
 
 @namespace DirectiveAthena.Website.Services.InfiniMudMarkdown
 @* ------------------------------------------------------------------------------------------------------------------ *@
@@ -13,13 +14,13 @@
 @* Html
 @* ------------------------------------------------------------------------------------------------------------------ *@
 <MudAlert Severity="@GetSeverity()" Variant="Variant.Outlined" Class="my-4">
-    <MudAlertTitle>
+    <MudText Typo="Typo.subtitle2" Class="fw-bold">
         @if (SyntaxNode.TryGetTitleNode(out CalloutTitleMdSyntaxNode? titleNode)) {
             @ComponentConverter.RenderChildComponents(titleNode)
         } else {
             @SyntaxNode.CalloutType
         }
-    </MudAlertTitle>
+    </MudText>
     @if (SyntaxNode.TryGetBodyNode(out CalloutBodyMdSyntaxNode? bodyNode)) {
         @ComponentConverter.RenderChildComponents(bodyNode)
     }
@@ -29,7 +30,7 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 
 @code {
-    private Severity GetSeverity() => SyntaxNode.CalloutType.ToLower() switch {
+    private Severity GetSeverity() => SyntaxNode.CalloutType?.ToLower() switch {
         "info" => Severity.Info,
         "success" => Severity.Success,
         "warning" => Severity.Warning,

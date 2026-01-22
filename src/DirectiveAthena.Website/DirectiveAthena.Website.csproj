@@ -10,8 +10,8 @@
 
     <ItemGroup>
         <PackageReference Include="InfiniLore.InfiniBlazor.Core.Markdown" />
+        <PackageReference Include="InfiniLore.InfiniBlazor.Core.Markdown.Components" />
         <PackageReference Include="JetBrains.Annotations" />
-        <PackageReference Include="Markdig" />
         <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" />
         <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" PrivateAssets="all" />
         <PackageReference Include="MudBlazor" />

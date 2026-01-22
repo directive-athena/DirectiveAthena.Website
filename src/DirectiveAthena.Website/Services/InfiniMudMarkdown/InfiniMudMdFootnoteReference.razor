@@ -13,13 +13,12 @@
 @* Html
 @* ------------------------------------------------------------------------------------------------------------------ *@
 <sup style="vertical-align: super; font-size: smaller;">
-    <MudLink 
-        Href="@($"#md-footnote-{SyntaxNode.Identifier}")"
-        Underline="Underline.Hover"
-        Color="Color.Primary"
-        onclick="@($"event.preventDefault(); document.getElementById('md-footnote-{SyntaxNode.Identifier}')?.scrollIntoView({{ behavior: 'smooth' }});")">
+    <a 
+        href="@($"#md-footnote-{SyntaxNode.Identifier}")"
+        class="mud-link mud-primary-text mud-link-underline-hover"
+        onclick="@($"document.getElementById('md-footnote-{SyntaxNode.Identifier}')?.scrollIntoView({{ behavior: 'smooth' }}); return false;")">
         @SyntaxNode.Identifier
-    </MudLink>
+    </a>
 </sup>
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Code

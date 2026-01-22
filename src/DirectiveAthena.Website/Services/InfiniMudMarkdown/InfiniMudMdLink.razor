@@ -3,6 +3,7 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @using InfiniBlazor.Markdown.Parsers.Blazor
 @using InfiniBlazor.Markdown.Syntax.Nodes
+@using MudBlazor
 
 @namespace DirectiveAthena.Website.Services.InfiniMudMarkdown
 @* ------------------------------------------------------------------------------------------------------------------ *@
@@ -13,7 +14,7 @@
 @* Html
 @* ------------------------------------------------------------------------------------------------------------------ *@
 <MudLink Href="@SyntaxNode.Href"
-         Title="@GetTitle()"
+         UserAttributes="@GetAttributes()"
          Underline="Underline.Hover"
          Color="Color.Primary">
     @RenderChildContent()
@@ -23,6 +24,13 @@
 @* Code
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @code {
+    private Dictionary<string, object> GetAttributes() {
+        var attrs = new Dictionary<string, object>();
+        var title = GetTitle();
+        if (title != null) attrs["title"] = title;
+        return attrs;
+    }
+
     private string? GetTitle() {
         if (SyntaxNode.Title.IsNotNullOrWhiteSpace()) return SyntaxNode.Title;
         if (SyntaxNode.Modifier != null && SyntaxNode.Modifier.TryGetTitle(out string? title)) return title;

@@ -9,16 +9,17 @@
 @* Descriptors
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @inherits InfiniBlazorMdComponentBase<ListItemMdSyntaxNode>
+@using MudBlazor
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Html
 @* ------------------------------------------------------------------------------------------------------------------ *@
-<MudListItem Dense="true">
+<MudListItem T="ListItemMdSyntaxNode" Dense="true">
     <ChildContent>
         <MudStack Row="true" AlignItems="AlignItems.Center">
             @if (SyntaxNode.IsCheckable) {
                 <MudCheckBox T="bool" Value="@SyntaxNode.IsChecked" ValueChanged="@OnCheckChanged" Dense="true" Color="Color.Primary" />
             }
-            <MudText Typo="Typo.body1" Style="@(SyntaxNode.IsInapplicable ? "text-decoration: line-through; opacity: 0.6;" : "")">
+            <MudText Typo="Typo.body1" UserAttributes="@GetAttributes()">
                 @ComponentConverter.RenderChildComponents(SyntaxNode)
             </MudText>
         </MudStack>
@@ -28,6 +29,13 @@
 @* Code
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @code {
+    private Dictionary<string, object> GetAttributes() {
+        var attrs = new Dictionary<string, object>();
+        var style = SyntaxNode.IsInapplicable ? "text-decoration: line-through; opacity: 0.6;" : "";
+        if (!string.IsNullOrEmpty(style)) attrs["style"] = style;
+        return attrs;
+    }
+
     private async Task OnCheckChanged(bool state) {
         SyntaxNode.WithCheckMarker(state ? "x" : " ");
         if (RenderContext is not null) await RenderContext.InvokeSyntaxNodeChange(SyntaxNode);

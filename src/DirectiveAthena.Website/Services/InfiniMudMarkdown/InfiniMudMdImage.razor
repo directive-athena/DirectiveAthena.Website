@@ -3,6 +3,7 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @using InfiniBlazor.Markdown.Parsers.Blazor
 @using InfiniBlazor.Markdown.Syntax.Nodes
+@using MudBlazor
 
 @namespace DirectiveAthena.Website.Services.InfiniMudMarkdown
 @* ------------------------------------------------------------------------------------------------------------------ *@
@@ -15,10 +16,9 @@
 <MudImage
     Src="@SyntaxNode.Href"
     Alt="@SyntaxNode.NormalizedAltText"
-    Title="@GetTitle()"
+    UserAttributes="@GetAttributes()"
     Elevation="2"
     Class="rounded-lg"
-    Style="@GetStyle()"
 />
 
 @* ------------------------------------------------------------------------------------------------------------------ *@
@@ -26,6 +26,14 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 
 @code {
+    private Dictionary<string, object> GetAttributes() {
+        var attrs = new Dictionary<string, object>();
+        var title = GetTitle();
+        if (title != null) attrs["title"] = title;
+        attrs["style"] = GetStyle();
+        return attrs;
+    }
+
     private const string FitStyling = "width:auto;height:1em;vertical-align:text-top;object-fit:contain;transform:translate(0,0.15em);";
 
     private string GetStyle() {

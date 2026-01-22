@@ -4,8 +4,8 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageVersion Include="InfiniLore.InfiniBlazor.Core.Markdown" Version="0.1.0-preview.117" />
+    <PackageVersion Include="InfiniLore.InfiniBlazor.Core.Markdown.Components" Version="0.1.0-preview.117" />
     <PackageVersion Include="JetBrains.Annotations" Version="2025.2.4" />
-    <PackageVersion Include="Markdig" Version="0.44.0" />
     <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly" Version="10.0.2" />
     <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="10.0.2" />
     <PackageVersion Include="MudBlazor" Version="8.15.0" />

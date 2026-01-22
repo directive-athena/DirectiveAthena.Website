@@ -2,7 +2,7 @@
 @* Imports
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @using DirectiveAthena.Website.Resources
-@using Markdig
+@using InfiniBlazor.Markdown
 @using Microsoft.Extensions.Localization
 
 @namespace DirectiveAthena.Website.Pages
@@ -50,7 +50,7 @@
                         }
                     </div>
                     <div class="markdown-content">
-                        @((MarkupString)_renderedMarkdown)
+                        <InfiniMarkdownPreview Content="@_markdown"/>
                     </div>
                 </article>
 
@@ -72,7 +72,7 @@
     [Parameter] public string? Slug { get; set; }
     
     private Post? _currentPost;
-    private string _renderedMarkdown = "";
+    private string _markdown = "";
     private bool _loading;
     private bool _error;
 
@@ -95,9 +95,7 @@
 
         try {
             string path = WritingsService.GetLocalizedFilePath(_currentPost);
-            string markdown = await HttpClient.GetStringAsync(path);
-            MarkdownPipeline pipeline = new MarkdownPipelineBuilder().UseAdvancedExtensions().Build();
-            _renderedMarkdown = Markdown.ToHtml(markdown, pipeline);
+            _markdown = await HttpClient.GetStringAsync(path);
         }
         catch (Exception) {
             _error = true;
