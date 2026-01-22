@@ -9,7 +9,6 @@ using System.Globalization;
 using Microsoft.JSInterop;
 using DirectiveAthena.Website.Models;
 using DirectiveAthena.Website.Services.InfiniMudMarkdown;
-using InfiniBlazor.Markdown;
 
 namespace DirectiveAthena.Website;
 
@@ -19,6 +18,16 @@ namespace DirectiveAthena.Website;
 public static class Program {
     public static async Task Main(string[] args) {
         var builder = WebAssemblyHostBuilder.CreateDefault(args);
+
+        builder.Services.AddInfiniBlazor(static config => {
+            config.Components.SetRenderMode(RenderMode.InteractiveWebAssembly);
+            config.Markdown.WithMudBlazorComponents();
+        });
+        // builder.Services.AddInfiniBlazorMarkdown(static config => {
+        //     // config.WithDefaultEditorComponents();
+        //     config.WithMudBlazorComponents();
+        // });
+        
         builder.RootComponents.Add<App>("#app");
         builder.RootComponents.Add<HeadOutlet>("head::after");
 
@@ -27,10 +36,6 @@ public static class Program {
         builder.Services.AddScoped<WritingsService>();
         builder.Services.AddScoped<DevFileSystemService>();
         builder.Services.AddLocalization();
-
-        builder.Services.AddInfiniBlazorMarkdown(static config => {
-            config.WithMudBlazorComponents();
-        });
 
         WebAssemblyHost host = builder.Build();
 
