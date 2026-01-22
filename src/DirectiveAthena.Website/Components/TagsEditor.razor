@@ -185,7 +185,7 @@
         if (root == null) return doc.ToString();
 
         foreach (TagModel tag in _tagModels) {
-            string key = $"Tag.{tag.Id}";
+            string key = tag.Id;
             string value = tag.Translations.GetValueOrDefault(locale) ?? "";
 
             XElement? existingData = root.Elements("data").FirstOrDefault(e => e.Attribute("name")?.Value == key);
