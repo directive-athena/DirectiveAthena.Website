@@ -9,22 +9,24 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Descriptors
 @* ------------------------------------------------------------------------------------------------------------------ *@
-@page "/writings/{Slug}"
+@page "/articles/{Id}"
 
-@inject WritingsService WritingsService
+@inject IArticleRepository ArticleRepository
+@inject IArticleManager ArticleManager
 @inject HttpClient HttpClient
 @inject NavigationManager NavigationManager
-@inject IStringLocalizer<Shared> Localizer
+@inject IStringLocalizer<Shared> LocalizerShared
+@inject IStringLocalizer<Tags> LocalizerTags
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Html
 @* ------------------------------------------------------------------------------------------------------------------ *@
-<PageTitle>@Localizer["Writings.Title"]</PageTitle>
+<PageTitle>@LocalizerShared[Shared.WritingsTitle]</PageTitle>
 
 <div class="min-vh-100 py-32">
     <MudContainer MaxWidth="MaxWidth.Large">
         @* Detail View *@
             <MudButton StartIcon="@Icons.Material.Filled.ArrowBack" Color="Color.Secondary" OnClick="@BackToList"
-                       Class="mb-12">@Localizer["Writings.Detail.Back"]
+                       Class="mb-12">@LocalizerShared[Shared.WritingsDetailBack]
             </MudButton>
 
             @if (_loading) {
@@ -32,9 +34,9 @@
                     <MudProgressCircular Color="Color.Secondary" Indeterminate="true" Size="Size.Large"/>
                 </div>
             }
-            else if (_error || _currentPost == null) {
+            else if (_error || _currentPost is null) {
                 <MudAlert Severity="Severity.Error" Variant="Variant.Filled"
-                          Class="card-glass">@Localizer["Writings.Detail.Error"]
+                          Class="card-glass">@LocalizerShared[Shared.WritingsDetailError]
                 </MudAlert>
             }
             else {
@@ -42,11 +44,11 @@
                     <MudText Typo="Typo.caption" Color="Color.Secondary" Class="d-block mb-2"
                              Style="letter-spacing: 0.2em; text-transform: uppercase;">@_currentPost.Date</MudText>
                     <MudText Typo="Typo.h2"
-                             Class="mb-8 SpaceGrotesk">@WritingsService.GetLocalizedTitle(_currentPost)</MudText>
+                             Class="mb-8 SpaceGrotesk">@ArticleManager.GetLocalizedTitle(_currentPost)</MudText>
                     <div class="d-flex gap-2 mb-12">
                         @foreach (string tag in _currentPost.Tags) {
                             <MudChip T="string" Size="Size.Small" Color="Color.Secondary"
-                                     Variant="Variant.Outlined">@WritingsService.GetLocalizedTagName(tag)</MudChip>
+                                     Variant="Variant.Outlined">@LocalizerTags[tag]</MudChip>
                         }
                     </div>
                     <div class="markdown-content">
@@ -57,7 +59,7 @@
                 <MudDivider Class="my-16 opacity-10"/>
                 <div class="d-flex justify-center">
                     <MudButton Variant="Variant.Outlined" Color="Color.Secondary"
-                               OnClick="@BackToList">@Localizer["Writings.Detail.BackBottom"]
+                               OnClick="@BackToList">@LocalizerShared[Shared.WritingsDetailBackBottom]
                     </MudButton>
                 </div>
             }
@@ -69,32 +71,32 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 
 @code {
-    [Parameter] public string? Slug { get; set; }
+    [Parameter] public string? Id { get; set; }
     
-    private Post? _currentPost;
+    private Article? _currentPost;
     private string _markdown = "";
     private bool _loading;
     private bool _error;
 
     protected override async Task OnParametersSetAsync() {
-        if (!string.IsNullOrEmpty(Slug)) {
-            await LoadPost(Slug);
+        if (!string.IsNullOrEmpty(Id)) {
+            await LoadPost(Id);
         }
     }
     
-    private async Task LoadPost(string slug) {
+    private async Task LoadPost(string id) {
         _loading = true;
         _error = false;
-        _currentPost = await WritingsService.GetPostBySlugAsync(slug);
+        _currentPost = await ArticleRepository.GetPostByIdAsync(id);
 
-        if (_currentPost == null) {
+        if (_currentPost is null) {
             _error = true;
             _loading = false;
             return;
         }
 
         try {
-            string path = WritingsService.GetLocalizedFilePath(_currentPost);
+            string path = ArticleManager.GetLocalizedFilePath(_currentPost);
             _markdown = await HttpClient.GetStringAsync(path);
         }
         catch (Exception) {
@@ -106,7 +108,7 @@
     }
 
     private void BackToList() {
-        NavigationManager.NavigateTo("/writings");
+        NavigationManager.NavigateTo("/articles");
     }
 
 }

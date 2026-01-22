@@ -9,6 +9,8 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @inject IJSRuntime JsRuntime
 @inject NavigationManager NavigationManager
+
+@inherits DirectiveAthenaWebsiteComponentBase
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Html
 @* ------------------------------------------------------------------------------------------------------------------ *@
@@ -28,7 +30,7 @@
         </MudButton>
     </ActivatorContent>
     <ChildContent>
-        @foreach (CultureConfig culture in LocalizationConfig.SupportedCultures) {
+        @foreach (LocalizationInfo culture in LocalizationProvider.GetSupportedLocalizations()) {
             <MudMenuItem OnClick="@(() => ChangeCulture(culture.Code))">
                 <div class="d-flex align-center gap-2">
                     @if (!string.IsNullOrEmpty(culture.FlagPath)) {
@@ -49,9 +51,6 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 
 @code {
-    private static CultureConfig CurrentCulture => LocalizationConfig.SupportedCultures.FirstOrDefault(c => c.Code == CultureInfo.CurrentUICulture.TwoLetterISOLanguageName)
-        ?? LocalizationConfig.DefaultCulture;
-
     private async Task ChangeCulture(string culture) {
         if (CultureInfo.CurrentUICulture.TwoLetterISOLanguageName != culture) {
             await JsRuntime.InvokeVoidAsync("localStorage.setItem", "culture", culture);

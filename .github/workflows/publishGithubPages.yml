@@ -33,10 +33,17 @@ jobs:
 
       - name: Restore dependencies
         run: dotnet restore DirectiveAthena.Website.slnx
+      
+      - name: Run tests
+        run: dotnet test --solution DirectiveAthena.Website.slnx --configuration Release --no-restore
 
       - name: Publish docs site
         run: |
-          dotnet publish src/DirectiveAthena.Website -c Release -o ./out
+          dotnet publish src/DirectiveAthena.Website -c Release -o ./out \
+            -p:PublishTrimmed=true \
+            -p:TrimMode=partial \
+            -p:DebuggerSupport=false \
+            -p:MetadataUpdaterSupport=false
           cp ./out/wwwroot/index.html ./out/wwwroot/404.html
       
       - name: List published files

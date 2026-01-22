@@ -5,22 +5,24 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Descriptors
 @* ------------------------------------------------------------------------------------------------------------------ *@
+@inject IDevFileSystemManager DevFileSystemManager
 
+@inherits DirectiveAthenaWebsiteComponentBase
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Html
 @* ------------------------------------------------------------------------------------------------------------------ *@
 <MudPaper Class="pa-6 card-glass">
     <div class="d-flex justify-space-between align-center mb-6">
-        <MudText Typo="Typo.h5">Edit Post: @Post.Slug</MudText>
+        <MudText Typo="Typo.h5">Edit Post: @Post.Id</MudText>
         <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error"
                        OnClick="@OnDeletePost"/>
     </div>
 
     <MudGrid>
         <MudItem xs="12" md="6">
-            <MudTextField Value="@Post.Slug" Label="Slug (Unique ID)"
+            <MudTextField Value="@Post.Id" Label="Unique ID"
                           Required="true" ReadOnly="true"
-                          HelperText="GUID Slug is generated automatically for new posts."/>
+                          HelperText="GUID is generated automatically for new posts."/>
         </MudItem>
         <MudItem xs="12" md="6">
             <MudTextField @bind-Value="Post.Date" Label="Date (YYYY-MM-DD)"
@@ -31,25 +33,25 @@
             <MudSwitch @bind-Value="Post.Hidden" Label="Hidden (Exclude from lists)" Color="Color.Primary" />
         </MudItem>
 
-        @foreach (CultureConfig culture in LocalizationConfig.SupportedCultures) {
+        @foreach (LocalizationInfo culture in LocalizationProvider.GetSupportedLocalizations()) {
             <MudItem xs="12">
                 <MudDivider Class="my-4"/>
                 <MudText Typo="Typo.subtitle1" Color="Color.Primary">@culture.DisplayName (@culture.Code)</MudText>
                 <MudTextField Value="@GetTitle(culture.Code)"
                               ValueChanged="@((string s) => SetTitle(culture.Code, s))"
                               Label="@($"Title ({culture.Code})")"
-                              Required="@(culture.Code == LocalizationConfig.DefaultCulture.Code)"/>
+                              Required="@(LocalizationProvider.IsDefaultCultureCode(culture.Code))"/>
                 <MudTextField Value="@GetSummary(culture.Code)"
                               ValueChanged="@((string s) => SetSummary(culture.Code, s))"
                               Label="@($"Summary ({culture.Code})")"
-                              Required="@(culture.Code == LocalizationConfig.DefaultCulture.Code)" Lines="3"/>
+                              Required="@(LocalizationProvider.IsDefaultCultureCode(culture.Code))" Lines="3"/>
             </MudItem>
         }
 
         <MudItem xs="12">
             <MudDivider Class="my-4"/>
             <MudTextField Value="@Post.File" Label="Markdown Filename (e.g. post.md)" Required="true" ReadOnly="true"
-                          HelperText="Filename matches Slug GUID and cannot be changed."/>
+                          HelperText="Filename matches GUID and cannot be changed."/>
         </MudItem>
 
         <MudItem xs="12">
@@ -71,7 +73,7 @@
         </MudItem>
 
         <MudItem xs="12" Class="mt-4">
-            @if (DevFs.IsLocalhost) {
+            @if (DevFileSystemManager.IsLocalhost) {
                 <MudButton Variant="Variant.Filled" Color="Color.Info" OnClick="@OnGenerateStubs"
                            StartIcon="@Icons.Material.Filled.NoteAdd">
                     Save Markdown Stubs to Disk
@@ -92,30 +94,40 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 
 @code {
-    [Parameter, EditorRequired] public Post Post { get; set; } = null!;
+    [Parameter, EditorRequired] public Article Post { get; set; } = null!;
     [Parameter] public EventCallback OnDeletePost { get; set; }
     [Parameter] public EventCallback OnGenerateStubs { get; set; }
 
-    [Inject] private DevFileSystemService DevFs { get; set; } = null!;
-
     private string _newTag = "";
 
-    private string GetTitle(string culture) => Post.Title.GetValueOrDefault(culture) ?? "";
-    private void SetTitle(string culture, string value) => Post.Title[culture] = value;
+    // -----------------------------------------------------------------------------------------------------------------
+    // Methods
+    // -----------------------------------------------------------------------------------------------------------------
+    private string GetTitle(string culture) 
+        => Post.Title.GetValueOrDefault(culture) ?? "";
+    private void SetTitle(string culture, string value) 
+        => Post.Title[culture] = value;
 
-    private string GetSummary(string culture) => Post.Summary.GetValueOrDefault(culture) ?? "";
-    private void SetSummary(string culture, string value) => Post.Summary[culture] = value;
+    private string GetSummary(string culture) 
+        => Post.Summary.GetValueOrDefault(culture) ?? "";
+    private void SetSummary(string culture, string value)
+        => Post.Summary[culture] = value;
 
     private void AddTag() {
-        if (string.IsNullOrWhiteSpace(_newTag) || Post.Tags.Contains(_newTag)) return;
+        if (string.IsNullOrWhiteSpace(_newTag)) return;
+        
+        string trimmedTag = _newTag.Trim();
+        if (Post.Tags.Contains(trimmedTag)) {
+            _newTag = "";
+            return;
+        }
 
-        Post.Tags.Add(_newTag.Trim());
+        Post.Tags.Add(trimmedTag);
         _newTag = "";
     }
 
-    private void RemoveTag(string tag) {
-        Post.Tags.Remove(tag);
-    }
+    private void RemoveTag(string tag) 
+        => Post.Tags.Remove(tag);
 
     private void OnTagKey(KeyboardEventArgs e) {
         if (e.Key == "Enter") AddTag();

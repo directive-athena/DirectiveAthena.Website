@@ -14,15 +14,15 @@
         <MudText Typo="Typo.h6">Posts</MudText>
         <MudIconButton Icon="@Icons.Material.Filled.Add" Color="Color.Primary" OnClick="@OnCreatePost"/>
     </div>
-    <MudList T="Post" SelectedValue="SelectedPost" SelectedValueChanged="OnPostSelected"
+    <MudList T="Article" SelectedValue="SelectedPost" SelectedValueChanged="OnPostSelected"
              Color="Color.Primary">
         @if (Posts is not null) {
-            foreach (Post post in Posts) {
+            foreach (Article post in Posts) {
                 <MudListItem Value="post">
                     <div class="d-flex flex-column">
                         <MudText
                             Typo="Typo.body1">@(post.Title.GetValueOrDefault("en") ?? "Untitled")</MudText>
-                        <MudText Typo="Typo.caption" Class="opacity-50">@post.Slug</MudText>
+                        <MudText Typo="Typo.caption" Class="opacity-50">@post.Id</MudText>
                         <div class="d-flex align-center gap-1">
                             @if (post.Hidden) {
                                 <MudChip T="string" Size="Size.Small" Color="Color.Default" Variant="Variant.Text" Icon="@Icons.Material.Filled.VisibilityOff">Hidden</MudChip>
@@ -45,8 +45,8 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 
 @code {
-    [Parameter] public List<Post>? Posts { get; set; }
-    [Parameter] public Post? SelectedPost { get; set; }
-    [Parameter] public EventCallback<Post?> OnPostSelected { get; set; }
+    [Parameter] public List<Article>? Posts { get; set; }
+    [Parameter] public Article? SelectedPost { get; set; }
+    [Parameter] public EventCallback<Article?> OnPostSelected { get; set; }
     [Parameter] public EventCallback OnCreatePost { get; set; }
 }

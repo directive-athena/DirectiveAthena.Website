@@ -14,7 +14,7 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Html
 @* ------------------------------------------------------------------------------------------------------------------ *@
-<PageTitle>@Localizer["Home.Title"]</PageTitle>
+<PageTitle>@Localizer[Shared.HomeTitle]</PageTitle>
 
 <MudStack Spacing="8">
     <Hero />
@@ -25,24 +25,24 @@
         <MudContainer MaxWidth="MaxWidth.Large">
             <div class="d-flex justify-space-between align-end mb-12">
                 <div>
-                    <MudText Typo="Typo.h2" Class="mb-4">@Localizer["Home.Writings.Title"]</MudText>
-                    <MudText Typo="Typo.body1" Class="text-secondary opacity-70">@Localizer["Home.Writings.Subtitle"]</MudText>
+                    <MudText Typo="Typo.h2" Class="mb-4">@Localizer[Shared.HomeWritingsTitle]</MudText>
+                    <MudText Typo="Typo.body1" Class="text-secondary opacity-70">@Localizer[Shared.HomeWritingsSubtitle]</MudText>
                 </div>
-                <MudButton Variant="Variant.Text" Color="Color.Secondary" Href="/writings"
+                <MudButton Variant="Variant.Text" Color="Color.Secondary" Href="/articles"
                            EndIcon="@Icons.Material.Filled.ArrowForward"
-                           Class="d-none d-sm-flex">@Localizer["Home.Writings.ViewArchive"]</MudButton>
+                           Class="d-none d-sm-flex">@Localizer[Shared.HomeWritingsViewArchive]</MudButton>
             </div>
 
             <MudGrid Spacing="6">
                 <MudItem xs="12">
-                    <LatestWritingHighlight />
+                    <ArticleLatestHighlight />
                 </MudItem>
-                <RecentWritingsGrid />
+                <ArticleRecentGrid />
             </MudGrid>
             
             <div class="d-flex justify-center mt-12 d-sm-none">
                 <MudButton Variant="Variant.Outlined" Color="Color.Secondary"
-                           Href="/writings">@Localizer["Home.Writings.ViewAll"]</MudButton>
+                           Href="/articles">@Localizer[Shared.HomeWritingsViewAll]</MudButton>
             </div>
         </MudContainer>
     </section>

@@ -6,8 +6,13 @@
   <Folder Name="/.dev-tools/github/">
     <File Path=".github/dependabot.yml" />
     <File Path=".github/workflows/publishGithubPages.yml" />
+    <File Path=".github/workflows/pullRequestTests.yml" />
   </Folder>
   <Folder Name="/src/">
+    <Project Path="src/DirectiveAthena.Website.Shared/DirectiveAthena.Website.Shared.csproj" />
     <Project Path="src/DirectiveAthena.Website/DirectiveAthena.Website.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/DirectiveAthenaTests.Website/DirectiveAthenaTests.Website.csproj" />
   </Folder>
 </Solution>

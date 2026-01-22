@@ -10,9 +10,11 @@
 @* Descriptors
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @inject IStringLocalizer<Tags> Localizer
-@inject DevFileSystemService DevFs
+@inject IDevFileSystemManager DevFileSystemManager
 @inject IJSRuntime JsRuntime
 @inject ISnackbar Snackbar
+
+@inherits DirectiveAthenaWebsiteComponentBase
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Html
 @* ------------------------------------------------------------------------------------------------------------------ *@
@@ -22,7 +24,7 @@
     <MudTable Items="@_tagModels" Hover="true" Breakpoint="Breakpoint.Sm" Dense="true" Class="mb-6">
         <HeaderContent>
             <MudTh>Tag ID</MudTh>
-            @foreach (CultureConfig culture in LocalizationConfig.SupportedCultures) {
+            @foreach (LocalizationInfo culture in LocalizationProvider.GetSupportedLocalizations()) {
                 <MudTh>@culture.DisplayName (@culture.Code)</MudTh>
             }
             <MudTh>Actions</MudTh>
@@ -32,7 +34,7 @@
                 <MudTextField @bind-Value="context.Id" Label="ID" Required="true"
                               ReadOnly="@context.IsOriginal"/>
             </MudTd>
-            @foreach (CultureConfig culture in LocalizationConfig.SupportedCultures) {
+            @foreach (LocalizationInfo culture in LocalizationProvider.GetSupportedLocalizations()) {
                 <MudTd DataLabel="@culture.DisplayName">
                     <MudTextField Value="@context.Translations.GetValueOrDefault(culture.Code)"
                                   ValueChanged="@((string? s) => context.Translations[culture.Code] = s ?? throw new ArgumentNullException(s))"
@@ -52,8 +54,8 @@
     </MudTable>
 
     <div class="d-flex flex-wrap gap-4">
-        @foreach (CultureConfig culture in LocalizationConfig.SupportedCultures) {
-            if (DevFs.IsLocalhost) {
+        @foreach (LocalizationInfo culture in LocalizationProvider.GetSupportedLocalizations()) {
+            if (DevFileSystemManager.IsLocalhost) {
                 <MudButton Variant="Variant.Filled" Color="Color.Success"
                            OnClick="@(() => SaveResxToDisk(culture.Code))" StartIcon="@Icons.Material.Filled.Save">
                     Save Resx (@culture.Code)
@@ -80,7 +82,7 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 
 @code {
-    [Parameter] public List<Post> Posts { get; set; } = [];
+    [Parameter] public List<Article> Posts { get; set; } = [];
 
     private readonly List<TagModel> _tagModels = [];
     private HashSet<string> _inUseTags = [];
@@ -112,7 +114,7 @@
             IsOriginal = isOriginal
         };
 
-        foreach (CultureConfig culture in LocalizationConfig.SupportedCultures) {
+        foreach (LocalizationInfo culture in LocalizationProvider.GetSupportedLocalizations()) {
             // This is a bit tricky since IStringLocalizer doesn't easily let us switch culture per call
             // But we can assume it's already set up or just use the current one as a base
             LocalizedString localized = Localizer.GetString(tagId);
@@ -124,7 +126,7 @@
 
     private async Task AddNewTag() {
         var newTag = new TagModel { Id = "NewTag", IsOriginal = false };
-        foreach (CultureConfig culture in LocalizationConfig.SupportedCultures) {
+        foreach (LocalizationInfo culture in LocalizationProvider.GetSupportedLocalizations()) {
             newTag.Translations[culture.Code] = "";
         }
 
@@ -139,18 +141,18 @@
     private bool IsTagInUse(string tagId) => _inUseTags.Contains(tagId);
 
     private async Task SaveResxToDisk(string locale) {
-        if (!DevFs.IsLocalhost) return;
+        if (!DevFileSystemManager.IsLocalhost) return;
 
-        if (!await DevFs.VerifyPermissionAsync()) {
+        if (!await DevFileSystemManager.VerifyPermissionAsync()) {
             Snackbar.Add("Filesystem access required.", Severity.Warning);
             return;
         }
 
-        string path = DevFileSystemService.GetTagsResxPath(locale);
-        string existingContent = await DevFs.ReadFileAsync(path) ?? "";
+        string path = DevFileSystemPaths.GetTagsResxPath(locale);
+        string existingContent = await DevFileSystemManager.ReadFileAsync(path) ?? "";
         string newContent = GenerateResx(locale, existingContent);
 
-        bool success = await DevFs.WriteFileAsync(path, newContent);
+        bool success = await DevFileSystemManager.WriteFileAsync(path, newContent);
         if (success) {
             Snackbar.Add($"Saved {path} to disk!", Severity.Success);
         }
@@ -161,7 +163,7 @@
 
     private async Task DownloadResx(string locale) {
         string content = GenerateResx(locale, "");
-        string fileName = locale == LocalizationConfig.DefaultCulture.Code ? "Tags.resx" : $"Tags.{locale}.resx";
+        string fileName = LocalizationProvider.IsDefaultCultureCode(locale) ? "Tags.resx" : $"Tags.{locale}.resx";
         await JsRuntime.InvokeVoidAsync("downloadFile", fileName, content);
     }
 
@@ -182,7 +184,7 @@
         }
 
         XElement? root = doc.Root;
-        if (root == null) return doc.ToString();
+        if (root is null) return doc.ToString();
 
         foreach (TagModel tag in _tagModels) {
             string key = tag.Id;

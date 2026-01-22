@@ -16,23 +16,23 @@
            Variant="@DrawerVariant.Temporary" Class="drawer-glass">
     <div class="pa-4 d-flex flex-column align-center">
         <MudImage Src="assets/logo.svg" Width="64" Height="64" Alt="Logo" Class="mb-4"/>
-        <MudText Typo="Typo.h6" Class="mb-8">@Localizer["Brand.Name"]</MudText>
+        <MudText Typo="Typo.h6" Class="mb-8">@Localizer[Shared.BrandName]</MudText>
     </div>
     <MudNavMenu>
         <MudStack Spacing="3">
             <MudNavLink Href="/" Match="NavLinkMatch.All"
-                        Icon="@Icons.Material.Filled.Home">@Localizer["Nav.Home"]</MudNavLink>
-            <MudNavLink Href="/story" Icon="@Icons.Material.Filled.AutoStories">@Localizer["Nav.Story"]</MudNavLink>
-            <MudNavLink Href="/writings" Icon="@Icons.Material.Filled.Article">@Localizer["Nav.Writings"]</MudNavLink>
+                        Icon="@Icons.Material.Filled.Home">@Localizer[Shared.NavHome]</MudNavLink>
+            <MudNavLink Href="/story" Icon="@Icons.Material.Filled.AutoStories">@Localizer[Shared.NavStory]</MudNavLink>
+            <MudNavLink Href="/articles" Icon="@Icons.Material.Filled.Article">@Localizer[Shared.NavWritings]</MudNavLink>
             
             @{
                 #if DEBUG
-                <MudNavLink Href="/writings-manager" Icon="@Icons.Material.Filled.Settings">@Localizer["Nav.WritingsManager"]</MudNavLink>
+                <MudNavLink Href="/article-manager" Icon="@Icons.Material.Filled.Settings">@Localizer[Shared.NavWritingsManager]</MudNavLink>
                 #endif
             }
             
             <MudNavLink Href="/contact"
-                        Icon="@Icons.Material.Filled.ContactSupport">@Localizer["Nav.Contact"]</MudNavLink>
+                        Icon="@Icons.Material.Filled.ContactSupport">@Localizer[Shared.NavContact]</MudNavLink>
             
             <div class="pa-2 flex justify-center">
                 <CultureSelector/>

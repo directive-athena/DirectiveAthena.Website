@@ -5,10 +5,12 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Descriptors
 @* ------------------------------------------------------------------------------------------------------------------ *@
-@inject WritingsService WritingsService
-@inject DevFileSystemService DevFs
+@inject IArticleManager ArticleManager
+@inject IDevFileSystemManager DevFileSystemManager
 @inject IJSRuntime JsRuntime
 @inject ISnackbar Snackbar
+
+@inherits DirectiveAthenaWebsiteComponentBase
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Html
 @* ------------------------------------------------------------------------------------------------------------------ *@
@@ -17,14 +19,14 @@
         <MudText Typo="Typo.h5">Markdown Editor</MudText>
         <div class="d-flex gap-2">
             <MudSelect T="string" Label="Locale" @bind-Value="_selectedLocale" Class="width-100">
-                @foreach (CultureConfig culture in LocalizationConfig.SupportedCultures) {
+                @foreach (LocalizationInfo culture in LocalizationProvider.GetSupportedLocalizations()) {
                     <MudSelectItem Value="@culture.Code">@culture.DisplayName</MudSelectItem>
                 }
             </MudSelect>
         </div>
     </div>
 
-    @if (Post == null) {
+    @if (Post is null) {
         <MudAlert Severity="Severity.Info">Select a post to edit its markdown.</MudAlert>
     }
     else {
@@ -34,7 +36,7 @@
                       Lines="20" Variant="Variant.Outlined" Class="mb-4"/>
 
         <div class="d-flex gap-4">
-            @if (DevFs.IsLocalhost) {
+            @if (DevFileSystemManager.IsLocalhost) {
                 <MudButton Variant="Variant.Filled" Color="Color.Success" OnClick="@SaveMarkdown"
                            StartIcon="@Icons.Material.Filled.Save">
                     Save to Disk
@@ -63,11 +65,11 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 
 @code {
-    [Parameter] public Post? Post { get; set; }
+    [Parameter] public Article? Post { get; set; }
 
     private string _selectedLocale = "en";
     private string _content = "";
-    private Post? _lastPost;
+    private Article? _lastPost;
     private string _lastLocale = "";
 
     protected override async Task OnParametersSetAsync() {
@@ -79,36 +81,36 @@
     }
 
     private async Task LoadContent() {
-        if (Post == null) {
+        if (Post is null) {
             _content = "";
             return;
         }
 
         // Try to load from disk first if on localhost and has access
-        if (DevFs.IsLocalhost && await DevFs.HasAccessAsync()) {
-            string? diskContent = await DevFs.ReadFileAsync(DevFileSystemService.GetMarkdownPath(_selectedLocale, Post.File));
+        if (DevFileSystemManager.IsLocalhost && await DevFileSystemManager.HasAccessAsync()) {
+            string? diskContent = await DevFileSystemManager.ReadFileAsync(DevFileSystemPaths.GetMarkdownPath(_selectedLocale, Post.File));
             if (diskContent is not null) {
                 _content = diskContent;
                 return;
             }
         }
 
-        _content = await WritingsService.GetRawMarkdownAsync(_selectedLocale, Post.File);
+        _content = await ArticleManager.GetRawMarkdownContentAsync(Post, _selectedLocale);
         if (string.IsNullOrEmpty(_content)) {
-            _content = $"# {Post.Title.GetValueOrDefault(_selectedLocale)}\n\n(New content for {Post.Slug} in {_selectedLocale})";
+            _content = $"# {Post.Title.GetValueOrDefault(_selectedLocale)}\n\n(New content for {Post.Id} in {_selectedLocale})";
         }
     }
 
     private async Task SaveMarkdown() {
-        if (Post == null || !DevFs.IsLocalhost) return;
+        if (Post is null || !DevFileSystemManager.IsLocalhost) return;
 
-        if (!await DevFs.VerifyPermissionAsync()) {
+        if (!await DevFileSystemManager.VerifyPermissionAsync()) {
             Snackbar.Add("Filesystem access required.", Severity.Warning);
             return;
         }
 
-        string path = DevFileSystemService.GetMarkdownPath(_selectedLocale, Post.File);
-        bool success = await DevFs.WriteFileAsync(path, _content);
+        string path = DevFileSystemPaths.GetMarkdownPath(_selectedLocale, Post.File);
+        bool success = await DevFileSystemManager.WriteFileAsync(path, _content);
 
         if (success) {
             Snackbar.Add($"Saved {_selectedLocale}/{Post.File} to disk!", Severity.Success);
@@ -119,7 +121,7 @@
     }
 
     private async Task DownloadMarkdown() {
-        if (Post == null) return;
+        if (Post is null) return;
 
         string path = $"{_selectedLocale}/{Post.File}";
         await JsRuntime.InvokeVoidAsync("downloadFile", path, _content);

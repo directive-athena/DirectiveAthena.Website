@@ -4,37 +4,39 @@
 @using DirectiveAthena.Website.Resources
 @using Microsoft.Extensions.Localization
 
-@namespace DirectiveAthena.Website.Components
+@namespace DirectiveAthena.Website.Pages
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Descriptors
 @* ------------------------------------------------------------------------------------------------------------------ *@
+@page "/story"
 @inject IStringLocalizer<Shared> Localizer
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Html
 @* ------------------------------------------------------------------------------------------------------------------ *@
-<MudAppBar Elevation="@(IsScrolled ? 1 : 0)"
-           Class="@(IsScrolled ? "appbar-glass scrolled" : "appbar-glass")"
-           Fixed="true">
+<PageTitle>@Localizer[Shared.StoryTitle]</PageTitle>
 
-    <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start"
-                   OnClick="@OnMenuClick" Class="mr-2"/>
-    
-    <MudImage Src="assets/logo-whiteShaded.svg" Width="32" Height="32" Alt="Logo" Class="mr-3"/>
+<div class="min-vh-100 py-32">
+    <MudContainer MaxWidth="MaxWidth.Medium" Class="text-center">
+        <MudText Typo="Typo.h2" Class="mb-12">@Localizer[Shared.StoryHeading]</MudText>
 
-    <MudButton Variant="Variant.Text" Href="/" Class="@(IsScrolled ? "brand-text d-none d-sm-flex" : "brand-text")">
-        @Localizer[Shared.BrandName]
-    </MudButton>
+        <MudCard Class="card-glass pa-8 mb-8 text-left">
+            <MudText Typo="Typo.body1" Class="text-secondary mb-6" Style="font-size: 1.25rem; line-height: 1.8;">
+                @Localizer[Shared.StorySection1]
+            </MudText>
 
-    <MudSpacer/>
+            <MudText Typo="Typo.body1" Class="text-secondary mb-6" Style="font-size: 1.25rem; line-height: 1.8;">
+                @Localizer[Shared.StorySection2]
+            </MudText>
+        </MudCard>
 
-    <CultureSelector/>
-</MudAppBar>
+        <div class="d-flex justify-center mt-12">
+            <MudButton Variant="Variant.Outlined" Color="Color.Secondary" Href="/"
+                       StartIcon="@Icons.Material.Filled.ArrowBack">@Localizer[Shared.StoryBack]
+            </MudButton>
+        </div>
+    </MudContainer>
+</div>
 
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Code
 @* ------------------------------------------------------------------------------------------------------------------ *@
-
-@code {
-    [Parameter] public bool IsScrolled { get; set; }
-    [Parameter] public EventCallback OnMenuClick { get; set; }
-}

@@ -5,9 +5,6 @@ using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using MudBlazor.Services;
 using DirectiveAthena.Website.Services;
-using System.Globalization;
-using Microsoft.JSInterop;
-using DirectiveAthena.Website.Models;
 using DirectiveAthena.Website.Services.InfiniMudMarkdown;
 
 namespace DirectiveAthena.Website;
@@ -28,23 +25,15 @@ public static class Program {
 
         builder.Services.AddScoped(_ => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
         builder.Services.AddMudServices();
-        builder.Services.AddScoped<WritingsService>();
-        builder.Services.AddScoped<DevFileSystemService>();
         builder.Services.AddLocalization();
+
+        builder.Services.RegisterServicesFromDirectiveAthenaWebsite();
 
         WebAssemblyHost host = builder.Build();
 
-        var jsInterop = host.Services.GetRequiredService<IJSRuntime>();
-        string result = await jsInterop.InvokeAsync<string>("localStorage.getItem", "culture");
-
-        string culture = LocalizationConfig.SupportedCultures.Any(c => c.Code == result)
-            ? result
-            : LocalizationConfig.DefaultCulture.Code;
-
-        var cultureInfo = new CultureInfo(culture);
-        CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
-        CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
-
+        var cultureInitializer = host.Services.GetRequiredService<ILocalizationInitializer>();
+        await cultureInitializer.ApplyPreferredCultureAsync();
+        
         await host.RunAsync();
     }
 }
