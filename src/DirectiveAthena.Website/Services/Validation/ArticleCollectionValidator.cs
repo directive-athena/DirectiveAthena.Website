@@ -25,25 +25,18 @@ public sealed class ArticleCollectionValidator : AbstractValidator<IEnumerable<A
             .WithMessage("Duplicate files found!");
     }
 
+    // -----------------------------------------------------------------------------------------------------------------
+    // Methods
+    // -----------------------------------------------------------------------------------------------------------------
     private static bool HasUniqueIds(IEnumerable<Article> articles) {
         HashSet<string> ids = new(StringComparer.Ordinal);
-        foreach (Article article in articles) {
-            if (!ids.Add(article.Id)) {
-                return false;
-            }
-        }
+        return articles.All(article => ids.Add(article.Id));
 
-        return true;
     }
 
     private static bool HasUniqueFiles(IEnumerable<Article> articles) {
         HashSet<string> files = new(StringComparer.OrdinalIgnoreCase);
-        foreach (Article article in articles) {
-            if (!files.Add(article.File)) {
-                return false;
-            }
-        }
+        return articles.All(article => files.Add(article.File));
 
-        return true;
     }
 }

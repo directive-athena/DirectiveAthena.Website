@@ -31,13 +31,16 @@ public sealed class ArticleValidator : AbstractValidator<Article> {
             .WithMessage("Some posts have missing summaries for one or more cultures!");
     }
 
+    // -----------------------------------------------------------------------------------------------------------------
+    // Methods
+    // -----------------------------------------------------------------------------------------------------------------
     private bool HasLocalizedTitles(Article article)
         => HasLocalizedValues(article.Title);
 
     private bool HasLocalizedSummaries(Article article)
         => HasLocalizedValues(article.Summary);
 
-    private bool HasLocalizedValues(IReadOnlyDictionary<string, string> values) {
+    private bool HasLocalizedValues(Dictionary<string, string> values) {
         foreach (LocalizationInfo localization in _localizations) {
             if (!values.TryGetValue(localization.Code, out string? value) || string.IsNullOrWhiteSpace(value)) {
                 return false;

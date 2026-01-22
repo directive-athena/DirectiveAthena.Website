@@ -45,7 +45,7 @@ public class ArticleManagerTests {
         // Arrange
         Article article = ArticleFaker.Create(100, includeNl: false);
         ILocalizationProvider localizationProvider = CreateLocalizationProvider("nl");
-        var manager = CreateManager(localizationProvider);
+        ArticleManager manager = CreateManager(localizationProvider);
 
         // Act
         string result = manager.GetLocalizedTitle(article);
@@ -59,7 +59,7 @@ public class ArticleManagerTests {
         // Arrange
         Article article = ArticleFaker.Create(101, includeNl: false);
         ILocalizationProvider localizationProvider = CreateLocalizationProvider("nl");
-        var manager = CreateManager(localizationProvider);
+        ArticleManager manager = CreateManager(localizationProvider);
         
         // Act
         string result = manager.GetLocalizedSummary(article);
@@ -73,7 +73,7 @@ public class ArticleManagerTests {
         // Arrange
         Article article = ArticleFaker.Create(102);
         ILocalizationProvider localizationProvider = CreateLocalizationProvider("nl");
-        var manager = CreateManager(localizationProvider);
+        ArticleManager manager = CreateManager(localizationProvider);
         
         // Act
         string result = manager.GetLocalizedFilePath(article);
@@ -87,7 +87,7 @@ public class ArticleManagerTests {
         // Arrange
         var handler = new TestHttpMessageHandler(_ => new HttpResponseMessage(HttpStatusCode.InternalServerError));
         var http = new HttpClient(handler) { BaseAddress = new Uri("http://localhost/") };
-        var manager = CreateManager(CreateLocalizationProvider("en"), http: http);
+        ArticleManager manager = CreateManager(CreateLocalizationProvider("en"), http: http);
         Article article = ArticleFaker.Create(103);
 
         // Act
@@ -101,7 +101,7 @@ public class ArticleManagerTests {
     public async Task NewArticle_PopulatesLocalizedFields() {
         // Arrange
         ILocalizationProvider localizationProvider = CreateLocalizationProvider("en");
-        var manager = CreateManager(localizationProvider);
+        ArticleManager manager = CreateManager(localizationProvider);
         
         // Act
         Article article = manager.NewArticle();
@@ -121,7 +121,7 @@ public class ArticleManagerTests {
             new() { Id = "", File = "missing.md" }
         ];
 
-        var manager = CreateManager(CreateLocalizationProvider("en"));
+        ArticleManager manager = CreateManager(CreateLocalizationProvider("en"));
         
         // Act
         bool result = manager.Validate(articles, out string? error);
@@ -135,11 +135,12 @@ public class ArticleManagerTests {
     public async Task Validate_RejectsDuplicateIds() {
         // Arrange
         Article[] articles = [
-            new() { Id = "dup", File = "a.md" },
-            new() { Id = "dup", File = "b.md" }
+            ArticleFaker.Create(140),
+            ArticleFaker.Create(141)
         ];
+        articles[1].Id = articles[0].Id;
 
-        var manager = CreateManager(CreateLocalizationProvider("en"));
+        ArticleManager manager = CreateManager(CreateLocalizationProvider("en"));
 
         // Act
         bool result = manager.Validate(articles, out string? error);
@@ -153,11 +154,12 @@ public class ArticleManagerTests {
     public async Task Validate_RejectsDuplicateFiles() {
         // Arrange
         Article[] articles = [
-            new() { Id = "a", File = "dup.md" },
-            new() { Id = "b", File = "dup.md" }
+            ArticleFaker.Create(150),
+            ArticleFaker.Create(151)
         ];
+        articles[1].File = articles[0].File;
 
-        var manager = CreateManager(CreateLocalizationProvider("en"));
+        ArticleManager manager = CreateManager(CreateLocalizationProvider("en"));
 
         // Act
         bool result = manager.Validate(articles, out string? error);
@@ -173,7 +175,7 @@ public class ArticleManagerTests {
         Article article = ArticleFaker.Create(200, includeNl: false);
         Article[] articles = [article];
 
-        var manager = CreateManager(CreateLocalizationProvider("en"));
+        ArticleManager manager = CreateManager(CreateLocalizationProvider("en"));
 
         // Act
         bool result = manager.Validate(articles, out string? error);
@@ -190,7 +192,7 @@ public class ArticleManagerTests {
         article.Summary.Remove("nl");
         Article[] articles = [article];
 
-        var manager = CreateManager(CreateLocalizationProvider("en"));
+        ArticleManager manager = CreateManager(CreateLocalizationProvider("en"));
 
         // Act
         bool result = manager.Validate(articles, out string? error);
@@ -205,7 +207,7 @@ public class ArticleManagerTests {
         // Arrange
         Article article = ArticleFaker.Create(120);
         var devFs = Substitute.For<IDevFileSystemManager>();
-        var manager = CreateManager(CreateLocalizationProvider("en"), devFs);
+        ArticleManager manager = CreateManager(CreateLocalizationProvider("en"), devFs);
         
         // Act
         Dictionary<string, string> stubs = await manager.GenerateStubsAsync(article, writeToDisk: false);
@@ -225,7 +227,7 @@ public class ArticleManagerTests {
         devFs.VerifyPermissionAsync().Returns(new ValueTask<bool>(true));
         devFs.WriteFileAsync(Arg.Any<string>(), Arg.Any<string>()).Returns(new ValueTask<bool>(true));
 
-        var manager = CreateManager(CreateLocalizationProvider("en"), devFs);
+        ArticleManager manager = CreateManager(CreateLocalizationProvider("en"), devFs);
 
         // Act
         Dictionary<string, string> stubs = await manager.GenerateStubsAsync(article, writeToDisk: true);
@@ -253,7 +255,7 @@ public class ArticleManagerTests {
         devFs.WriteFileAsync(Arg.Any<string>(), Arg.Any<string>()).Returns(new ValueTask<bool>(true));
         
         // Act
-        var manager = CreateManager(CreateLocalizationProvider("en"), devFs);
+        ArticleManager manager = CreateManager(CreateLocalizationProvider("en"), devFs);
         await manager.EnsureResxAsync();
 
         // Assert
