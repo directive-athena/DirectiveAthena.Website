@@ -5,7 +5,7 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Descriptors
 @* ------------------------------------------------------------------------------------------------------------------ *@
-@inject WritingsService WritingsService
+@inject IArticleManager ArticleManager
 @inject IDevFileSystemManager DevFileSystemManager
 @inject IJSRuntime JsRuntime
 @inject ISnackbar Snackbar
@@ -65,11 +65,11 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 
 @code {
-    [Parameter] public Post? Post { get; set; }
+    [Parameter] public Article? Post { get; set; }
 
     private string _selectedLocale = "en";
     private string _content = "";
-    private Post? _lastPost;
+    private Article? _lastPost;
     private string _lastLocale = "";
 
     protected override async Task OnParametersSetAsync() {
@@ -95,9 +95,9 @@
             }
         }
 
-        _content = await WritingsService.GetRawMarkdownAsync(_selectedLocale, Post.File);
+        _content = await ArticleManager.GetRawMarkdownContentAsync(Post, _selectedLocale);
         if (string.IsNullOrEmpty(_content)) {
-            _content = $"# {Post.Title.GetValueOrDefault(_selectedLocale)}\n\n(New content for {Post.Slug} in {_selectedLocale})";
+            _content = $"# {Post.Title.GetValueOrDefault(_selectedLocale)}\n\n(New content for {Post.Id} in {_selectedLocale})";
         }
     }
 

@@ -9,9 +9,10 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Descriptors
 @* ------------------------------------------------------------------------------------------------------------------ *@
-@page "/writings-manager"
+@page "/article-manager"
+@page "/articles-manager"
 
-@inject WritingsService WritingsService
+@inject IArticleRepository ArticleRepository
 @inject IDevFileSystemManager DevFileSystemManager
 @inject IJSRuntime JsRuntime
 @inject ISnackbar Snackbar
@@ -66,7 +67,7 @@
                 <MudTabPanel Text="Posts" Icon="@Icons.Material.Filled.List">
                     <MudGrid>
                         <MudItem xs="12" md="4">
-                            <PostList Posts="_posts" SelectedPost="_selectedPost"
+                            <ArticleList Posts="_posts" SelectedPost="_selectedPost"
                                       OnPostSelected="OnPostSelected" OnCreatePost="CreateNewPost"/>
 
                             @switch (DevFileSystemManager.IsLocalhost) {
@@ -94,7 +95,7 @@
 
                         <MudItem xs="12" md="8">
                             @if (_selectedPost is not null) {
-                                <PostEditor Post="_selectedPost" OnDeletePost="DeletePost"
+                                <ArticleEditor Post="_selectedPost" OnDeletePost="DeletePost"
                                             OnGenerateStubs="GenerateStubs"/>
                             }
                             else {
@@ -124,13 +125,13 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 
 @code {
-    private List<Post>? _posts;
-    private Post? _selectedPost;
+    private List<Article>? _posts;
+    private Article? _selectedPost;
     private bool _fsSupported;
     private bool _hasAccess;
 
     protected override async Task OnInitializedAsync() {
-        Post[] posts = await WritingsService.GetPostsAsync(includeHidden: true);
+        IEnumerable<Article> posts = await ArticleRepository.GetPostsAsync(includeHidden: true);
         _posts = posts.ToList();
 
         if (!DevFileSystemManager.IsLocalhost) return;
@@ -185,18 +186,18 @@
         Snackbar.Add("Access reset.", Severity.Info);
     }
 
-    private void OnPostSelected(Post? post) {
+    private void OnPostSelected(Article? post) {
         _selectedPost = post;
     }
 
     private void CreateNewPost() {
-        string slug = Guid.NewGuid().ToString();
-        var newPost = new Post {
-            Slug = slug,
+        string id = Guid.NewGuid().ToString();
+        var newPost = new Article {
+            Id = id,
             Date = DateTime.Now.ToString("yyyy-MM-dd"),
             Title = new Dictionary<string, string> { ["en"] = "New Post", ["nl"] = "" },
             Summary = new Dictionary<string, string> { ["en"] = "Summary here", ["nl"] = "" },
-            File = $"{slug}.md",
+            File = $"{id}.md",
             Tags = [],
             Hidden = false
         };
@@ -207,7 +208,7 @@
     private async Task DeletePost() {
         if (_selectedPost is null) return;
 
-        Post postToDelete = _selectedPost;
+        Article postToDelete = _selectedPost;
         _posts?.Remove(postToDelete);
         _selectedPost = null;
 
@@ -255,8 +256,8 @@
         }
 
         // Simple validation
-        if (_posts.Any(p => string.IsNullOrWhiteSpace(p.Slug) || string.IsNullOrWhiteSpace(p.File))) {
-            Snackbar.Add("Some posts have missing Slug or File!", Severity.Error);
+        if (_posts.Any(p => string.IsNullOrWhiteSpace(p.Id) || string.IsNullOrWhiteSpace(p.File))) {
+            Snackbar.Add("Some posts have missing Id or File!", Severity.Error);
             return;
         }
 
@@ -275,8 +276,8 @@
         if (_posts is null) return;
 
         // Simple validation
-        if (_posts.Any(p => p.Slug.IsNullOrWhiteSpace() || p.File.IsNullOrWhiteSpace())) {
-            Snackbar.Add("Some posts have missing Slug or File!", Severity.Error);
+        if (_posts.Any(p => p.Id.IsNullOrWhiteSpace() || p.File.IsNullOrWhiteSpace())) {
+            Snackbar.Add("Some posts have missing Id or File!", Severity.Error);
             return;
         }
 
@@ -293,8 +294,8 @@
     private async Task GenerateStubs() {
         if (_selectedPost is null) return;
 
-        string enContent = $"# {_selectedPost.Title.GetValueOrDefault("en")}\n\nContent for {_selectedPost.Slug} in English.";
-        string nlContent = $"# {_selectedPost.Title.GetValueOrDefault("nl")}\n\nInhoud voor {_selectedPost.Slug} in het Nederlands.";
+        string enContent = $"# {_selectedPost.Title.GetValueOrDefault("en")}\n\nContent for {_selectedPost.Id} in English.";
+        string nlContent = $"# {_selectedPost.Title.GetValueOrDefault("nl")}\n\nInhoud voor {_selectedPost.Id} in het Nederlands.";
 
         if (DevFileSystemManager.IsLocalhost && _hasAccess) {
             if (!await DevFileSystemManager.VerifyPermissionAsync()) {

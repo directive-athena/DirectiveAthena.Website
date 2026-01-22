@@ -6,8 +6,8 @@ namespace DirectiveAthena.Website.Models;
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
-public class Post {
-    public string Slug { get; set; } = "";
+public class Article {
+    public string Id { get; set; } = "";
     public Dictionary<string, string> Title { get; set; } = new();
     public Dictionary<string, string> Summary { get; set; } = new();
     public string Date { get; set; } = "";

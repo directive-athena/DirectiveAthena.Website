@@ -26,20 +26,20 @@ The project now supports localization. To add a new writing, you can use the bui
 
 ### Using the Writings Manager
 1. Run the site locally: `dotnet watch run`
-2. Navigate to `/writings-manager` in your browser.
+2. Navigate to `/articles-manager` in your browser.
 3. Use the interface to create/edit posts, add tags, and provide translations for English and Dutch.
-4. Click **Download index.json** and replace the file at `wwwroot/content/writings/index.json`.
-5. Click **Download Markdown Stubs** to get template files for your content and place them in `wwwroot/content/writings/`.
+4. Click **Download index.json** and replace the file at `wwwroot/content/articles/index.json`.
+5. Click **Download Markdown Stubs** to get template files for your content and place them in `wwwroot/content/articles/`.
 6. Edit the markdown files with your content.
 
 ### Manual Method
-1. Create a new Markdown file in `wwwroot/content/writings/` (e.g., `my-new-post.md`).
+1. Create a new Markdown file in `wwwroot/content/articles/` (e.g., `my-new-post.md`).
 2. (Optional) Create a localized version: `my-new-post.nl.md`.
-3. Open `wwwroot/content/writings/index.json`.
+3. Open `wwwroot/content/articles/index.json`.
 4. Add a new entry to the JSON array:
    ```json
    {
-     "slug": "my-new-post",
+     "id": "my-new-post",
      "date": "2026-01-21",
      "tags": ["AI", "Sovereignty"],
      "file": "my-new-post.md",
@@ -54,7 +54,7 @@ The project now supports localization. To add a new writing, you can use the bui
    }
    ```
 5. Note: Tag IDs used in the `tags` array must have corresponding entries in the `.resx` files (e.g., `Tag.AI`).
-6. Place the markdown files in culture-specific folders: `wwwroot/content/writings/en/my-new-post.md` and `wwwroot/content/writings/nl/my-new-post.md`.
+6. Place the markdown files in culture-specific folders: `wwwroot/content/articles/en/my-new-post.md` and `wwwroot/content/articles/nl/my-new-post.md`.
 
 ## Localization
 
@@ -63,7 +63,7 @@ The project now supports localization. To add a new writing, you can use the bui
   - `Shared.resx`: Default (English) strings.
   - `Shared.nl.resx`: Dutch translations.
 - **Tag Translations**: Also come from `.resx` files using the `Tag.` prefix (e.g., `Tag.ai`).
-- **Files**: Localized markdown files are resolved by path: `content/writings/{culture}/{file}`.
+- **Files**: Localized markdown files are resolved by path: `content/articles/{culture}/{file}`.
 - **Persistence**: User language choice is saved in `localStorage` and applied at startup.
 
 ### How to Add a New Culture
@@ -73,7 +73,7 @@ The project now supports localization. To add a new writing, you can use the bui
    new("fr", "Français", "FR", "https://flagcdn.com/w40/fr.png")
    ```
 3. Run the application locally: `dotnet watch run`.
-4. Navigate to `/writings-manager` and grant File System Access.
+4. Navigate to `/articles-manager` and grant File System Access.
 5. The app will automatically create the missing `Shared.<culture>.resx` file in the `Resources` folder.
 6. Use the **Tags** tab in the Writings Manager to add translations for the new culture.
 7. Use the **Posts** and **Markdown** tabs to add translated metadata and content.

@@ -10,10 +10,10 @@ namespace DirectiveAthena.Website.Services;
 public static class DevFileSystemPaths {
 
     public static string GetIndexPath()
-        => "src/DirectiveAthena.Website/wwwroot/content/writings/index.json";
+        => "src/DirectiveAthena.Website/wwwroot/content/articles/index.json";
 
     public static string GetMarkdownPath(string locale, string fileName)
-        => $"src/DirectiveAthena.Website/wwwroot/content/writings/{locale}/{fileName}";
+        => $"src/DirectiveAthena.Website/wwwroot/content/articles/{locale}/{fileName}";
 
     public static string GetSharedResxPath(string locale)
         => locale == LocalizationProvider.DefaultLocalization.Code
