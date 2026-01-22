@@ -1,18 +1,1 @@
-[
-  {
-    "slug": "new-post-845af5d8",
-    "title": {
-      "en": "New Post",
-      "nl": "New Post"
-    },
-    "summary": {
-      "en": "Summary here",
-      "nl": "Something"
-    },
-    "date": "2026-01-21",
-    "tags": [
-      "Tag.Something"
-    ],
-    "file": "new-post.md"
-  }
-]
+[]

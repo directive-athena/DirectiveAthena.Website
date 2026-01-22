@@ -172,5 +172,30 @@ window.fsApi = {
             console.error('Failed to read file: ' + relativePath, e);
             return null;
         }
+    },
+    deleteFile: async (relativePath) => {
+        try {
+            const rootHandle = await getHandle('repo-root');
+            if (!rootHandle) {
+                // noinspection ExceptionCaughtLocallyJS
+                throw new Error('No root handle found');
+            }
+
+            const parts = relativePath.split(/[\\/]/);
+            let currentHandle = rootHandle;
+
+            for (let i = 0; i < parts.length - 1; i++) {
+                currentHandle = await currentHandle.getDirectoryHandle(parts[i]);
+            }
+
+            await currentHandle.removeEntry(parts[parts.length - 1]);
+            return true;
+        } catch (e) {
+            if (e.name === 'NotFoundError') {
+                return true;
+            }
+            console.error('Failed to delete file: ' + relativePath, e);
+            return false;
+        }
     }
 };

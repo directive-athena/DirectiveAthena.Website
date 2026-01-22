@@ -200,11 +200,46 @@
         _selectedPost = newPost;
     }
 
-    private void DeletePost() {
+    private async Task DeletePost() {
         if (_selectedPost == null) return;
 
-        _posts?.Remove(_selectedPost);
+        Post postToDelete = _selectedPost;
+        _posts?.Remove(postToDelete);
         _selectedPost = null;
+
+        switch (DevFs.IsLocalhost, _hasAccess) {
+            case (true, true): {
+                if (!await DevFs.VerifyPermissionAsync()) {
+                    _hasAccess = false;
+                    Snackbar.Add("Write access lost. Post removed from list, but markdown files were not deleted.", Severity.Warning);
+                    return;
+                }
+
+                bool allDeleted = true;
+                foreach (string path in LocalizationConfig.SupportedCultures.Select(culture => DevFileSystemService.GetMarkdownPath(culture.Code, postToDelete.File))) {
+                    bool success = await DevFs.DeleteFileAsync(path);
+                    if (!success) allDeleted = false;
+                }
+
+                if (allDeleted) {
+                    Snackbar.Add("Post and markdown files deleted.", Severity.Success);
+                }
+                else {
+                    Snackbar.Add("Post removed, but some markdown files failed to delete.", Severity.Warning);
+                }
+
+                await SaveAll();
+                break;
+            }
+
+            case (_, false):
+                Snackbar.Add("Read-only mode: Post removed from list, but files were not deleted.", Severity.Warning);
+                break;
+
+            default:
+                Snackbar.Add("Unexpected combination of DevFs.IsLocalhost and _hasAccess.", Severity.Error);
+                break;
+        }
     }
 
     private async Task SaveAll() {

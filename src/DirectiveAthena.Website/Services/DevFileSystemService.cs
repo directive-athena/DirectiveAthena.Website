@@ -44,6 +44,9 @@ public class DevFileSystemService(IJSRuntime jsRuntime, NavigationManager naviga
     public async ValueTask<string?> ReadFileAsync(string relativePath) 
         => await jsRuntime.InvokeAsync<string?>("fsApi.readFile", relativePath);
 
+    public async ValueTask<bool> DeleteFileAsync(string relativePath)
+        => await jsRuntime.InvokeAsync<bool>("fsApi.deleteFile", relativePath);
+
     public static string GetIndexPath() 
         => "src/DirectiveAthena.Website/wwwroot/content/writings/index.json";
 
