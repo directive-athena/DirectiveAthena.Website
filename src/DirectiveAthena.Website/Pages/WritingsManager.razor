@@ -128,7 +128,7 @@
     private bool _hasAccess;
 
     protected override async Task OnInitializedAsync() {
-        Post[] posts = await WritingsService.GetPostsAsync();
+        Post[] posts = await WritingsService.GetPostsAsync(includeHidden: true);
         _posts = posts.ToList();
 
         if (!DevFs.IsLocalhost) return;
@@ -188,13 +188,15 @@
     }
 
     private void CreateNewPost() {
+        var slug = Guid.NewGuid().ToString();
         var newPost = new Post {
-            Slug = "new-post-" + Guid.NewGuid().ToString().Substring(0, 8),
+            Slug = slug,
             Date = DateTime.Now.ToString("yyyy-MM-dd"),
             Title = new Dictionary<string, string> { ["en"] = "New Post", ["nl"] = "" },
             Summary = new Dictionary<string, string> { ["en"] = "Summary here", ["nl"] = "" },
-            File = "new-post.md",
-            Tags = new List<string>()
+            File = $"{slug}.md",
+            Tags = new List<string>(),
+            Hidden = false
         };
         _posts?.Insert(0, newPost);
         _selectedPost = newPost;

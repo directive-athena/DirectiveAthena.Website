@@ -19,8 +19,11 @@ public class WritingsService(HttpClient http, IStringLocalizer<Tags> tagsLocaliz
     // Methods
     // -----------------------------------------------------------------------------------------------------------------
     [SuppressMessage("ReSharper", "UseCollectionExpression")]
-    public async ValueTask<Post[]> GetPostsAsync() {
-        if (_posts is not null) return _posts;
+    public async ValueTask<Post[]> GetPostsAsync(bool includeHidden = false) {
+        if (_posts is not null) {
+            return includeHidden ? _posts : _posts.Where(p => !p.Hidden).ToArray();
+        }
+
         try {
             _posts = await http.GetFromJsonAsync<Post[]>("content/writings/index.json");
         }
@@ -28,11 +31,12 @@ public class WritingsService(HttpClient http, IStringLocalizer<Tags> tagsLocaliz
             _posts = Array.Empty<Post>();
         }
 
-        return _posts ?? Array.Empty<Post>();
+        Post[] allPosts = _posts ?? Array.Empty<Post>();
+        return includeHidden ? allPosts : allPosts.Where(p => !p.Hidden).ToArray();
     }
 
     public async Task<Post?> GetPostBySlugAsync(string slug) {
-        Post[] posts = await GetPostsAsync();
+        Post[] posts = await GetPostsAsync(includeHidden: true);
         return posts.FirstOrDefault(p => p.Slug == slug);
     }
 
