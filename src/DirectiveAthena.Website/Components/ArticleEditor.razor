@@ -120,9 +120,8 @@
         _newTag = "";
     }
 
-    private void RemoveTag(string tag) {
-        Post.Tags.Remove(tag);
-    }
+    private void RemoveTag(string tag) 
+        => Post.Tags.Remove(tag);
 
     private void OnTagKey(KeyboardEventArgs e) {
         if (e.Key == "Enter") AddTag();
