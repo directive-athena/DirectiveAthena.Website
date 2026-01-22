@@ -8,16 +8,28 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Descriptors
 @* ------------------------------------------------------------------------------------------------------------------ *@
-@inherits InfiniBlazorMdComponentBase<BlockQuoteMdSyntaxNode>
+@inherits InfiniBlazorMdComponentBase<ListItemMdSyntaxNode>
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Html
 @* ------------------------------------------------------------------------------------------------------------------ *@
-<MudPaper Elevation="0" Class="pl-4 border-l-4 border-solid mud-border-primary mud-bg-alpha-10 rounded-r my-4">
-    @RenderChildContent()
-</MudPaper>
-
+<MudListItem Dense="true">
+    <ChildContent>
+        <MudStack Row="true" AlignItems="AlignItems.Center">
+            @if (SyntaxNode.IsCheckable) {
+                <MudCheckBox T="bool" Value="@SyntaxNode.IsChecked" ValueChanged="@OnCheckChanged" Dense="true" Color="Color.Primary" />
+            }
+            <MudText Typo="Typo.body1" Style="@(SyntaxNode.IsInapplicable ? "text-decoration: line-through; opacity: 0.6;" : "")">
+                @ComponentConverter.RenderChildComponents(SyntaxNode)
+            </MudText>
+        </MudStack>
+    </ChildContent>
+</MudListItem>
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Code
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @code {
+    private async Task OnCheckChanged(bool state) {
+        SyntaxNode.WithCheckMarker(state ? "x" : " ");
+        if (RenderContext is not null) await RenderContext.InvokeSyntaxNodeChange(SyntaxNode);
+    }
 }

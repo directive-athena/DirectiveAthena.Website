@@ -2,7 +2,6 @@
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
 using InfiniBlazor.Markdown;
-using InfiniBlazor.Markdown.MdBlazorComponents;
 using InfiniBlazor.Markdown.Syntax.Nodes;
 
 namespace DirectiveAthena.Website.Services.InfiniMudMarkdown;
@@ -11,45 +10,45 @@ namespace DirectiveAthena.Website.Services.InfiniMudMarkdown;
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
 public static class InfiniBlazorMarkdownConfigExtensions {
-     public static InfiniBlazorMarkdownConfig WithDefaultEditorComponents(this InfiniBlazorMarkdownConfig config) {
-        config.HtmlRendererFootnoteWrapperType = typeof(InfiniMdEditorFootnoteDescriptionWrapper);
+    public static InfiniBlazorMarkdownConfig WithMudBlazorComponents(this InfiniBlazorMarkdownConfig config) {
+        config.HtmlRendererFootnoteWrapperType = typeof(InfiniMudMdEditorFootnoteDescriptionWrapper);
         
         config.RegisterMdBlazorComponent<BlockQuoteMdSyntaxNode, InfiniMudMdBlockQuote>();
-        config.RegisterMdBlazorComponent<BoldMdSyntaxNode, MdInfiniBold>();
-        config.RegisterMdBlazorComponent<CalloutMdSyntaxNode, MdInfiniCallout>();
-        config.RegisterMdBlazorComponent<CodeBlockMdSyntaxNode, MdInfiniCodeBlock>();
-        config.RegisterMdBlazorComponent<CodeInlineMdSyntaxNode, MdInfiniCodeInline>();
-        config.RegisterMdBlazorComponent<HtmlMdSyntaxNode, MdInfiniHtml>();
-        config.RegisterMdBlazorComponent<TextMdSyntaxNode, MdInfiniText>();
-        config.RegisterMdBlazorComponent<EmoteMdSyntaxNode, MdInfiniEmote>();
-        config.RegisterMdBlazorComponent<EscapedCharacterMdSyntaxNode, MdInfiniEscapedCharacter>();
-        config.RegisterMdBlazorComponent<HeadingMdSyntaxNode, MdInfiniHeading>();
-        config.RegisterMdBlazorComponent<HeadingSimpleMdSyntaxNode, MdInfiniHeadingSimple>();
-        config.RegisterMdBlazorComponent<HorizontalRuleMdSyntaxNode, MdInfiniHorizontalRule>();
-        config.RegisterMdBlazorComponent<HtmlSpanMdSyntaxNode, MdInfiniHtmlSpan>();
-        config.RegisterMdBlazorComponent<ImageMdSyntaxNode, MdInfiniImage>();
-        config.RegisterMdBlazorComponent<ItalicMdSyntaxNode, MdInfiniItalic>();
-        config.RegisterMdBlazorComponent<LinkMdSyntaxNode, MdInfiniLink>();
-        config.RegisterMdBlazorComponent<ListItemMdSyntaxNode, MdInfiniListItem>();
-        config.RegisterMdBlazorComponent<ListOrderedMdSyntaxNode, MdInfiniListOrdered>();
-        config.RegisterMdBlazorComponent<ListUnOrderedMdSyntaxNode, MdInfiniListUnOrdered>();
-        config.RegisterMdBlazorComponent<ParagraphMdSyntaxNode, MdInfiniParagraph>();
-        config.RegisterMdBlazorComponent<StrikeMdSyntaxNode, MdInfiniStrike>();
-        config.RegisterMdBlazorComponent<SubScriptMdSyntaxNode, MdInfiniSubScript>();
-        config.RegisterMdBlazorComponent<SuperScriptMdSyntaxNode, MdInfiniSuperScript>();
-        config.RegisterMdBlazorComponent<TableMdSyntaxNode, MdInfiniTable>();
-        config.RegisterMdBlazorComponent<TagMdSyntaxNode, MdInfiniTag>();
-        config.RegisterMdBlazorComponent<UnderlineMdSyntaxNode, MdInfiniUnderline>();
-        config.RegisterMdBlazorComponent<UserMdSyntaxNode, MdInfiniUser>();
-        config.RegisterMdBlazorComponent<WikiLinkMdSyntaxNode, MdInfiniWikiLink>();
-        config.RegisterMdBlazorComponent<TemplateMdSyntaxNode, MdInfiniTemplate>();
-        config.RegisterMdBlazorComponent<FootnoteReferenceMdSyntaxNode, MdInfiniFootnoteReference>();
-        config.RegisterMdBlazorComponent<FootnoteDescriptionMdSyntaxNode, MdInfiniFootnoteDescription>();
-        config.RegisterMdBlazorComponent<HighlightMdSyntaxNode, MdInfiniHighlight>();
-        config.RegisterMdBlazorComponent<WrapperMdSyntaxNode, MdInfiniWrapper>();
-        config.RegisterMdBlazorComponent<FrontMatterMdSyntaxNode, MdInfiniFrontMatter>();
-        config.RegisterMdBlazorComponent<BreakMdSyntaxNode, MdInfiniBreak>();
-        // config.RegisterBlazorComponent<NewLineMdSyntaxNode, MdInfiniNewLine>(); // Not implemented well yet, only as an example
+        config.RegisterMdBlazorComponent<BoldMdSyntaxNode, InfiniMudMdBold>();
+        config.RegisterMdBlazorComponent<CalloutMdSyntaxNode, InfiniMudMdCallout>();
+        config.RegisterMdBlazorComponent<CodeBlockMdSyntaxNode, InfiniMudMdCodeBlock>();
+        config.RegisterMdBlazorComponent<CodeInlineMdSyntaxNode, InfiniMudMdCodeInline>();
+        config.RegisterMdBlazorComponent<HtmlMdSyntaxNode, InfiniMudMdHtml>();
+        config.RegisterMdBlazorComponent<TextMdSyntaxNode, InfiniMudMdText>();
+        config.RegisterMdBlazorComponent<EmoteMdSyntaxNode, InfiniMudMdEmote>();
+        config.RegisterMdBlazorComponent<EscapedCharacterMdSyntaxNode, InfiniMudMdEscapedCharacter>();
+        config.RegisterMdBlazorComponent<HeadingMdSyntaxNode, InfiniMudMdHeading>();
+        config.RegisterMdBlazorComponent<HeadingSimpleMdSyntaxNode, InfiniMudMdHeadingSimple>();
+        config.RegisterMdBlazorComponent<HorizontalRuleMdSyntaxNode, InfiniMudMdHorizontalRule>();
+        config.RegisterMdBlazorComponent<HtmlSpanMdSyntaxNode, InfiniMudMdHtmlSpan>();
+        config.RegisterMdBlazorComponent<ImageMdSyntaxNode, InfiniMudMdImage>();
+        config.RegisterMdBlazorComponent<ItalicMdSyntaxNode, InfiniMudMdItalic>();
+        config.RegisterMdBlazorComponent<LinkMdSyntaxNode, InfiniMudMdLink>();
+        config.RegisterMdBlazorComponent<ListItemMdSyntaxNode, InfiniMudMdListItem>();
+        config.RegisterMdBlazorComponent<ListOrderedMdSyntaxNode, InfiniMudMdListOrdered>();
+        config.RegisterMdBlazorComponent<ListUnOrderedMdSyntaxNode, InfiniMudMdListUnOrdered>();
+        config.RegisterMdBlazorComponent<ParagraphMdSyntaxNode, InfiniMudMdParagraph>();
+        config.RegisterMdBlazorComponent<StrikeMdSyntaxNode, InfiniMudMdStrike>();
+        config.RegisterMdBlazorComponent<SubScriptMdSyntaxNode, InfiniMudMdSubScript>();
+        config.RegisterMdBlazorComponent<SuperScriptMdSyntaxNode, InfiniMudMdSuperScript>();
+        config.RegisterMdBlazorComponent<TableMdSyntaxNode, InfiniMudMdTable>();
+        config.RegisterMdBlazorComponent<TagMdSyntaxNode, InfiniMudMdTag>();
+        config.RegisterMdBlazorComponent<UnderlineMdSyntaxNode, InfiniMudMdUnderline>();
+        config.RegisterMdBlazorComponent<UserMdSyntaxNode, InfiniMudMdUser>();
+        config.RegisterMdBlazorComponent<WikiLinkMdSyntaxNode, InfiniMudMdWikiLink>();
+        config.RegisterMdBlazorComponent<TemplateMdSyntaxNode, InfiniMudMdTemplate>();
+        config.RegisterMdBlazorComponent<FootnoteReferenceMdSyntaxNode, InfiniMudMdFootnoteReference>();
+        config.RegisterMdBlazorComponent<FootnoteDescriptionMdSyntaxNode, InfiniMudMdFootnoteDescription>();
+        config.RegisterMdBlazorComponent<HighlightMdSyntaxNode, InfiniMudMdHighlight>();
+        config.RegisterMdBlazorComponent<WrapperMdSyntaxNode, InfiniMudMdWrapper>();
+        config.RegisterMdBlazorComponent<FrontMatterMdSyntaxNode, InfiniMudMdFrontMatter>();
+        config.RegisterMdBlazorComponent<BreakMdSyntaxNode, InfiniMudMdBreak>();
+        // config.RegisterBlazorComponent<NewLineMdSyntaxNode, InfiniMudMdNewLine>(); // Not implemented well yet, only as an example
         
         return config;
     }

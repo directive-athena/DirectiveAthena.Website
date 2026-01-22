@@ -8,14 +8,19 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Descriptors
 @* ------------------------------------------------------------------------------------------------------------------ *@
-@inherits InfiniBlazorMdComponentBase<BlockQuoteMdSyntaxNode>
+@inherits InfiniBlazorMdComponentBase<CodeInlineMdSyntaxNode>
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Html
 @* ------------------------------------------------------------------------------------------------------------------ *@
-<MudPaper Elevation="0" Class="pl-4 border-l-4 border-solid mud-border-primary mud-bg-alpha-10 rounded-r my-4">
-    @RenderChildContent()
-</MudPaper>
-
+<MudText Typo="Typo.body2" Inline="true" Style="font-family: monospace; background-color: rgba(0,0,0,0.05); padding: 2px 4px; border-radius: 4px;">
+    @{Span<char> span = stackalloc char[SyntaxNode.Content.Length];}
+    @if (SyntaxNode.TryGetContentWithoutEscapedBackTicks(span, out int length)) {
+        @span[..length].ToString()
+    }
+    else {
+        @SyntaxNode.Content
+    }
+</MudText>
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Code
 @* ------------------------------------------------------------------------------------------------------------------ *@

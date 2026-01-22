@@ -8,16 +8,24 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Descriptors
 @* ------------------------------------------------------------------------------------------------------------------ *@
-@inherits InfiniBlazorMdComponentBase<BlockQuoteMdSyntaxNode>
+@inherits InfiniBlazorMdComponentBase<LinkMdSyntaxNode>
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Html
 @* ------------------------------------------------------------------------------------------------------------------ *@
-<MudPaper Elevation="0" Class="pl-4 border-l-4 border-solid mud-border-primary mud-bg-alpha-10 rounded-r my-4">
+<MudLink Href="@SyntaxNode.Href"
+         Title="@GetTitle()"
+         Underline="Underline.Hover"
+         Color="Color.Primary">
     @RenderChildContent()
-</MudPaper>
+</MudLink>
 
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Code
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @code {
+    private string? GetTitle() {
+        if (SyntaxNode.Title.IsNotNullOrWhiteSpace()) return SyntaxNode.Title;
+        if (SyntaxNode.Modifier != null && SyntaxNode.Modifier.TryGetTitle(out string? title)) return title;
+        return null;   
+    }
 }

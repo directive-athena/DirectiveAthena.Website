@@ -8,16 +8,37 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Descriptors
 @* ------------------------------------------------------------------------------------------------------------------ *@
-@inherits InfiniBlazorMdComponentBase<BlockQuoteMdSyntaxNode>
+@inherits InfiniBlazorMdComponentBase<CalloutMdSyntaxNode>
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Html
 @* ------------------------------------------------------------------------------------------------------------------ *@
-<MudPaper Elevation="0" Class="pl-4 border-l-4 border-solid mud-border-primary mud-bg-alpha-10 rounded-r my-4">
-    @RenderChildContent()
-</MudPaper>
-
+<MudAlert Severity="@GetSeverity()" Variant="Variant.Outlined" Class="my-4">
+    <MudAlertTitle>
+        @if (SyntaxNode.TryGetTitleNode(out CalloutTitleMdSyntaxNode? titleNode)) {
+            @ComponentConverter.RenderChildComponents(titleNode)
+        } else {
+            @SyntaxNode.CalloutType
+        }
+    </MudAlertTitle>
+    @if (SyntaxNode.TryGetBodyNode(out CalloutBodyMdSyntaxNode? bodyNode)) {
+        @ComponentConverter.RenderChildComponents(bodyNode)
+    }
+</MudAlert>
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Code
 @* ------------------------------------------------------------------------------------------------------------------ *@
+
 @code {
+    private Severity GetSeverity() => SyntaxNode.CalloutType.ToLower() switch {
+        "info" => Severity.Info,
+        "success" => Severity.Success,
+        "warning" => Severity.Warning,
+        "error" => Severity.Error,
+        "danger" => Severity.Error,
+        "note" => Severity.Info,
+        "tip" => Severity.Success,
+        "important" => Severity.Warning,
+        "caution" => Severity.Error,
+        _ => Severity.Normal
+    };
 }

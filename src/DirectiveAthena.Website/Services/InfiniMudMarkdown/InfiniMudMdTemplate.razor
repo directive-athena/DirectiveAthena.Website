@@ -8,16 +8,18 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Descriptors
 @* ------------------------------------------------------------------------------------------------------------------ *@
-@inherits InfiniBlazorMdComponentBase<BlockQuoteMdSyntaxNode>
+@inherits InfiniBlazorMdComponentBase<TemplateMdSyntaxNode>
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Html
 @* ------------------------------------------------------------------------------------------------------------------ *@
-<MudPaper Elevation="0" Class="pl-4 border-l-4 border-solid mud-border-primary mud-bg-alpha-10 rounded-r my-4">
-    @RenderChildContent()
-</MudPaper>
-
+@if (TemplateContentProvider is not null && TemplateContentProvider.TryGetData(SyntaxNode.Content, out object? variableContent)) {
+    @variableContent
+}
+else {
+    <MudText Typo="Typo.body2" Inline="true" Style="font-family: monospace; background-color: rgba(255,0,0,0.1); padding: 2px 4px; border-radius: 4px; color: red;">
+        Variable "@SyntaxNode.Content" Not Found
+    </MudText>
+}
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Code
 @* ------------------------------------------------------------------------------------------------------------------ *@
-@code {
-}

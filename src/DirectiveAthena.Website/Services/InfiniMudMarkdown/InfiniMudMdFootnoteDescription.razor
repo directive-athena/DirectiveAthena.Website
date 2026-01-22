@@ -1,23 +1,21 @@
 ﻿@* ------------------------------------------------------------------------------------------------------------------ *@
 @* Imports
 @* ------------------------------------------------------------------------------------------------------------------ *@
-@using InfiniBlazor.Markdown.Parsers.Blazor
 @using InfiniBlazor.Markdown.Syntax.Nodes
+@using InfiniBlazor.Markdown.Parsers.Blazor
 
 @namespace DirectiveAthena.Website.Services.InfiniMudMarkdown
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Descriptors
 @* ------------------------------------------------------------------------------------------------------------------ *@
-@inherits InfiniBlazorMdComponentBase<BlockQuoteMdSyntaxNode>
+@inherits InfiniBlazorMdComponentBase<FootnoteDescriptionMdSyntaxNode>
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Html
 @* ------------------------------------------------------------------------------------------------------------------ *@
-<MudPaper Elevation="0" Class="pl-4 border-l-4 border-solid mud-border-primary mud-bg-alpha-10 rounded-r my-4">
-    @RenderChildContent()
-</MudPaper>
-
+<MudStack Row="true" id="@($"md-footnote-{SyntaxNode.Identifier}")" Class="py-2">
+    <MudText Typo="Typo.body2" Class="mr-2">@SyntaxNode.Identifier :</MudText>
+    <MudText Typo="Typo.body2" Style="flex-grow: 1;">@RenderChildContent()</MudText>
+</MudStack>
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Code
 @* ------------------------------------------------------------------------------------------------------------------ *@
-@code {
-}

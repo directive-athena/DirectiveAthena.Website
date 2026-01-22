@@ -1,23 +1,30 @@
 ﻿@* ------------------------------------------------------------------------------------------------------------------ *@
 @* Imports
 @* ------------------------------------------------------------------------------------------------------------------ *@
-@using InfiniBlazor.Markdown.Parsers.Blazor
 @using InfiniBlazor.Markdown.Syntax.Nodes
 
 @namespace DirectiveAthena.Website.Services.InfiniMudMarkdown
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Descriptors
 @* ------------------------------------------------------------------------------------------------------------------ *@
-@inherits InfiniBlazorMdComponentBase<BlockQuoteMdSyntaxNode>
+@inherits InfiniBlazor.Markdown.Parsers.Blazor.InfiniBlazorMdComponentBase<HeadingMdSyntaxNode>
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Html
 @* ------------------------------------------------------------------------------------------------------------------ *@
-<MudPaper Elevation="0" Class="pl-4 border-l-4 border-solid mud-border-primary mud-bg-alpha-10 rounded-r my-4">
+<MudText Typo="GetTypo()" Class="mt-4 mb-2">
     @RenderChildContent()
-</MudPaper>
+</MudText>
 
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Code
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @code {
+    public Typo GetTypo() => SyntaxNode.Level switch {
+        1 => Typo.h1,
+        2 => Typo.h2,
+        3 => Typo.h3,
+        4 => Typo.h4,
+        5 => Typo.h5,
+        _ => Typo.h6
+    };
 }

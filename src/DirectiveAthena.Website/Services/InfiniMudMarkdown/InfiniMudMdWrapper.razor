@@ -8,16 +8,31 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Descriptors
 @* ------------------------------------------------------------------------------------------------------------------ *@
-@inherits InfiniBlazorMdComponentBase<BlockQuoteMdSyntaxNode>
+@inherits InfiniBlazorMdComponentBase<WrapperMdSyntaxNode>
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Html
 @* ------------------------------------------------------------------------------------------------------------------ *@
-<MudPaper Elevation="0" Class="pl-4 border-l-4 border-solid mud-border-primary mud-bg-alpha-10 rounded-r my-4">
+<MudText Inline="true" Style="@GetStyle()">
     @RenderChildContent()
-</MudPaper>
+</MudText>
 
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Code
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @code {
+    private string GetStyle() {
+        var styles = new List<string>();
+        if (SyntaxNode.Modifier is not {} modifier) return string.Empty;
+
+        if (modifier.TryGetColor(out string? color)) {
+            if (color is "accent") color = "var(--mud-palette-primary)";
+            styles.Add($"color:{color}");     
+        }
+
+        if (modifier.TryGetStyle(out string? style)) {
+            styles.Add(style);       
+        }
+
+        return string.Join(";", styles);
+    }
 }

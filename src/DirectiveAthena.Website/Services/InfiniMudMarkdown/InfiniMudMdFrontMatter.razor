@@ -1,23 +1,39 @@
 ﻿@* ------------------------------------------------------------------------------------------------------------------ *@
 @* Imports
 @* ------------------------------------------------------------------------------------------------------------------ *@
+@using InfiniBlazor
 @using InfiniBlazor.Markdown.Parsers.Blazor
 @using InfiniBlazor.Markdown.Syntax.Nodes
+@using Microsoft.Extensions.Logging
+@using Color = MudBlazor.Color
 
 @namespace DirectiveAthena.Website.Services.InfiniMudMarkdown
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Descriptors
 @* ------------------------------------------------------------------------------------------------------------------ *@
-@inherits InfiniBlazorMdComponentBase<BlockQuoteMdSyntaxNode>
+@inherits InfiniBlazorMdComponentBase<FrontMatterMdSyntaxNode>
+@inject IFrontMatterProvider FrontMatterProvider
+@inject ILogger<InfiniMudMdFrontMatter> Logger
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Html
 @* ------------------------------------------------------------------------------------------------------------------ *@
-<MudPaper Elevation="0" Class="pl-4 border-l-4 border-solid mud-border-primary mud-bg-alpha-10 rounded-r my-4">
-    @RenderChildContent()
+<MudPaper Elevation="0" Class="pa-4 mud-bg-alpha-5 rounded my-4">
+    <MudText Typo="Typo.caption" Color="Color.Secondary">Front Matter (@SyntaxNode.Language)</MudText>
+    <MudDivider Class="my-2" />
+    <pre style="font-size: 0.8rem;">@SyntaxNode.Content</pre>
 </MudPaper>
-
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Code
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @code {
+    private async Task OnEntriesChanged(IEnumerable<IFrontMatterEntry> entries) {
+        Logger.Information("Front matter entries changed");
+        if (!FrontMatterProvider.TryParse(entries, SyntaxNode.Language, out string? value)) return;
+        
+        SyntaxNode.WithContent(value.TrimEnd('\n', '\r'));
+        Logger.Information("Front matter content changed to {a}", value);
+        
+        if (RenderContext is null) return;
+        await RenderContext.InvokeSyntaxNodeChange(SyntaxNode);
+    }
 }

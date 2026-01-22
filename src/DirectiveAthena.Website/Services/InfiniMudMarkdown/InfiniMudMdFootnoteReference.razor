@@ -1,21 +1,26 @@
 ﻿@* ------------------------------------------------------------------------------------------------------------------ *@
 @* Imports
 @* ------------------------------------------------------------------------------------------------------------------ *@
-@using InfiniBlazor.Markdown.Parsers.Blazor
 @using InfiniBlazor.Markdown.Syntax.Nodes
+@using InfiniBlazor.Markdown.Parsers.Blazor
 
 @namespace DirectiveAthena.Website.Services.InfiniMudMarkdown
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Descriptors
 @* ------------------------------------------------------------------------------------------------------------------ *@
-@inherits InfiniBlazorMdComponentBase<BlockQuoteMdSyntaxNode>
+@inherits InfiniBlazorMdComponentBase<FootnoteReferenceMdSyntaxNode>
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Html
 @* ------------------------------------------------------------------------------------------------------------------ *@
-<MudPaper Elevation="0" Class="pl-4 border-l-4 border-solid mud-border-primary mud-bg-alpha-10 rounded-r my-4">
-    @RenderChildContent()
-</MudPaper>
-
+<sup style="vertical-align: super; font-size: smaller;">
+    <MudLink 
+        Href="@($"#md-footnote-{SyntaxNode.Identifier}")"
+        Underline="Underline.Hover"
+        Color="Color.Primary"
+        onclick="@($"event.preventDefault(); document.getElementById('md-footnote-{SyntaxNode.Identifier}')?.scrollIntoView({{ behavior: 'smooth' }});")">
+        @SyntaxNode.Identifier
+    </MudLink>
+</sup>
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Code
 @* ------------------------------------------------------------------------------------------------------------------ *@
