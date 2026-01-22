@@ -15,6 +15,7 @@ public class DevFileSystemService(IJSRuntime jsRuntime, NavigationManager naviga
 #if DEBUG
             return navigationManager.BaseUri.Contains("localhost") || navigationManager.BaseUri.Contains("127.0.0.1");
 #else
+            _ = navigationManager; // keep parameter considered used in Release
             return false;
 #endif
         }
