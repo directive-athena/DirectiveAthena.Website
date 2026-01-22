@@ -1,0 +1,38 @@
+﻿@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Imports
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@using InfiniBlazor.Markdown.Parsers.Blazor
+@using InfiniBlazor.Markdown.Syntax.Nodes
+
+@namespace DirectiveAthena.Website.Services.InfiniMudMarkdown
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Descriptors
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@inherits InfiniBlazorMdComponentBase<WrapperMdSyntaxNode>
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Html
+@* ------------------------------------------------------------------------------------------------------------------ *@
+<MudText Inline="true" Style="@GetStyle()">
+    @RenderChildContent()
+</MudText>
+
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Code
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@code {
+    private string GetStyle() {
+        var styles = new List<string>();
+        if (SyntaxNode.Modifier is not {} modifier) return string.Empty;
+
+        if (modifier.TryGetColor(out string? color)) {
+            if (color is "accent") color = "var(--mud-palette-primary)";
+            styles.Add($"color:{color}");     
+        }
+
+        if (modifier.TryGetStyle(out string? style)) {
+            styles.Add(style);       
+        }
+
+        return string.Join(";", styles);
+    }
+}
