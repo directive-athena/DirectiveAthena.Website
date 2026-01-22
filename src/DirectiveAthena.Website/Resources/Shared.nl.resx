@@ -187,4 +187,7 @@
   <data name="Story.Section2" xml:space="preserve">
     <value>Volg mee om het verhaal voort te zetten</value>
   </data>
+    <data name="Nav.WritingsManager" xml:space="preserve">
+        <value>Writings Manager</value>
+    </data>
 </root>

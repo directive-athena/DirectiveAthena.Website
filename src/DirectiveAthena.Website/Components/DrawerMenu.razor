@@ -24,9 +24,16 @@
                         Icon="@Icons.Material.Filled.Home">@Localizer["Nav.Home"]</MudNavLink>
             <MudNavLink Href="/story" Icon="@Icons.Material.Filled.AutoStories">@Localizer["Nav.Story"]</MudNavLink>
             <MudNavLink Href="/writings" Icon="@Icons.Material.Filled.Article">@Localizer["Nav.Writings"]</MudNavLink>
+            
+            @{
+                #if DEBUG
+                <MudNavLink Href="/writings-manager" Icon="@Icons.Material.Filled.Settings">@Localizer["Nav.WritingsManager"]</MudNavLink>
+                #endif
+            }
+            
             <MudNavLink Href="/contact"
                         Icon="@Icons.Material.Filled.ContactSupport">@Localizer["Nav.Contact"]</MudNavLink>
-
+            
             <div class="pa-2 flex justify-center">
                 <CultureSelector/>
             </div>

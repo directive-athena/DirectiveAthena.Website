@@ -187,4 +187,7 @@
   <data name="NotFound.Message" xml:space="preserve">
     <value>Sorry, the content you are looking for does not exist.</value>
   </data>
+    <data name="Nav.WritingsManager" xml:space="preserve">
+        <value>Writings Manager</value>
+    </data>
 </root>
