@@ -11,7 +11,6 @@ using DirectiveAthena.Website.Models;
 using DirectiveAthena.Website.Services.InfiniMudMarkdown;
 
 namespace DirectiveAthena.Website;
-
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
@@ -23,11 +22,7 @@ public static class Program {
             config.Components.SetRenderMode(RenderMode.InteractiveWebAssembly);
             config.Markdown.WithMudBlazorComponents();
         });
-        // builder.Services.AddInfiniBlazorMarkdown(static config => {
-        //     // config.WithDefaultEditorComponents();
-        //     config.WithMudBlazorComponents();
-        // });
-        
+
         builder.RootComponents.Add<App>("#app");
         builder.RootComponents.Add<HeadOutlet>("head::after");
 
@@ -41,11 +36,11 @@ public static class Program {
 
         var jsInterop = host.Services.GetRequiredService<IJSRuntime>();
         string result = await jsInterop.InvokeAsync<string>("localStorage.getItem", "culture");
-        
-        string culture = LocalizationConfig.SupportedCultures.Any(c => c.Code == result) 
+
+        string culture = LocalizationConfig.SupportedCultures.Any(c => c.Code == result)
             ? result
             : LocalizationConfig.DefaultCulture.Code;
-        
+
         var cultureInfo = new CultureInfo(culture);
         CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
         CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
