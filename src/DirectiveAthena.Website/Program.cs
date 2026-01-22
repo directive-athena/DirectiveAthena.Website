@@ -32,6 +32,8 @@ public static class Program {
         builder.Services.AddScoped<DevFileSystemService>();
         builder.Services.AddLocalization();
 
+        builder.Services.RegisterServicesFromDirectiveAthenaWebsite();
+
         WebAssemblyHost host = builder.Build();
 
         var jsInterop = host.Services.GetRequiredService<IJSRuntime>();

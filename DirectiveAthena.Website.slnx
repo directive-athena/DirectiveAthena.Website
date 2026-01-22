@@ -8,6 +8,7 @@
     <File Path=".github/workflows/publishGithubPages.yml" />
   </Folder>
   <Folder Name="/src/">
+    <Project Path="src/DirectiveAthena.Website.Shared/DirectiveAthena.Website.Shared.csproj" />
     <Project Path="src/DirectiveAthena.Website/DirectiveAthena.Website.csproj" />
   </Folder>
 </Solution>

@@ -11,6 +11,7 @@
 @page "/contact"
 
 @inject IStringLocalizer<Shared> Localizer
+@inject IContactInfoProvider ContactInfoProvider
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Html
 @* ------------------------------------------------------------------------------------------------------------------ *@
@@ -24,34 +25,15 @@
         </MudText>
 
         <MudGrid Spacing="4">
-            <MudItem xs="12">
-                <MudButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="true"
-                           StartIcon="@Icons.Custom.Brands.X" Href="https://x.com/AnnaSasDev"
-                           Target="_blank" Class="py-4 card-glass">
-                    Twitter / X
-                </MudButton>
-            </MudItem>
-            <MudItem xs="12">
-                <MudButton Variant="Variant.Filled" Color="Color.Surface" FullWidth="true"
-                           StartIcon="@Icons.Custom.Brands.GitHub" Href="https://github.com/directive-athena/Website" Target="_blank"
-                           Class="py-4 card-glass">
-                    GitHub - Directive Athena Website
-                </MudButton>
-            </MudItem>
-            <MudItem xs="12">
-                <MudButton Variant="Variant.Filled" Color="Color.Surface" FullWidth="true"
-                           StartIcon="@Icons.Custom.Brands.GitHub" Href="https://github.com/AnnaSasDev" Target="_blank"
-                           Class="py-4 card-glass">
-                    GitHub - AnnaSasDev
-                </MudButton>
-            </MudItem>
-            <MudItem xs="12">
-                <MudButton Variant="Variant.Filled" Color="Color.Error" FullWidth="true"
-                           StartIcon="@Icons.Material.Filled.Computer" Href="https://twitch.tv/AnnaSasDev"
-                           Target="_blank" Class="py-4 card-glass">
-                    Twitch
-                </MudButton>
-            </MudItem>
+            @foreach (ContactInfo contactInfo in ContactInfoProvider.GetContactInfos()) {
+                <MudItem xs="12">
+                    <MudButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="true"
+                               StartIcon="@contactInfo.Icon" Href="@contactInfo.Url" Target="_blank"
+                               Class="py-4 card-glass">
+                        @contactInfo.Title
+                    </MudButton>
+                </MudItem>
+            }
         </MudGrid>
 
         <div class="mt-16">
@@ -65,3 +47,4 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Code
 @* ------------------------------------------------------------------------------------------------------------------ *@
+
