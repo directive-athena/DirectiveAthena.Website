@@ -60,4 +60,7 @@
   <data name="Tag.Something" xml:space="preserve">
     <value>Something</value>
   </data>
+  <data name="Tag.Thankyou" xml:space="preserve">
+    <value>Thank you</value>
+  </data>
 </root>
