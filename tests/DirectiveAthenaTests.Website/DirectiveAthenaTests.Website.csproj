@@ -12,6 +12,7 @@
     <PackageReference Include="NSubstitute" />
     <PackageReference Include="TUnit" />
     <PackageReference Include="BUnit" />
+    <PackageReference Include="Bogus" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" />
   </ItemGroup>
 
