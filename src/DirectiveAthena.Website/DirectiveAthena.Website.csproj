@@ -16,6 +16,7 @@
         </PackageReference>
         <PackageReference Include="InfiniLore.InfiniBlazor" />
         <PackageReference Include="JetBrains.Annotations" />
+        <PackageReference Include="FluentValidation" />
         <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" />
         <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" PrivateAssets="all" />
         <PackageReference Include="MudBlazor" />

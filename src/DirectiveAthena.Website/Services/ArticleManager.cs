@@ -4,6 +4,8 @@
 using System.Xml.Linq;
 using CodeOfChaos.Extensions.DependencyInjection;
 using DirectiveAthena.Website.Models;
+using FluentValidation;
+using FluentValidation.Results;
 
 namespace DirectiveAthena.Website.Services;
 // ---------------------------------------------------------------------------------------------------------------------
@@ -13,7 +15,8 @@ namespace DirectiveAthena.Website.Services;
 public class ArticleManager(
     ILocalizationProvider localizationProvider,
     IDevFileSystemManager devFs,
-    HttpClient http
+    HttpClient http,
+    IValidator<IEnumerable<Article>> validator
 ) : IArticleManager {
     public string GetLocalizedTitle(Article article)
         => GetLocalizedValue(article.Title);
@@ -61,19 +64,14 @@ public class ArticleManager(
     }
 
     public bool Validate(IEnumerable<Article> articles, out string? errorMessage) {
-        List<Article> articleList = articles.ToList();
-        if (articleList.Any(p => string.IsNullOrWhiteSpace(p.Id) || string.IsNullOrWhiteSpace(p.File))) {
-            errorMessage = "Some posts have missing Id or File!";
-            return false;
-        }
-        
-        if (articleList.GroupBy(p => p.Id).Any(g => g.Count() > 1)) {
-            errorMessage = "Duplicate IDs found!";
-            return false;
+        ValidationResult? result = validator.Validate(articles);
+        if (result.IsValid) {
+            errorMessage = null;
+            return true;
         }
 
-        errorMessage = null;
-        return true;
+        errorMessage = result.Errors.First().ErrorMessage;
+        return false;
     }
 
     public async Task<Dictionary<string, string>> GenerateStubsAsync(Article article, bool writeToDisk = false, CancellationToken ct = default) {
