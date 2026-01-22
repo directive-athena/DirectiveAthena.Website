@@ -16,6 +16,7 @@ public class Shared {
     public const string BrandName = "Brand.Name";
     public const string FooterDescription = "Footer.Description";
     public const string FooterCopyright = "Footer.Copyright";
+    public const string FooterVersion = "Footer.Version";
     public const string HomeTitle = "Home.Title";
     public const string HomeHeroTitle = "Home.Hero.Title";
     public const string HomeHeroSubtitle = "Home.Hero.Subtitle";

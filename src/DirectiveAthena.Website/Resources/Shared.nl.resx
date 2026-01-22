@@ -79,6 +79,9 @@
   <data name="Footer.Copyright" xml:space="preserve">
     <value>© {0} Anna Sas. Gebouwd met Blazor &amp; MudBlazor.</value>
   </data>
+  <data name="Footer.Version" xml:space="preserve">
+    <value>Versie {0}</value>
+  </data>
     <data name="Home.Title" xml:space="preserve">
     <value>Directive Athena</value>
   </data>
