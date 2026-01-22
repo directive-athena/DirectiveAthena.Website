@@ -43,13 +43,13 @@ public class WritingsService(HttpClient http, IStringLocalizer<Tags> tagsLocaliz
     public static string GetLocalizedTitle(Post post) {
         string culture = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
         if (post.Title.TryGetValue(culture, out string? title)) return title;
-        return post.Title.GetValueOrDefault(LocalizationConfig.DefaultCulture.Code) ?? "";
+        return post.Title.GetValueOrDefault(LocalizationProvider.DefaultLocalization.Code) ?? "";
     }
 
     public static string GetLocalizedSummary(Post post) {
         string culture = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
         if (post.Summary.TryGetValue(culture, out string? summary)) return summary;
-        return post.Summary.GetValueOrDefault(LocalizationConfig.DefaultCulture.Code) ?? "";
+        return post.Summary.GetValueOrDefault(LocalizationProvider.DefaultLocalization.Code) ?? "";
     }
 
     public static string GetLocalizedFilePath(Post post) {

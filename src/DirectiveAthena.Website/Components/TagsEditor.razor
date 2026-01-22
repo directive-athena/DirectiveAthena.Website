@@ -13,6 +13,8 @@
 @inject IDevFileSystemManager DevFileSystemManager
 @inject IJSRuntime JsRuntime
 @inject ISnackbar Snackbar
+
+@inherits DirectiveAthenaWebsiteComponentBase
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Html
 @* ------------------------------------------------------------------------------------------------------------------ *@
@@ -22,7 +24,7 @@
     <MudTable Items="@_tagModels" Hover="true" Breakpoint="Breakpoint.Sm" Dense="true" Class="mb-6">
         <HeaderContent>
             <MudTh>Tag ID</MudTh>
-            @foreach (CultureConfig culture in LocalizationConfig.SupportedCultures) {
+            @foreach (LocalizationInfo culture in LocalizationProvider.GetSupportedLocalizations()) {
                 <MudTh>@culture.DisplayName (@culture.Code)</MudTh>
             }
             <MudTh>Actions</MudTh>
@@ -32,7 +34,7 @@
                 <MudTextField @bind-Value="context.Id" Label="ID" Required="true"
                               ReadOnly="@context.IsOriginal"/>
             </MudTd>
-            @foreach (CultureConfig culture in LocalizationConfig.SupportedCultures) {
+            @foreach (LocalizationInfo culture in LocalizationProvider.GetSupportedLocalizations()) {
                 <MudTd DataLabel="@culture.DisplayName">
                     <MudTextField Value="@context.Translations.GetValueOrDefault(culture.Code)"
                                   ValueChanged="@((string? s) => context.Translations[culture.Code] = s ?? throw new ArgumentNullException(s))"
@@ -52,7 +54,7 @@
     </MudTable>
 
     <div class="d-flex flex-wrap gap-4">
-        @foreach (CultureConfig culture in LocalizationConfig.SupportedCultures) {
+        @foreach (LocalizationInfo culture in LocalizationProvider.GetSupportedLocalizations()) {
             if (DevFileSystemManager.IsLocalhost) {
                 <MudButton Variant="Variant.Filled" Color="Color.Success"
                            OnClick="@(() => SaveResxToDisk(culture.Code))" StartIcon="@Icons.Material.Filled.Save">
@@ -112,7 +114,7 @@
             IsOriginal = isOriginal
         };
 
-        foreach (CultureConfig culture in LocalizationConfig.SupportedCultures) {
+        foreach (LocalizationInfo culture in LocalizationProvider.GetSupportedLocalizations()) {
             // This is a bit tricky since IStringLocalizer doesn't easily let us switch culture per call
             // But we can assume it's already set up or just use the current one as a base
             LocalizedString localized = Localizer.GetString(tagId);
@@ -124,7 +126,7 @@
 
     private async Task AddNewTag() {
         var newTag = new TagModel { Id = "NewTag", IsOriginal = false };
-        foreach (CultureConfig culture in LocalizationConfig.SupportedCultures) {
+        foreach (LocalizationInfo culture in LocalizationProvider.GetSupportedLocalizations()) {
             newTag.Translations[culture.Code] = "";
         }
 
@@ -161,7 +163,7 @@
 
     private async Task DownloadResx(string locale) {
         string content = GenerateResx(locale, "");
-        string fileName = locale == LocalizationConfig.DefaultCulture.Code ? "Tags.resx" : $"Tags.{locale}.resx";
+        string fileName = LocalizationProvider.IsDefaultCultureCode(locale) ? "Tags.resx" : $"Tags.{locale}.resx";
         await JsRuntime.InvokeVoidAsync("downloadFile", fileName, content);
     }
 

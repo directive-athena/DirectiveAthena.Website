@@ -15,6 +15,8 @@
 @inject IDevFileSystemManager DevFileSystemManager
 @inject IJSRuntime JsRuntime
 @inject ISnackbar Snackbar
+
+@inherits DirectiveAthenaWebsiteComponentBase
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Html
 @* ------------------------------------------------------------------------------------------------------------------ *@
@@ -145,7 +147,7 @@
     }
 
     private async Task EnsureResxFilesExist() {
-        foreach (string path in LocalizationConfig.SupportedCultures.Select(culture => DevFileSystemPaths.GetSharedResxPath(culture.Code))) {
+        foreach (string path in LocalizationProvider.GetSupportedLocalizations().Select(culture => DevFileSystemPaths.GetSharedResxPath(culture.Code))) {
             string? content = await DevFileSystemManager.ReadFileAsync(path);
             if (content is not null) continue;
 
@@ -218,7 +220,7 @@
                 }
 
                 bool allDeleted = true;
-                foreach (string path in LocalizationConfig.SupportedCultures.Select(culture => DevFileSystemPaths.GetMarkdownPath(culture.Code, postToDelete.File))) {
+                foreach (string path in LocalizationProvider.GetSupportedLocalizations().Select(culture => DevFileSystemPaths.GetMarkdownPath(culture.Code, postToDelete.File))) {
                     bool success = await DevFileSystemManager.DeleteFileAsync(path);
                     if (!success) allDeleted = false;
                 }

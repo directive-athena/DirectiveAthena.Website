@@ -6,6 +6,8 @@
 @* Descriptors
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @inject IDevFileSystemManager DevFileSystemManager
+
+@inherits DirectiveAthenaWebsiteComponentBase
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Html
 @* ------------------------------------------------------------------------------------------------------------------ *@
@@ -31,18 +33,18 @@
             <MudSwitch @bind-Value="Post.Hidden" Label="Hidden (Exclude from lists)" Color="Color.Primary" />
         </MudItem>
 
-        @foreach (CultureConfig culture in LocalizationConfig.SupportedCultures) {
+        @foreach (LocalizationInfo culture in LocalizationProvider.GetSupportedLocalizations()) {
             <MudItem xs="12">
                 <MudDivider Class="my-4"/>
                 <MudText Typo="Typo.subtitle1" Color="Color.Primary">@culture.DisplayName (@culture.Code)</MudText>
                 <MudTextField Value="@GetTitle(culture.Code)"
                               ValueChanged="@((string s) => SetTitle(culture.Code, s))"
                               Label="@($"Title ({culture.Code})")"
-                              Required="@(culture.Code == LocalizationConfig.DefaultCulture.Code)"/>
+                              Required="@(LocalizationProvider.IsDefaultCultureCode(culture.Code))"/>
                 <MudTextField Value="@GetSummary(culture.Code)"
                               ValueChanged="@((string s) => SetSummary(culture.Code, s))"
                               Label="@($"Summary ({culture.Code})")"
-                              Required="@(culture.Code == LocalizationConfig.DefaultCulture.Code)" Lines="3"/>
+                              Required="@(LocalizationProvider.IsDefaultCultureCode(culture.Code))" Lines="3"/>
             </MudItem>
         }
 

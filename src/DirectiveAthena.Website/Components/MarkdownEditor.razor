@@ -9,6 +9,8 @@
 @inject IDevFileSystemManager DevFileSystemManager
 @inject IJSRuntime JsRuntime
 @inject ISnackbar Snackbar
+
+@inherits DirectiveAthenaWebsiteComponentBase
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Html
 @* ------------------------------------------------------------------------------------------------------------------ *@
@@ -17,7 +19,7 @@
         <MudText Typo="Typo.h5">Markdown Editor</MudText>
         <div class="d-flex gap-2">
             <MudSelect T="string" Label="Locale" @bind-Value="_selectedLocale" Class="width-100">
-                @foreach (CultureConfig culture in LocalizationConfig.SupportedCultures) {
+                @foreach (LocalizationInfo culture in LocalizationProvider.GetSupportedLocalizations()) {
                     <MudSelectItem Value="@culture.Code">@culture.DisplayName</MudSelectItem>
                 }
             </MudSelect>

@@ -16,12 +16,12 @@ public static class DevFileSystemPaths {
         => $"src/DirectiveAthena.Website/wwwroot/content/writings/{locale}/{fileName}";
 
     public static string GetSharedResxPath(string locale)
-        => locale == LocalizationConfig.DefaultCulture.Code
+        => locale == LocalizationProvider.DefaultLocalization.Code
             ? "src/DirectiveAthena.Website/Resources/Shared.resx"
             : $"src/DirectiveAthena.Website/Resources/Shared.{locale}.resx";
 
     public static string GetTagsResxPath(string locale)
-        => locale == LocalizationConfig.DefaultCulture.Code
+        => locale == LocalizationProvider.DefaultLocalization.Code
             ? "src/DirectiveAthena.Website/Resources/Tags.resx"
             : $"src/DirectiveAthena.Website/Resources/Tags.{locale}.resx";
 }
