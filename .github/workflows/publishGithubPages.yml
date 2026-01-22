@@ -35,7 +35,7 @@ jobs:
         run: dotnet restore DirectiveAthena.Website.slnx
       
       - name: Run tests
-        run: dotnet test DirectiveAthena.Website.slnx --configuration Release --no-restore
+        run: dotnet test --solution DirectiveAthena.Website.slnx --configuration Release --no-restore
 
       - name: Publish docs site
         run: |
