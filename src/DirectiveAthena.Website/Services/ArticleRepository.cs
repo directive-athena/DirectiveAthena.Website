@@ -12,6 +12,7 @@ namespace DirectiveAthena.Website.Services;
 // ---------------------------------------------------------------------------------------------------------------------
 [InjectableScoped<IArticleRepository>]
 public class ArticleRepository(HttpClient http, IDevFileSystemManager devFs, ILocalizationProvider localizationProvider) : IArticleRepository {
+    private readonly SemaphoreSlim _lock = new(1, 1);
     private Article[]? _articles;
     
     private static readonly JsonSerializerOptions Options = new() {
@@ -22,29 +23,35 @@ public class ArticleRepository(HttpClient http, IDevFileSystemManager devFs, ILo
     // -----------------------------------------------------------------------------------------------------------------
     // Methods
     // -----------------------------------------------------------------------------------------------------------------
-    public async ValueTask<IEnumerable<Article>> GetPostsAsync(bool includeHidden = false) {
+    public async ValueTask<IEnumerable<Article>> GetPostsAsync(bool includeHidden = false, CancellationToken ct = default) {
         if (_articles is not null) return includeHidden ? _articles : _articles.Where(p => !p.Hidden);
 
+        await _lock.WaitAsync(ct);
         try {
-            _articles = await http.GetFromJsonAsync<Article[]>("content/articles/index.json");
+            if (_articles is not null) return includeHidden ? _articles : _articles.Where(p => !p.Hidden);
+
+            _articles = await http.GetFromJsonAsync<Article[]>("content/articles/index.json", ct);
             _articles ??= []; // if it is still null, set to an empty array
         }
         catch {
             _articles = [];
         }
+        finally {
+            _lock.Release();
+        }
 
         return includeHidden ? _articles : _articles.Where(p => !p.Hidden);
     }
 
-    public async ValueTask<Article?> GetPostByIdAsync(string id) {
-        IEnumerable<Article> articles = await GetPostsAsync(includeHidden: true);
+    public async ValueTask<Article?> GetPostByIdAsync(string id, CancellationToken ct = default) {
+        IEnumerable<Article> articles = await GetPostsAsync(includeHidden: true, ct);
         return articles.FirstOrDefault(p => p.Id == id);
     }
 
     public string AsJsonString(IEnumerable<Article> articles) 
         => JsonSerializer.Serialize(articles, Options);
 
-    public async Task<bool> SaveAsync(IEnumerable<Article> articles) {
+    public async Task<bool> SaveAsync(IEnumerable<Article> articles, CancellationToken ct = default) {
         if (!devFs.IsLocalhost) return false;
         if (!await devFs.VerifyPermissionAsync()) return false;
 
@@ -52,7 +59,7 @@ public class ArticleRepository(HttpClient http, IDevFileSystemManager devFs, ILo
         return await devFs.WriteFileAsync(DevFileSystemPaths.GetIndexPath(), json);
     }
     
-    public async Task<bool> DeleteAsync(Article article, IEnumerable<Article> articles) {
+    public async Task<bool> DeleteAsync(Article article, IEnumerable<Article> articles, CancellationToken ct = default) {
         if (!devFs.IsLocalhost || !await devFs.HasAccessAsync()) return false;
         if (!await devFs.VerifyPermissionAsync()) return false;
 
@@ -65,6 +72,6 @@ public class ArticleRepository(HttpClient http, IDevFileSystemManager devFs, ILo
 
         if (!allDeleted) return false;
 
-        return await SaveAsync(articles);
+        return await SaveAsync(articles, ct);
     }
 }

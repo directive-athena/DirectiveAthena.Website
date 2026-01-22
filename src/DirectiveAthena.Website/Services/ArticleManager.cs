@@ -15,18 +15,17 @@ public class ArticleManager(
     IDevFileSystemManager devFs,
     HttpClient http
 ) : IArticleManager {
-    public string GetLocalizedTitle(Article article) {
-        LocalizationInfo localization = localizationProvider.GetCurrentLocalization();
-        return !article.Title.TryGetValue(localization.Code, out string? title)
-            ? article.Title.GetValueOrDefault(LocalizationProvider.DefaultLocalization.Code, string.Empty)
-            : title;
-    }
+    public string GetLocalizedTitle(Article article)
+        => GetLocalizedValue(article.Title);
 
-    public string GetLocalizedSummary(Article article) {
+    public string GetLocalizedSummary(Article article)
+        => GetLocalizedValue(article.Summary);
+
+    private string GetLocalizedValue(Dictionary<string, string> values) {
         LocalizationInfo localization = localizationProvider.GetCurrentLocalization();
-        return !article.Summary.TryGetValue(localization.Code, out string? summary)
-            ? article.Summary.GetValueOrDefault(LocalizationProvider.DefaultLocalization.Code, string.Empty)
-            : summary;
+        return !values.TryGetValue(localization.Code, out string? value)
+            ? values.GetValueOrDefault(LocalizationProvider.DefaultLocalization.Code, string.Empty)
+            : value;
     }
 
     public string GetLocalizedFilePath(Article article) {
@@ -34,9 +33,9 @@ public class ArticleManager(
         return $"content/articles/{localization.Code}/{article.File}";
     }
 
-    public async Task<string> GetRawMarkdownContentAsync(Article article, string locale) {
+    public async Task<string> GetRawMarkdownContentAsync(Article article, string locale, CancellationToken ct = default) {
         try {
-            return await http.GetStringAsync($"content/articles/{locale}/{article.File}");
+            return await http.GetStringAsync($"content/articles/{locale}/{article.File}", ct);
         }
         catch {
             return string.Empty;
@@ -62,8 +61,14 @@ public class ArticleManager(
     }
 
     public bool Validate(IEnumerable<Article> articles, out string? errorMessage) {
-        if (articles.Any(p => string.IsNullOrWhiteSpace(p.Id) || string.IsNullOrWhiteSpace(p.File))) {
+        List<Article> articleList = articles.ToList();
+        if (articleList.Any(p => string.IsNullOrWhiteSpace(p.Id) || string.IsNullOrWhiteSpace(p.File))) {
             errorMessage = "Some posts have missing Id or File!";
+            return false;
+        }
+        
+        if (articleList.GroupBy(p => p.Id).Any(g => g.Count() > 1)) {
+            errorMessage = "Duplicate IDs found!";
             return false;
         }
 
@@ -71,7 +76,7 @@ public class ArticleManager(
         return true;
     }
 
-    public async Task<Dictionary<string, string>> GenerateStubsAsync(Article article, bool writeToDisk = false) {
+    public async Task<Dictionary<string, string>> GenerateStubsAsync(Article article, bool writeToDisk = false, CancellationToken ct = default) {
         IReadOnlyCollection<LocalizationInfo> locals = localizationProvider.GetSupportedLocalizations();
         Dictionary<string, string> stubs = locals.ToDictionary(
             c => c.Code,
@@ -86,7 +91,7 @@ public class ArticleManager(
         return stubs;
     }
 
-    public async Task EnsureResxAsync() {
+    public async Task EnsureResxAsync(CancellationToken ct = default) {
         if (!devFs.IsLocalhost || !await devFs.HasAccessAsync()) return;
 
         foreach (string path in localizationProvider.GetSupportedLocalizations()

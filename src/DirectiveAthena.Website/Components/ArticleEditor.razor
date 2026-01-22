@@ -114,9 +114,15 @@
         => Post.Summary[culture] = value;
 
     private void AddTag() {
-        if (string.IsNullOrWhiteSpace(_newTag) || Post.Tags.Contains(_newTag)) return;
+        if (string.IsNullOrWhiteSpace(_newTag)) return;
+        
+        string trimmedTag = _newTag.Trim();
+        if (Post.Tags.Contains(trimmedTag)) {
+            _newTag = "";
+            return;
+        }
 
-        Post.Tags.Add(_newTag.Trim());
+        Post.Tags.Add(trimmedTag);
         _newTag = "";
     }
 
