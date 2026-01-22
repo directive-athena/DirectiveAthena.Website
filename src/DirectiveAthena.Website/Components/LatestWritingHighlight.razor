@@ -14,7 +14,7 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Html
 @* ------------------------------------------------------------------------------------------------------------------ *@
-@if (_post != null) {
+@if (_post is not null) {
     <MudCard Class="card-glass featured-card overflow-hidden"
              @onclick="ViewPost" Style="cursor: pointer;">
         <MudGrid Spacing="0">
@@ -61,7 +61,7 @@ else if (_isLoaded) {
     }
 
     private void ViewPost() {
-        if (_post != null) {
+        if (_post is not null) {
             NavigationManager.NavigateTo($"/writings/{_post.Slug}");
         }
     }

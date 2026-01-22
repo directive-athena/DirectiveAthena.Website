@@ -31,8 +31,8 @@
             <MudChip T="string" Variant="@(string.IsNullOrEmpty(_selectedTag) ? Variant.Filled : Variant.Outlined)"
                      Color="Color.Secondary" OnClick="@ClearTag">@Localizer["Writings.Archive.AllPosts"]
             </MudChip>
-            @if (_posts != null) {
-                @foreach (string tag in _posts.SelectMany(p => p.Tags).Distinct()) {
+            @if (_posts is not null) {
+                foreach (string tag in _posts.SelectMany(p => p.Tags).Distinct()) {
                     <MudChip T="string" Variant="@(_selectedTag == tag ? Variant.Filled : Variant.Outlined)"
                              Color="Color.Secondary"
                              OnClick="@(() => FilterByTag(tag))">@WritingsService.GetLocalizedTagName(tag)</MudChip>
@@ -92,7 +92,7 @@
     protected override async Task OnInitializedAsync() {
         _posts = await WritingsService.GetPostsAsync();
     }
-    
+
     private IEnumerable<Post> FilteredPosts =>
         string.IsNullOrEmpty(_selectedTag)
             ? _posts ?? []

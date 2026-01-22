@@ -189,7 +189,7 @@
             string value = tag.Translations.GetValueOrDefault(locale) ?? "";
 
             XElement? existingData = root.Elements("data").FirstOrDefault(e => e.Attribute("name")?.Value == key);
-            if (existingData != null) {
+            if (existingData is not null) {
                 existingData.Element("value")!.Value = value;
             }
             else {

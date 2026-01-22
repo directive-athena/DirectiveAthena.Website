@@ -16,7 +16,7 @@
     </div>
     <MudList T="Post" SelectedValue="SelectedPost" SelectedValueChanged="OnPostSelected"
              Color="Color.Primary">
-        @if (Posts != null) {
+        @if (Posts is not null) {
             foreach (Post post in Posts) {
                 <MudListItem Value="post">
                     <div class="d-flex flex-column">

@@ -91,7 +91,7 @@
                         </MudItem>
 
                         <MudItem xs="12" md="8">
-                            @if (_selectedPost != null) {
+                            @if (_selectedPost is not null) {
                                 <PostEditor Post="_selectedPost" OnDeletePost="DeletePost"
                                             OnGenerateStubs="GenerateStubs"/>
                             }
@@ -147,7 +147,7 @@
     private async Task EnsureResxFilesExist() {
         foreach (string path in LocalizationConfig.SupportedCultures.Select(culture => DevFileSystemService.GetSharedResxPath(culture.Code))) {
             string? content = await DevFs.ReadFileAsync(path);
-            if (content != null) continue;
+            if (content is not null) continue;
 
             XDocument newResx = CreateNewResx();
             await DevFs.WriteFileAsync(path, newResx.ToString());
