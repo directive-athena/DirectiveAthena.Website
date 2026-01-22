@@ -25,9 +25,4 @@
       </EmbeddedResource>
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="wwwroot\content\writings\en\" />
-      <Folder Include="wwwroot\content\writings\nl\" />
-    </ItemGroup>
-
 </Project>

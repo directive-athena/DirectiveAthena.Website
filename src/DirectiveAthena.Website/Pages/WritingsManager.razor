@@ -188,12 +188,13 @@
     }
 
     private void CreateNewPost() {
+        var slug = Guid.NewGuid().ToString();
         var newPost = new Post {
-            Slug = Guid.NewGuid().ToString(),
+            Slug = slug,
             Date = DateTime.Now.ToString("yyyy-MM-dd"),
             Title = new Dictionary<string, string> { ["en"] = "New Post", ["nl"] = "" },
             Summary = new Dictionary<string, string> { ["en"] = "Summary here", ["nl"] = "" },
-            File = "new-post.md",
+            File = $"{slug}.md",
             Tags = new List<string>(),
             Hidden = false
         };

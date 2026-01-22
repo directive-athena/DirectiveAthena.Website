@@ -18,8 +18,9 @@
 
     <MudGrid>
         <MudItem xs="12" md="6">
-            <MudTextField @bind-Value="Post.Slug" Label="Slug (Unique ID)"
-                          Required="true"/>
+            <MudTextField Value="@Post.Slug" Label="Slug (Unique ID)"
+                          Required="true" ReadOnly="true"
+                          HelperText="GUID Slug is generated automatically for new posts."/>
         </MudItem>
         <MudItem xs="12" md="6">
             <MudTextField @bind-Value="Post.Date" Label="Date (YYYY-MM-DD)"
@@ -47,7 +48,8 @@
 
         <MudItem xs="12">
             <MudDivider Class="my-4"/>
-            <MudTextField @bind-Value="Post.File" Label="Markdown Filename (e.g. post.md)" Required="true"/>
+            <MudTextField Value="@Post.File" Label="Markdown Filename (e.g. post.md)" Required="true" ReadOnly="true"
+                          HelperText="Filename matches Slug GUID and cannot be changed."/>
         </MudItem>
 
         <MudItem xs="12">
