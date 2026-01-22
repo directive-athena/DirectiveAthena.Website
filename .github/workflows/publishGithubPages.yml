@@ -35,13 +35,16 @@ jobs:
         run: dotnet restore DirectiveAthena.Website.slnx
 
       - name: Publish docs site
-        run: dotnet publish src/DirectiveAthena.Website -c Release -o ./out
+        run: dotnet publish src/DirectiveAthena.Website -c Release -o ./out -p:BaseHref=/DirectiveAthena.Website/ -p:StaticWebAssetBasePath=/DirectiveAthena.Website/
       
+      - name: Copy index.html to 404.html
+        run: cp ./out/wwwroot/DirectiveAthena.Website/index.html ./out/wwwroot/DirectiveAthena.Website/404.html
+
       - name: List published files
         # sanity check so you can see what will be uploaded (optional)
         run: |
           echo "Published output:"
-          ls -la ./out
+          ls -la ./out/wwwroot/DirectiveAthena.Website
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
