@@ -13,6 +13,7 @@
 @page "/articles-manager"
 
 @inject IArticleRepository ArticleRepository
+@inject IArticleManager ArticleManager
 @inject IDevFileSystemManager DevFileSystemManager
 @inject IJSRuntime JsRuntime
 @inject ISnackbar Snackbar
@@ -144,35 +145,13 @@
 
         if (!_hasAccess) return;
 
-        await EnsureResxFilesExist();
-    }
-
-    private async Task EnsureResxFilesExist() {
-        foreach (string path in LocalizationProvider.GetSupportedLocalizations().Select(culture => DevFileSystemPaths.GetSharedResxPath(culture.Code))) {
-            string? content = await DevFileSystemManager.ReadFileAsync(path);
-            if (content is not null) continue;
-
-            XDocument newResx = CreateNewResx();
-            await DevFileSystemManager.WriteFileAsync(path, newResx.ToString());
-            Snackbar.Add($"Created missing RESX: {path}", Severity.Info);
-        }
-    }
-
-    private static XDocument CreateNewResx() {
-        return new XDocument(
-            new XElement("root",
-                new XElement("resheader", new XAttribute("name", "resmimetype"), new XElement("value", "text/microsoft-resx")),
-                new XElement("resheader", new XAttribute("name", "version"), new XElement("value", "2.0")),
-                new XElement("resheader", new XAttribute("name", "reader"), new XElement("value", "System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089")),
-                new XElement("resheader", new XAttribute("name", "writer"), new XElement("value", "System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"))
-            )
-        );
+        await ArticleManager.EnsureResxAsync();
     }
 
     private async Task RequestAccess() {
         if (await DevFileSystemManager.RequestAccessAsync()) {
             _hasAccess = true;
-            await EnsureResxFilesExist();
+            await ArticleManager.EnsureResxAsync();
             Snackbar.Add("Access granted!", Severity.Success);
         }
         else {
@@ -191,102 +170,66 @@
     }
 
     private void CreateNewPost() {
-        string id = Guid.NewGuid().ToString();
-        var newPost = new Article {
-            Id = id,
-            Date = DateTime.Now.ToString("yyyy-MM-dd"),
-            Title = new Dictionary<string, string> { ["en"] = "New Post", ["nl"] = "" },
-            Summary = new Dictionary<string, string> { ["en"] = "Summary here", ["nl"] = "" },
-            File = $"{id}.md",
-            Tags = [],
-            Hidden = false
-        };
-        _posts?.Insert(0, newPost);
-        _selectedPost = newPost;
+        _selectedPost = ArticleManager.NewArticle();
+        _posts?.Insert(0, _selectedPost);
     }
 
     private async Task DeletePost() {
-        if (_selectedPost is null) return;
+        if (_selectedPost is null || _posts is null) return;
 
         Article postToDelete = _selectedPost;
-        _posts?.Remove(postToDelete);
+        _posts.Remove(postToDelete);
         _selectedPost = null;
 
-        switch (DevFileSystemManager.IsLocalhost, _hasAccess) {
-            case (true, true): {
-                if (!await DevFileSystemManager.VerifyPermissionAsync()) {
-                    _hasAccess = false;
-                    Snackbar.Add("Write access lost. Post removed from list, but markdown files were not deleted.", Severity.Warning);
-                    return;
-                }
-
-                bool allDeleted = true;
-                foreach (string path in LocalizationProvider.GetSupportedLocalizations().Select(culture => DevFileSystemPaths.GetMarkdownPath(culture.Code, postToDelete.File))) {
-                    bool success = await DevFileSystemManager.DeleteFileAsync(path);
-                    if (!success) allDeleted = false;
-                }
-
-                if (allDeleted) {
-                    Snackbar.Add("Post and markdown files deleted.", Severity.Success);
-                }
-                else {
-                    Snackbar.Add("Post removed, but some markdown files failed to delete.", Severity.Warning);
-                }
-
-                await SaveAll();
-                break;
+        if (DevFileSystemManager.IsLocalhost && _hasAccess) {
+            bool success = await ArticleRepository.DeleteAsync(postToDelete, _posts);
+            if (success) {
+                Snackbar.Add("Post and markdown files deleted.", Severity.Success);
             }
-
-            case (_, false):
-                Snackbar.Add("Read-only mode: Post removed from list, but files were not deleted.", Severity.Warning);
-                break;
-
-            default:
-                Snackbar.Add("Unexpected combination of DevFs.IsLocalhost and _hasAccess.", Severity.Error);
-                break;
+            else {
+                Snackbar.Add("Post removed from list, but filesystem operation failed or was partial.", Severity.Warning);
+            }
+        }
+        else {
+            Snackbar.Add("Read-only mode: Post removed from list, but files were not deleted.", Severity.Warning);
         }
     }
 
     private async Task SaveAll() {
-        if (_posts is null || !DevFileSystemManager.IsLocalhost || !_hasAccess) return;
+        if (_posts is null) return;
 
-        if (!await DevFileSystemManager.VerifyPermissionAsync()) {
-            _hasAccess = false;
+        if (!ArticleManager.Validate(_posts, out string? errorMessage)) {
+            Snackbar.Add(errorMessage!, Severity.Error);
             return;
         }
 
-        // Simple validation
-        if (_posts.Any(p => string.IsNullOrWhiteSpace(p.Id) || string.IsNullOrWhiteSpace(p.File))) {
-            Snackbar.Add("Some posts have missing Id or File!", Severity.Error);
-            return;
-        }
-
-        string json = JsonSerializer.Serialize(_posts, new JsonSerializerOptions { WriteIndented = true, PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
-        bool success = await DevFileSystemManager.WriteFileAsync(DevFileSystemPaths.GetIndexPath(), json);
-
+        bool success = await ArticleRepository.SaveAsync(_posts);
         if (success) {
             Snackbar.Add("index.json saved to disk!", Severity.Success);
         }
         else {
             Snackbar.Add("Failed to save index.json.", Severity.Error);
+            if (!await DevFileSystemManager.HasAccessAsync()) {
+                _hasAccess = false;
+            }
         }
     }
 
     private async Task ExportJson() {
         if (_posts is null) return;
 
-        // Simple validation
-        if (_posts.Any(p => p.Id.IsNullOrWhiteSpace() || p.File.IsNullOrWhiteSpace())) {
-            Snackbar.Add("Some posts have missing Id or File!", Severity.Error);
+        if (!ArticleManager.Validate(_posts, out string? errorMessage)) {
+            Snackbar.Add(errorMessage!, Severity.Error);
             return;
         }
 
-        string json = JsonSerializer.Serialize(_posts, new JsonSerializerOptions { WriteIndented = true, PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
+        string json = ArticleRepository.AsJsonString(_posts);
         await DownloadFile("index.json", json);
     }
 
     private async Task CopyJson() {
-        string json = JsonSerializer.Serialize(_posts, new JsonSerializerOptions { WriteIndented = true, PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
+        if (_posts is null) return;
+        string json = ArticleRepository.AsJsonString(_posts);
         await JsRuntime.InvokeVoidAsync("navigator.clipboard.writeText", json);
         Snackbar.Add("JSON copied to clipboard", Severity.Success);
     }
@@ -294,33 +237,20 @@
     private async Task GenerateStubs() {
         if (_selectedPost is null) return;
 
-        string enContent = $"# {_selectedPost.Title.GetValueOrDefault("en")}\n\nContent for {_selectedPost.Id} in English.";
-        string nlContent = $"# {_selectedPost.Title.GetValueOrDefault("nl")}\n\nInhoud voor {_selectedPost.Id} in het Nederlands.";
+        bool writeToDisk = DevFileSystemManager.IsLocalhost && _hasAccess;
+        Dictionary<string, string> stubs = await ArticleManager.GenerateStubsAsync(_selectedPost, writeToDisk);
 
-        if (DevFileSystemManager.IsLocalhost && _hasAccess) {
-            if (!await DevFileSystemManager.VerifyPermissionAsync()) {
-                _hasAccess = false;
-                return;
-            }
-
-            bool enSuccess = await DevFileSystemManager.WriteFileAsync(DevFileSystemPaths.GetMarkdownPath("en", _selectedPost.File), enContent);
-            bool nlSuccess = await DevFileSystemManager.WriteFileAsync(DevFileSystemPaths.GetMarkdownPath("nl", _selectedPost.File), nlContent);
-
-            if (enSuccess && nlSuccess) {
-                Snackbar.Add("Markdown stubs saved to disk!", Severity.Success);
-            }
-            else {
-                Snackbar.Add("Failed to save one or more stubs.", Severity.Error);
-            }
+        if (writeToDisk) {
+            Snackbar.Add("Markdown stubs saved to disk!", Severity.Success);
+            return;
         }
-        else {
-            await DownloadFile("en/" + _selectedPost.File, enContent);
-            await DownloadFile("nl/" + _selectedPost.File, nlContent);
+
+        foreach (KeyValuePair<string, string> stub in stubs) {
+            await DownloadFile($"{stub.Key}/{_selectedPost.File}", stub.Value);
         }
     }
 
     private async Task DownloadFile(string fileName, string content) {
         await JsRuntime.InvokeVoidAsync("downloadFile", fileName, content);
     }
-
 }

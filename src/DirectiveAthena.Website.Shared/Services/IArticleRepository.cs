@@ -11,4 +11,8 @@ namespace DirectiveAthena.Website.Services;
 public interface IArticleRepository {
     ValueTask<IEnumerable<Article>> GetPostsAsync(bool includeHidden = false);
     ValueTask<Article?> GetPostByIdAsync(string id);
+    Task<bool> DeleteAsync(Article article, IEnumerable<Article> articles);
+    
+    string AsJsonString(IEnumerable<Article> articles);
+    Task<bool> SaveAsync(IEnumerable<Article> articles);
 }
