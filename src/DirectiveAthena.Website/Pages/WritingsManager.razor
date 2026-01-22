@@ -49,7 +49,7 @@
         }
     </div>
 
-    @if (_posts == null) {
+    @if (_posts is null) {
         <MudProgressCircular Color="Color.Primary" Indeterminate="true"/>
     }
     else {
@@ -188,14 +188,14 @@
     }
 
     private void CreateNewPost() {
-        var slug = Guid.NewGuid().ToString();
+        string slug = Guid.NewGuid().ToString();
         var newPost = new Post {
             Slug = slug,
             Date = DateTime.Now.ToString("yyyy-MM-dd"),
             Title = new Dictionary<string, string> { ["en"] = "New Post", ["nl"] = "" },
             Summary = new Dictionary<string, string> { ["en"] = "Summary here", ["nl"] = "" },
             File = $"{slug}.md",
-            Tags = new List<string>(),
+            Tags = [],
             Hidden = false
         };
         _posts?.Insert(0, newPost);
@@ -203,7 +203,7 @@
     }
 
     private async Task DeletePost() {
-        if (_selectedPost == null) return;
+        if (_selectedPost is null) return;
 
         Post postToDelete = _selectedPost;
         _posts?.Remove(postToDelete);
@@ -245,7 +245,7 @@
     }
 
     private async Task SaveAll() {
-        if (_posts == null || !DevFs.IsLocalhost || !_hasAccess) return;
+        if (_posts is null || !DevFs.IsLocalhost || !_hasAccess) return;
 
         if (!await DevFs.VerifyPermissionAsync()) {
             _hasAccess = false;
@@ -270,10 +270,10 @@
     }
 
     private async Task ExportJson() {
-        if (_posts == null) return;
+        if (_posts is null) return;
 
         // Simple validation
-        if (_posts.Any(p => string.IsNullOrWhiteSpace(p.Slug) || string.IsNullOrWhiteSpace(p.File))) {
+        if (_posts.Any(p => p.Slug.IsNullOrWhiteSpace() || p.File.IsNullOrWhiteSpace())) {
             Snackbar.Add("Some posts have missing Slug or File!", Severity.Error);
             return;
         }
@@ -289,7 +289,7 @@
     }
 
     private async Task GenerateStubs() {
-        if (_selectedPost == null) return;
+        if (_selectedPost is null) return;
 
         string enContent = $"# {_selectedPost.Title.GetValueOrDefault("en")}\n\nContent for {_selectedPost.Slug} in English.";
         string nlContent = $"# {_selectedPost.Title.GetValueOrDefault("nl")}\n\nInhoud voor {_selectedPost.Slug} in het Nederlands.";

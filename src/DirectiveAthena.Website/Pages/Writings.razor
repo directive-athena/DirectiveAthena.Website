@@ -16,20 +16,20 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Html
 @* ------------------------------------------------------------------------------------------------------------------ *@
-<PageTitle>@Localizer["Writings.Title"]</PageTitle>
+<PageTitle>@Localizer[Shared.WritingsTitle]</PageTitle>
 
 <div class="min-vh-100 py-32">
     <MudContainer MaxWidth="MaxWidth.Large">
         @* Archive View *@
         <div class="text-center mb-16">
-            <MudText Typo="Typo.h2" Class="mb-4">@Localizer["Writings.Archive.Title"]</MudText>
-            <MudText Typo="Typo.body1" Class="text-secondary opacity-70">@Localizer["Writings.Archive.Subtitle"]
+            <MudText Typo="Typo.h2" Class="mb-4">@Localizer[Shared.WritingsArchiveTitle]</MudText>
+            <MudText Typo="Typo.body1" Class="text-secondary opacity-70">@Localizer[Shared.WritingsArchiveSubtitle]
             </MudText>
         </div>
 
         <div class="d-flex flex-wrap justify-center gap-2 mb-12">
             <MudChip T="string" Variant="@(string.IsNullOrEmpty(_selectedTag) ? Variant.Filled : Variant.Outlined)"
-                     Color="Color.Secondary" OnClick="@ClearTag">@Localizer["Writings.Archive.AllPosts"]
+                     Color="Color.Secondary" OnClick="@ClearTag">@Localizer[Shared.WritingsArchiveAllPosts]
             </MudChip>
             @if (_posts is not null) {
                 foreach (string tag in _posts.SelectMany(p => p.Tags).Distinct()) {
@@ -40,7 +40,7 @@
             }
         </div>
 
-        @if (_posts == null) {
+        @if (_posts is null) {
             <div class="d-flex justify-center py-12">
                 <MudProgressCircular Color="Color.Secondary" Indeterminate="true" Size="Size.Large"/>
             </div>
@@ -70,7 +70,7 @@
                                 </MudText>
                                 <MudButton Variant="Variant.Text" Color="Color.Secondary"
                                            EndIcon="@Icons.Material.Filled.ArrowForward"
-                                           Class="pa-0">@Localizer["Writings.Archive.ReadArticle"]
+                                           Class="pa-0">@Localizer[Shared.WritingsArchiveReadArticle]
                                 </MudButton>
                             </MudCardContent>
                         </MudCard>

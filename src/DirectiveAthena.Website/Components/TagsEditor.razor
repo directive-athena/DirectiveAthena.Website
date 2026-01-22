@@ -182,7 +182,7 @@
         }
 
         XElement? root = doc.Root;
-        if (root == null) return doc.ToString();
+        if (root is null) return doc.ToString();
 
         foreach (TagModel tag in _tagModels) {
             string key = tag.Id;

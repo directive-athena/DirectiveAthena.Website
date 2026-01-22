@@ -24,7 +24,7 @@
         </div>
     </div>
 
-    @if (Post == null) {
+    @if (Post is null) {
         <MudAlert Severity="Severity.Info">Select a post to edit its markdown.</MudAlert>
     }
     else {
@@ -79,7 +79,7 @@
     }
 
     private async Task LoadContent() {
-        if (Post == null) {
+        if (Post is null) {
             _content = "";
             return;
         }
@@ -100,7 +100,7 @@
     }
 
     private async Task SaveMarkdown() {
-        if (Post == null || !DevFs.IsLocalhost) return;
+        if (Post is null || !DevFs.IsLocalhost) return;
 
         if (!await DevFs.VerifyPermissionAsync()) {
             Snackbar.Add("Filesystem access required.", Severity.Warning);
@@ -119,7 +119,7 @@
     }
 
     private async Task DownloadMarkdown() {
-        if (Post == null) return;
+        if (Post is null) return;
 
         string path = $"{_selectedLocale}/{Post.File}";
         await JsRuntime.InvokeVoidAsync("downloadFile", path, _content);

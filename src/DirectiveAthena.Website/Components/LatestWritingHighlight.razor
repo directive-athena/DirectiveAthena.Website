@@ -21,7 +21,7 @@
             <MudItem xs="12" md="7" Class="pa-8 d-flex flex-column justify-center">
                 <MudText Typo="Typo.caption" Color="Color.Primary"
                          Style="letter-spacing: 0.2em; text-transform: uppercase;"
-                         Class="mb-4">@Localizer["Home.Writings.LatestLabel"]</MudText>
+                         Class="mb-4">@Localizer[Shared.HomeWritingsLatestLabel]</MudText>
                 <MudText Typo="Typo.h3"
                          Class="mb-4 SpaceGrotesk">@WritingsService.GetLocalizedTitle(_post)</MudText>
                 <MudText Typo="Typo.body1" Class="text-secondary mb-8"
@@ -30,7 +30,7 @@
                 </MudText>
                 <div class="d-flex align-center gap-4">
                     <MudButton Variant="Variant.Filled" Color="Color.Primary"
-                               Class="px-6">@Localizer["Home.Writings.ReadFull"]</MudButton>
+                               Class="px-6">@Localizer[Shared.HomeWritingsReadFull]</MudButton>
                     <MudText Typo="Typo.caption" Class="opacity-50">@_post.Date</MudText>
                 </div>
             </MudItem>

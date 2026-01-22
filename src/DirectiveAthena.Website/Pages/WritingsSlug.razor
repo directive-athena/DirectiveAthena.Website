@@ -18,13 +18,13 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Html
 @* ------------------------------------------------------------------------------------------------------------------ *@
-<PageTitle>@Localizer["Writings.Title"]</PageTitle>
+<PageTitle>@Localizer[Shared.WritingsTitle]</PageTitle>
 
 <div class="min-vh-100 py-32">
     <MudContainer MaxWidth="MaxWidth.Large">
         @* Detail View *@
             <MudButton StartIcon="@Icons.Material.Filled.ArrowBack" Color="Color.Secondary" OnClick="@BackToList"
-                       Class="mb-12">@Localizer["Writings.Detail.Back"]
+                       Class="mb-12">@Localizer[Shared.WritingsDetailBack]
             </MudButton>
 
             @if (_loading) {
@@ -32,9 +32,9 @@
                     <MudProgressCircular Color="Color.Secondary" Indeterminate="true" Size="Size.Large"/>
                 </div>
             }
-            else if (_error || _currentPost == null) {
+            else if (_error || _currentPost is null) {
                 <MudAlert Severity="Severity.Error" Variant="Variant.Filled"
-                          Class="card-glass">@Localizer["Writings.Detail.Error"]
+                          Class="card-glass">@Localizer[Shared.WritingsDetailError]
                 </MudAlert>
             }
             else {
@@ -57,7 +57,7 @@
                 <MudDivider Class="my-16 opacity-10"/>
                 <div class="d-flex justify-center">
                     <MudButton Variant="Variant.Outlined" Color="Color.Secondary"
-                               OnClick="@BackToList">@Localizer["Writings.Detail.BackBottom"]
+                               OnClick="@BackToList">@Localizer[Shared.WritingsDetailBackBottom]
                     </MudButton>
                 </div>
             }
@@ -87,7 +87,7 @@
         _error = false;
         _currentPost = await WritingsService.GetPostBySlugAsync(slug);
 
-        if (_currentPost == null) {
+        if (_currentPost is null) {
             _error = true;
             _loading = false;
             return;
