@@ -4,6 +4,7 @@
 using System.Net;
 using DirectiveAthena.Website.Models;
 using DirectiveAthena.Website.Services;
+using DirectiveAthena.Website.Services.Validation;
 using DirectiveAthenaTests.Website.Helpers;
 using NSubstitute;
 
@@ -25,6 +26,17 @@ public class ArticleManagerTests {
         return localizationProvider;
     }
 
+    private static ArticleManager CreateManager(
+        ILocalizationProvider localizationProvider,
+        IDevFileSystemManager? devFs = null,
+        HttpClient? http = null
+    ) {
+        devFs ??= Substitute.For<IDevFileSystemManager>();
+        http ??= new HttpClient();
+        var validator = new ArticleCollectionValidator(new ArticleValidator(localizationProvider));
+        return new ArticleManager(localizationProvider, devFs, http, validator);
+    }
+
     // -----------------------------------------------------------------------------------------------------------------
     // Test Methods
     // -----------------------------------------------------------------------------------------------------------------
@@ -33,7 +45,7 @@ public class ArticleManagerTests {
         // Arrange
         Article article = ArticleFaker.Create(100, includeNl: false);
         ILocalizationProvider localizationProvider = CreateLocalizationProvider("nl");
-        var manager = new ArticleManager(localizationProvider, Substitute.For<IDevFileSystemManager>(), new HttpClient());
+        var manager = CreateManager(localizationProvider);
 
         // Act
         string result = manager.GetLocalizedTitle(article);
@@ -47,7 +59,7 @@ public class ArticleManagerTests {
         // Arrange
         Article article = ArticleFaker.Create(101, includeNl: false);
         ILocalizationProvider localizationProvider = CreateLocalizationProvider("nl");
-        var manager = new ArticleManager(localizationProvider, Substitute.For<IDevFileSystemManager>(), new HttpClient());
+        var manager = CreateManager(localizationProvider);
         
         // Act
         string result = manager.GetLocalizedSummary(article);
@@ -61,7 +73,7 @@ public class ArticleManagerTests {
         // Arrange
         Article article = ArticleFaker.Create(102);
         ILocalizationProvider localizationProvider = CreateLocalizationProvider("nl");
-        var manager = new ArticleManager(localizationProvider, Substitute.For<IDevFileSystemManager>(), new HttpClient());
+        var manager = CreateManager(localizationProvider);
         
         // Act
         string result = manager.GetLocalizedFilePath(article);
@@ -75,7 +87,7 @@ public class ArticleManagerTests {
         // Arrange
         var handler = new TestHttpMessageHandler(_ => new HttpResponseMessage(HttpStatusCode.InternalServerError));
         var http = new HttpClient(handler) { BaseAddress = new Uri("http://localhost/") };
-        var manager = new ArticleManager(CreateLocalizationProvider("en"), Substitute.For<IDevFileSystemManager>(), http);
+        var manager = CreateManager(CreateLocalizationProvider("en"), http: http);
         Article article = ArticleFaker.Create(103);
 
         // Act
@@ -89,7 +101,7 @@ public class ArticleManagerTests {
     public async Task NewArticle_PopulatesLocalizedFields() {
         // Arrange
         ILocalizationProvider localizationProvider = CreateLocalizationProvider("en");
-        var manager = new ArticleManager(localizationProvider, Substitute.For<IDevFileSystemManager>(), new HttpClient());
+        var manager = CreateManager(localizationProvider);
         
         // Act
         Article article = manager.NewArticle();
@@ -109,7 +121,7 @@ public class ArticleManagerTests {
             new() { Id = "", File = "missing.md" }
         ];
 
-        var manager = new ArticleManager(CreateLocalizationProvider("en"), Substitute.For<IDevFileSystemManager>(), new HttpClient());
+        var manager = CreateManager(CreateLocalizationProvider("en"));
         
         // Act
         bool result = manager.Validate(articles, out string? error);
@@ -127,7 +139,7 @@ public class ArticleManagerTests {
             new() { Id = "dup", File = "b.md" }
         ];
 
-        var manager = new ArticleManager(CreateLocalizationProvider("en"), Substitute.For<IDevFileSystemManager>(), new HttpClient());
+        var manager = CreateManager(CreateLocalizationProvider("en"));
 
         // Act
         bool result = manager.Validate(articles, out string? error);
@@ -138,11 +150,62 @@ public class ArticleManagerTests {
     }
 
     [Test]
+    public async Task Validate_RejectsDuplicateFiles() {
+        // Arrange
+        Article[] articles = [
+            new() { Id = "a", File = "dup.md" },
+            new() { Id = "b", File = "dup.md" }
+        ];
+
+        var manager = CreateManager(CreateLocalizationProvider("en"));
+
+        // Act
+        bool result = manager.Validate(articles, out string? error);
+
+        // Assert
+        await Assert.That(result).IsFalse();
+        await Assert.That(error).IsEqualTo("Duplicate files found!");
+    }
+
+    [Test]
+    public async Task Validate_RejectsMissingLocalizedTitles() {
+        // Arrange
+        Article article = ArticleFaker.Create(200, includeNl: false);
+        Article[] articles = [article];
+
+        var manager = CreateManager(CreateLocalizationProvider("en"));
+
+        // Act
+        bool result = manager.Validate(articles, out string? error);
+
+        // Assert
+        await Assert.That(result).IsFalse();
+        await Assert.That(error).IsEqualTo("Some posts have missing titles for one or more cultures!");
+    }
+
+    [Test]
+    public async Task Validate_RejectsMissingLocalizedSummaries() {
+        // Arrange
+        Article article = ArticleFaker.Create(201);
+        article.Summary.Remove("nl");
+        Article[] articles = [article];
+
+        var manager = CreateManager(CreateLocalizationProvider("en"));
+
+        // Act
+        bool result = manager.Validate(articles, out string? error);
+
+        // Assert
+        await Assert.That(result).IsFalse();
+        await Assert.That(error).IsEqualTo("Some posts have missing summaries for one or more cultures!");
+    }
+
+    [Test]
     public async Task GenerateStubsAsync_ReturnsStubsForAllCultures() {
         // Arrange
         Article article = ArticleFaker.Create(120);
         var devFs = Substitute.For<IDevFileSystemManager>();
-        var manager = new ArticleManager(CreateLocalizationProvider("en"), devFs, new HttpClient());
+        var manager = CreateManager(CreateLocalizationProvider("en"), devFs);
         
         // Act
         Dictionary<string, string> stubs = await manager.GenerateStubsAsync(article, writeToDisk: false);
@@ -162,7 +225,7 @@ public class ArticleManagerTests {
         devFs.VerifyPermissionAsync().Returns(new ValueTask<bool>(true));
         devFs.WriteFileAsync(Arg.Any<string>(), Arg.Any<string>()).Returns(new ValueTask<bool>(true));
 
-        var manager = new ArticleManager(CreateLocalizationProvider("en"), devFs, new HttpClient());
+        var manager = CreateManager(CreateLocalizationProvider("en"), devFs);
 
         // Act
         Dictionary<string, string> stubs = await manager.GenerateStubsAsync(article, writeToDisk: true);
@@ -190,7 +253,7 @@ public class ArticleManagerTests {
         devFs.WriteFileAsync(Arg.Any<string>(), Arg.Any<string>()).Returns(new ValueTask<bool>(true));
         
         // Act
-        var manager = new ArticleManager(CreateLocalizationProvider("en"), devFs, new HttpClient());
+        var manager = CreateManager(CreateLocalizationProvider("en"), devFs);
         await manager.EnsureResxAsync();
 
         // Assert

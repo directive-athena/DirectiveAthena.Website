@@ -6,6 +6,9 @@ using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using MudBlazor.Services;
 using DirectiveAthena.Website.Services;
 using DirectiveAthena.Website.Services.InfiniMudMarkdown;
+using DirectiveAthena.Website.Services.Validation;
+using FluentValidation;
+using DirectiveAthena.Website.Models;
 
 namespace DirectiveAthena.Website;
 // ---------------------------------------------------------------------------------------------------------------------
@@ -26,6 +29,9 @@ public static class Program {
         builder.Services.AddScoped(_ => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
         builder.Services.AddMudServices();
         builder.Services.AddLocalization();
+
+        builder.Services.AddTransient<IValidator<Article>, ArticleValidator>();
+        builder.Services.AddTransient<IValidator<IEnumerable<Article>>, ArticleCollectionValidator>();
 
         builder.Services.RegisterServicesFromDirectiveAthenaWebsite();
 
