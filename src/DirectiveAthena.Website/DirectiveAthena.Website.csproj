@@ -9,6 +9,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="InfiniLore.InfiniBlazor.Core.Markdown" />
         <PackageReference Include="JetBrains.Annotations" />
         <PackageReference Include="Markdig" />
         <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" />
