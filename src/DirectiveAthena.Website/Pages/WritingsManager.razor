@@ -12,7 +12,7 @@
 @page "/writings-manager"
 
 @inject WritingsService WritingsService
-@inject DevFileSystemService DevFs
+@inject IDevFileSystemManager DevFileSystemManager
 @inject IJSRuntime JsRuntime
 @inject ISnackbar Snackbar
 @* ------------------------------------------------------------------------------------------------------------------ *@
@@ -24,7 +24,7 @@
     <div class="d-flex justify-space-between align-center mb-8">
         <MudText Typo="Typo.h3">Writings Manager</MudText>
 
-        @if (DevFs.IsLocalhost) {
+        @if (DevFileSystemManager.IsLocalhost) {
             <div class="d-flex align-center gap-4">
                 @if (_fsSupported) {
                     <MudChip T="string" Color="@(_hasAccess ? Color.Success : Color.Warning)"
@@ -53,7 +53,7 @@
         <MudProgressCircular Color="Color.Primary" Indeterminate="true"/>
     }
     else {
-        if (!DevFs.IsLocalhost) {
+        if (!DevFileSystemManager.IsLocalhost) {
             <MudAlert Severity="Severity.Info" Variant="Variant.Filled" Class="mb-6">
                 <b>Read-Only Mode:</b> Direct filesystem writes are only available on <code>localhost</code> and in
                 <code>DEBUG</code> mode.
@@ -67,7 +67,7 @@
                             <PostList Posts="_posts" SelectedPost="_selectedPost"
                                       OnPostSelected="OnPostSelected" OnCreatePost="CreateNewPost"/>
 
-                            @switch (DevFs.IsLocalhost) {
+                            @switch (DevFileSystemManager.IsLocalhost) {
                                 case true when _hasAccess:
                                     <MudButton Variant="Variant.Filled" Color="Color.Success" FullWidth="true"
                                                OnClick="@SaveAll"
@@ -131,13 +131,13 @@
         Post[] posts = await WritingsService.GetPostsAsync(includeHidden: true);
         _posts = posts.ToList();
 
-        if (!DevFs.IsLocalhost) return;
+        if (!DevFileSystemManager.IsLocalhost) return;
 
-        _fsSupported = await DevFs.IsSupportedAsync();
+        _fsSupported = await DevFileSystemManager.IsSupportedAsync();
 
         if (!_fsSupported) return;
 
-        _hasAccess = await DevFs.HasAccessAsync();
+        _hasAccess = await DevFileSystemManager.HasAccessAsync();
 
         if (!_hasAccess) return;
 
@@ -145,12 +145,12 @@
     }
 
     private async Task EnsureResxFilesExist() {
-        foreach (string path in LocalizationConfig.SupportedCultures.Select(culture => DevFileSystemService.GetSharedResxPath(culture.Code))) {
-            string? content = await DevFs.ReadFileAsync(path);
+        foreach (string path in LocalizationConfig.SupportedCultures.Select(culture => DevFileSystemPaths.GetSharedResxPath(culture.Code))) {
+            string? content = await DevFileSystemManager.ReadFileAsync(path);
             if (content is not null) continue;
 
             XDocument newResx = CreateNewResx();
-            await DevFs.WriteFileAsync(path, newResx.ToString());
+            await DevFileSystemManager.WriteFileAsync(path, newResx.ToString());
             Snackbar.Add($"Created missing RESX: {path}", Severity.Info);
         }
     }
@@ -167,7 +167,7 @@
     }
 
     private async Task RequestAccess() {
-        if (await DevFs.RequestAccessAsync()) {
+        if (await DevFileSystemManager.RequestAccessAsync()) {
             _hasAccess = true;
             await EnsureResxFilesExist();
             Snackbar.Add("Access granted!", Severity.Success);
@@ -178,7 +178,7 @@
     }
 
     private async Task ResetAccess() {
-        await DevFs.ResetAccessAsync();
+        await DevFileSystemManager.ResetAccessAsync();
         _hasAccess = false;
         Snackbar.Add("Access reset.", Severity.Info);
     }
@@ -209,17 +209,17 @@
         _posts?.Remove(postToDelete);
         _selectedPost = null;
 
-        switch (DevFs.IsLocalhost, _hasAccess) {
+        switch (DevFileSystemManager.IsLocalhost, _hasAccess) {
             case (true, true): {
-                if (!await DevFs.VerifyPermissionAsync()) {
+                if (!await DevFileSystemManager.VerifyPermissionAsync()) {
                     _hasAccess = false;
                     Snackbar.Add("Write access lost. Post removed from list, but markdown files were not deleted.", Severity.Warning);
                     return;
                 }
 
                 bool allDeleted = true;
-                foreach (string path in LocalizationConfig.SupportedCultures.Select(culture => DevFileSystemService.GetMarkdownPath(culture.Code, postToDelete.File))) {
-                    bool success = await DevFs.DeleteFileAsync(path);
+                foreach (string path in LocalizationConfig.SupportedCultures.Select(culture => DevFileSystemPaths.GetMarkdownPath(culture.Code, postToDelete.File))) {
+                    bool success = await DevFileSystemManager.DeleteFileAsync(path);
                     if (!success) allDeleted = false;
                 }
 
@@ -245,9 +245,9 @@
     }
 
     private async Task SaveAll() {
-        if (_posts is null || !DevFs.IsLocalhost || !_hasAccess) return;
+        if (_posts is null || !DevFileSystemManager.IsLocalhost || !_hasAccess) return;
 
-        if (!await DevFs.VerifyPermissionAsync()) {
+        if (!await DevFileSystemManager.VerifyPermissionAsync()) {
             _hasAccess = false;
             return;
         }
@@ -259,7 +259,7 @@
         }
 
         string json = JsonSerializer.Serialize(_posts, new JsonSerializerOptions { WriteIndented = true, PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
-        bool success = await DevFs.WriteFileAsync(DevFileSystemService.GetIndexPath(), json);
+        bool success = await DevFileSystemManager.WriteFileAsync(DevFileSystemPaths.GetIndexPath(), json);
 
         if (success) {
             Snackbar.Add("index.json saved to disk!", Severity.Success);
@@ -294,14 +294,14 @@
         string enContent = $"# {_selectedPost.Title.GetValueOrDefault("en")}\n\nContent for {_selectedPost.Slug} in English.";
         string nlContent = $"# {_selectedPost.Title.GetValueOrDefault("nl")}\n\nInhoud voor {_selectedPost.Slug} in het Nederlands.";
 
-        if (DevFs.IsLocalhost && _hasAccess) {
-            if (!await DevFs.VerifyPermissionAsync()) {
+        if (DevFileSystemManager.IsLocalhost && _hasAccess) {
+            if (!await DevFileSystemManager.VerifyPermissionAsync()) {
                 _hasAccess = false;
                 return;
             }
 
-            bool enSuccess = await DevFs.WriteFileAsync(DevFileSystemService.GetMarkdownPath("en", _selectedPost.File), enContent);
-            bool nlSuccess = await DevFs.WriteFileAsync(DevFileSystemService.GetMarkdownPath("nl", _selectedPost.File), nlContent);
+            bool enSuccess = await DevFileSystemManager.WriteFileAsync(DevFileSystemPaths.GetMarkdownPath("en", _selectedPost.File), enContent);
+            bool nlSuccess = await DevFileSystemManager.WriteFileAsync(DevFileSystemPaths.GetMarkdownPath("nl", _selectedPost.File), nlContent);
 
             if (enSuccess && nlSuccess) {
                 Snackbar.Add("Markdown stubs saved to disk!", Severity.Success);

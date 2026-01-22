@@ -5,7 +5,7 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Descriptors
 @* ------------------------------------------------------------------------------------------------------------------ *@
-
+@inject IDevFileSystemManager DevFileSystemManager
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Html
 @* ------------------------------------------------------------------------------------------------------------------ *@
@@ -71,7 +71,7 @@
         </MudItem>
 
         <MudItem xs="12" Class="mt-4">
-            @if (DevFs.IsLocalhost) {
+            @if (DevFileSystemManager.IsLocalhost) {
                 <MudButton Variant="Variant.Filled" Color="Color.Info" OnClick="@OnGenerateStubs"
                            StartIcon="@Icons.Material.Filled.NoteAdd">
                     Save Markdown Stubs to Disk
@@ -96,15 +96,20 @@
     [Parameter] public EventCallback OnDeletePost { get; set; }
     [Parameter] public EventCallback OnGenerateStubs { get; set; }
 
-    [Inject] private DevFileSystemService DevFs { get; set; } = null!;
-
     private string _newTag = "";
 
-    private string GetTitle(string culture) => Post.Title.GetValueOrDefault(culture) ?? "";
-    private void SetTitle(string culture, string value) => Post.Title[culture] = value;
+    // -----------------------------------------------------------------------------------------------------------------
+    // Methods
+    // -----------------------------------------------------------------------------------------------------------------
+    private string GetTitle(string culture) 
+        => Post.Title.GetValueOrDefault(culture) ?? "";
+    private void SetTitle(string culture, string value) 
+        => Post.Title[culture] = value;
 
-    private string GetSummary(string culture) => Post.Summary.GetValueOrDefault(culture) ?? "";
-    private void SetSummary(string culture, string value) => Post.Summary[culture] = value;
+    private string GetSummary(string culture) 
+        => Post.Summary.GetValueOrDefault(culture) ?? "";
+    private void SetSummary(string culture, string value)
+        => Post.Summary[culture] = value;
 
     private void AddTag() {
         if (string.IsNullOrWhiteSpace(_newTag) || Post.Tags.Contains(_newTag)) return;

@@ -6,7 +6,7 @@
 @* Descriptors
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @inject WritingsService WritingsService
-@inject DevFileSystemService DevFs
+@inject IDevFileSystemManager DevFileSystemManager
 @inject IJSRuntime JsRuntime
 @inject ISnackbar Snackbar
 @* ------------------------------------------------------------------------------------------------------------------ *@
@@ -34,7 +34,7 @@
                       Lines="20" Variant="Variant.Outlined" Class="mb-4"/>
 
         <div class="d-flex gap-4">
-            @if (DevFs.IsLocalhost) {
+            @if (DevFileSystemManager.IsLocalhost) {
                 <MudButton Variant="Variant.Filled" Color="Color.Success" OnClick="@SaveMarkdown"
                            StartIcon="@Icons.Material.Filled.Save">
                     Save to Disk
@@ -85,8 +85,8 @@
         }
 
         // Try to load from disk first if on localhost and has access
-        if (DevFs.IsLocalhost && await DevFs.HasAccessAsync()) {
-            string? diskContent = await DevFs.ReadFileAsync(DevFileSystemService.GetMarkdownPath(_selectedLocale, Post.File));
+        if (DevFileSystemManager.IsLocalhost && await DevFileSystemManager.HasAccessAsync()) {
+            string? diskContent = await DevFileSystemManager.ReadFileAsync(DevFileSystemPaths.GetMarkdownPath(_selectedLocale, Post.File));
             if (diskContent is not null) {
                 _content = diskContent;
                 return;
@@ -100,15 +100,15 @@
     }
 
     private async Task SaveMarkdown() {
-        if (Post is null || !DevFs.IsLocalhost) return;
+        if (Post is null || !DevFileSystemManager.IsLocalhost) return;
 
-        if (!await DevFs.VerifyPermissionAsync()) {
+        if (!await DevFileSystemManager.VerifyPermissionAsync()) {
             Snackbar.Add("Filesystem access required.", Severity.Warning);
             return;
         }
 
-        string path = DevFileSystemService.GetMarkdownPath(_selectedLocale, Post.File);
-        bool success = await DevFs.WriteFileAsync(path, _content);
+        string path = DevFileSystemPaths.GetMarkdownPath(_selectedLocale, Post.File);
+        bool success = await DevFileSystemManager.WriteFileAsync(path, _content);
 
         if (success) {
             Snackbar.Add($"Saved {_selectedLocale}/{Post.File} to disk!", Severity.Success);

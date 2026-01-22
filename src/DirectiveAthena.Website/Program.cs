@@ -29,7 +29,6 @@ public static class Program {
         builder.Services.AddScoped(_ => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
         builder.Services.AddMudServices();
         builder.Services.AddScoped<WritingsService>();
-        builder.Services.AddScoped<DevFileSystemService>();
         builder.Services.AddLocalization();
 
         builder.Services.RegisterServicesFromDirectiveAthenaWebsite();
