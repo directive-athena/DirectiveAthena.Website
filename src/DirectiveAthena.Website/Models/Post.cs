@@ -7,4 +7,5 @@ public class Post {
     public string Date { get; set; } = "";
     public List<string> Tags { get; set; } = new();
     public string File { get; set; } = "";
+    public bool Hidden { get; set; } = false;
 }

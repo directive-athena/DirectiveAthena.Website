@@ -26,6 +26,10 @@
                           Required="true"/>
         </MudItem>
 
+        <MudItem xs="12">
+            <MudSwitch @bind-Value="Post.Hidden" Label="Hidden (Exclude from lists)" Color="Color.Primary" />
+        </MudItem>
+
         @foreach (CultureConfig culture in LocalizationConfig.SupportedCultures) {
             <MudItem xs="12">
                 <MudDivider Class="my-4"/>
