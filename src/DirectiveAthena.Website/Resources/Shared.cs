@@ -42,6 +42,13 @@ public class Shared {
     public const string WritingsDetailBack = "Writings.Detail.Back";
     public const string WritingsDetailError = "Writings.Detail.Error";
     public const string WritingsDetailBackBottom = "Writings.Detail.BackBottom";
+    public const string WritingsDetailReadTime = "Writings.Detail.ReadTime";
+    public const string WritingsDetailCopyLink = "Writings.Detail.CopyLink";
+    public const string WritingsDetailLinkCopied = "Writings.Detail.LinkCopied";
+    public const string WritingsDetailShareLabel = "Writings.Detail.ShareLabel";
+    public const string WritingsDetailShareTwitter = "Writings.Detail.ShareTwitter";
+    public const string WritingsDetailShareBluesky = "Writings.Detail.ShareBluesky";
+    public const string WritingsDetailShareReddit = "Writings.Detail.ShareReddit";
     public const string StoryTitle = "Story.Title";
     public const string StoryHeading = "Story.Heading";
     public const string StorySection1 = "Story.Section1";

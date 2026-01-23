@@ -4,6 +4,7 @@
 @using DirectiveAthena.Website.Resources
 @using InfiniBlazor.Markdown
 @using Microsoft.Extensions.Localization
+@using System.Text.RegularExpressions
 
 @namespace DirectiveAthena.Website.Pages
 @* ------------------------------------------------------------------------------------------------------------------ *@
@@ -15,6 +16,7 @@
 @inject IArticleManager ArticleManager
 @inject HttpClient HttpClient
 @inject NavigationManager NavigationManager
+@inject IJSRuntime JsRuntime
 @inject IStringLocalizer<Shared> LocalizerShared
 @inject IStringLocalizer<Tags> LocalizerTags
 @* ------------------------------------------------------------------------------------------------------------------ *@
@@ -41,11 +43,40 @@
             }
             else {
                 <article class="fade-in mx-auto" style="max-width: 800px;">
-                    <MudText Typo="Typo.caption" Color="Color.Secondary" Class="d-block mb-2"
-                             Style="letter-spacing: 0.2em; text-transform: uppercase;">@_currentPost.Date</MudText>
+                    <div class="d-flex align-center flex-wrap gap-4 mb-2">
+                        <MudText Typo="Typo.caption" Color="Color.Secondary"
+                                 Style="letter-spacing: 0.2em; text-transform: uppercase;">@_currentPost.Date</MudText>
+                        <MudText Typo="Typo.caption" Class="opacity-60">
+                            @string.Format(LocalizerShared[Shared.WritingsDetailReadTime], _readTimeMinutes)
+                        </MudText>
+                        <MudButton Variant="Variant.Text" Color="Color.Secondary" Size="Size.Small"
+                                   StartIcon="@(_isLinkCopied ? Icons.Material.Filled.Check : Icons.Material.Filled.ContentCopy)"
+                                   OnClick="@CopyLinkAsync" Disabled="@_isCopyInProgress"
+                                   Class="pa-0">
+                            @(_isLinkCopied
+                                ? LocalizerShared[Shared.WritingsDetailLinkCopied]
+                                : LocalizerShared[Shared.WritingsDetailCopyLink])
+                        </MudButton>
+                        <MudSpacer/>
+                        <div class="d-flex align-center gap-2">
+                            <MudText Typo="Typo.caption" Class="opacity-60">@LocalizerShared[Shared.WritingsDetailShareLabel]</MudText>
+                            <MudTooltip Text="@LocalizerShared[Shared.WritingsDetailShareTwitter]">
+                                <MudIconButton Icon="@Icons.Custom.Brands.X" Color="Color.Secondary" Size="Size.Small"
+                                               Href="@_shareTwitterUrl" Target="_blank"/>
+                            </MudTooltip>
+                            <MudTooltip Text="@LocalizerShared[Shared.WritingsDetailShareBluesky]">
+                                <MudIconButton Icon="@CustomIcons.Bluesky" Color="Color.Secondary" Size="Size.Small"
+                                               Href="@_shareBlueskyUrl" Target="_blank"/>
+                            </MudTooltip>
+                            <MudTooltip Text="@LocalizerShared[Shared.WritingsDetailShareReddit]">
+                                <MudIconButton Icon="@Icons.Custom.Brands.Reddit" Color="Color.Secondary" Size="Size.Small"
+                                               Href="@_shareRedditUrl" Target="_blank"/>
+                            </MudTooltip>
+                        </div>
+                    </div>
                     <MudText Typo="Typo.h2"
                              Class="mb-8 SpaceGrotesk">@ArticleManager.GetLocalizedTitle(_currentPost)</MudText>
-                    <div class="d-flex gap-2 mb-12">
+                    <div class="d-flex gap-2 mb-8">
                         @foreach (string tag in _currentPost.Tags) {
                             <MudChip T="string" Size="Size.Small" Color="Color.Secondary"
                                      Variant="Variant.Outlined">@LocalizerTags[tag]</MudChip>
@@ -75,8 +106,14 @@
     
     private Article? _currentPost;
     private string _markdown = "";
+    private int _readTimeMinutes = 1;
     private bool _loading;
     private bool _error;
+    private bool _isLinkCopied;
+    private bool _isCopyInProgress;
+    private string _shareTwitterUrl = "";
+    private string _shareBlueskyUrl = "";
+    private string _shareRedditUrl = "";
 
     protected override async Task OnParametersSetAsync() {
         if (!string.IsNullOrEmpty(Id)) {
@@ -98,6 +135,8 @@
         try {
             string path = ArticleManager.GetLocalizedFilePath(_currentPost);
             _markdown = await HttpClient.GetStringAsync(path);
+            UpdateReadTime();
+            UpdateShareLinks();
         }
         catch (Exception) {
             _error = true;
@@ -109,6 +148,40 @@
 
     private void BackToList() {
         NavigationManager.NavigateTo("/articles");
+    }
+
+    private void UpdateReadTime() {
+        int wordCount = Regex.Matches(_markdown, @"\b\w+\b").Count;
+        _readTimeMinutes = Math.Max(1, (int)Math.Ceiling(wordCount / 200.0));
+    }
+
+    private void UpdateShareLinks() {
+        if (_currentPost is null) return;
+
+        string title = ArticleManager.GetLocalizedTitle(_currentPost);
+        string encodedTitle = Uri.EscapeDataString(title);
+        string encodedUrl = Uri.EscapeDataString(NavigationManager.Uri);
+        string blueskyText = Uri.EscapeDataString($"{title}\n{NavigationManager.Uri}");
+
+        _shareTwitterUrl = $"https://twitter.com/intent/tweet?text={encodedTitle}&url={encodedUrl}";
+        _shareBlueskyUrl = $"https://bsky.app/intent/compose?text={blueskyText}";
+        _shareRedditUrl = $"https://www.reddit.com/submit?url={encodedUrl}&title={encodedTitle}";
+    }
+
+    private async Task CopyLinkAsync() {
+        if (_isCopyInProgress) return;
+
+        _isCopyInProgress = true;
+        bool copied = await JsRuntime.InvokeAsync<bool>("copyToClipboard", NavigationManager.Uri);
+        _isLinkCopied = copied;
+        StateHasChanged();
+
+        if (copied) {
+            await Task.Delay(2000);
+            _isLinkCopied = false;
+        }
+
+        _isCopyInProgress = false;
     }
 
 }
