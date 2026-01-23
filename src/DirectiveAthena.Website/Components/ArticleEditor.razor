@@ -10,6 +10,8 @@
 @* Descriptors
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @inject IDevFileSystemManager DevFileSystemManager
+@inject IArticleManager ArticleManager
+@inject IDevFileSystemPaths DevFilePaths
 
 @inherits WebsiteComponentBase
 @* ------------------------------------------------------------------------------------------------------------------ *@
@@ -76,6 +78,15 @@
             </MudText>
         </MudItem>
 
+        <MudItem xs="12">
+            <MudDivider Class="my-4"/>
+            <LocalizedMarkdownEditor Title="Markdown"
+                                     FileName="@Post.File"
+                                     LoadContentAsync="@((string locale) => ArticleManager.GetRawMarkdownContentAsync(Post, locale))"
+                                     BuildDefaultContent="@((string locale) => BuildDefaultMarkdown(locale))"
+                                     GetDiskPath="@((string locale) => DevFilePaths.GetMarkdownPath(locale, Post.File))"/>
+        </MudItem>
+
         <MudItem xs="12" Class="mt-4">
             @if (DevFileSystemManager.IsLocalhost) {
                 <MudButton Variant="Variant.Filled" Color="Color.Info" OnClick="@OnGenerateStubs"
@@ -135,6 +146,12 @@
 
     private void OnTagKey(KeyboardEventArgs e) {
         if (e.Key == "Enter") AddTag();
+    }
+
+    private string BuildDefaultMarkdown(string locale) {
+        string title = Post.Title.GetValueOrDefault(locale) ?? "New Post";
+        string summary = Post.Summary.GetValueOrDefault(locale) ?? "";
+        return $"# {title}\n\n{summary}";
     }
 
 }

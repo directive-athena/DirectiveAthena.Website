@@ -10,6 +10,8 @@
 @* Descriptors
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @inject IDevFileSystemManager DevFileSystemManager
+@inject IWorldRuleManager WorldRuleManager
+@inject IDevFileSystemPaths DevFilePaths
 
 @inherits WebsiteComponentBase
 @* ------------------------------------------------------------------------------------------------------------------ *@
@@ -72,6 +74,15 @@
             </MudText>
         </MudItem>
 
+        <MudItem xs="12">
+            <MudDivider Class="my-4"/>
+            <LocalizedMarkdownEditor Title="Markdown"
+                                     FileName="@Rule.File"
+                                     LoadContentAsync="@((string locale) => WorldRuleManager.GetRawMarkdownContentAsync(Rule, locale))"
+                                     BuildDefaultContent="@((string locale) => BuildDefaultMarkdown(locale))"
+                                     GetDiskPath="@((string locale) => DevFilePaths.GetWorldRuleMarkdownPath(locale, Rule.File))"/>
+        </MudItem>
+
         <MudItem xs="12" Class="mt-4">
             @if (DevFileSystemManager.IsLocalhost) {
                 <MudButton Variant="Variant.Filled" Color="Color.Info" OnClick="@OnGenerateStubs"
@@ -131,5 +142,11 @@
 
     private void OnTagKey(KeyboardEventArgs e) {
         if (e.Key == "Enter") AddTag();
+    }
+
+    private string BuildDefaultMarkdown(string locale) {
+        string question = Rule.Question.GetValueOrDefault(locale) ?? "New Rule";
+        string answer = Rule.Answer.GetValueOrDefault(locale) ?? "";
+        return $"# {question}\n\n{answer}";
     }
 }

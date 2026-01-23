@@ -1,7 +1,6 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Imports
 @* ------------------------------------------------------------------------------------------------------------------ *@
-@using DirectiveAthena.Website.Services.Articles
 @using DirectiveAthena.Website.Services.FileSystem
 @using DirectiveAthena.Website.Services.Localization
 
@@ -9,11 +8,9 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Descriptors
 @* ------------------------------------------------------------------------------------------------------------------ *@
-@inject IArticleManager ArticleManager
 @inject IDevFileSystemManager DevFileSystemManager
 @inject IJSRuntime JsRuntime
 @inject ISnackbar Snackbar
-@inject IDevFileSystemPaths DevFilePaths
 
 @inherits WebsiteComponentBase
 @* ------------------------------------------------------------------------------------------------------------------ *@
@@ -21,7 +18,7 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 <MudPaper Class="pa-6 card-glass">
     <div class="d-flex justify-space-between align-center mb-4">
-        <MudText Typo="Typo.h5">Markdown Editor</MudText>
+        <MudText Typo="Typo.h6">@Title</MudText>
         <div class="d-flex gap-2">
             <MudSelect T="string" Label="Locale" @bind-Value="_selectedLocale" Class="width-100">
                 @foreach (LocalizationInfo culture in LocalizationProvider.GetSupportedLocalizations()) {
@@ -31,14 +28,14 @@
         </div>
     </div>
 
-    @if (Post is null) {
-        <MudAlert Severity="Severity.Info">Select a post to edit its markdown.</MudAlert>
+    @if (string.IsNullOrWhiteSpace(FileName) || LoadContentAsync is null || GetDiskPath is null || BuildDefaultContent is null) {
+        <MudAlert Severity="Severity.Info">Select an item to edit its markdown.</MudAlert>
     }
     else {
-        <MudText Typo="Typo.subtitle1" Class="mb-2">Editing: <b>@(_selectedLocale)/@Post.File</b></MudText>
+        <MudText Typo="Typo.subtitle1" Class="mb-2">Editing: <b>@(_selectedLocale)/@FileName</b></MudText>
 
         <MudTextField T="string" @bind-Value="_content" Label="Markdown Content"
-                      Lines="20" Variant="Variant.Outlined" Class="mb-4"/>
+                      Lines="16" Variant="Variant.Outlined" Class="mb-4"/>
 
         <div class="d-flex gap-4">
             @if (DevFileSystemManager.IsLocalhost) {
@@ -70,55 +67,56 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 
 @code {
-    [Parameter] public Article? Post { get; set; }
+    [Parameter] public string Title { get; set; } = "Markdown Editor";
+    [Parameter] public string? FileName { get; set; }
+    [Parameter] public Func<string, Task<string>>? LoadContentAsync { get; set; }
+    [Parameter] public Func<string, string>? BuildDefaultContent { get; set; }
+    [Parameter] public Func<string, string>? GetDiskPath { get; set; }
 
     private string _selectedLocale = "en";
     private string _content = "";
-    private Article? _lastPost;
+    private string? _lastFile;
     private string _lastLocale = "";
 
     protected override async Task OnParametersSetAsync() {
-        if (Post != _lastPost || _selectedLocale != _lastLocale) {
-            _lastPost = Post;
+        if (_lastFile != FileName || _selectedLocale != _lastLocale) {
+            _lastFile = FileName;
             _lastLocale = _selectedLocale;
             await LoadContent();
         }
     }
 
     private async Task LoadContent() {
-        if (Post is null) {
+        if (string.IsNullOrWhiteSpace(FileName) || LoadContentAsync is null || GetDiskPath is null || BuildDefaultContent is null) {
             _content = "";
             return;
         }
 
-        // Try to load from disk first if on localhost and has access
         if (DevFileSystemManager.IsLocalhost && await DevFileSystemManager.HasAccessAsync()) {
-            string? diskContent = await DevFileSystemManager.ReadFileAsync(DevFilePaths.GetMarkdownPath(_selectedLocale, Post.File));
+            string? diskContent = await DevFileSystemManager.ReadFileAsync(GetDiskPath(_selectedLocale));
             if (diskContent is not null) {
                 _content = diskContent;
                 return;
             }
         }
 
-        _content = await ArticleManager.GetRawMarkdownContentAsync(Post, _selectedLocale);
+        _content = await LoadContentAsync(_selectedLocale);
         if (string.IsNullOrEmpty(_content)) {
-            _content = $"# {Post.Title.GetValueOrDefault(_selectedLocale)}\n\n(New content for {Post.Id} in {_selectedLocale})";
+            _content = BuildDefaultContent(_selectedLocale);
         }
     }
 
     private async Task SaveMarkdown() {
-        if (Post is null || !DevFileSystemManager.IsLocalhost) return;
+        if (string.IsNullOrWhiteSpace(FileName) || GetDiskPath is null || !DevFileSystemManager.IsLocalhost) return;
 
         if (!await DevFileSystemManager.VerifyPermissionAsync()) {
             Snackbar.Add("Filesystem access required.", Severity.Warning);
             return;
         }
 
-        string path = DevFilePaths.GetMarkdownPath(_selectedLocale, Post.File);
-        bool success = await DevFileSystemManager.WriteFileAsync(path, _content);
-
+        bool success = await DevFileSystemManager.WriteFileAsync(GetDiskPath(_selectedLocale), _content);
         if (success) {
-            Snackbar.Add($"Saved {_selectedLocale}/{Post.File} to disk!", Severity.Success);
+            Snackbar.Add($"Saved {_selectedLocale}/{FileName} to disk!", Severity.Success);
         }
         else {
             Snackbar.Add("Failed to save markdown file.", Severity.Error);
@@ -126,9 +124,8 @@
     }
 
     private async Task DownloadMarkdown() {
-        if (Post is null) return;
-
-        string path = $"{_selectedLocale}/{Post.File}";
+        if (string.IsNullOrWhiteSpace(FileName)) return;
+        string path = $"{_selectedLocale}/{FileName}";
         await JsRuntime.InvokeVoidAsync("downloadFile", path, _content);
     }
 

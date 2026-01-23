@@ -3,7 +3,6 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @using System.Xml.Linq
 @using DirectiveAthena.Website.Resources
-@using DirectiveAthena.Website.Services.Articles
 @using DirectiveAthena.Website.Services.FileSystem
 @using DirectiveAthena.Website.Services.Localization
 @using Microsoft.Extensions.Localization
@@ -76,7 +75,7 @@
 
     @if (_inUseTags.Any()) {
         <MudAlert Severity="Severity.Info" Class="mt-4">
-            Tags currently used in posts: @string.Join(", ", _inUseTags)
+            Tags currently in use: @string.Join(", ", _inUseTags)
         </MudAlert>
     }
 </MudPaper>
@@ -86,17 +85,17 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 
 @code {
-    [Parameter] public List<Article> Posts { get; set; } = [];
+    [Parameter] public IEnumerable<string> UsedTags { get; set; } = [];
 
     private readonly List<TagModel> _tagModels = [];
     private HashSet<string> _inUseTags = [];
 
-    protected override void OnInitialized() {
+    protected override void OnParametersSet() {
         LoadTags();
     }
 
     private void LoadTags() {
-        _inUseTags = Posts.SelectMany(p => p.Tags).ToHashSet();
+        _inUseTags = UsedTags.ToHashSet();
 
         foreach (string tagId in _inUseTags) {
             AddTagToModel(tagId, true);
