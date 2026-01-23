@@ -2,9 +2,11 @@
 @* Imports
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @using DirectiveAthena.Website.Components
+@using DirectiveAthena.Website.Resources
 @using DirectiveAthena.Website.Services.Articles
 @using DirectiveAthena.Website.Services.FileSystem
 @using DirectiveAthena.Website.Services.WorldRules
+@using Microsoft.Extensions.Localization
 
 @namespace DirectiveAthena.Website.Pages
 @* ------------------------------------------------------------------------------------------------------------------ *@
@@ -24,37 +26,38 @@
 @inject IDevFileSystemManager DevFileSystemManager
 @inject IJSRuntime JsRuntime
 @inject ISnackbar Snackbar
+@inject IStringLocalizer<Shared> Localizer
 
 @inherits WebsiteComponentBase
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Html
 @* ------------------------------------------------------------------------------------------------------------------ *@
-<PageTitle>Content Manager - Directive Athena</PageTitle>
+<PageTitle>@Localizer[Shared.ContentManagerTitle]</PageTitle>
 
 <MudContainer MaxWidth="MaxWidth.Large" Class="py-12">
     <div class="d-flex justify-space-between align-center mb-8">
-        <MudText Typo="Typo.h3">Content Manager</MudText>
+        <MudText Typo="Typo.h3">@Localizer[Shared.ContentManagerHeading]</MudText>
 
         @if (DevFileSystemManager.IsLocalhost) {
             <div class="d-flex align-center gap-4">
                 @if (_fsSupported) {
                     <MudChip T="string" Color="@(_hasAccess ? Color.Success : Color.Warning)"
                              Icon="@(_hasAccess ? Icons.Material.Filled.CheckCircle : Icons.Material.Filled.Warning)">
-                        Write Access: @(_hasAccess ? "Granted" : "Required")
+                        @Localizer[Shared.ContentManagerAccessLabel]: @(_hasAccess ? Localizer[Shared.ContentManagerAccessGranted] : Localizer[Shared.ContentManagerAccessRequired])
                     </MudChip>
                     if (!_hasAccess) {
-                        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="@RequestAccess">Grant
-                            Access
+                        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="@RequestAccess">
+                            @Localizer[Shared.ContentManagerAccessGrant]
                         </MudButton>
                     }
                     else {
                         <MudButton Variant="Variant.Outlined" Color="Color.Secondary" Size="Size.Small"
-                                   OnClick="@ResetAccess">Reset Access
+                                   OnClick="@ResetAccess">@Localizer[Shared.ContentManagerAccessReset]
                         </MudButton>
                     }
                 }
                 else {
-                    <MudAlert Severity="Severity.Error" Dense="true">FS API Not Supported</MudAlert>
+                    <MudAlert Severity="Severity.Error" Dense="true">@Localizer[Shared.ContentManagerAccessUnsupported]</MudAlert>
                 }
             </div>
         }
@@ -66,29 +69,29 @@
     else {
         if (!DevFileSystemManager.IsLocalhost) {
             <MudAlert Severity="Severity.Info" Variant="Variant.Filled" Class="mb-6">
-                <b>Read-Only Mode:</b> Direct filesystem writes are only available on <code>localhost</code> and in
-                <code>DEBUG</code> mode.
+                <b>@Localizer[Shared.ContentManagerReadOnlyLabel]:</b>
+                @Localizer[Shared.ContentManagerReadOnlyBody]
             </MudAlert>
         }
         else {
             if (_activeTab < 0) {
                 <MudPaper Class="pa-8 card-glass text-center">
-                    <MudText Typo="Typo.h5" Class="mb-4">What do you want to edit?</MudText>
+                    <MudText Typo="Typo.h5" Class="mb-4">@Localizer[Shared.ContentManagerChooserTitle]</MudText>
                     <MudText Typo="Typo.body2" Class="text-secondary mb-6">
-                        Choose a content type to manage.
+                        @Localizer[Shared.ContentManagerChooserSubtitle]
                     </MudText>
                     <div class="d-flex flex-wrap justify-center gap-4">
                         <MudButton Variant="Variant.Filled" Color="Color.Secondary" StartIcon="@Icons.Material.Filled.Article"
                                    OnClick="@(() => SelectTab(0))">
-                            Writings
+                            @Localizer[Shared.ContentManagerChooserWritings]
                         </MudButton>
                         <MudButton Variant="Variant.Filled" Color="Color.Secondary" StartIcon="@Icons.Material.Filled.Rule"
                                    OnClick="@(() => SelectTab(1))">
-                            World Rules
+                            @Localizer[Shared.ContentManagerChooserWorldRules]
                         </MudButton>
                         <MudButton Variant="Variant.Outlined" Color="Color.Secondary" StartIcon="@Icons.Material.Filled.Label"
                                    OnClick="@(() => SelectTab(2))">
-                            Tags
+                            @Localizer[Shared.ContentManagerChooserTags]
                         </MudButton>
                     </div>
                 </MudPaper>
@@ -97,12 +100,12 @@
                 <div class="d-flex justify-end mb-4">
                     <MudButton Variant="Variant.Text" Color="Color.Secondary" OnClick="@BackToChooser"
                                StartIcon="@Icons.Material.Filled.ArrowBack">
-                        Choose Another
+                        @Localizer[Shared.ContentManagerChooseAnother]
                     </MudButton>
                 </div>
                 <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6"
                          @bind-ActivePanelIndex="_activeTab">
-                <MudTabPanel Text="Writings" Icon="@Icons.Material.Filled.Article">
+                <MudTabPanel Text="@Localizer[Shared.ContentManagerTabWritings]" Icon="@Icons.Material.Filled.Article">
                     <MudGrid>
                         <MudItem xs="12" md="4">
                             <ArticleList Posts="_posts" SelectedPost="_selectedPost"
@@ -113,19 +116,19 @@
                                     <MudButton Variant="Variant.Filled" Color="Color.Success" FullWidth="true"
                                                OnClick="@SaveAllArticles"
                                                StartIcon="@Icons.Material.Filled.Save" Class="mb-4">
-                                        Save index.json
+                                        @Localizer[Shared.ContentManagerSaveIndex]
                                     </MudButton>
                                     break;
                                 case false:
                                     <MudButton Variant="Variant.Filled" Color="Color.Secondary" FullWidth="true"
                                                OnClick="@ExportArticlesJson"
                                                StartIcon="@Icons.Material.Filled.Download" Class="mb-4">
-                                        Download index.json
+                                        @Localizer[Shared.ContentManagerDownloadIndex]
                                     </MudButton>
                                     <MudButton Variant="Variant.Outlined" Color="Color.Info" FullWidth="true"
                                                OnClick="@CopyArticlesJson"
                                                StartIcon="@Icons.Material.Filled.ContentCopy">
-                                        Copy index.json to Clipboard
+                                        @Localizer[Shared.ContentManagerCopyIndex]
                                     </MudButton>
                                     break;
                             }
@@ -138,16 +141,15 @@
                                                OnTagsChanged="OnTagsChanged"/>
                             }
                             else {
-                                <MudAlert Severity="Severity.Info" Variant="Variant.Outlined">Select a post or create a
-                                    new
-                                    one.
+                                <MudAlert Severity="Severity.Info" Variant="Variant.Outlined">
+                                    @Localizer[Shared.ContentManagerSelectPost]
                                 </MudAlert>
                             }
                         </MudItem>
                     </MudGrid>
                 </MudTabPanel>
 
-                <MudTabPanel Text="World Rules" Icon="@Icons.Material.Filled.Rule">
+                <MudTabPanel Text="@Localizer[Shared.ContentManagerTabWorldRules]" Icon="@Icons.Material.Filled.Rule">
                     <MudGrid>
                         <MudItem xs="12" md="4">
                             <WorldRuleList Rules="_rules" SelectedRule="_selectedRule"
@@ -158,19 +160,19 @@
                                     <MudButton Variant="Variant.Filled" Color="Color.Success" FullWidth="true"
                                                OnClick="@SaveAllRules"
                                                StartIcon="@Icons.Material.Filled.Save" Class="mb-4">
-                                        Save index.json
+                                        @Localizer[Shared.ContentManagerSaveIndex]
                                     </MudButton>
                                     break;
                                 case false:
                                     <MudButton Variant="Variant.Filled" Color="Color.Secondary" FullWidth="true"
                                                OnClick="@ExportRulesJson"
                                                StartIcon="@Icons.Material.Filled.Download" Class="mb-4">
-                                        Download index.json
+                                        @Localizer[Shared.ContentManagerDownloadIndex]
                                     </MudButton>
                                     <MudButton Variant="Variant.Outlined" Color="Color.Info" FullWidth="true"
                                                OnClick="@CopyRulesJson"
                                                StartIcon="@Icons.Material.Filled.ContentCopy">
-                                        Copy index.json to Clipboard
+                                        @Localizer[Shared.ContentManagerCopyIndex]
                                     </MudButton>
                                     break;
                             }
@@ -183,16 +185,15 @@
                                                  OnTagsChanged="OnTagsChanged"/>
                             }
                             else {
-                                <MudAlert Severity="Severity.Info" Variant="Variant.Outlined">Select a rule or create a
-                                    new
-                                    one.
+                                <MudAlert Severity="Severity.Info" Variant="Variant.Outlined">
+                                    @Localizer[Shared.ContentManagerSelectRule]
                                 </MudAlert>
                             }
                         </MudItem>
                     </MudGrid>
                 </MudTabPanel>
 
-                <MudTabPanel Text="Tags" Icon="@Icons.Material.Filled.Label">
+                <MudTabPanel Text="@Localizer[Shared.ContentManagerTabTags]" Icon="@Icons.Material.Filled.Label">
                     <TagsEditor UsedTags="@AllTags"/>
                 </MudTabPanel>
                 </MudTabs>
@@ -243,17 +244,17 @@
         if (await DevFileSystemManager.RequestAccessAsync()) {
             _hasAccess = true;
             await ArticleManager.EnsureResxAsync();
-            Snackbar.Add("Access granted!", Severity.Success);
+            Snackbar.Add(Localizer[Shared.ContentManagerAccessGrantedToast], Severity.Success);
         }
         else {
-            Snackbar.Add("Failed to get access.", Severity.Error);
+            Snackbar.Add(Localizer[Shared.ContentManagerAccessFailedToast], Severity.Error);
         }
     }
 
     private async Task ResetAccess() {
         await DevFileSystemManager.ResetAccessAsync();
         _hasAccess = false;
-        Snackbar.Add("Access reset.", Severity.Info);
+        Snackbar.Add(Localizer[Shared.ContentManagerAccessResetToast], Severity.Info);
     }
 
     private void OnPostSelected(Article? post) {
@@ -285,7 +286,7 @@
     private async Task DeletePost() {
         if (_selectedPost is null || _posts is null) return;
 
-        bool confirm = await JsRuntime.InvokeAsync<bool>("confirm", "Are you sure you want to delete this post?");
+        bool confirm = await JsRuntime.InvokeAsync<bool>("confirm", Localizer[Shared.ContentManagerDeletePostConfirm].Value);
         if (!confirm) return;
 
         Article postToDelete = _selectedPost;
@@ -295,21 +296,21 @@
         if (DevFileSystemManager.IsLocalhost && _hasAccess) {
             bool success = await ArticleRepository.DeleteAsync(postToDelete, _posts);
             if (success) {
-                Snackbar.Add("Post and markdown files deleted.", Severity.Success);
+                Snackbar.Add(Localizer[Shared.ContentManagerDeletePostSuccess], Severity.Success);
             }
             else {
-                Snackbar.Add("Post removed from list, but filesystem operation failed or was partial.", Severity.Warning);
+                Snackbar.Add(Localizer[Shared.ContentManagerDeletePostPartial], Severity.Warning);
             }
         }
         else {
-            Snackbar.Add("Read-only mode: Post removed from list, but files were not deleted.", Severity.Warning);
+            Snackbar.Add(Localizer[Shared.ContentManagerDeletePostReadOnly], Severity.Warning);
         }
     }
 
     private async Task DeleteRule() {
         if (_selectedRule is null || _rules is null) return;
 
-        bool confirm = await JsRuntime.InvokeAsync<bool>("confirm", "Are you sure you want to delete this rule?");
+        bool confirm = await JsRuntime.InvokeAsync<bool>("confirm", Localizer[Shared.ContentManagerDeleteRuleConfirm].Value);
         if (!confirm) return;
 
         WorldRule ruleToDelete = _selectedRule;
@@ -319,14 +320,14 @@
         if (DevFileSystemManager.IsLocalhost && _hasAccess) {
             bool success = await WorldRuleRepository.DeleteAsync(ruleToDelete, _rules);
             if (success) {
-                Snackbar.Add("Rule and markdown files deleted.", Severity.Success);
+                Snackbar.Add(Localizer[Shared.ContentManagerDeleteRuleSuccess], Severity.Success);
             }
             else {
-                Snackbar.Add("Rule removed from list, but filesystem operation failed or was partial.", Severity.Warning);
+                Snackbar.Add(Localizer[Shared.ContentManagerDeleteRulePartial], Severity.Warning);
             }
         }
         else {
-            Snackbar.Add("Read-only mode: Rule removed from list, but files were not deleted.", Severity.Warning);
+            Snackbar.Add(Localizer[Shared.ContentManagerDeleteRuleReadOnly], Severity.Warning);
         }
     }
 
@@ -340,10 +341,10 @@
 
         bool success = await ArticleRepository.SaveAsync(_posts);
         if (success) {
-            Snackbar.Add("index.json saved to disk!", Severity.Success);
+            Snackbar.Add(Localizer[Shared.ContentManagerIndexSaved], Severity.Success);
         }
         else {
-            Snackbar.Add("Failed to save index.json.", Severity.Error);
+            Snackbar.Add(Localizer[Shared.ContentManagerIndexSaveFailed], Severity.Error);
             if (!await DevFileSystemManager.HasAccessAsync()) {
                 _hasAccess = false;
             }
@@ -360,10 +361,10 @@
 
         bool success = await WorldRuleRepository.SaveAsync(_rules);
         if (success) {
-            Snackbar.Add("index.json saved to disk!", Severity.Success);
+            Snackbar.Add(Localizer[Shared.ContentManagerIndexSaved], Severity.Success);
         }
         else {
-            Snackbar.Add("Failed to save index.json.", Severity.Error);
+            Snackbar.Add(Localizer[Shared.ContentManagerIndexSaveFailed], Severity.Error);
             if (!await DevFileSystemManager.HasAccessAsync()) {
                 _hasAccess = false;
             }
@@ -398,14 +399,14 @@
         if (_posts is null) return;
         string json = ArticleRepository.AsJsonString(_posts);
         await JsRuntime.InvokeVoidAsync("navigator.clipboard.writeText", json);
-        Snackbar.Add("JSON copied to clipboard", Severity.Success);
+        Snackbar.Add(Localizer[Shared.ContentManagerJsonCopied], Severity.Success);
     }
 
     private async Task CopyRulesJson() {
         if (_rules is null) return;
         string json = WorldRuleRepository.AsJsonString(_rules);
         await JsRuntime.InvokeVoidAsync("navigator.clipboard.writeText", json);
-        Snackbar.Add("JSON copied to clipboard", Severity.Success);
+        Snackbar.Add(Localizer[Shared.ContentManagerJsonCopied], Severity.Success);
     }
 
     private async Task GenerateArticleStubs() {
@@ -415,7 +416,7 @@
         Dictionary<string, string> stubs = await ArticleManager.GenerateStubsAsync(_selectedPost, writeToDisk);
 
         if (writeToDisk) {
-            Snackbar.Add("Markdown stubs saved to disk!", Severity.Success);
+            Snackbar.Add(Localizer[Shared.ContentManagerMarkdownStubsSaved], Severity.Success);
             return;
         }
 
@@ -431,7 +432,7 @@
         Dictionary<string, string> stubs = await WorldRuleManager.GenerateStubsAsync(_selectedRule, writeToDisk);
 
         if (writeToDisk) {
-            Snackbar.Add("Markdown stubs saved to disk!", Severity.Success);
+            Snackbar.Add(Localizer[Shared.ContentManagerMarkdownStubsSaved], Severity.Success);
             return;
         }
 

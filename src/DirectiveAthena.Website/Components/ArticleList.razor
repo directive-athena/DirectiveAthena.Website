@@ -1,19 +1,22 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Imports
 @* ------------------------------------------------------------------------------------------------------------------ *@
+@using DirectiveAthena.Website.Resources
 @using DirectiveAthena.Website.Services.Articles
+@using Microsoft.Extensions.Localization
 
 @namespace DirectiveAthena.Website.Components
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Descriptors
 @* ------------------------------------------------------------------------------------------------------------------ *@
+@inject IStringLocalizer<Shared> Localizer
 
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Html
 @* ------------------------------------------------------------------------------------------------------------------ *@
 <MudPaper Class="pa-4 card-glass mb-4">
     <div class="d-flex justify-space-between align-center mb-4">
-        <MudText Typo="Typo.h6">Posts</MudText>
+        <MudText Typo="Typo.h6">@Localizer[Shared.ListPosts]</MudText>
         <MudIconButton Icon="@Icons.Material.Filled.Add" Color="Color.Primary" OnClick="@OnCreatePost"/>
     </div>
     <MudList T="Article" SelectedValue="SelectedPost" SelectedValueChanged="OnPostSelected"
@@ -23,15 +26,15 @@
                 <MudListItem Value="post">
                     <div class="d-flex flex-column">
                         <MudText
-                            Typo="Typo.body1">@(post.Title.GetValueOrDefault("en") ?? "Untitled")</MudText>
+                            Typo="Typo.body1">@(post.Title.GetValueOrDefault("en") ?? Localizer[Shared.ListUntitled])</MudText>
                         <MudText Typo="Typo.caption" Class="opacity-50">@post.Id</MudText>
                         <div class="d-flex align-center gap-1">
                             @if (post.Hidden) {
-                                <MudChip T="string" Size="Size.Small" Color="Color.Default" Variant="Variant.Text" Icon="@Icons.Material.Filled.VisibilityOff">Hidden</MudChip>
+                                <MudChip T="string" Size="Size.Small" Color="Color.Default" Variant="Variant.Text" Icon="@Icons.Material.Filled.VisibilityOff">@Localizer[Shared.ListHidden]</MudChip>
                             }
                             @if (string.IsNullOrEmpty(post.Title.GetValueOrDefault("nl")) || string.IsNullOrEmpty(post.Summary.GetValueOrDefault("nl"))) {
                                 <MudChip T="string" Size="Size.Small" Color="Color.Warning"
-                                         Variant="Variant.Text">Missing NL
+                                         Variant="Variant.Text">@Localizer[Shared.ListMissingNl]
                                 </MudChip>
                             }
                         </div>

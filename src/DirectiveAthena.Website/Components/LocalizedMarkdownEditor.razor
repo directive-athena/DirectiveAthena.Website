@@ -1,8 +1,10 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Imports
 @* ------------------------------------------------------------------------------------------------------------------ *@
+@using DirectiveAthena.Website.Resources
 @using DirectiveAthena.Website.Services.FileSystem
 @using DirectiveAthena.Website.Services.Localization
+@using Microsoft.Extensions.Localization
 
 @namespace DirectiveAthena.Website.Components
 @* ------------------------------------------------------------------------------------------------------------------ *@
@@ -11,6 +13,7 @@
 @inject IDevFileSystemManager DevFileSystemManager
 @inject IJSRuntime JsRuntime
 @inject ISnackbar Snackbar
+@inject IStringLocalizer<Shared> Localizer
 
 @inherits WebsiteComponentBase
 @* ------------------------------------------------------------------------------------------------------------------ *@
@@ -18,9 +21,9 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 <MudPaper Class="pa-6 card-glass">
     <div class="d-flex justify-space-between align-center mb-4">
-        <MudText Typo="Typo.h6">@Title</MudText>
+        <MudText Typo="Typo.h6">@TitleText</MudText>
         <div class="d-flex gap-2">
-            <MudSelect T="string" Label="Locale" @bind-Value="_selectedLocale" Class="width-100">
+            <MudSelect T="string" Label="@Localizer[Shared.MarkdownEditorLocale]" @bind-Value="_selectedLocale" Class="width-100">
                 @foreach (LocalizationInfo culture in LocalizationProvider.GetSupportedLocalizations()) {
                     <MudSelectItem Value="@culture.Code">@culture.DisplayName</MudSelectItem>
                 }
@@ -29,34 +32,36 @@
     </div>
 
     @if (string.IsNullOrWhiteSpace(FileName) || LoadContentAsync is null || GetDiskPath is null || BuildDefaultContent is null) {
-        <MudAlert Severity="Severity.Info">Select an item to edit its markdown.</MudAlert>
+        <MudAlert Severity="Severity.Info">@Localizer[Shared.MarkdownEditorSelectItem]</MudAlert>
     }
     else {
-        <MudText Typo="Typo.subtitle1" Class="mb-2">Editing: <b>@(_selectedLocale)/@FileName</b></MudText>
+        <MudText Typo="Typo.subtitle1" Class="mb-2">
+            @string.Format(Localizer[Shared.MarkdownEditorEditing], _selectedLocale, FileName)
+        </MudText>
 
-        <MudTextField T="string" @bind-Value="_content" Label="Markdown Content"
+        <MudTextField T="string" @bind-Value="_content" Label="@Localizer[Shared.MarkdownEditorContent]"
                       Lines="16" Variant="Variant.Outlined" Class="mb-4"/>
 
         <div class="d-flex gap-4">
             @if (DevFileSystemManager.IsLocalhost) {
                 <MudButton Variant="Variant.Filled" Color="Color.Success" OnClick="@SaveMarkdown"
                            StartIcon="@Icons.Material.Filled.Save">
-                    Save to Disk
+                    @Localizer[Shared.MarkdownEditorSave]
                 </MudButton>
             }
             else {
                 <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="@DownloadMarkdown"
                            StartIcon="@Icons.Material.Filled.Download">
-                    Download Markdown
+                    @Localizer[Shared.MarkdownEditorDownload]
                 </MudButton>
                 <MudButton Variant="Variant.Outlined" Color="Color.Info" OnClick="@CopyToClipboard"
                            StartIcon="@Icons.Material.Filled.ContentCopy">
-                    Copy to Clipboard
+                    @Localizer[Shared.MarkdownEditorCopy]
                 </MudButton>
             }
             <MudButton Variant="Variant.Text" Color="Color.Default" OnClick="@LoadContent"
                        StartIcon="@Icons.Material.Filled.Refresh">
-                Reload Original
+                @Localizer[Shared.MarkdownEditorReload]
             </MudButton>
         </div>
     }
@@ -67,7 +72,7 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 
 @code {
-    [Parameter] public string Title { get; set; } = "Markdown Editor";
+    [Parameter] public string Title { get; set; } = "";
     [Parameter] public string? FileName { get; set; }
     [Parameter] public Func<string, Task<string>>? LoadContentAsync { get; set; }
     [Parameter] public Func<string, string>? BuildDefaultContent { get; set; }
@@ -77,6 +82,9 @@
     private string _content = "";
     private string? _lastFile;
     private string _lastLocale = "";
+    private string TitleText => string.IsNullOrWhiteSpace(Title)
+        ? Localizer[Shared.MarkdownEditorTitle]
+        : Title;
 
     protected override async Task OnParametersSetAsync() {
         if (_lastFile != FileName || _selectedLocale != _lastLocale) {
@@ -110,16 +118,16 @@
         if (string.IsNullOrWhiteSpace(FileName) || GetDiskPath is null || !DevFileSystemManager.IsLocalhost) return;
 
         if (!await DevFileSystemManager.VerifyPermissionAsync()) {
-            Snackbar.Add("Filesystem access required.", Severity.Warning);
+            Snackbar.Add(Localizer[Shared.MarkdownEditorFsRequired], Severity.Warning);
             return;
         }
 
         bool success = await DevFileSystemManager.WriteFileAsync(GetDiskPath(_selectedLocale), _content);
         if (success) {
-            Snackbar.Add($"Saved {_selectedLocale}/{FileName} to disk!", Severity.Success);
+            Snackbar.Add(string.Format(Localizer[Shared.MarkdownEditorSaveSuccess], _selectedLocale, FileName), Severity.Success);
         }
         else {
-            Snackbar.Add("Failed to save markdown file.", Severity.Error);
+            Snackbar.Add(Localizer[Shared.MarkdownEditorSaveFailed], Severity.Error);
         }
     }
 
