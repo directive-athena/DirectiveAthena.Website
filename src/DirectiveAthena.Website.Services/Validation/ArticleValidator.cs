@@ -1,6 +1,7 @@
 // ---------------------------------------------------------------------------------------------------------------------
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
+using CodeOfChaos.Extensions.DependencyInjection;
 using FluentValidation;
 using DirectiveAthena.Website.Models;
 
@@ -8,6 +9,7 @@ namespace DirectiveAthena.Website.Services.Validation;
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
+[InjectableTransient<IValidator<Article>>]
 public sealed class ArticleValidator : AbstractValidator<Article> {
     private readonly IReadOnlyCollection<LocalizationInfo> _localizations;
 

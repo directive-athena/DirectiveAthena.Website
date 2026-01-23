@@ -1,6 +1,7 @@
 // ---------------------------------------------------------------------------------------------------------------------
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
+using CodeOfChaos.Extensions.DependencyInjection;
 using FluentValidation;
 using DirectiveAthena.Website.Models;
 
@@ -8,6 +9,7 @@ namespace DirectiveAthena.Website.Services.Validation;
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
+[InjectableTransient<IValidator<IEnumerable<Article>>>]
 public sealed class ArticleCollectionValidator : AbstractValidator<IEnumerable<Article>> {
     public ArticleCollectionValidator(IValidator<Article> articleValidator) {
         RuleFor(articles => articles)

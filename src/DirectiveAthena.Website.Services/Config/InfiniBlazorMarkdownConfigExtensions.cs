@@ -1,10 +1,11 @@
 ﻿// ---------------------------------------------------------------------------------------------------------------------
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
+using DirectiveAthena.Website.Services.InfiniMudMarkdown;
 using InfiniBlazor.Markdown;
 using InfiniBlazor.Markdown.Syntax.Nodes;
 
-namespace DirectiveAthena.Website.Services.InfiniMudMarkdown;
+namespace DirectiveAthena.Website.Services.Config;
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
