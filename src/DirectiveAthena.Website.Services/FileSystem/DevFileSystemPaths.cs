@@ -8,7 +8,7 @@ namespace DirectiveAthena.Website.Services.FileSystem;
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
-[InjectableSingleton<DevFileSystemPaths>]
+[InjectableSingleton<IDevFileSystemPaths>]
 public class DevFileSystemPaths(ILocalizationProvider localizationProvider) : IDevFileSystemPaths{
 
     public string GetIndexPath()

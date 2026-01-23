@@ -274,4 +274,24 @@ public class ArticleManagerTests {
         await devFs.DidNotReceive().WriteFileAsync(enPath, Arg.Any<string>());
         await devFs.Received(1).WriteFileAsync(nlPath, Arg.Any<string>());
     }
+
+    [Test]
+    public async Task EnsureResxAsync_DoesNotReadOrWriteWhenNotLocalhost() {
+        // Arrange
+        var devFs = Substitute.For<IDevFileSystemManager>();
+        devFs.IsLocalhost.Returns(false);
+        devFs.HasAccessAsync().Returns(new ValueTask<bool>(true));
+
+        var devFsPaths = Substitute.For<IDevFileSystemPaths>();
+        devFsPaths.GetSharedResxPath(Arg.Any<string>()).Returns("shared.resx");
+
+        ArticleManager manager = CreateManager(CreateLocalizationProvider("en"), devFs, devFsPaths: devFsPaths);
+
+        // Act
+        await manager.EnsureResxAsync();
+
+        // Assert
+        await devFs.DidNotReceiveWithAnyArgs().ReadFileAsync(null!);
+        await devFs.DidNotReceiveWithAnyArgs().WriteFileAsync(null!, null!);
+    }
 }

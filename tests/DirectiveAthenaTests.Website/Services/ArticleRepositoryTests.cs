@@ -65,10 +65,50 @@ public class ArticleRepositoryTests {
         });
         var http = new HttpClient(handler) { BaseAddress = new Uri("http://localhost/") };
         var repo = new ArticleRepository(http, Substitute.For<IDevFileSystemManager>(), Substitute.For<ILocalizationProvider>(), Substitute.For<IDevFileSystemPaths>());
-        
+
         // Act
         _ = (await repo.GetPostsAsync()).ToList();
         _ = (await repo.GetPostsAsync(includeHidden: true)).ToList();
+
+        // Assert
+        await Assert.That(handler.CallCount).IsEqualTo(1);
+    }
+
+    [Test]
+    public async Task GetPostsAsync_ReturnsEmptyWhenResponseNull() {
+        // Arrange
+        var handler = new TestHttpMessageHandler(_ => new HttpResponseMessage(HttpStatusCode.OK) {
+            Content = new StringContent("null", Encoding.UTF8, "application/json")
+        });
+        var http = new HttpClient(handler) { BaseAddress = new Uri("http://localhost/") };
+        var repo = new ArticleRepository(http, Substitute.For<IDevFileSystemManager>(), Substitute.For<ILocalizationProvider>(), Substitute.For<IDevFileSystemPaths>());
+
+        // Act
+        IEnumerable<Article> result = await repo.GetPostsAsync();
+
+        // Assert
+        await Assert.That(result).IsEmpty();
+    }
+
+    [Test]
+    public async Task GetPostsAsync_CachesAcrossConcurrentCalls() {
+        // Arrange
+        Article[] articles = [
+            ArticleFaker.Create(12, hidden: false),
+            ArticleFaker.Create(13, hidden: true)
+        ];
+
+        var handler = new TestHttpMessageHandler(_ => new HttpResponseMessage(HttpStatusCode.OK) {
+            Content = new StringContent(JsonSerializer.Serialize(articles), Encoding.UTF8, "application/json")
+        });
+        var http = new HttpClient(handler) { BaseAddress = new Uri("http://localhost/") };
+        var repo = new ArticleRepository(http, Substitute.For<IDevFileSystemManager>(), Substitute.For<ILocalizationProvider>(), Substitute.For<IDevFileSystemPaths>());
+
+        // Act
+        Task[] tasks = Enumerable.Range(0, 5)
+            .Select(_ => repo.GetPostsAsync(includeHidden: true).AsTask())
+            .ToArray<Task>();
+        await Task.WhenAll(tasks);
 
         // Assert
         await Assert.That(handler.CallCount).IsEqualTo(1);
@@ -87,7 +127,7 @@ public class ArticleRepositoryTests {
 
         var repo = new ArticleRepository(new HttpClient(), devFs, Substitute.For<ILocalizationProvider>(), devFsPaths);
         Article[] articles = [ArticleFaker.Create(21)];
-        
+
         // Act
         bool result = await repo.SaveAsync(articles);
 
@@ -139,7 +179,7 @@ public class ArticleRepositoryTests {
 
         var repo = new ArticleRepository(new HttpClient(), devFs, localizationProvider, devFsPaths);
         Article[] articles = [article];
-        
+
         // Act
         bool result = await repo.DeleteAsync(article, articles);
 
@@ -149,6 +189,7 @@ public class ArticleRepositoryTests {
             string path = devFsPaths.GetMarkdownPath(localization.Code, article.File);
             await devFs.Received(1).DeleteFileAsync(path);
         }
+
         await devFs.Received(1).WriteFileAsync(devFsPaths.GetIndexPath(), Arg.Any<string>());
     }
 
