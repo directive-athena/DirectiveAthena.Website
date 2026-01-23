@@ -1,0 +1,59 @@
+﻿@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Imports
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@using InfiniBlazor.Markdown.Syntax.Nodes
+@using InfiniBlazor.Markdown.Parsers.Blazor
+@using InfiniBlazor.Markdown.Syntax
+
+@namespace DirectiveAthena.Website.Services.Markdown
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Descriptors
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@inherits InfiniBlazorMdComponentBase<TableMdSyntaxNode>
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Html
+@* ------------------------------------------------------------------------------------------------------------------ *@
+<MudSimpleTable Style="overflow-x: auto;" Class="my-4">
+    <thead>
+        <tr>
+            @{ ReadOnlySpan<TableCellMdSyntaxNode> span = SyntaxNode.GetHeaderCells(); }
+            @for (int index = 0; index < span.Length; index++) {
+                TableCellMdSyntaxNode headerItem = span[index];
+                <th style="text-align: @GetAlignmentString(index)">
+                    @ComponentConverter.RenderChildComponents(headerItem)
+                </th>
+            }
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var rowNode in SyntaxNode.GetRows()) {
+            <tr>
+                @{ ReadOnlySpan<IMdSyntaxNode> nodes = rowNode.GetChildrenSpan(); }
+                @for (int index = 0; index < nodes.Length; index++) {
+                    IMdSyntaxNode node = nodes[index];
+                    <td style="text-align: @GetAlignmentString(index)">
+                        @ComponentConverter.RenderChildComponents(node)
+                    </td>
+                }
+            </tr>
+        }
+    </tbody>
+</MudSimpleTable>
+
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Code
+@* ------------------------------------------------------------------------------------------------------------------ *@
+
+@code {
+    private string GetAlignmentString(int columnIndex) {
+        if (!SyntaxNode.HasAlignments || columnIndex >= SyntaxNode.Alignments.Length) return "left";
+
+        return SyntaxNode.Alignments[columnIndex] switch {
+            TableMdSyntaxNode.Alignment.Left => "left",
+            TableMdSyntaxNode.Alignment.Center => "center",
+            TableMdSyntaxNode.Alignment.Right => "right",
+            _ => "left"
+        };
+    }
+}
+

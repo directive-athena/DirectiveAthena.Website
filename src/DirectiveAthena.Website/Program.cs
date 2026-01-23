@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using MudBlazor.Services;
 using DirectiveAthena.Website.Services;
-using DirectiveAthena.Website.Services.Config;
 
 namespace DirectiveAthena.Website;
 // ---------------------------------------------------------------------------------------------------------------------

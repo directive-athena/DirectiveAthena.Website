@@ -1,0 +1,38 @@
+﻿@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Imports
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@using InfiniBlazor.Markdown.Parsers.Blazor
+@using InfiniBlazor.Markdown.Syntax.Nodes
+
+@namespace DirectiveAthena.Website.Services.Markdown
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Descriptors
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@inherits InfiniBlazorMdComponentBase<LinkMdSyntaxNode>
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Html
+@* ------------------------------------------------------------------------------------------------------------------ *@
+<MudLink Href="@SyntaxNode.Href"
+         UserAttributes="@GetAttributes()"
+         Underline="Underline.Hover"
+         Color="Color.Primary">
+    @RenderChildContent()
+</MudLink>
+
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Code
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@code {
+    private Dictionary<string, object> GetAttributes() {
+        var attrs = new Dictionary<string, object>();
+        var title = GetTitle();
+        if (title != null) attrs["title"] = title;
+        return attrs;
+    }
+
+    private string? GetTitle() {
+        if (SyntaxNode.Title.IsNotNullOrWhiteSpace()) return SyntaxNode.Title;
+        if (SyntaxNode.Modifier != null && SyntaxNode.Modifier.TryGetTitle(out string? title)) return title;
+        return null;   
+    }
+}
