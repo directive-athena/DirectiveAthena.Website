@@ -67,6 +67,12 @@
   <data name="Nav.Writings" xml:space="preserve">
     <value>Writings</value>
   </data>
+  <data name="Nav.WorldRules" xml:space="preserve">
+    <value>World Rules</value>
+  </data>
+  <data name="Nav.WorldRulesManager" xml:space="preserve">
+    <value>World Rules Manager</value>
+  </data>
   <data name="Nav.Contact" xml:space="preserve">
     <value>Contact</value>
   </data>
@@ -177,6 +183,24 @@
   </data>
   <data name="Writings.Detail.ShareReddit" xml:space="preserve">
     <value>Reddit</value>
+  </data>
+  <data name="WorldRules.Title" xml:space="preserve">
+    <value>World Rules - Directive Athena</value>
+  </data>
+  <data name="WorldRules.Heading" xml:space="preserve">
+    <value>World Rules</value>
+  </data>
+  <data name="WorldRules.Subtitle" xml:space="preserve">
+    <value>Constraints, boundaries, and canon anchors for the setting.</value>
+  </data>
+  <data name="WorldRules.All" xml:space="preserve">
+    <value>All Rules</value>
+  </data>
+  <data name="WorldRules.Updated" xml:space="preserve">
+    <value>Updated {0}</value>
+  </data>
+  <data name="WorldRules.Empty" xml:space="preserve">
+    <value>No rules published yet. Add your first entry to begin shaping the canon.</value>
   </data>
   <data name="Story.Title" xml:space="preserve">
     <value>Story - Directive Athena</value>

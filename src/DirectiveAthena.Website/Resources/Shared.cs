@@ -12,6 +12,8 @@ public class Shared {
     public const string NavHome = "Nav.Home";
     public const string NavStory = "Nav.Story";
     public const string NavWritings = "Nav.Writings";
+    public const string NavWorldRules = "Nav.WorldRules";
+    public const string NavWorldRulesManager = "Nav.WorldRulesManager";
     public const string NavContact = "Nav.Contact";
     public const string BrandName = "Brand.Name";
     public const string FooterDescription = "Footer.Description";
@@ -49,6 +51,12 @@ public class Shared {
     public const string WritingsDetailShareTwitter = "Writings.Detail.ShareTwitter";
     public const string WritingsDetailShareBluesky = "Writings.Detail.ShareBluesky";
     public const string WritingsDetailShareReddit = "Writings.Detail.ShareReddit";
+    public const string WorldRulesTitle = "WorldRules.Title";
+    public const string WorldRulesHeading = "WorldRules.Heading";
+    public const string WorldRulesSubtitle = "WorldRules.Subtitle";
+    public const string WorldRulesAll = "WorldRules.All";
+    public const string WorldRulesUpdated = "WorldRules.Updated";
+    public const string WorldRulesEmpty = "WorldRules.Empty";
     public const string StoryTitle = "Story.Title";
     public const string StoryHeading = "Story.Heading";
     public const string StorySection1 = "Story.Section1";

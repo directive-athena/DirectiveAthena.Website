@@ -1,0 +1,50 @@
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Imports
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@using DirectiveAthena.Website.Services.WorldRules
+
+@namespace DirectiveAthena.Website.Components
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Descriptors
+@* ------------------------------------------------------------------------------------------------------------------ *@
+
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Html
+@* ------------------------------------------------------------------------------------------------------------------ *@
+<MudPaper Class="pa-4 card-glass mb-4">
+    <div class="d-flex justify-space-between align-center mb-4">
+        <MudText Typo="Typo.h6">Rules</MudText>
+        <MudIconButton Icon="@Icons.Material.Filled.Add" Color="Color.Primary" OnClick="@OnCreateRule"/>
+    </div>
+    <MudList T="WorldRule" SelectedValue="SelectedRule" SelectedValueChanged="OnRuleSelected"
+             Color="Color.Primary">
+        @if (Rules is not null) {
+            foreach (WorldRule rule in Rules) {
+                <MudListItem Value="rule">
+                    <div class="d-flex flex-column">
+                        <MudText Typo="Typo.body1">@(rule.Question.GetValueOrDefault("en") ?? "Untitled")</MudText>
+                        <MudText Typo="Typo.caption" Class="opacity-50">@rule.Id</MudText>
+                        <div class="d-flex align-center gap-1">
+                            @if (string.IsNullOrEmpty(rule.Question.GetValueOrDefault("nl")) || string.IsNullOrEmpty(rule.Answer.GetValueOrDefault("nl"))) {
+                                <MudChip T="string" Size="Size.Small" Color="Color.Warning"
+                                         Variant="Variant.Text">Missing NL
+                                </MudChip>
+                            }
+                        </div>
+                    </div>
+                </MudListItem>
+            }
+        }
+    </MudList>
+</MudPaper>
+
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Code
+@* ------------------------------------------------------------------------------------------------------------------ *@
+
+@code {
+    [Parameter] public List<WorldRule>? Rules { get; set; }
+    [Parameter] public WorldRule? SelectedRule { get; set; }
+    [Parameter] public EventCallback<WorldRule?> OnRuleSelected { get; set; }
+    [Parameter] public EventCallback OnCreateRule { get; set; }
+}

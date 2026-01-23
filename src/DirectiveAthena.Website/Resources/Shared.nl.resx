@@ -67,6 +67,12 @@
   <data name="Nav.Writings" xml:space="preserve">
     <value>Geschriften</value>
   </data>
+  <data name="Nav.WorldRules" xml:space="preserve">
+    <value>Wereldregels</value>
+  </data>
+  <data name="Nav.WorldRulesManager" xml:space="preserve">
+    <value>Wereldregels beheer</value>
+  </data>
   <data name="Nav.Contact" xml:space="preserve">
     <value>Contact</value>
   </data>
@@ -177,6 +183,24 @@
   </data>
   <data name="Writings.Detail.ShareReddit" xml:space="preserve">
     <value>Reddit</value>
+  </data>
+  <data name="WorldRules.Title" xml:space="preserve">
+    <value>Wereldregels - Directive Athena</value>
+  </data>
+  <data name="WorldRules.Heading" xml:space="preserve">
+    <value>Wereldregels</value>
+  </data>
+  <data name="WorldRules.Subtitle" xml:space="preserve">
+    <value>Beperkingen, grenzen en canonische ankers voor de setting.</value>
+  </data>
+  <data name="WorldRules.All" xml:space="preserve">
+    <value>Alle regels</value>
+  </data>
+  <data name="WorldRules.Updated" xml:space="preserve">
+    <value>Bijgewerkt {0}</value>
+  </data>
+  <data name="WorldRules.Empty" xml:space="preserve">
+    <value>Nog geen regels gepubliceerd. Voeg je eerste item toe om de canon te vormen.</value>
   </data>
   <data name="Story.Title" xml:space="preserve">
     <value>Verhaal - Directive Athena</value>

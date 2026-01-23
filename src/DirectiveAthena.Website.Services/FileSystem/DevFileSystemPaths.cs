@@ -17,6 +17,12 @@ public class DevFileSystemPaths(ILocalizationProvider localizationProvider) : ID
     public string GetMarkdownPath(string locale, string fileName)
         => $"src/DirectiveAthena.Website/wwwroot/content/articles/{locale}/{fileName}";
 
+    public string GetWorldRulesIndexPath()
+        => "src/DirectiveAthena.Website/wwwroot/content/world-rules/index.json";
+
+    public string GetWorldRuleMarkdownPath(string locale, string fileName)
+        => $"src/DirectiveAthena.Website/wwwroot/content/world-rules/{locale}/{fileName}";
+
     public string GetSharedResxPath(string locale)
         => locale == localizationProvider.DefaultLocalization.Code
             ? "src/DirectiveAthena.Website/Resources/Shared.resx"

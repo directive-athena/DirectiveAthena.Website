@@ -24,10 +24,12 @@
                         Icon="@Icons.Material.Filled.Home">@Localizer[Shared.NavHome]</MudNavLink>
             <MudNavLink Href="/story" Icon="@Icons.Material.Filled.AutoStories">@Localizer[Shared.NavStory]</MudNavLink>
             <MudNavLink Href="/articles" Icon="@Icons.Material.Filled.Article">@Localizer[Shared.NavWritings]</MudNavLink>
+            <MudNavLink Href="/world-rules" Icon="@Icons.Material.Filled.Rule">@Localizer[Shared.NavWorldRules]</MudNavLink>
             
             @{
                 #if DEBUG
                 <MudNavLink Href="/article-manager" Icon="@Icons.Material.Filled.Settings">@Localizer[Shared.NavWritingsManager]</MudNavLink>
+                <MudNavLink Href="/world-rules-manager" Icon="@Icons.Material.Filled.Rule">@Localizer[Shared.NavWorldRulesManager]</MudNavLink>
                 #endif
             }
             
