@@ -112,6 +112,7 @@
     [Parameter, EditorRequired] public Article Post { get; set; } = null!;
     [Parameter] public EventCallback OnDeletePost { get; set; }
     [Parameter] public EventCallback OnGenerateStubs { get; set; }
+    [Parameter] public EventCallback OnTagsChanged { get; set; }
 
     private string _newTag = "";
 
@@ -139,13 +140,22 @@
 
         Post.Tags.Add(trimmedTag);
         _newTag = "";
+        NotifyTagsChanged();
     }
 
-    private void RemoveTag(string tag) 
-        => Post.Tags.Remove(tag);
+    private void RemoveTag(string tag) {
+        Post.Tags.Remove(tag);
+        NotifyTagsChanged();
+    }
 
     private void OnTagKey(KeyboardEventArgs e) {
         if (e.Key == "Enter") AddTag();
+    }
+
+    private void NotifyTagsChanged() {
+        if (OnTagsChanged.HasDelegate) {
+            _ = OnTagsChanged.InvokeAsync();
+        }
     }
 
     private string BuildDefaultMarkdown(string locale) {

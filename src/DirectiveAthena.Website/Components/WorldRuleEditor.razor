@@ -108,6 +108,7 @@
     [Parameter, EditorRequired] public WorldRule Rule { get; set; } = null!;
     [Parameter] public EventCallback OnDeleteRule { get; set; }
     [Parameter] public EventCallback OnGenerateStubs { get; set; }
+    [Parameter] public EventCallback OnTagsChanged { get; set; }
 
     private string _newTag = "";
 
@@ -135,13 +136,22 @@
 
         Rule.Tags.Add(trimmedTag);
         _newTag = "";
+        NotifyTagsChanged();
     }
 
-    private void RemoveTag(string tag)
-        => Rule.Tags.Remove(tag);
+    private void RemoveTag(string tag) {
+        Rule.Tags.Remove(tag);
+        NotifyTagsChanged();
+    }
 
     private void OnTagKey(KeyboardEventArgs e) {
         if (e.Key == "Enter") AddTag();
+    }
+
+    private void NotifyTagsChanged() {
+        if (OnTagsChanged.HasDelegate) {
+            _ = OnTagsChanged.InvokeAsync();
+        }
     }
 
     private string BuildDefaultMarkdown(string locale) {

@@ -71,7 +71,37 @@
             </MudAlert>
         }
         else {
-            <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
+            if (_activeTab < 0) {
+                <MudPaper Class="pa-8 card-glass text-center">
+                    <MudText Typo="Typo.h5" Class="mb-4">What do you want to edit?</MudText>
+                    <MudText Typo="Typo.body2" Class="text-secondary mb-6">
+                        Choose a content type to manage.
+                    </MudText>
+                    <div class="d-flex flex-wrap justify-center gap-4">
+                        <MudButton Variant="Variant.Filled" Color="Color.Secondary" StartIcon="@Icons.Material.Filled.Article"
+                                   OnClick="@(() => SelectTab(0))">
+                            Writings
+                        </MudButton>
+                        <MudButton Variant="Variant.Filled" Color="Color.Secondary" StartIcon="@Icons.Material.Filled.Rule"
+                                   OnClick="@(() => SelectTab(1))">
+                            World Rules
+                        </MudButton>
+                        <MudButton Variant="Variant.Outlined" Color="Color.Secondary" StartIcon="@Icons.Material.Filled.Label"
+                                   OnClick="@(() => SelectTab(2))">
+                            Tags
+                        </MudButton>
+                    </div>
+                </MudPaper>
+            }
+            else {
+                <div class="d-flex justify-end mb-4">
+                    <MudButton Variant="Variant.Text" Color="Color.Secondary" OnClick="@BackToChooser"
+                               StartIcon="@Icons.Material.Filled.ArrowBack">
+                        Choose Another
+                    </MudButton>
+                </div>
+                <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6"
+                         @bind-ActivePanelIndex="_activeTab">
                 <MudTabPanel Text="Writings" Icon="@Icons.Material.Filled.Article">
                     <MudGrid>
                         <MudItem xs="12" md="4">
@@ -104,7 +134,8 @@
                         <MudItem xs="12" md="8">
                             @if (_selectedPost is not null) {
                                 <ArticleEditor Post="_selectedPost" OnDeletePost="DeletePost"
-                                               OnGenerateStubs="GenerateArticleStubs"/>
+                                               OnGenerateStubs="GenerateArticleStubs"
+                                               OnTagsChanged="OnTagsChanged"/>
                             }
                             else {
                                 <MudAlert Severity="Severity.Info" Variant="Variant.Outlined">Select a post or create a
@@ -148,7 +179,8 @@
                         <MudItem xs="12" md="8">
                             @if (_selectedRule is not null) {
                                 <WorldRuleEditor Rule="_selectedRule" OnDeleteRule="DeleteRule"
-                                                 OnGenerateStubs="GenerateRuleStubs"/>
+                                                 OnGenerateStubs="GenerateRuleStubs"
+                                                 OnTagsChanged="OnTagsChanged"/>
                             }
                             else {
                                 <MudAlert Severity="Severity.Info" Variant="Variant.Outlined">Select a rule or create a
@@ -163,7 +195,8 @@
                 <MudTabPanel Text="Tags" Icon="@Icons.Material.Filled.Label">
                     <TagsEditor UsedTags="@AllTags"/>
                 </MudTabPanel>
-            </MudTabs>
+                </MudTabs>
+            }
         }
     }
 </MudContainer>
@@ -179,6 +212,7 @@
     private WorldRule? _selectedRule;
     private bool _fsSupported;
     private bool _hasAccess;
+    private int _activeTab = -1;
 
     private IEnumerable<string> AllTags =>
         (_posts ?? [])
@@ -238,6 +272,14 @@
     private void CreateNewRule() {
         _selectedRule = WorldRuleManager.NewRule();
         _rules?.Insert(0, _selectedRule);
+    }
+
+    private void SelectTab(int index) {
+        _activeTab = index;
+    }
+
+    private void BackToChooser() {
+        _activeTab = -1;
     }
 
     private async Task DeletePost() {
@@ -400,5 +442,9 @@
 
     private async Task DownloadFile(string fileName, string content) {
         await JsRuntime.InvokeVoidAsync("downloadFile", fileName, content);
+    }
+
+    private void OnTagsChanged() {
+        StateHasChanged();
     }
 }
