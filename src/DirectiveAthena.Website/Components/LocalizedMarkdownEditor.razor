@@ -23,7 +23,8 @@
     <div class="d-flex justify-space-between align-center mb-4">
         <MudText Typo="Typo.h6">@TitleText</MudText>
         <div class="d-flex gap-2">
-            <MudSelect T="string" Label="@Localizer[Shared.MarkdownEditorLocale]" @bind-Value="_selectedLocale" Class="width-100">
+            <MudSelect T="string" Label="@Localizer[Shared.MarkdownEditorLocale]" Value="@_selectedLocale"
+                       ValueChanged="@OnLocaleChanged" Class="width-100">
                 @foreach (LocalizationInfo culture in LocalizationProvider.GetSupportedLocalizations()) {
                     <MudSelectItem Value="@culture.Code">@culture.DisplayName</MudSelectItem>
                 }
@@ -82,21 +83,33 @@
     private string _content = "";
     private string? _lastFile;
     private string _lastLocale = "";
+    private readonly Dictionary<string, string> _drafts = new(StringComparer.OrdinalIgnoreCase);
     private string TitleText => string.IsNullOrWhiteSpace(Title)
         ? Localizer[Shared.MarkdownEditorTitle]
         : Title;
 
     protected override async Task OnParametersSetAsync() {
-        if (_lastFile != FileName || _selectedLocale != _lastLocale) {
+        if (_lastFile != FileName) {
             _lastFile = FileName;
-            _lastLocale = _selectedLocale;
-            await LoadContent();
+            _drafts.Clear();
         }
+
+        // ReSharper disable once RedundantCheckBeforeAssignment
+        if (_selectedLocale != _lastLocale) {
+            _lastLocale = _selectedLocale;
+        }
+
+        await LoadContent();
     }
 
     private async Task LoadContent() {
         if (string.IsNullOrWhiteSpace(FileName) || LoadContentAsync is null || GetDiskPath is null || BuildDefaultContent is null) {
             _content = "";
+            return;
+        }
+
+        if (_drafts.TryGetValue(_selectedLocale, out string? draft)) {
+            _content = draft;
             return;
         }
 
@@ -112,6 +125,27 @@
         if (string.IsNullOrEmpty(_content)) {
             _content = BuildDefaultContent(_selectedLocale);
         }
+    }
+
+    private async Task OnLocaleChanged(string newLocale) {
+        if (string.Equals(newLocale, _selectedLocale, StringComparison.OrdinalIgnoreCase)) return;
+
+        await SaveDraftAsync(_selectedLocale);
+        _selectedLocale = newLocale;
+        _lastLocale = newLocale;
+        await LoadContent();
+    }
+
+    private async Task SaveDraftAsync(string locale) {
+        if (string.IsNullOrWhiteSpace(FileName) || GetDiskPath is null) return;
+
+        _drafts[locale] = _content;
+
+        if (!DevFileSystemManager.IsLocalhost) return;
+        if (!await DevFileSystemManager.HasAccessAsync()) return;
+        if (!await DevFileSystemManager.VerifyPermissionAsync()) return;
+
+        await DevFileSystemManager.WriteFileAsync(GetDiskPath(locale), _content);
     }
 
     private async Task SaveMarkdown() {
