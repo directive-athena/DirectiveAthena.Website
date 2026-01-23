@@ -60,15 +60,18 @@
                         <MudSpacer/>
                         <div class="d-flex align-center gap-2">
                             <MudText Typo="Typo.caption" Class="opacity-60">@LocalizerShared[Shared.WritingsDetailShareLabel]</MudText>
-                            <MudIconButton Icon="@Icons.Custom.Brands.Twitter" Color="Color.Secondary" Size="Size.Small"
-                                           Href="@_shareTwitterUrl" Target="_blank"
-                                           Title="@LocalizerShared[Shared.WritingsDetailShareTwitter]"/>
-                            <MudIconButton Icon="@CustomIcons.Bluesky" Color="Color.Secondary" Size="Size.Small"
-                                           Href="@_shareBlueskyUrl" Target="_blank"
-                                           Title="@LocalizerShared[Shared.WritingsDetailShareBluesky]"/>
-                            <MudIconButton Icon="@Icons.Custom.Brands.Reddit" Color="Color.Secondary" Size="Size.Small"
-                                           Href="@_shareRedditUrl" Target="_blank"
-                                           Title="@LocalizerShared[Shared.WritingsDetailShareReddit]"/>
+                            <MudTooltip Text="@LocalizerShared[Shared.WritingsDetailShareTwitter]">
+                                <MudIconButton Icon="@Icons.Custom.Brands.X" Color="Color.Secondary" Size="Size.Small"
+                                               Href="@_shareTwitterUrl" Target="_blank"/>
+                            </MudTooltip>
+                            <MudTooltip Text="@LocalizerShared[Shared.WritingsDetailShareBluesky]">
+                                <MudIconButton Icon="@CustomIcons.Bluesky" Color="Color.Secondary" Size="Size.Small"
+                                               Href="@_shareBlueskyUrl" Target="_blank"/>
+                            </MudTooltip>
+                            <MudTooltip Text="@LocalizerShared[Shared.WritingsDetailShareReddit]">
+                                <MudIconButton Icon="@Icons.Custom.Brands.Reddit" Color="Color.Secondary" Size="Size.Small"
+                                               Href="@_shareRedditUrl" Target="_blank"/>
+                            </MudTooltip>
                         </div>
                     </div>
                     <MudText Typo="Typo.h2"
