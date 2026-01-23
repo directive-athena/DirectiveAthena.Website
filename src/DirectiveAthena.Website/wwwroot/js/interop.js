@@ -37,6 +37,33 @@ window.registerScrollListener = (dotNetHelper) => {
     });
 };
 
+window.copyToClipboard = async (text) => {
+    try {
+        if (navigator.clipboard && window.isSecureContext) {
+            await navigator.clipboard.writeText(text);
+            return true;
+        }
+    } catch (e) {
+        console.warn('Clipboard API copy failed, falling back.', e);
+    }
+
+    try {
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        textarea.setAttribute('readonly', '');
+        textarea.style.position = 'absolute';
+        textarea.style.left = '-9999px';
+        document.body.appendChild(textarea);
+        textarea.select();
+        const success = document.execCommand('copy');
+        textarea.remove();
+        return success;
+    } catch (e) {
+        console.error('Clipboard fallback copy failed.', e);
+        return false;
+    }
+};
+
 window.downloadFile = (fileName, content) => {
     const blob = new Blob([content], { type: 'text/plain' });
     const url = window.URL.createObjectURL(blob);

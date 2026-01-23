@@ -157,6 +157,15 @@
   <data name="Writings.Detail.BackBottom" xml:space="preserve">
     <value>Terug naar alle geschriften</value>
   </data>
+  <data name="Writings.Detail.ReadTime" xml:space="preserve">
+    <value>Leestijd {0} min</value>
+  </data>
+  <data name="Writings.Detail.CopyLink" xml:space="preserve">
+    <value>Kopieer link</value>
+  </data>
+  <data name="Writings.Detail.LinkCopied" xml:space="preserve">
+    <value>Link gekopieerd</value>
+  </data>
   <data name="Story.Title" xml:space="preserve">
     <value>Verhaal - Directive Athena</value>
   </data>
