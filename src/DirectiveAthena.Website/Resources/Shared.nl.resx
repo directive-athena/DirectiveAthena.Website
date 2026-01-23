@@ -166,6 +166,18 @@
   <data name="Writings.Detail.LinkCopied" xml:space="preserve">
     <value>Link gekopieerd</value>
   </data>
+  <data name="Writings.Detail.ShareLabel" xml:space="preserve">
+    <value>Delen</value>
+  </data>
+  <data name="Writings.Detail.ShareTwitter" xml:space="preserve">
+    <value>Twitter</value>
+  </data>
+  <data name="Writings.Detail.ShareBluesky" xml:space="preserve">
+    <value>Bluesky</value>
+  </data>
+  <data name="Writings.Detail.ShareReddit" xml:space="preserve">
+    <value>Reddit</value>
+  </data>
   <data name="Story.Title" xml:space="preserve">
     <value>Verhaal - Directive Athena</value>
   </data>
