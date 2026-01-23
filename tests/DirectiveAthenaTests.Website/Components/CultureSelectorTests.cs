@@ -4,7 +4,7 @@
 using System.Globalization;
 using Bunit;
 using DirectiveAthena.Website.Components;
-using DirectiveAthena.Website.Services;
+using DirectiveAthena.Website.Services.Localization;
 using DirectiveAthenaTests.Website.Helpers;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.DependencyInjection;

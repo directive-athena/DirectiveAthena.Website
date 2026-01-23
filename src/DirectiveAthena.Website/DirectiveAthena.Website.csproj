@@ -9,11 +9,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="CodeOfChaos.Extensions.DependencyInjection" />
-        <PackageReference Include="CodeOfChaos.Extensions.DependencyInjection.Generators">
-          <PrivateAssets>all</PrivateAssets>
-          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-        </PackageReference>
         <PackageReference Include="InfiniLore.InfiniBlazor" />
         <PackageReference Include="JetBrains.Annotations" />
         <PackageReference Include="FluentValidation" />
@@ -32,7 +27,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\DirectiveAthena.Website.Services\DirectiveAthena.Website.Services.csproj" />
       <ProjectReference Include="..\DirectiveAthena.Website.Shared\DirectiveAthena.Website.Shared.csproj" />
     </ItemGroup>
-
 </Project>

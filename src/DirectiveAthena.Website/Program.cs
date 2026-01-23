@@ -5,10 +5,7 @@ using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using MudBlazor.Services;
 using DirectiveAthena.Website.Services;
-using DirectiveAthena.Website.Services.InfiniMudMarkdown;
-using DirectiveAthena.Website.Services.Validation;
-using FluentValidation;
-using DirectiveAthena.Website.Models;
+using DirectiveAthena.Website.Services.Localization;
 
 namespace DirectiveAthena.Website;
 // ---------------------------------------------------------------------------------------------------------------------
@@ -17,23 +14,15 @@ namespace DirectiveAthena.Website;
 public static class Program {
     public static async Task Main(string[] args) {
         var builder = WebAssemblyHostBuilder.CreateDefault(args);
-
-        builder.Services.AddInfiniBlazor(static config => {
-            config.Components.SetRenderMode(RenderMode.InteractiveWebAssembly);
-            config.Markdown.WithMudBlazorComponents();
-        });
-
+        
         builder.RootComponents.Add<App>("#app");
         builder.RootComponents.Add<HeadOutlet>("head::after");
 
         builder.Services.AddScoped(_ => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
         builder.Services.AddMudServices();
         builder.Services.AddLocalization();
-
-        builder.Services.AddTransient<IValidator<Article>, ArticleValidator>();
-        builder.Services.AddTransient<IValidator<IEnumerable<Article>>, ArticleCollectionValidator>();
-
-        builder.Services.RegisterServicesFromDirectiveAthenaWebsite();
+        
+        builder.Services.AddWebsiteServices();
 
         WebAssemblyHost host = builder.Build();
 

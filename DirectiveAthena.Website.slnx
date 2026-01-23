@@ -9,6 +9,7 @@
     <File Path=".github/workflows/pullRequestTests.yml" />
   </Folder>
   <Folder Name="/src/">
+    <Project Path="src/DirectiveAthena.Website.Services/DirectiveAthena.Website.Services.csproj" />
     <Project Path="src/DirectiveAthena.Website.Shared/DirectiveAthena.Website.Shared.csproj" />
     <Project Path="src/DirectiveAthena.Website/DirectiveAthena.Website.csproj" />
   </Folder>

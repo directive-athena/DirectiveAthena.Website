@@ -3,6 +3,9 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @using System.Xml.Linq
 @using DirectiveAthena.Website.Resources
+@using DirectiveAthena.Website.Services.Articles
+@using DirectiveAthena.Website.Services.FileSystem
+@using DirectiveAthena.Website.Services.Localization
 @using Microsoft.Extensions.Localization
 
 @namespace DirectiveAthena.Website.Components
@@ -13,8 +16,9 @@
 @inject IDevFileSystemManager DevFileSystemManager
 @inject IJSRuntime JsRuntime
 @inject ISnackbar Snackbar
+@inject IDevFileSystemPaths DevFilePaths
 
-@inherits DirectiveAthenaWebsiteComponentBase
+@inherits WebsiteComponentBase
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Html
 @* ------------------------------------------------------------------------------------------------------------------ *@
@@ -148,7 +152,7 @@
             return;
         }
 
-        string path = DevFileSystemPaths.GetTagsResxPath(locale);
+        string path = DevFilePaths.GetTagsResxPath(locale);
         string existingContent = await DevFileSystemManager.ReadFileAsync(path) ?? "";
         string newContent = GenerateResx(locale, existingContent);
 

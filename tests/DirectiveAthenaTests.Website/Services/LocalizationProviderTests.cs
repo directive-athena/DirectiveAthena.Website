@@ -2,8 +2,7 @@
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
 using System.Globalization;
-using DirectiveAthena.Website.Models;
-using DirectiveAthena.Website.Services;
+using DirectiveAthena.Website.Services.Localization;
 
 namespace DirectiveAthenaTests.Website.Services;
 // ---------------------------------------------------------------------------------------------------------------------
