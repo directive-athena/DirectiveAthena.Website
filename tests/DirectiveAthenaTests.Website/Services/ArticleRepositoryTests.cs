@@ -82,7 +82,10 @@ public class ArticleRepositoryTests {
         devFs.VerifyPermissionAsync().Returns(new ValueTask<bool>(true));
         devFs.WriteFileAsync(Arg.Any<string>(), Arg.Any<string>()).Returns(new ValueTask<bool>(true));
 
-        var repo = new ArticleRepository(new HttpClient(), devFs, Substitute.For<ILocalizationProvider>(), Substitute.For<IDevFileSystemPaths>());
+        var devFsPaths = Substitute.For<IDevFileSystemPaths>();
+        devFsPaths.GetIndexPath().Returns("index.json");
+
+        var repo = new ArticleRepository(new HttpClient(), devFs, Substitute.For<ILocalizationProvider>(), devFsPaths);
         Article[] articles = [ArticleFaker.Create(21)];
         
         // Act
@@ -90,7 +93,7 @@ public class ArticleRepositoryTests {
 
         // Assert
         await Assert.That(result).IsTrue();
-        await devFs.Received(1).WriteFileAsync(DevFileSystemPaths.GetIndexPath(), Arg.Any<string>());
+        await devFs.Received(1).WriteFileAsync(devFsPaths.GetIndexPath(), Arg.Any<string>());
     }
 
     [Test]
@@ -99,7 +102,7 @@ public class ArticleRepositoryTests {
         var devFs = Substitute.For<IDevFileSystemManager>();
         devFs.IsLocalhost.Returns(false);
 
-        var repo = new ArticleRepository(new HttpClient(), devFs, Substitute.For<ILocalizationProvider>());
+        var repo = new ArticleRepository(new HttpClient(), devFs, Substitute.For<ILocalizationProvider>(), Substitute.For<IDevFileSystemPaths>());
         Article[] articles = [ArticleFaker.Create(22)];
 
         // Act
@@ -128,8 +131,13 @@ public class ArticleRepositoryTests {
         var localizationProvider = Substitute.For<ILocalizationProvider>();
         localizationProvider.GetSupportedLocalizations().Returns(localizations);
 
-        var repo = new ArticleRepository(new HttpClient(), devFs, localizationProvider);
         Article article = ArticleFaker.Create(30);
+        var devFsPaths = Substitute.For<IDevFileSystemPaths>();
+        devFsPaths.GetIndexPath().Returns("index.json");
+        devFsPaths.GetMarkdownPath("en", article.File).Returns($"en/{article.File}");
+        devFsPaths.GetMarkdownPath("nl", article.File).Returns($"nl/{article.File}");
+
+        var repo = new ArticleRepository(new HttpClient(), devFs, localizationProvider, devFsPaths);
         Article[] articles = [article];
         
         // Act
@@ -138,10 +146,10 @@ public class ArticleRepositoryTests {
         // Assert
         await Assert.That(result).IsTrue();
         foreach (LocalizationInfo localization in localizations) {
-            string path = DevFileSystemPaths.GetMarkdownPath(localization.Code, article.File);
+            string path = devFsPaths.GetMarkdownPath(localization.Code, article.File);
             await devFs.Received(1).DeleteFileAsync(path);
         }
-        await devFs.Received(1).WriteFileAsync(DevFileSystemPaths.GetIndexPath(), Arg.Any<string>());
+        await devFs.Received(1).WriteFileAsync(devFsPaths.GetIndexPath(), Arg.Any<string>());
     }
 
     [Test]
@@ -154,7 +162,7 @@ public class ArticleRepositoryTests {
         var localizationProvider = Substitute.For<ILocalizationProvider>();
         localizationProvider.GetSupportedLocalizations().Returns(new[] { new LocalizationInfo("en", "English", "EN", "") });
 
-        var repo = new ArticleRepository(new HttpClient(), devFs, localizationProvider);
+        var repo = new ArticleRepository(new HttpClient(), devFs, localizationProvider, Substitute.For<IDevFileSystemPaths>());
         Article article = ArticleFaker.Create(40);
         Article[] articles = [article];
 

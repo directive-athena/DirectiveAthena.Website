@@ -21,6 +21,7 @@ public class ArticleManagerTests {
         ];
 
         var localizationProvider = Substitute.For<ILocalizationProvider>();
+        localizationProvider.DefaultLocalization.Returns(localizations.First(l => l.Code == "en"));
         localizationProvider.GetCurrentLocalization().Returns(localizations.First(l => l.Code == currentCode));
         localizationProvider.GetSupportedLocalizations().Returns(localizations);
         return localizationProvider;
@@ -229,7 +230,12 @@ public class ArticleManagerTests {
         devFs.VerifyPermissionAsync().Returns(new ValueTask<bool>(true));
         devFs.WriteFileAsync(Arg.Any<string>(), Arg.Any<string>()).Returns(new ValueTask<bool>(true));
 
-        ArticleManager manager = CreateManager(CreateLocalizationProvider("en"), devFs);
+        var devFsPaths = Substitute.For<IDevFileSystemPaths>();
+        devFsPaths
+            .GetMarkdownPath(Arg.Any<string>(), Arg.Any<string>())
+            .Returns(call => $"{call.ArgAt<string>(0)}/{call.ArgAt<string>(1)}");
+
+        ArticleManager manager = CreateManager(CreateLocalizationProvider("en"), devFs, devFsPaths: devFsPaths);
 
         // Act
         Dictionary<string, string> stubs = await manager.GenerateStubsAsync(article, writeToDisk: true);
@@ -237,7 +243,7 @@ public class ArticleManagerTests {
         // Assert
         await Assert.That(stubs.Count).IsEqualTo(ArticleFaker.DefaultLocalizations().Count);
         foreach (LocalizationInfo localization in ArticleFaker.DefaultLocalizations()) {
-            string path = DevFileSystemPaths.GetMarkdownPath(localization.Code, article.File);
+            string path = devFsPaths.GetMarkdownPath(localization.Code, article.File);
             await devFs.Received(1).WriteFileAsync(path, Arg.Any<string>());
         }
     }
@@ -249,15 +255,19 @@ public class ArticleManagerTests {
         devFs.IsLocalhost.Returns(true);
         devFs.HasAccessAsync().Returns(new ValueTask<bool>(true));
 
-        string enPath = DevFileSystemPaths.GetSharedResxPath("en");
-        string nlPath = DevFileSystemPaths.GetSharedResxPath("nl");
+        var devFsPaths = Substitute.For<IDevFileSystemPaths>();
+        devFsPaths.GetSharedResxPath("en").Returns("shared.en.resx");
+        devFsPaths.GetSharedResxPath("nl").Returns("shared.nl.resx");
+
+        string enPath = devFsPaths.GetSharedResxPath("en");
+        string nlPath = devFsPaths.GetSharedResxPath("nl");
 
         devFs.ReadFileAsync(enPath).Returns(new ValueTask<string?>("existing"));
         devFs.ReadFileAsync(nlPath).Returns(new ValueTask<string?>());
         devFs.WriteFileAsync(Arg.Any<string>(), Arg.Any<string>()).Returns(new ValueTask<bool>(true));
         
         // Act
-        ArticleManager manager = CreateManager(CreateLocalizationProvider("en"), devFs);
+        ArticleManager manager = CreateManager(CreateLocalizationProvider("en"), devFs, devFsPaths: devFsPaths);
         await manager.EnsureResxAsync();
 
         // Assert
