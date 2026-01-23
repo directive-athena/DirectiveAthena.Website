@@ -16,6 +16,7 @@
 @inject IDevFileSystemManager DevFileSystemManager
 @inject IJSRuntime JsRuntime
 @inject ISnackbar Snackbar
+@inject IDevFileSystemPaths DevFilePaths
 
 @inherits WebsiteComponentBase
 @* ------------------------------------------------------------------------------------------------------------------ *@
@@ -151,7 +152,7 @@
             return;
         }
 
-        string path = DevFileSystemPaths.GetTagsResxPath(locale);
+        string path = DevFilePaths.GetTagsResxPath(locale);
         string existingContent = await DevFileSystemManager.ReadFileAsync(path) ?? "";
         string newContent = GenerateResx(locale, existingContent);
 

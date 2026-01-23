@@ -17,7 +17,8 @@ public class ArticleManager(
     ILocalizationProvider localizationProvider,
     IDevFileSystemManager devFs,
     HttpClient http,
-    IValidator<IEnumerable<Article>> validator
+    IValidator<IEnumerable<Article>> validator,
+    IDevFileSystemPaths devFsPaths
 ) : IArticleManager {
     public string GetLocalizedTitle(Article article)
         => GetLocalizedValue(article.Title);
@@ -28,7 +29,7 @@ public class ArticleManager(
     private string GetLocalizedValue(Dictionary<string, string> values) {
         LocalizationInfo localization = localizationProvider.GetCurrentLocalization();
         return !values.TryGetValue(localization.Code, out string? value)
-            ? values.GetValueOrDefault(LocalizationProvider.DefaultLocalization.Code, string.Empty)
+            ? values.GetValueOrDefault(localizationProvider.DefaultLocalization.Code, string.Empty)
             : value;
     }
 
@@ -84,7 +85,7 @@ public class ArticleManager(
         if (!writeToDisk || !devFs.IsLocalhost || !await devFs.HasAccessAsync() || !await devFs.VerifyPermissionAsync()) return stubs;
 
         foreach (KeyValuePair<string, string> stub in stubs) {
-            await devFs.WriteFileAsync(DevFileSystemPaths.GetMarkdownPath(stub.Key, article.File), stub.Value);
+            await devFs.WriteFileAsync(devFsPaths.GetMarkdownPath(stub.Key, article.File), stub.Value);
         }
 
         return stubs;
@@ -94,7 +95,7 @@ public class ArticleManager(
         if (!devFs.IsLocalhost || !await devFs.HasAccessAsync()) return;
 
         foreach (string path in localizationProvider.GetSupportedLocalizations()
-            .Select(culture => DevFileSystemPaths.GetSharedResxPath(culture.Code))) {
+            .Select(culture => devFsPaths.GetSharedResxPath(culture.Code))) {
             string? content = await devFs.ReadFileAsync(path);
             if (content is not null) continue;
 

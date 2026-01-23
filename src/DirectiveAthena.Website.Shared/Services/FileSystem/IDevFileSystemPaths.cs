@@ -1,17 +1,14 @@
 ﻿// ---------------------------------------------------------------------------------------------------------------------
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
-using System.Diagnostics.CodeAnalysis;
+namespace DirectiveAthena.Website.Services.FileSystem;
 
-namespace DirectiveAthena.Website.Services.Localization;
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
-public interface ILocalizationProvider {
-    LocalizationInfo DefaultLocalization { get; }
-    
-    LocalizationInfo GetCurrentLocalization();
-    IReadOnlyCollection<LocalizationInfo> GetSupportedLocalizations();
-    bool TryGetLocalization(string cultureCode, [NotNullWhen(true)] out LocalizationInfo? config);
-    bool IsDefaultCultureCode(string cultureCode);
+public interface IDevFileSystemPaths {
+    string GetIndexPath();
+    string GetMarkdownPath(string locale, string fileName);
+    string GetSharedResxPath(string locale);
+    string GetTagsResxPath(string locale);
 }

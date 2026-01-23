@@ -12,7 +12,12 @@ namespace DirectiveAthena.Website.Services.Articles;
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
 [InjectableScoped<IArticleRepository>]
-public class ArticleRepository(HttpClient http, IDevFileSystemManager devFs, ILocalizationProvider localizationProvider) : IArticleRepository {
+public class ArticleRepository(
+    HttpClient http,
+    IDevFileSystemManager devFs,
+    ILocalizationProvider localizationProvider,
+    IDevFileSystemPaths devFsPaths
+) : IArticleRepository {
     private readonly SemaphoreSlim _lock = new(1, 1);
     private Article[]? _articles;
     
@@ -57,7 +62,7 @@ public class ArticleRepository(HttpClient http, IDevFileSystemManager devFs, ILo
         if (!await devFs.VerifyPermissionAsync()) return false;
 
         string json = AsJsonString(articles);
-        return await devFs.WriteFileAsync(DevFileSystemPaths.GetIndexPath(), json);
+        return await devFs.WriteFileAsync(devFsPaths.GetIndexPath(), json);
     }
     
     public async Task<bool> DeleteAsync(Article article, IEnumerable<Article> articles, CancellationToken ct = default) {
@@ -66,7 +71,7 @@ public class ArticleRepository(HttpClient http, IDevFileSystemManager devFs, ILo
 
         bool allDeleted = true;
         foreach (string path in localizationProvider.GetSupportedLocalizations()
-            .Select(culture => DevFileSystemPaths.GetMarkdownPath(culture.Code, article.File))) {
+            .Select(culture => devFsPaths.GetMarkdownPath(culture.Code, article.File))) {
             bool success = await devFs.DeleteFileAsync(path);
             if (!success) allDeleted = false;
         }

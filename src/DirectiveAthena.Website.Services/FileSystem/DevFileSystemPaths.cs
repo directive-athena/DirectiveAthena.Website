@@ -1,27 +1,29 @@
 ﻿// ---------------------------------------------------------------------------------------------------------------------
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
+using CodeOfChaos.Extensions.DependencyInjection;
 using DirectiveAthena.Website.Services.Localization;
 
 namespace DirectiveAthena.Website.Services.FileSystem;
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
-public static class DevFileSystemPaths {
+[InjectableSingleton<DevFileSystemPaths>]
+public class DevFileSystemPaths(ILocalizationProvider localizationProvider) : IDevFileSystemPaths{
 
-    public static string GetIndexPath()
+    public string GetIndexPath()
         => "src/DirectiveAthena.Website/wwwroot/content/articles/index.json";
 
-    public static string GetMarkdownPath(string locale, string fileName)
+    public string GetMarkdownPath(string locale, string fileName)
         => $"src/DirectiveAthena.Website/wwwroot/content/articles/{locale}/{fileName}";
 
-    public static string GetSharedResxPath(string locale)
-        => locale == LocalizationProvider.DefaultLocalization.Code
+    public string GetSharedResxPath(string locale)
+        => locale == localizationProvider.DefaultLocalization.Code
             ? "src/DirectiveAthena.Website/Resources/Shared.resx"
             : $"src/DirectiveAthena.Website/Resources/Shared.{locale}.resx";
 
-    public static string GetTagsResxPath(string locale)
-        => locale == LocalizationProvider.DefaultLocalization.Code
+    public string GetTagsResxPath(string locale)
+        => locale == localizationProvider.DefaultLocalization.Code
             ? "src/DirectiveAthena.Website/Resources/Tags.resx"
             : $"src/DirectiveAthena.Website/Resources/Tags.{locale}.resx";
 }

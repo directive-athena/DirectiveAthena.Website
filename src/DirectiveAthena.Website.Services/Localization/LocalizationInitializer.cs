@@ -16,7 +16,7 @@ public class LocalizationInitializer(ILocalizationProvider localizationProvider,
     public async Task ApplyPreferredCultureAsync() {
         string result = await jsRuntime.InvokeAsync<string>("localStorage.getItem", "culture");
         if (!localizationProvider.TryGetLocalization(result, out LocalizationInfo? culture)) {
-            culture = LocalizationProvider.DefaultLocalization;
+            culture = localizationProvider.DefaultLocalization;
         }
 
         var cultureInfo = new CultureInfo(culture.Code);

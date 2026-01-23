@@ -28,8 +28,7 @@ public class ArticleRepositoryTests {
             Content = new StringContent(JsonSerializer.Serialize(articles), Encoding.UTF8, "application/json")
         });
         var http = new HttpClient(handler) { BaseAddress = new Uri("http://localhost/") };
-        var repo = new ArticleRepository(http, Substitute.For<IDevFileSystemManager>(), Substitute.For<ILocalizationProvider>());
-
+        var repo = new ArticleRepository(http, Substitute.For<IDevFileSystemManager>(), Substitute.For<ILocalizationProvider>(), Substitute.For<IDevFileSystemPaths>());
 
         // Act
         List<Article> result = (await repo.GetPostsAsync()).ToList();
@@ -44,7 +43,7 @@ public class ArticleRepositoryTests {
         // Arrange
         var handler = new TestHttpMessageHandler(_ => throw new HttpRequestException("boom"));
         var http = new HttpClient(handler) { BaseAddress = new Uri("http://localhost/") };
-        var repo = new ArticleRepository(http, Substitute.For<IDevFileSystemManager>(), Substitute.For<ILocalizationProvider>());
+        var repo = new ArticleRepository(http, Substitute.For<IDevFileSystemManager>(), Substitute.For<ILocalizationProvider>(), Substitute.For<IDevFileSystemPaths>());
 
         // Act
         IEnumerable<Article> result = await repo.GetPostsAsync();
@@ -65,8 +64,8 @@ public class ArticleRepositoryTests {
             Content = new StringContent(JsonSerializer.Serialize(articles), Encoding.UTF8, "application/json")
         });
         var http = new HttpClient(handler) { BaseAddress = new Uri("http://localhost/") };
-        var repo = new ArticleRepository(http, Substitute.For<IDevFileSystemManager>(), Substitute.For<ILocalizationProvider>());
-
+        var repo = new ArticleRepository(http, Substitute.For<IDevFileSystemManager>(), Substitute.For<ILocalizationProvider>(), Substitute.For<IDevFileSystemPaths>());
+        
         // Act
         _ = (await repo.GetPostsAsync()).ToList();
         _ = (await repo.GetPostsAsync(includeHidden: true)).ToList();
@@ -83,9 +82,9 @@ public class ArticleRepositoryTests {
         devFs.VerifyPermissionAsync().Returns(new ValueTask<bool>(true));
         devFs.WriteFileAsync(Arg.Any<string>(), Arg.Any<string>()).Returns(new ValueTask<bool>(true));
 
-        var repo = new ArticleRepository(new HttpClient(), devFs, Substitute.For<ILocalizationProvider>());
+        var repo = new ArticleRepository(new HttpClient(), devFs, Substitute.For<ILocalizationProvider>(), Substitute.For<IDevFileSystemPaths>());
         Article[] articles = [ArticleFaker.Create(21)];
-
+        
         // Act
         bool result = await repo.SaveAsync(articles);
 

@@ -16,7 +16,7 @@ public class LocalizationProvider : ILocalizationProvider {
         new("nl", "Nederlands", "NL", "https://flagcdn.com/w40/nl.png")
     ];
 
-    public static LocalizationInfo DefaultLocalization => SupportedLocalizations.First();
+    public LocalizationInfo DefaultLocalization => SupportedLocalizations.First();
 
     // -----------------------------------------------------------------------------------------------------------------
     // Methods

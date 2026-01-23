@@ -29,12 +29,14 @@ public class ArticleManagerTests {
     private static ArticleManager CreateManager(
         ILocalizationProvider localizationProvider,
         IDevFileSystemManager? devFs = null,
-        HttpClient? http = null
+        HttpClient? http = null,
+        IDevFileSystemPaths? devFsPaths = null
     ) {
         devFs ??= Substitute.For<IDevFileSystemManager>();
         http ??= new HttpClient();
+        devFsPaths ??= Substitute.For<IDevFileSystemPaths>();
         var validator = new ArticleCollectionValidator(new ArticleValidator(localizationProvider));
-        return new ArticleManager(localizationProvider, devFs, http, validator);
+        return new ArticleManager(localizationProvider, devFs, http, validator, devFsPaths);
     }
 
     // -----------------------------------------------------------------------------------------------------------------
