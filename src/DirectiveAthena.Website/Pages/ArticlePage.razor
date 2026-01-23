@@ -57,6 +57,19 @@
                                 ? LocalizerShared[Shared.WritingsDetailLinkCopied]
                                 : LocalizerShared[Shared.WritingsDetailCopyLink])
                         </MudButton>
+                        <MudSpacer/>
+                        <div class="d-flex align-center gap-2">
+                            <MudText Typo="Typo.caption" Class="opacity-60">@LocalizerShared[Shared.WritingsDetailShareLabel]</MudText>
+                            <MudIconButton Icon="@Icons.Custom.Brands.Twitter" Color="Color.Secondary" Size="Size.Small"
+                                           Href="@_shareTwitterUrl" Target="_blank"
+                                           Title="@LocalizerShared[Shared.WritingsDetailShareTwitter]"/>
+                            <MudIconButton Icon="@CustomIcons.Bluesky" Color="Color.Secondary" Size="Size.Small"
+                                           Href="@_shareBlueskyUrl" Target="_blank"
+                                           Title="@LocalizerShared[Shared.WritingsDetailShareBluesky]"/>
+                            <MudIconButton Icon="@Icons.Custom.Brands.Reddit" Color="Color.Secondary" Size="Size.Small"
+                                           Href="@_shareRedditUrl" Target="_blank"
+                                           Title="@LocalizerShared[Shared.WritingsDetailShareReddit]"/>
+                        </div>
                     </div>
                     <MudText Typo="Typo.h2"
                              Class="mb-8 SpaceGrotesk">@ArticleManager.GetLocalizedTitle(_currentPost)</MudText>
@@ -65,18 +78,6 @@
                             <MudChip T="string" Size="Size.Small" Color="Color.Secondary"
                                      Variant="Variant.Outlined">@LocalizerTags[tag]</MudChip>
                         }
-                    </div>
-                    <div class="d-flex align-center flex-wrap gap-2 mb-12">
-                        <MudText Typo="Typo.caption" Class="opacity-60">@LocalizerShared[Shared.WritingsDetailShareLabel]</MudText>
-                        <MudButton Variant="Variant.Text" Color="Color.Secondary" Size="Size.Small"
-                                   EndIcon="@Icons.Material.Filled.OpenInNew" Href="@_shareTwitterUrl" Target="_blank"
-                                   Class="pa-0">@LocalizerShared[Shared.WritingsDetailShareTwitter]</MudButton>
-                        <MudButton Variant="Variant.Text" Color="Color.Secondary" Size="Size.Small"
-                                   EndIcon="@Icons.Material.Filled.OpenInNew" Href="@_shareBlueskyUrl" Target="_blank"
-                                   Class="pa-0">@LocalizerShared[Shared.WritingsDetailShareBluesky]</MudButton>
-                        <MudButton Variant="Variant.Text" Color="Color.Secondary" Size="Size.Small"
-                                   EndIcon="@Icons.Material.Filled.OpenInNew" Href="@_shareRedditUrl" Target="_blank"
-                                   Class="pa-0">@LocalizerShared[Shared.WritingsDetailShareReddit]</MudButton>
                     </div>
                     <div class="markdown-content">
                         <InfiniMarkdownPreview Content="@_markdown"/>
