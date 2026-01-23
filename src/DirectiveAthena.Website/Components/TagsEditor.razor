@@ -3,7 +3,9 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @using System.Xml.Linq
 @using DirectiveAthena.Website.Resources
+@using DirectiveAthena.Website.Services.Articles
 @using DirectiveAthena.Website.Services.FileSystem
+@using DirectiveAthena.Website.Services.Localization
 @using Microsoft.Extensions.Localization
 
 @namespace DirectiveAthena.Website.Components
@@ -15,7 +17,7 @@
 @inject IJSRuntime JsRuntime
 @inject ISnackbar Snackbar
 
-@inherits DirectiveAthenaWebsiteComponentBase
+@inherits WebsiteComponentBase
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Html
 @* ------------------------------------------------------------------------------------------------------------------ *@

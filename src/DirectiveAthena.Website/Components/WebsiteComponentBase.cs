@@ -1,11 +1,15 @@
 ﻿// ---------------------------------------------------------------------------------------------------------------------
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
-namespace DirectiveAthena.Website.Services;
+using DirectiveAthena.Website.Services.Localization;
+using Microsoft.AspNetCore.Components;
 
+namespace DirectiveAthena.Website.Components;
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
-public interface ILocalizationInitializer {
-    Task ApplyPreferredCultureAsync();
+public class WebsiteComponentBase : ComponentBase {
+    [Inject] public ILocalizationProvider LocalizationProvider { get; set; } = null!;
+    
+    protected LocalizationInfo CurrentCulture => LocalizationProvider.GetCurrentLocalization();
 }

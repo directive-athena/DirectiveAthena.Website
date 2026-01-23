@@ -2,7 +2,7 @@
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
 using CodeOfChaos.Extensions.DependencyInjection;
-using DirectiveAthena.Website.Models;
+using DirectiveAthena.Website.Services.Localization;
 using FluentValidation;
 
 namespace DirectiveAthena.Website.Services.Articles;

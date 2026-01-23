@@ -2,7 +2,6 @@
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
 using CodeOfChaos.Extensions.DependencyInjection;
-using DirectiveAthena.Website.Models;
 using Microsoft.JSInterop;
 using System.Globalization;
 

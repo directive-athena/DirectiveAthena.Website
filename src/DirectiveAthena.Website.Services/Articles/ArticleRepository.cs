@@ -4,8 +4,8 @@
 using System.Text.Json;
 using CodeOfChaos.Extensions.DependencyInjection;
 using System.Net.Http.Json;
-using DirectiveAthena.Website.Models;
 using DirectiveAthena.Website.Services.FileSystem;
+using DirectiveAthena.Website.Services.Localization;
 
 namespace DirectiveAthena.Website.Services.Articles;
 // ---------------------------------------------------------------------------------------------------------------------

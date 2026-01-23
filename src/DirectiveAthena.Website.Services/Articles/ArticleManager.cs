@@ -3,7 +3,6 @@
 // ---------------------------------------------------------------------------------------------------------------------
 using System.Xml.Linq;
 using CodeOfChaos.Extensions.DependencyInjection;
-using DirectiveAthena.Website.Models;
 using DirectiveAthena.Website.Services.FileSystem;
 using DirectiveAthena.Website.Services.Localization;
 using FluentValidation;

@@ -2,7 +2,7 @@
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
 using Bogus;
-using DirectiveAthena.Website.Models;
+using DirectiveAthena.Website.Services.Articles;
 using DirectiveAthena.Website.Services.Localization;
 
 namespace DirectiveAthenaTests.Website.Helpers;

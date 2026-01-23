@@ -1,12 +1,13 @@
-﻿// ---------------------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
-using DirectiveAthena.Website.Models;
-
-namespace DirectiveAthena.Website.Services;
+namespace DirectiveAthena.Website.Services.Localization;
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
-public interface IContactInfoProvider {
-    ContactInfo[] GetContactInfos();
-}
+public record LocalizationInfo(
+    string Code,
+    string DisplayName,
+    string Abbreviation,
+    string FlagPath
+);

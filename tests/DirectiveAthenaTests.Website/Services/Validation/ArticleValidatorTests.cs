@@ -1,9 +1,8 @@
 // ---------------------------------------------------------------------------------------------------------------------
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
-using DirectiveAthena.Website.Models;
-using DirectiveAthena.Website.Services;
 using DirectiveAthena.Website.Services.Articles;
+using DirectiveAthena.Website.Services.Localization;
 using DirectiveAthenaTests.Website.Helpers;
 using FluentValidation.Results;
 using NSubstitute;
