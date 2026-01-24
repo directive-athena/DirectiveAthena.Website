@@ -35,8 +35,13 @@
       <ProjectReference Include="..\DirectiveAthena.Website.Shared\DirectiveAthena.Website.Shared.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
+  <ItemGroup>
       <Folder Include="wwwroot\content\world-rules\en\" />
       <Folder Include="wwwroot\content\world-rules\nl\" />
-    </ItemGroup>
+  </ItemGroup>
+
+  <Target Name="BuildWebpackRelease" BeforeTargets="Publish" Condition="'$(Configuration)' == 'Release'">
+    <Message Text="Building webpack bundle (Release)..." Importance="high" />
+    <Exec Command="npm run build" WorkingDirectory="$(SolutionDir)" />
+  </Target>
 </Project>
