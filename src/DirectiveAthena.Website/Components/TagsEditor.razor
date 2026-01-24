@@ -13,10 +13,9 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @inject IStringLocalizer<Tags> Localizer
 @inject IStringLocalizer<Shared> LocalizerShared
-@inject IDevFileSystemManager DevFileSystemManager
+@inject IResourceStorage ResourceStorage
 @inject IJSRuntime JsRuntime
 @inject ISnackbar Snackbar
-@inject IDevFileSystemPaths DevFilePaths
 
 @inherits WebsiteComponentBase
 @* ------------------------------------------------------------------------------------------------------------------ *@
@@ -59,7 +58,7 @@
 
     <div class="d-flex flex-wrap gap-4">
         @foreach (LocalizationInfo culture in LocalizationProvider.GetSupportedLocalizations()) {
-            if (DevFileSystemManager.IsLocalhost) {
+            if (ResourceStorage.IsLocalhost) {
                 <MudButton Variant="Variant.Filled" Color="Color.Success"
                            OnClick="@(() => SaveResxToDisk(culture.Code))" StartIcon="@Icons.Material.Filled.Save">
                     @string.Format(LocalizerShared[Shared.TagsManagerSaveResx], culture.Code)
@@ -145,18 +144,18 @@
     private bool IsTagInUse(string tagId) => _inUseTags.Contains(tagId);
 
     private async Task SaveResxToDisk(string locale) {
-        if (!DevFileSystemManager.IsLocalhost) return;
+        if (!ResourceStorage.IsLocalhost) return;
 
-        if (!await DevFileSystemManager.VerifyPermissionAsync()) {
+        if (!await ResourceStorage.VerifyPermissionAsync()) {
             Snackbar.Add(LocalizerShared[Shared.TagsManagerFsRequired], Severity.Warning);
             return;
         }
 
-        string path = DevFilePaths.GetTagsResxPath(locale);
-        string existingContent = await DevFileSystemManager.ReadFileAsync(path) ?? "";
+        string path = ResourceStorage.GetTagsResxPath(locale);
+        string existingContent = await ResourceStorage.ReadTagsResxAsync(locale) ?? "";
         string newContent = GenerateResx(locale, existingContent);
 
-        bool success = await DevFileSystemManager.WriteFileAsync(path, newContent);
+        bool success = await ResourceStorage.WriteTagsResxAsync(locale, newContent);
         if (success) {
             Snackbar.Add(string.Format(LocalizerShared[Shared.TagsManagerSaveSuccess], path), Severity.Success);
         }

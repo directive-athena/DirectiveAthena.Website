@@ -3,7 +3,6 @@
 // ---------------------------------------------------------------------------------------------------------------------
 using CodeOfChaos.Extensions.DependencyInjection;
 using DirectiveAthena.Website.Services.FileSystem;
-using DirectiveAthena.Website.Services.Localization;
 
 namespace DirectiveAthena.Website.Services.Articles;
 // ---------------------------------------------------------------------------------------------------------------------
@@ -12,14 +11,12 @@ namespace DirectiveAthena.Website.Services.Articles;
 [InjectableScoped<IArticleRepository>]
 public class ArticleRepository(
     HttpClient http,
-    IDevFileSystemManager devFs,
-    ILocalizationProvider localizationProvider,
-    IDevFileSystemPaths devFsPaths
+    IContentStorageFactory storageFactory
 ) : ContentRepository<Article>(
     http,
-    new DevFileSystemCategoryManager(devFs, devFsPaths, localizationProvider, DevFileSystemCategory.Articles)
+    storageFactory.ForCategory(ContentCategory.Articles)
 ), IArticleRepository {
-    protected override string IndexPath => "content/articles/index.json";
+    protected override string IndexPath => Storage.IndexContentPath;
 
     // -----------------------------------------------------------------------------------------------------------------
     // Methods

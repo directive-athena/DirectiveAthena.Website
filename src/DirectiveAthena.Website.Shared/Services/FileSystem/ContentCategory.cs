@@ -5,7 +5,7 @@ namespace DirectiveAthena.Website.Services.FileSystem;
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
-public enum DevFileSystemCategory {
+public enum ContentCategory {
     Articles,
     WorldRules
 }

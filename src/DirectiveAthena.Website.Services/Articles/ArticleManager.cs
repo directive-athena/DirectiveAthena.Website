@@ -15,11 +15,13 @@ namespace DirectiveAthena.Website.Services.Articles;
 [InjectableScoped<IArticleManager>]
 public class ArticleManager(
     ILocalizationProvider localizationProvider,
-    IDevFileSystemManager devFs,
+    IContentStorageFactory storageFactory,
+    IResourceStorage resourceStorage,
     HttpClient http,
-    IValidator<IEnumerable<Article>> validator,
-    IDevFileSystemPaths devFsPaths
+    IValidator<IEnumerable<Article>> validator
 ) : IArticleManager {
+    private readonly IContentStorage _storage = storageFactory.ForCategory(ContentCategory.Articles);
+
     public string GetLocalizedTitle(Article article)
         => GetLocalizedValue(article.Title);
 
@@ -35,12 +37,13 @@ public class ArticleManager(
 
     public string GetLocalizedFilePath(Article article) {
         LocalizationInfo localization = localizationProvider.GetCurrentLocalization();
-        return $"content/articles/{localization.Code}/{article.MarkdownFileName}";
+        return _storage.GetMarkdownContentPath(localization.Code, article.MarkdownFileName);
     }
 
     public async Task<string> GetRawMarkdownContentAsync(Article article, string locale, CancellationToken ct = default) {
         try {
-            return await http.GetStringAsync($"content/articles/{locale}/{article.MarkdownFileName}", ct);
+            string path = _storage.GetMarkdownContentPath(locale, article.MarkdownFileName);
+            return await http.GetStringAsync(path, ct);
         }
         catch {
             return string.Empty;
@@ -81,25 +84,25 @@ public class ArticleManager(
             c => c.Code,
             c => $"# {article.Title.GetValueOrDefault(c.Code)}");
 
-        if (!writeToDisk || !devFs.IsLocalhost || !await devFs.HasAccessAsync() || !await devFs.VerifyPermissionAsync()) return stubs;
+        if (!writeToDisk || !_storage.IsLocalhost || !await _storage.HasAccessAsync() || !await _storage.VerifyPermissionAsync()) return stubs;
 
         foreach (KeyValuePair<string, string> stub in stubs) {
-            await devFs.WriteFileAsync(devFsPaths.GetMarkdownPath(stub.Key, article.MarkdownFileName), stub.Value);
+            string path = _storage.GetMarkdownDiskPath(stub.Key, article.MarkdownFileName);
+            await _storage.WriteFileAsync(path, stub.Value);
         }
 
         return stubs;
     }
 
     public async Task EnsureResxAsync(CancellationToken ct = default) {
-        if (!devFs.IsLocalhost || !await devFs.HasAccessAsync()) return;
+        if (!resourceStorage.IsLocalhost || !await resourceStorage.HasAccessAsync()) return;
 
-        foreach (string path in localizationProvider.GetSupportedLocalizations()
-            .Select(culture => devFsPaths.GetSharedResxPath(culture.Code))) {
-            string? content = await devFs.ReadFileAsync(path);
+        foreach (LocalizationInfo culture in localizationProvider.GetSupportedLocalizations()) {
+            string? content = await resourceStorage.ReadSharedResxAsync(culture.Code, ct);
             if (content is not null) continue;
 
             XDocument newResx = CreateNewResx();
-            await devFs.WriteFileAsync(path, newResx.ToString());
+            await resourceStorage.WriteSharedResxAsync(culture.Code, newResx.ToString(), ct);
         }
     }
 

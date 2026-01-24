@@ -27,17 +27,23 @@ public class ArticleManagerTests {
         return localizationProvider;
     }
 
+    private static IContentStorageFactory CreateStorageFactory(IContentStorage storage) {
+        var factory = Substitute.For<IContentStorageFactory>();
+        factory.ForCategory(ContentCategory.Articles).Returns(storage);
+        return factory;
+    }
+
     private static ArticleManager CreateManager(
         ILocalizationProvider localizationProvider,
-        IDevFileSystemManager? devFs = null,
-        HttpClient? http = null,
-        IDevFileSystemPaths? devFsPaths = null
+        IContentStorage? storage = null,
+        IResourceStorage? resourceStorage = null,
+        HttpClient? http = null
     ) {
-        devFs ??= Substitute.For<IDevFileSystemManager>();
+        storage ??= Substitute.For<IContentStorage>();
+        resourceStorage ??= Substitute.For<IResourceStorage>();
         http ??= new HttpClient();
-        devFsPaths ??= Substitute.For<IDevFileSystemPaths>();
         var validator = new ArticleCollectionValidator(new ArticleValidator(localizationProvider));
-        return new ArticleManager(localizationProvider, devFs, http, validator, devFsPaths);
+        return new ArticleManager(localizationProvider, CreateStorageFactory(storage), resourceStorage, http, validator);
     }
 
     // -----------------------------------------------------------------------------------------------------------------
@@ -76,7 +82,10 @@ public class ArticleManagerTests {
         // Arrange
         Article article = ArticleFaker.Create(102);
         ILocalizationProvider localizationProvider = CreateLocalizationProvider("nl");
-        ArticleManager manager = CreateManager(localizationProvider);
+        var storage = Substitute.For<IContentStorage>();
+        storage.GetMarkdownContentPath(Arg.Any<string>(), Arg.Any<string>())
+            .Returns(call => $"content/articles/{call.ArgAt<string>(0)}/{call.ArgAt<string>(1)}");
+        ArticleManager manager = CreateManager(localizationProvider, storage);
         
         // Act
         string result = manager.GetLocalizedFilePath(article);
@@ -190,33 +199,30 @@ public class ArticleManagerTests {
     public async Task GenerateStubsAsync_ReturnsStubsForAllCultures() {
         // Arrange
         Article article = ArticleFaker.Create(120);
-        var devFs = Substitute.For<IDevFileSystemManager>();
-        ArticleManager manager = CreateManager(CreateLocalizationProvider("en"), devFs);
+        var storage = Substitute.For<IContentStorage>();
+        ArticleManager manager = CreateManager(CreateLocalizationProvider("en"), storage);
         
         // Act
         Dictionary<string, string> stubs = await manager.GenerateStubsAsync(article, writeToDisk: false);
 
         // Assert
         await Assert.That(stubs.Count).IsEqualTo(ArticleFaker.DefaultLocalizations().Count);
-        await devFs.DidNotReceiveWithAnyArgs().WriteFileAsync(null!, null!);
+        await storage.DidNotReceiveWithAnyArgs().WriteFileAsync(null!, null!);
     }
 
     [Test]
     public async Task GenerateStubsAsync_WritesWhenLocalhostAndPermitted() {
         // Arrange
         Article article = ArticleFaker.Create(121);
-        var devFs = Substitute.For<IDevFileSystemManager>();
-        devFs.IsLocalhost.Returns(true);
-        devFs.HasAccessAsync().Returns(new ValueTask<bool>(true));
-        devFs.VerifyPermissionAsync().Returns(new ValueTask<bool>(true));
-        devFs.WriteFileAsync(Arg.Any<string>(), Arg.Any<string>()).Returns(new ValueTask<bool>(true));
-
-        var devFsPaths = Substitute.For<IDevFileSystemPaths>();
-        devFsPaths
-            .GetMarkdownPath(Arg.Any<string>(), Arg.Any<string>())
+        var storage = Substitute.For<IContentStorage>();
+        storage.IsLocalhost.Returns(true);
+        storage.HasAccessAsync().Returns(new ValueTask<bool>(true));
+        storage.VerifyPermissionAsync().Returns(new ValueTask<bool>(true));
+        storage.WriteFileAsync(Arg.Any<string>(), Arg.Any<string>()).Returns(new ValueTask<bool>(true));
+        storage.GetMarkdownDiskPath(Arg.Any<string>(), Arg.Any<string>())
             .Returns(call => $"{call.ArgAt<string>(0)}/{call.ArgAt<string>(1)}");
 
-        ArticleManager manager = CreateManager(CreateLocalizationProvider("en"), devFs, devFsPaths: devFsPaths);
+        ArticleManager manager = CreateManager(CreateLocalizationProvider("en"), storage);
 
         // Act
         Dictionary<string, string> stubs = await manager.GenerateStubsAsync(article, writeToDisk: true);
@@ -224,55 +230,45 @@ public class ArticleManagerTests {
         // Assert
         await Assert.That(stubs.Count).IsEqualTo(ArticleFaker.DefaultLocalizations().Count);
         foreach (LocalizationInfo localization in ArticleFaker.DefaultLocalizations()) {
-            string path = devFsPaths.GetMarkdownPath(localization.Code, article.MarkdownFileName);
-            await devFs.Received(1).WriteFileAsync(path, Arg.Any<string>());
+            string path = storage.GetMarkdownDiskPath(localization.Code, article.MarkdownFileName);
+            await storage.Received(1).WriteFileAsync(path, Arg.Any<string>());
         }
     }
 
     [Test]
     public async Task EnsureResxAsync_CreatesMissingResxFiles() {
         // Arrange
-        var devFs = Substitute.For<IDevFileSystemManager>();
-        devFs.IsLocalhost.Returns(true);
-        devFs.HasAccessAsync().Returns(new ValueTask<bool>(true));
-
-        var devFsPaths = Substitute.For<IDevFileSystemPaths>();
-        devFsPaths.GetSharedResxPath("en").Returns("shared.en.resx");
-        devFsPaths.GetSharedResxPath("nl").Returns("shared.nl.resx");
-
-        string enPath = devFsPaths.GetSharedResxPath("en");
-        string nlPath = devFsPaths.GetSharedResxPath("nl");
-
-        devFs.ReadFileAsync(enPath).Returns(new ValueTask<string?>("existing"));
-        devFs.ReadFileAsync(nlPath).Returns(new ValueTask<string?>());
-        devFs.WriteFileAsync(Arg.Any<string>(), Arg.Any<string>()).Returns(new ValueTask<bool>(true));
+        var resourceStorage = Substitute.For<IResourceStorage>();
+        resourceStorage.IsLocalhost.Returns(true);
+        resourceStorage.HasAccessAsync().Returns(new ValueTask<bool>(true));
+        resourceStorage.ReadSharedResxAsync("en").Returns(new ValueTask<string?>("existing"));
+        resourceStorage.ReadSharedResxAsync("nl").Returns(new ValueTask<string?>());
+        resourceStorage.WriteSharedResxAsync(Arg.Any<string>(), Arg.Any<string>())
+            .Returns(new ValueTask<bool>(true));
         
         // Act
-        ArticleManager manager = CreateManager(CreateLocalizationProvider("en"), devFs, devFsPaths: devFsPaths);
+        ArticleManager manager = CreateManager(CreateLocalizationProvider("en"), resourceStorage: resourceStorage);
         await manager.EnsureResxAsync();
 
         // Assert
-        await devFs.DidNotReceive().WriteFileAsync(enPath, Arg.Any<string>());
-        await devFs.Received(1).WriteFileAsync(nlPath, Arg.Any<string>());
+        await resourceStorage.DidNotReceive().WriteSharedResxAsync("en", Arg.Any<string>());
+        await resourceStorage.Received(1).WriteSharedResxAsync("nl", Arg.Any<string>());
     }
 
     [Test]
     public async Task EnsureResxAsync_DoesNotReadOrWriteWhenNotLocalhost() {
         // Arrange
-        var devFs = Substitute.For<IDevFileSystemManager>();
-        devFs.IsLocalhost.Returns(false);
-        devFs.HasAccessAsync().Returns(new ValueTask<bool>(true));
+        var resourceStorage = Substitute.For<IResourceStorage>();
+        resourceStorage.IsLocalhost.Returns(false);
+        resourceStorage.HasAccessAsync().Returns(new ValueTask<bool>(true));
 
-        var devFsPaths = Substitute.For<IDevFileSystemPaths>();
-        devFsPaths.GetSharedResxPath(Arg.Any<string>()).Returns("shared.resx");
-
-        ArticleManager manager = CreateManager(CreateLocalizationProvider("en"), devFs, devFsPaths: devFsPaths);
+        ArticleManager manager = CreateManager(CreateLocalizationProvider("en"), resourceStorage: resourceStorage);
 
         // Act
         await manager.EnsureResxAsync();
 
         // Assert
-        await devFs.DidNotReceiveWithAnyArgs().ReadFileAsync(null!);
-        await devFs.DidNotReceiveWithAnyArgs().WriteFileAsync(null!, null!);
+        await resourceStorage.DidNotReceiveWithAnyArgs().ReadSharedResxAsync(null!);
+        await resourceStorage.DidNotReceiveWithAnyArgs().WriteSharedResxAsync(null!, null!);
     }
 }

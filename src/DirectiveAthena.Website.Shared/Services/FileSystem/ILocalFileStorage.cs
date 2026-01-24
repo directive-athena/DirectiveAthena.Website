@@ -1,13 +1,13 @@
-﻿// ---------------------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
 namespace DirectiveAthena.Website.Services.FileSystem;
+
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
-public interface IDevFileSystemManager {
+public interface ILocalFileStorage {
     bool IsLocalhost { get; }
-    
     ValueTask<bool> IsSupportedAsync(CancellationToken ct = default);
     ValueTask<bool> RequestAccessAsync(CancellationToken ct = default);
     ValueTask<bool> HasAccessAsync(CancellationToken ct = default);

@@ -13,13 +13,10 @@ namespace DirectiveAthena.Website.Services;
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
-public abstract class ContentRepository<T>(
-    HttpClient http,
-    IDevFileSystemCategoryManager devFs
-) 
-    : IContentRepository<T>
+public abstract class ContentRepository<T>(HttpClient http, IContentStorage contentStorage) : IContentRepository<T>
     where T : ContentBase {
     private readonly SemaphoreSlim _lock = new(1, 1);
+    protected IContentStorage Storage { get; } = contentStorage;
     protected ImmutableDictionary<Guid, T> ItemsById { get; private set; } = ImmutableDictionary<Guid, T>.Empty;
     private bool _hasLoaded;
     private EntityTagHeaderValue? _etag;
@@ -49,23 +46,23 @@ public abstract class ContentRepository<T>(
     }
     
     public async ValueTask<bool> SaveAsync(IEnumerable<T> items, CancellationToken ct = default) {
-        if (!devFs.IsLocalhost) return false;
-        if (!await devFs.VerifyPermissionAsync(ct)) return false;
+        if (!Storage.IsLocalhost) return false;
+        if (!await Storage.VerifyPermissionAsync(ct)) return false;
 
         string json = await AsJsonStringAsync(items, ct);
-        bool success = await devFs.WriteIndexAsync(json, ct);
+        bool success = await Storage.WriteIndexAsync(json, ct);
         return success;
     }
 
     public async ValueTask<bool> DeleteByIdAsync(Guid id, CancellationToken ct = default) {
         _ = ct;
-        if (!devFs.IsLocalhost || !await devFs.HasAccessAsync(ct)) return false;
-        if (!await devFs.VerifyPermissionAsync(ct)) return false;
+        if (!Storage.IsLocalhost || !await Storage.HasAccessAsync(ct)) return false;
+        if (!await Storage.VerifyPermissionAsync(ct)) return false;
 
         await EnsureCacheAsync(ct);
         if (!ItemsById.TryGetValue(id, out T? item)) return false;
 
-        bool allDeleted = await devFs.DeleteLocalizedFilesAsync(item.MarkdownFileName, ct);
+        bool allDeleted = await Storage.DeleteLocalizedFilesAsync(item.MarkdownFileName, ct);
         if (!allDeleted) return false;
 
         T[] updatedItems = ItemsById.Remove(id).Values.ToArray();
@@ -113,7 +110,7 @@ public abstract class ContentRepository<T>(
         => !_hasLoaded || _lastRefreshUtc is null || now - _lastRefreshUtc.Value > GetRefreshWindow();
 
     private TimeSpan GetRefreshWindow()
-        => devFs.IsLocalhost ? DevRefreshWindow : CacheRefreshWindow;
+        => Storage.IsLocalhost ? DevRefreshWindow : CacheRefreshWindow;
 
     private async Task RefreshCacheAsync(DateTimeOffset now, CancellationToken ct) {
         using HttpRequestMessage request = new(HttpMethod.Get, IndexPath);

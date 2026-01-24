@@ -2,15 +2,15 @@
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
 using CodeOfChaos.Extensions.DependencyInjection;
-using Microsoft.JSInterop;
 using Microsoft.AspNetCore.Components;
+using Microsoft.JSInterop;
 
 namespace DirectiveAthena.Website.Services.FileSystem;
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
-[InjectableScoped<IDevFileSystemManager>]
-public class DevFileSystemManager(IJSRuntime jsRuntime, NavigationManager navigationManager) : IDevFileSystemManager {
+[InjectableScoped<ILocalFileStorage>]
+public class LocalFileStorage(IJSRuntime jsRuntime, NavigationManager navigationManager) : ILocalFileStorage {
     public bool IsLocalhost {
         get {
             #if DEBUG

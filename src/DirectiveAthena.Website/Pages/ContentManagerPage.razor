@@ -23,7 +23,7 @@
 @inject IArticleManager ArticleManager
 @inject IWorldRuleRepository WorldRuleRepository
 @inject IWorldRuleManager WorldRuleManager
-@inject IDevFileSystemManager DevFileSystemManager
+@inject ILocalFileStorage LocalFileStorage
 @inject IJSRuntime JsRuntime
 @inject ISnackbar Snackbar
 @inject IStringLocalizer<Shared> Localizer
@@ -38,7 +38,7 @@
     <div class="d-flex justify-space-between align-center mb-8">
         <MudText Typo="Typo.h3">@Localizer[Shared.ContentManagerHeading]</MudText>
 
-        @if (DevFileSystemManager.IsLocalhost) {
+        @if (LocalFileStorage.IsLocalhost) {
             <div class="d-flex align-center gap-4">
                 @if (_fsSupported) {
                     <MudChip T="string" Color="@(_hasAccess ? Color.Success : Color.Warning)"
@@ -67,7 +67,7 @@
         <MudProgressCircular Color="Color.Primary" Indeterminate="true"/>
     }
     else {
-        if (!DevFileSystemManager.IsLocalhost) {
+        if (!LocalFileStorage.IsLocalhost) {
             <MudAlert Severity="Severity.Info" Variant="Variant.Filled" Class="mb-6">
                 <b>@Localizer[Shared.ContentManagerReadOnlyLabel]:</b>
                 @Localizer[Shared.ContentManagerReadOnlyBody]
@@ -111,7 +111,7 @@
                             <ArticleList Posts="_posts" SelectedPost="_selectedPost"
                                          OnPostSelected="OnPostSelected" OnCreatePost="CreateNewPost"/>
 
-                            @switch (DevFileSystemManager.IsLocalhost) {
+                            @switch (LocalFileStorage.IsLocalhost) {
                                 case true when _hasAccess:
                                     <MudButton Variant="Variant.Filled" Color="Color.Success" FullWidth="true"
                                                OnClick="@SaveAllArticles"
@@ -155,7 +155,7 @@
                             <WorldRuleList Rules="_rules" SelectedRule="_selectedRule"
                                            OnRuleSelected="OnRuleSelected" OnCreateRule="CreateNewRule"/>
 
-                            @switch (DevFileSystemManager.IsLocalhost) {
+                            @switch (LocalFileStorage.IsLocalhost) {
                                 case true when _hasAccess:
                                     <MudButton Variant="Variant.Filled" Color="Color.Success" FullWidth="true"
                                                OnClick="@SaveAllRules"
@@ -228,12 +228,12 @@
         IEnumerable<WorldRule> rules = await WorldRuleRepository.GetAllAsync();
         _rules = rules.ToList();
 
-        if (!DevFileSystemManager.IsLocalhost) return;
+        if (!LocalFileStorage.IsLocalhost) return;
 
-        _fsSupported = await DevFileSystemManager.IsSupportedAsync();
+        _fsSupported = await LocalFileStorage.IsSupportedAsync();
         if (!_fsSupported) return;
 
-        _hasAccess = await DevFileSystemManager.HasAccessAsync();
+        _hasAccess = await LocalFileStorage.HasAccessAsync();
 
         if (_hasAccess) {
             await ArticleManager.EnsureResxAsync();
@@ -241,7 +241,7 @@
     }
 
     private async Task RequestAccess() {
-        if (await DevFileSystemManager.RequestAccessAsync()) {
+        if (await LocalFileStorage.RequestAccessAsync()) {
             _hasAccess = true;
             await ArticleManager.EnsureResxAsync();
             Snackbar.Add(Localizer[Shared.ContentManagerAccessGrantedToast], Severity.Success);
@@ -252,7 +252,7 @@
     }
 
     private async Task ResetAccess() {
-        await DevFileSystemManager.ResetAccessAsync();
+        await LocalFileStorage.ResetAccessAsync();
         _hasAccess = false;
         Snackbar.Add(Localizer[Shared.ContentManagerAccessResetToast], Severity.Info);
     }
@@ -293,7 +293,7 @@
         _posts.Remove(postToDelete);
         _selectedPost = null;
 
-        if (DevFileSystemManager.IsLocalhost && _hasAccess) {
+        if (LocalFileStorage.IsLocalhost && _hasAccess) {
             bool success = await ArticleRepository.DeleteByIdAsync(postToDelete.Id);
             if (success) {
                 Snackbar.Add(Localizer[Shared.ContentManagerDeletePostSuccess], Severity.Success);
@@ -317,7 +317,7 @@
         _rules.Remove(ruleToDelete);
         _selectedRule = null;
 
-        if (DevFileSystemManager.IsLocalhost && _hasAccess) {
+        if (LocalFileStorage.IsLocalhost && _hasAccess) {
             bool success = await WorldRuleRepository.DeleteByIdAsync(ruleToDelete.Id);
             if (success) {
                 Snackbar.Add(Localizer[Shared.ContentManagerDeleteRuleSuccess], Severity.Success);
@@ -345,7 +345,7 @@
         }
         else {
             Snackbar.Add(Localizer[Shared.ContentManagerIndexSaveFailed], Severity.Error);
-            if (!await DevFileSystemManager.HasAccessAsync()) {
+            if (!await LocalFileStorage.HasAccessAsync()) {
                 _hasAccess = false;
             }
         }
@@ -365,7 +365,7 @@
         }
         else {
             Snackbar.Add(Localizer[Shared.ContentManagerIndexSaveFailed], Severity.Error);
-            if (!await DevFileSystemManager.HasAccessAsync()) {
+            if (!await LocalFileStorage.HasAccessAsync()) {
                 _hasAccess = false;
             }
         }
@@ -416,7 +416,7 @@
     private async Task GenerateArticleStubs() {
         if (_selectedPost is null) return;
 
-        bool writeToDisk = DevFileSystemManager.IsLocalhost && _hasAccess;
+        bool writeToDisk = LocalFileStorage.IsLocalhost && _hasAccess;
         Dictionary<string, string> stubs = await ArticleManager.GenerateStubsAsync(_selectedPost, writeToDisk);
 
         if (writeToDisk) {
@@ -432,7 +432,7 @@
     private async Task GenerateRuleStubs() {
         if (_selectedRule is null) return;
 
-        bool writeToDisk = DevFileSystemManager.IsLocalhost && _hasAccess;
+        bool writeToDisk = LocalFileStorage.IsLocalhost && _hasAccess;
         Dictionary<string, string> stubs = await WorldRuleManager.GenerateStubsAsync(_selectedRule, writeToDisk);
 
         if (writeToDisk) {

@@ -11,9 +11,8 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Descriptors
 @* ------------------------------------------------------------------------------------------------------------------ *@
-@inject IDevFileSystemManager DevFileSystemManager
 @inject IWorldRuleManager WorldRuleManager
-@inject IDevFileSystemPaths DevFilePaths
+@inject IContentStorageFactory ContentStorageFactory
 @inject IStringLocalizer<Shared> Localizer
 
 @inherits WebsiteComponentBase
@@ -84,11 +83,11 @@
                                      FileName="@Rule.MarkdownFileName"
                                      LoadContentAsync="@((string locale) => WorldRuleManager.GetRawMarkdownContentAsync(Rule, locale))"
                                      BuildDefaultContent="@((string locale) => BuildDefaultMarkdown(locale))"
-                                     GetDiskPath="@((string locale) => DevFilePaths.GetWorldRuleMarkdownPath(locale, Rule.MarkdownFileName))"/>
+                                     GetDiskPath="@((string locale) => _storage.GetMarkdownDiskPath(locale, Rule.MarkdownFileName))"/>
         </MudItem>
 
         <MudItem xs="12" Class="mt-4">
-            @if (DevFileSystemManager.IsLocalhost) {
+            @if (_storage.IsLocalhost) {
                 <MudButton Variant="Variant.Filled" Color="Color.Info" OnClick="@OnGenerateStubs"
                            StartIcon="@Icons.Material.Filled.NoteAdd">
                     @Localizer[Shared.ContentManagerMarkdownStubsSaveDisk]
@@ -115,6 +114,11 @@
     [Parameter] public EventCallback OnTagsChanged { get; set; }
 
     private string _newTag = "";
+    private IContentStorage _storage = null!;
+
+    protected override void OnInitialized() {
+        _storage = ContentStorageFactory.ForCategory(ContentCategory.WorldRules);
+    }
 
     // -----------------------------------------------------------------------------------------------------------------
     // Methods

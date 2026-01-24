@@ -25,8 +25,9 @@ public class ServiceCollectionExtensionsTests {
         // Assert
         await Assert.That(services.Any(s => s.ServiceType == typeof(IArticleManager))).IsTrue();
         await Assert.That(services.Any(s => s.ServiceType == typeof(IArticleRepository))).IsTrue();
-        await Assert.That(services.Any(s => s.ServiceType == typeof(IDevFileSystemManager))).IsTrue();
-        await Assert.That(services.Any(s => s.ServiceType == typeof(IDevFileSystemPaths))).IsTrue();
+        await Assert.That(services.Any(s => s.ServiceType == typeof(ILocalFileStorage))).IsTrue();
+        await Assert.That(services.Any(s => s.ServiceType == typeof(IContentStorageFactory))).IsTrue();
+        await Assert.That(services.Any(s => s.ServiceType == typeof(IResourceStorage))).IsTrue();
         await Assert.That(services.Any(s => s.ServiceType == typeof(ILocalizationProvider))).IsTrue();
         await Assert.That(services.Any(s => s.ServiceType == typeof(ILocalizationInitializer))).IsTrue();
         await Assert.That(services.Any(s => s.ServiceType == typeof(IValidator<Article>))).IsTrue();

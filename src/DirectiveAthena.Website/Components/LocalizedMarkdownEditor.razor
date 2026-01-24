@@ -10,7 +10,7 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Descriptors
 @* ------------------------------------------------------------------------------------------------------------------ *@
-@inject IDevFileSystemManager DevFileSystemManager
+@inject ILocalFileStorage LocalFileStorage
 @inject IJSRuntime JsRuntime
 @inject ISnackbar Snackbar
 @inject IStringLocalizer<Shared> Localizer
@@ -44,7 +44,7 @@
                       Lines="16" Variant="Variant.Outlined" Class="mb-4"/>
 
         <div class="d-flex gap-4">
-            @if (DevFileSystemManager.IsLocalhost) {
+            @if (LocalFileStorage.IsLocalhost) {
                 <MudButton Variant="Variant.Filled" Color="Color.Success" OnClick="@SaveMarkdown"
                            StartIcon="@Icons.Material.Filled.Save">
                     @Localizer[Shared.MarkdownEditorSave]
@@ -113,8 +113,8 @@
             return;
         }
 
-        if (DevFileSystemManager.IsLocalhost && await DevFileSystemManager.HasAccessAsync()) {
-            string? diskContent = await DevFileSystemManager.ReadFileAsync(GetDiskPath(_selectedLocale));
+        if (LocalFileStorage.IsLocalhost && await LocalFileStorage.HasAccessAsync()) {
+            string? diskContent = await LocalFileStorage.ReadFileAsync(GetDiskPath(_selectedLocale));
             if (diskContent is not null) {
                 _content = diskContent;
                 return;
@@ -141,22 +141,22 @@
 
         _drafts[locale] = _content;
 
-        if (!DevFileSystemManager.IsLocalhost) return;
-        if (!await DevFileSystemManager.HasAccessAsync()) return;
-        if (!await DevFileSystemManager.VerifyPermissionAsync()) return;
+        if (!LocalFileStorage.IsLocalhost) return;
+        if (!await LocalFileStorage.HasAccessAsync()) return;
+        if (!await LocalFileStorage.VerifyPermissionAsync()) return;
 
-        await DevFileSystemManager.WriteFileAsync(GetDiskPath(locale), _content);
+        await LocalFileStorage.WriteFileAsync(GetDiskPath(locale), _content);
     }
 
     private async Task SaveMarkdown() {
-        if (string.IsNullOrWhiteSpace(FileName) || GetDiskPath is null || !DevFileSystemManager.IsLocalhost) return;
+        if (string.IsNullOrWhiteSpace(FileName) || GetDiskPath is null || !LocalFileStorage.IsLocalhost) return;
 
-        if (!await DevFileSystemManager.VerifyPermissionAsync()) {
+        if (!await LocalFileStorage.VerifyPermissionAsync()) {
             Snackbar.Add(Localizer[Shared.MarkdownEditorFsRequired], Severity.Warning);
             return;
         }
 
-        bool success = await DevFileSystemManager.WriteFileAsync(GetDiskPath(_selectedLocale), _content);
+        bool success = await LocalFileStorage.WriteFileAsync(GetDiskPath(_selectedLocale), _content);
         if (success) {
             Snackbar.Add(string.Format(Localizer[Shared.MarkdownEditorSaveSuccess], _selectedLocale, FileName), Severity.Success);
         }

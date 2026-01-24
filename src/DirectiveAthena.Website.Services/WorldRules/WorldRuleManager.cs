@@ -14,11 +14,12 @@ namespace DirectiveAthena.Website.Services.WorldRules;
 [InjectableScoped<IWorldRuleManager>]
 public class WorldRuleManager(
     ILocalizationProvider localizationProvider,
-    IDevFileSystemManager devFs,
+    IContentStorageFactory storageFactory,
     HttpClient http,
-    IValidator<IEnumerable<WorldRule>> validator,
-    IDevFileSystemPaths devFsPaths
+    IValidator<IEnumerable<WorldRule>> validator
 ) : IWorldRuleManager {
+    private readonly IContentStorage _storage = storageFactory.ForCategory(ContentCategory.WorldRules);
+
     public string GetLocalizedQuestion(WorldRule rule)
         => GetLocalizedValue(rule.Question);
 
@@ -27,12 +28,13 @@ public class WorldRuleManager(
 
     public string GetLocalizedFilePath(WorldRule rule) {
         LocalizationInfo localization = localizationProvider.GetCurrentLocalization();
-        return $"content/world-rules/{localization.Code}/{rule.MarkdownFileName}";
+        return _storage.GetMarkdownContentPath(localization.Code, rule.MarkdownFileName);
     }
 
     public async Task<string> GetRawMarkdownContentAsync(WorldRule rule, string locale, CancellationToken ct = default) {
         try {
-            return await http.GetStringAsync($"content/world-rules/{locale}/{rule.MarkdownFileName}", ct);
+            string path = _storage.GetMarkdownContentPath(locale, rule.MarkdownFileName);
+            return await http.GetStringAsync(path, ct);
         }
         catch {
             return string.Empty;
@@ -72,10 +74,11 @@ public class WorldRuleManager(
             c => c.Code,
             c => $"# {rule.Question.GetValueOrDefault(c.Code)}\n\n{rule.Answer.GetValueOrDefault(c.Code)}");
 
-        if (!writeToDisk || !devFs.IsLocalhost || !await devFs.HasAccessAsync() || !await devFs.VerifyPermissionAsync()) return stubs;
+        if (!writeToDisk || !_storage.IsLocalhost || !await _storage.HasAccessAsync(ct) || !await _storage.VerifyPermissionAsync(ct)) return stubs;
 
         foreach (KeyValuePair<string, string> stub in stubs) {
-            await devFs.WriteFileAsync(devFsPaths.GetWorldRuleMarkdownPath(stub.Key, rule.MarkdownFileName), stub.Value);
+            string path = _storage.GetMarkdownDiskPath(stub.Key, rule.MarkdownFileName);
+            await _storage.WriteFileAsync(path, stub.Value, ct);
         }
 
         return stubs;
