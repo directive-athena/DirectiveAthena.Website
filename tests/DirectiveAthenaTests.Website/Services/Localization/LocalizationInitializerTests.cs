@@ -1,11 +1,11 @@
 // ---------------------------------------------------------------------------------------------------------------------
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
-using System.Globalization;
 using DirectiveAthena.Website.Services.Localization;
 using NSubstitute;
+using System.Globalization;
 
-namespace DirectiveAthenaTests.Website.Services;
+namespace DirectiveAthenaTests.Website.Services.Localization;
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------

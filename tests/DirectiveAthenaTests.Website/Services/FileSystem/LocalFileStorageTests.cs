@@ -7,7 +7,7 @@ using Microsoft.JSInterop;
 using Microsoft.JSInterop.Infrastructure;
 using NSubstitute;
 
-namespace DirectiveAthenaTests.Website.Services;
+namespace DirectiveAthenaTests.Website.Services.FileSystem;
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------

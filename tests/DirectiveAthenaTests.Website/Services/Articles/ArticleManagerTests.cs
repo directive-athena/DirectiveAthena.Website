@@ -1,14 +1,14 @@
 // ---------------------------------------------------------------------------------------------------------------------
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
-using System.Net;
 using DirectiveAthena.Website.Services.Articles;
 using DirectiveAthena.Website.Services.FileSystem;
 using DirectiveAthena.Website.Services.Localization;
 using DirectiveAthenaTests.Website.Helpers;
 using NSubstitute;
+using System.Net;
 
-namespace DirectiveAthenaTests.Website.Services;
+namespace DirectiveAthenaTests.Website.Services.Articles;
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------

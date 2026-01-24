@@ -7,11 +7,11 @@ using DirectiveAthenaTests.Website.Helpers;
 using FluentValidation.Results;
 using NSubstitute;
 
-namespace DirectiveAthenaTests.Website.Services.Validation;
+namespace DirectiveAthenaTests.Website.Services.Articles;
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
-public class ArticleCollectionValidatorTests {
+public class ArticleValidatorTests {
 
     private static ILocalizationProvider CreateLocalizationProvider(string currentCode) {
         LocalizationInfo[] localizations = [
@@ -29,38 +29,59 @@ public class ArticleCollectionValidatorTests {
     // Test Methods
     // -----------------------------------------------------------------------------------------------------------------
     [Test]
-    public async Task Validate_RejectsDuplicateIds() {
+    public async Task Validate_RejectsMissingId() {
         // Arrange
-        Article[] articles = [
-            ArticleFaker.Create(400),
-            ArticleFaker.Create(401)
-        ];
-        articles[1].Id = articles[0].Id;
-
-        var validator = new ArticleCollectionValidator(new ArticleValidator(CreateLocalizationProvider("en")));
+        var validator = new ArticleValidator(CreateLocalizationProvider("en"));
+        Article article = ArticleFaker.Create(300);
+        article.Id = Guid.Empty;
 
         // Act
-        ValidationResult? result = await validator.ValidateAsync(articles);
+        ValidationResult? result = await validator.ValidateAsync(article);
 
         // Assert
         await Assert.That(result.IsValid).IsFalse();
-        await Assert.That(result.Errors.Any(e => e.ErrorMessage == "Duplicate IDs found!")).IsTrue();
+        await Assert.That(result.Errors.Any(e => e.ErrorMessage == "Some posts have missing Id!")).IsTrue();
     }
 
     [Test]
-    public async Task Validate_FailsWhenAnyArticleIsInvalid() {
+    public async Task Validate_RejectsMissingLocalizedTitle() {
         // Arrange
-        Article valid = ArticleFaker.Create(420);
-        Article invalid = ArticleFaker.Create(421, includeNl: false);
-        Article[] articles = [valid, invalid];
-
-        var validator = new ArticleCollectionValidator(new ArticleValidator(CreateLocalizationProvider("en")));
+        var validator = new ArticleValidator(CreateLocalizationProvider("en"));
+        Article article = ArticleFaker.Create(301, includeNl: false);
 
         // Act
-        ValidationResult? result = await validator.ValidateAsync(articles);
+        ValidationResult? result = await validator.ValidateAsync(article);
 
         // Assert
         await Assert.That(result.IsValid).IsFalse();
         await Assert.That(result.Errors.Any(e => e.ErrorMessage == "Some posts have missing titles for one or more cultures!")).IsTrue();
+    }
+
+    [Test]
+    public async Task Validate_RejectsMissingLocalizedSummary() {
+        // Arrange
+        var validator = new ArticleValidator(CreateLocalizationProvider("en"));
+        Article article = ArticleFaker.Create(302);
+        article.Summary.Remove("nl");
+
+        // Act
+        ValidationResult? result = await validator.ValidateAsync(article);
+
+        // Assert
+        await Assert.That(result.IsValid).IsFalse();
+        await Assert.That(result.Errors.Any(e => e.ErrorMessage == "Some posts have missing summaries for one or more cultures!")).IsTrue();
+    }
+
+    [Test]
+    public async Task Validate_AllowsValidArticle() {
+        // Arrange
+        var validator = new ArticleValidator(CreateLocalizationProvider("en"));
+        Article article = ArticleFaker.Create(303);
+
+        // Act
+        ValidationResult? result = await validator.ValidateAsync(article);
+
+        // Assert
+        await Assert.That(result.IsValid).IsTrue();
     }
 }

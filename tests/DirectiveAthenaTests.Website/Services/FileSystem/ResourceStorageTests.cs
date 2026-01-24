@@ -5,7 +5,7 @@ using DirectiveAthena.Website.Services.FileSystem;
 using DirectiveAthena.Website.Services.Localization;
 using NSubstitute;
 
-namespace DirectiveAthenaTests.Website.Services;
+namespace DirectiveAthenaTests.Website.Services.FileSystem;
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
