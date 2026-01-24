@@ -42,6 +42,6 @@
 
   <Target Name="BuildWebpackRelease" BeforeTargets="Publish" Condition="'$(Configuration)' == 'Release'">
     <Message Text="Building webpack bundle (Release)..." Importance="high" />
-    <Exec Command="npm run build" WorkingDirectory="$(SolutionDir)" />
+    <Exec Command="npm run build" WorkingDirectory="$(SolutionDir)src\DirectiveAthena.Website.ClientAssets" />
   </Target>
 </Project>

@@ -6,9 +6,9 @@ module.exports = (_env, argv) => {
     return {
         context: __dirname,
         mode: isProd ? "production" : "development",
-        entry: "./src/DirectiveAthena.Website/wwwroot/ts/interop.ts",
+        entry: "./typescript/interop.ts",
         output: {
-            path: path.resolve(__dirname, "src/DirectiveAthena.Website/wwwroot/js"),
+            path: path.resolve(__dirname, "../DirectiveAthena.Website/wwwroot/js"),
             filename: "interop.bundle.min.js"
         },
         resolve: {
