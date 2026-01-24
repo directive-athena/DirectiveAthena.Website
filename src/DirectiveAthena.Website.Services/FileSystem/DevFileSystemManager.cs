@@ -25,27 +25,27 @@ public class DevFileSystemManager(IJSRuntime jsRuntime, NavigationManager naviga
     // -----------------------------------------------------------------------------------------------------------------
     // Methods
     // -----------------------------------------------------------------------------------------------------------------
-    public ValueTask<bool> IsSupportedAsync()
-        => jsRuntime.InvokeAsync<bool>("fsApi.isSupported");
+    public ValueTask<bool> IsSupportedAsync(CancellationToken ct = default)
+        => jsRuntime.InvokeAsync<bool>("fsApi.isSupported", ct);
 
-    public ValueTask<bool> RequestAccessAsync()
-        => jsRuntime.InvokeAsync<bool>("fsApi.requestAccess");
+    public ValueTask<bool> RequestAccessAsync(CancellationToken ct = default)
+        => jsRuntime.InvokeAsync<bool>("fsApi.requestAccess", ct);
 
-    public ValueTask<bool> HasAccessAsync()
-        => jsRuntime.InvokeAsync<bool>("fsApi.hasAccess");
+    public ValueTask<bool> HasAccessAsync(CancellationToken ct = default)
+        => jsRuntime.InvokeAsync<bool>("fsApi.hasAccess", ct);
 
-    public ValueTask<bool> VerifyPermissionAsync()
-        => jsRuntime.InvokeAsync<bool>("fsApi.verifyPermission");
+    public ValueTask<bool> VerifyPermissionAsync(CancellationToken ct = default)
+        => jsRuntime.InvokeAsync<bool>("fsApi.verifyPermission", ct);
 
-    public ValueTask ResetAccessAsync()
-        => jsRuntime.InvokeVoidAsync("fsApi.resetAccess");
+    public ValueTask ResetAccessAsync(CancellationToken ct = default)
+        => jsRuntime.InvokeVoidAsync("fsApi.resetAccess", ct);
 
-    public ValueTask<bool> WriteFileAsync(string relativePath, string content)
-        => jsRuntime.InvokeAsync<bool>("fsApi.writeFile", relativePath, content);
+    public ValueTask<bool> WriteFileAsync(string relativePath, string content, CancellationToken ct = default)
+        => jsRuntime.InvokeAsync<bool>("fsApi.writeFile", ct, relativePath, content);
 
-    public ValueTask<string?> ReadFileAsync(string relativePath)
-        => jsRuntime.InvokeAsync<string?>("fsApi.readFile", relativePath);
+    public ValueTask<string?> ReadFileAsync(string relativePath, CancellationToken ct = default)
+        => jsRuntime.InvokeAsync<string?>("fsApi.readFile", ct, relativePath);
 
-    public ValueTask<bool> DeleteFileAsync(string relativePath)
-        => jsRuntime.InvokeAsync<bool>("fsApi.deleteFile", relativePath);
+    public ValueTask<bool> DeleteFileAsync(string relativePath, CancellationToken ct = default)
+        => jsRuntime.InvokeAsync<bool>("fsApi.deleteFile", ct, relativePath);
 }
