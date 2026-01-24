@@ -6,53 +6,99 @@ using System.Collections.Immutable;
 using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using System.Text;
 using System.Text.Json;
 
 namespace DirectiveAthena.Website.Services;
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
-public abstract class CachedJsonRepository<T>(
+public abstract class ContentRepository<T>(
     HttpClient http,
-    IDevFileSystemManager devFs
-) {
+    IDevFileSystemCategoryManager devFs
+) 
+    : IContentRepository<T>
+    where T : ContentBase {
     private readonly SemaphoreSlim _lock = new(1, 1);
-    private ImmutableArray<T> _items;
+    protected ImmutableDictionary<Guid, T> ItemsById { get; private set; } = ImmutableDictionary<Guid, T>.Empty;
     private bool _hasLoaded;
     private EntityTagHeaderValue? _etag;
     private DateTimeOffset? _lastModifiedUtc;
     private DateTimeOffset? _lastRefreshUtc;
-
     private readonly TimeSpan CacheRefreshWindow = TimeSpan.FromMinutes(5);
     private readonly TimeSpan DevRefreshWindow = TimeSpan.FromSeconds(5);
 
     protected abstract string IndexPath { get; }
-    protected abstract string WritePath { get; }
-    
+
     private readonly JsonSerializerOptions _jsonSerializerOptions = new() {
         WriteIndented = true,
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase
     };
+
+    // -----------------------------------------------------------------------------------------------------------------
+    // CRUD Methods
+    // -----------------------------------------------------------------------------------------------------------------
+    public async ValueTask<T[]> GetAllAsync(CancellationToken ct = default) {
+        await EnsureCacheAsync(ct);
+        return ItemsById.Values.ToArray();
+    }
+
+    public async ValueTask<T?> GetByIdAsync(Guid id, CancellationToken ct = default) {
+        await EnsureCacheAsync(ct);
+        return ItemsById.GetValueOrDefault(id);
+    }
+    
+    public async ValueTask<bool> SaveAsync(IEnumerable<T> items, CancellationToken ct = default) {
+        if (!devFs.IsLocalhost) return false;
+        if (!await devFs.VerifyPermissionAsync(ct)) return false;
+
+        string json = await AsJsonStringAsync(items, ct);
+        bool success = await devFs.WriteIndexAsync(json, ct);
+        return success;
+    }
+
+    public async ValueTask<bool> DeleteByIdAsync(Guid id, CancellationToken ct = default) {
+        _ = ct;
+        if (!devFs.IsLocalhost || !await devFs.HasAccessAsync(ct)) return false;
+        if (!await devFs.VerifyPermissionAsync(ct)) return false;
+
+        await EnsureCacheAsync(ct);
+        if (!ItemsById.TryGetValue(id, out T? item)) return false;
+
+        bool allDeleted = await devFs.DeleteLocalizedFilesAsync(item.MarkdownFileName, ct);
+        if (!allDeleted) return false;
+
+        T[] updatedItems = ItemsById.Remove(id).Values.ToArray();
+        return await SaveAsync(updatedItems, ct);
+    }
+
+    public async ValueTask<string> GetAsJsonStringAsync(CancellationToken ct = default) {
+        await EnsureCacheAsync(ct);
+        return await AsJsonStringAsync(ItemsById.Values, ct);
+    }
     
     // -----------------------------------------------------------------------------------------------------------------
     // Methods
     // -----------------------------------------------------------------------------------------------------------------
-    private string Serialize(IEnumerable<T> items)
-        => JsonSerializer.Serialize(items, _jsonSerializerOptions);
-    
-    protected async ValueTask<ImmutableArray<T>> GetAllAsync(CancellationToken ct = default) {
+    private async ValueTask<string> AsJsonStringAsync(IEnumerable<T> items, CancellationToken ct = default) {
+        await using MemoryStream stream = new();
+        await JsonSerializer.SerializeAsync(stream, items, _jsonSerializerOptions, ct);
+        return Encoding.UTF8.GetString(stream.ToArray());
+    }
+
+    protected async Task EnsureCacheAsync(CancellationToken ct) {
         DateTimeOffset now = DateTimeOffset.UtcNow;
-        if (_hasLoaded && !ShouldRefresh(now)) return _items;
+        if (_hasLoaded && !ShouldRefresh(now)) return;
 
         await _lock.WaitAsync(ct);
         try {
             now = DateTimeOffset.UtcNow;
-            if (_hasLoaded && !ShouldRefresh(now)) return _items;
+            if (_hasLoaded && !ShouldRefresh(now)) return;
 
             await RefreshCacheAsync(now, ct);
         }
         catch {
-            _items = [];
+            ItemsById = ImmutableDictionary<Guid, T>.Empty;
             _hasLoaded = true;
             _etag = null;
             _lastModifiedUtc = null;
@@ -61,30 +107,8 @@ public abstract class CachedJsonRepository<T>(
         finally {
             _lock.Release();
         }
-
-        return _items;
     }
-
-    protected void UpdateCache(IEnumerable<T> items) {
-        _items = [..items];
-        _hasLoaded = true;
-        _lastRefreshUtc = DateTimeOffset.UtcNow;
-        _etag = null;
-        _lastModifiedUtc = null;
-    }
-
-    public virtual async ValueTask<bool> SaveAsync(IEnumerable<T> items, CancellationToken ct = default) {
-        _ = ct;
-        if (!devFs.IsLocalhost) return false;
-        if (!await devFs.VerifyPermissionAsync()) return false;
-
-        T[] itemArray = items as T[] ?? items.ToArray();
-        string json = Serialize(itemArray);
-        bool success = await devFs.WriteFileAsync(WritePath, json);
-        if (success) UpdateCache(itemArray);
-        return success;
-    }
-
+    
     private bool ShouldRefresh(DateTimeOffset now)
         => !_hasLoaded || _lastRefreshUtc is null || now - _lastRefreshUtc.Value > GetRefreshWindow();
 
@@ -106,10 +130,19 @@ public abstract class CachedJsonRepository<T>(
 
         response.EnsureSuccessStatusCode();
         T[]? items = await response.Content.ReadFromJsonAsync<T[]>(cancellationToken: ct);
-        _items = [..items ?? []];
+        ItemsById = BuildIndex(items ?? []);
         _hasLoaded = true;
         _etag = response.Headers.ETag;
         _lastModifiedUtc = response.Content.Headers.LastModified;
         _lastRefreshUtc = now;
+    }
+
+    private static ImmutableDictionary<Guid, T> BuildIndex(IEnumerable<T> items) {
+        ImmutableDictionary<Guid, T>.Builder builder = ImmutableDictionary.CreateBuilder<Guid, T>();
+        foreach (T item in items) {
+            builder[item.Id] = item;
+        }
+
+        return builder.ToImmutable();
     }
 }
