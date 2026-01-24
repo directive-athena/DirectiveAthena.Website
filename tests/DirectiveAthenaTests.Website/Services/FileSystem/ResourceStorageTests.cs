@@ -3,6 +3,7 @@
 // ---------------------------------------------------------------------------------------------------------------------
 using DirectiveAthena.Website.Services.FileSystem;
 using DirectiveAthena.Website.Services.Localization;
+using Microsoft.Extensions.Logging;
 using NSubstitute;
 
 namespace DirectiveAthenaTests.Website.Services.FileSystem;
@@ -17,7 +18,8 @@ public class ResourceStorageTests {
         var localizationProvider = Substitute.For<ILocalizationProvider>();
         localizationProvider.DefaultLocalization.Returns(new LocalizationInfo("en", "English", "EN", ""));
 
-        var storage = new ResourceStorage(Substitute.For<ILocalFileStorage>(), localizationProvider);
+        var logger = Substitute.For<ILogger<ResourceStorage>>();
+        var storage = new ResourceStorage(Substitute.For<ILocalFileStorage>(), localizationProvider, logger);
 
         // Act
         string result = storage.GetSharedResxPath("en");
@@ -32,7 +34,8 @@ public class ResourceStorageTests {
         var localizationProvider = Substitute.For<ILocalizationProvider>();
         localizationProvider.DefaultLocalization.Returns(new LocalizationInfo("en", "English", "EN", ""));
 
-        var storage = new ResourceStorage(Substitute.For<ILocalFileStorage>(), localizationProvider);
+        var logger = Substitute.For<ILogger<ResourceStorage>>();
+        var storage = new ResourceStorage(Substitute.For<ILocalFileStorage>(), localizationProvider, logger);
 
         // Act
         string result = storage.GetSharedResxPath("nl");
@@ -47,7 +50,8 @@ public class ResourceStorageTests {
         var localizationProvider = Substitute.For<ILocalizationProvider>();
         localizationProvider.DefaultLocalization.Returns(new LocalizationInfo("en", "English", "EN", ""));
 
-        var storage = new ResourceStorage(Substitute.For<ILocalFileStorage>(), localizationProvider);
+        var logger = Substitute.For<ILogger<ResourceStorage>>();
+        var storage = new ResourceStorage(Substitute.For<ILocalFileStorage>(), localizationProvider, logger);
 
         // Act
         string result = storage.GetTagsResxPath("en");
@@ -62,7 +66,8 @@ public class ResourceStorageTests {
         var localizationProvider = Substitute.For<ILocalizationProvider>();
         localizationProvider.DefaultLocalization.Returns(new LocalizationInfo("en", "English", "EN", ""));
 
-        var storage = new ResourceStorage(Substitute.For<ILocalFileStorage>(), localizationProvider);
+        var logger = Substitute.For<ILogger<ResourceStorage>>();
+        var storage = new ResourceStorage(Substitute.For<ILocalFileStorage>(), localizationProvider, logger);
 
         // Act
         string result = storage.GetTagsResxPath("nl");

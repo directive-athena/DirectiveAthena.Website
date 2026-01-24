@@ -5,6 +5,7 @@ using DirectiveAthena.Website.Services.Articles;
 using DirectiveAthena.Website.Services.FileSystem;
 using DirectiveAthena.Website.Services.Localization;
 using DirectiveAthenaTests.Website.Helpers;
+using Microsoft.Extensions.Logging;
 using NSubstitute;
 using System.Net;
 
@@ -43,7 +44,8 @@ public class ArticleManagerTests {
         resourceStorage ??= Substitute.For<IResourceStorage>();
         http ??= new HttpClient();
         var validator = new ArticleCollectionValidator(new ArticleValidator(localizationProvider));
-        return new ArticleManager(localizationProvider, CreateStorageFactory(storage), resourceStorage, http, validator);
+        var logger = Substitute.For<ILogger<ArticleManager>>();
+        return new ArticleManager(localizationProvider, CreateStorageFactory(storage), resourceStorage, http, validator, logger);
     }
 
     // -----------------------------------------------------------------------------------------------------------------

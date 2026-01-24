@@ -3,6 +3,7 @@
 // ---------------------------------------------------------------------------------------------------------------------
 using CodeOfChaos.Extensions.DependencyInjection;
 using DirectiveAthena.Website.Services.Localization;
+using Microsoft.Extensions.Logging;
 
 namespace DirectiveAthena.Website.Services.FileSystem;
 // ---------------------------------------------------------------------------------------------------------------------
@@ -11,7 +12,8 @@ namespace DirectiveAthena.Website.Services.FileSystem;
 [InjectableScoped<IResourceStorage>]
 public  class ResourceStorage(
     ILocalFileStorage fileStorage,
-    ILocalizationProvider localizationProvider
+    ILocalizationProvider localizationProvider,
+    ILogger<ResourceStorage> logger
 ) : IResourceStorage {
     public bool IsLocalhost => fileStorage.IsLocalhost;
 
@@ -40,15 +42,31 @@ public  class ResourceStorage(
     // -----------------------------------------------------------------------------------------------------------------
     // Resource Ops
     // -----------------------------------------------------------------------------------------------------------------
-    public ValueTask<string?> ReadSharedResxAsync(string locale, CancellationToken ct = default)
-        => fileStorage.ReadFileAsync(GetSharedResxPath(locale), ct);
+    public async ValueTask<string?> ReadSharedResxAsync(string locale, CancellationToken ct = default) {
+        string path = GetSharedResxPath(locale);
+        string? result = await fileStorage.ReadFileAsync(path, ct);
+        logger.Debug("Read shared resx {Path}: {Result}.", path, result is null ? "missing" : "ok");
+        return result;
+    }
 
-    public ValueTask<bool> WriteSharedResxAsync(string locale, string content, CancellationToken ct = default)
-        => fileStorage.WriteFileAsync(GetSharedResxPath(locale), content, ct);
+    public async ValueTask<bool> WriteSharedResxAsync(string locale, string content, CancellationToken ct = default) {
+        string path = GetSharedResxPath(locale);
+        bool result = await fileStorage.WriteFileAsync(path, content, ct);
+        logger.Information("Write shared resx {Path}: {Result}.", path, result ? "success" : "failure");
+        return result;
+    }
 
-    public ValueTask<string?> ReadTagsResxAsync(string locale, CancellationToken ct = default)
-        => fileStorage.ReadFileAsync(GetTagsResxPath(locale), ct);
+    public async ValueTask<string?> ReadTagsResxAsync(string locale, CancellationToken ct = default) {
+        string path = GetTagsResxPath(locale);
+        string? result = await fileStorage.ReadFileAsync(path, ct);
+        logger.Debug("Read tags resx {Path}: {Result}.", path, result is null ? "missing" : "ok");
+        return result;
+    }
 
-    public ValueTask<bool> WriteTagsResxAsync(string locale, string content, CancellationToken ct = default)
-        => fileStorage.WriteFileAsync(GetTagsResxPath(locale), content, ct);
+    public async ValueTask<bool> WriteTagsResxAsync(string locale, string content, CancellationToken ct = default) {
+        string path = GetTagsResxPath(locale);
+        bool result = await fileStorage.WriteFileAsync(path, content, ct);
+        logger.Information("Write tags resx {Path}: {Result}.", path, result ? "success" : "failure");
+        return result;
+    }
 }

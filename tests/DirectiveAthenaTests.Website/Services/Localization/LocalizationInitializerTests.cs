@@ -2,6 +2,7 @@
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
 using DirectiveAthena.Website.Services.Localization;
+using Microsoft.Extensions.Logging;
 using NSubstitute;
 using System.Globalization;
 
@@ -25,7 +26,9 @@ public class LocalizationInitializerTests {
             jsRuntime.InvokeAsync<string>("localStorage.getItem", Arg.Any<object?[]>())
                 .Returns(new ValueTask<string>("nl"));
 
-            var initializer = new LocalizationInitializer(new LocalizationProvider(), jsRuntime);
+            var logger = Substitute.For<ILogger<LocalizationInitializer>>();
+            var providerLogger = Substitute.For<ILogger<LocalizationProvider>>();
+            var initializer = new LocalizationInitializer(new LocalizationProvider(providerLogger), jsRuntime, logger);
             
             // Act
             await initializer.ApplyPreferredCultureAsync();
@@ -50,7 +53,9 @@ public class LocalizationInitializerTests {
             jsRuntime.InvokeAsync<string>("localStorage.getItem", Arg.Any<object?[]>())
                 .Returns(new ValueTask<string>("zz"));
 
-            var initializer = new LocalizationInitializer(new LocalizationProvider(), jsRuntime);
+            var logger = Substitute.For<ILogger<LocalizationInitializer>>();
+            var providerLogger = Substitute.For<ILogger<LocalizationProvider>>();
+            var initializer = new LocalizationInitializer(new LocalizationProvider(providerLogger), jsRuntime, logger);
 
             // Act
             await initializer.ApplyPreferredCultureAsync();

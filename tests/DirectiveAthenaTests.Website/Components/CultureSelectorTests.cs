@@ -8,9 +8,11 @@ using DirectiveAthena.Website.Services.Localization;
 using DirectiveAthenaTests.Website.Helpers;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.JSInterop;
 using MudBlazor;
 using MudBlazor.Services;
+using NSubstitute;
 using System.Reflection;
 
 namespace DirectiveAthenaTests.Website.Components;
@@ -38,7 +40,8 @@ public class CultureSelectorTests {
 
             ctx.Services.AddSingleton<IJSRuntime>(jsRuntime);
             ctx.Services.AddSingleton<NavigationManager>(nav);
-            ctx.Services.AddSingleton<ILocalizationProvider>(new LocalizationProvider());
+            var logger = Substitute.For<ILogger<LocalizationProvider>>();
+            ctx.Services.AddSingleton<ILocalizationProvider>(new LocalizationProvider(logger));
 
             // Act
             _ = ctx.Render<MudPopoverProvider>();

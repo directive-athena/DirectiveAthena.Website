@@ -4,6 +4,7 @@
 using DirectiveAthena.Website.Services.Articles;
 using DirectiveAthena.Website.Services.FileSystem;
 using DirectiveAthenaTests.Website.Helpers;
+using Microsoft.Extensions.Logging;
 using NSubstitute;
 using System.Net;
 using System.Text;
@@ -39,7 +40,8 @@ public class ArticleRepositoryTests {
             Content = new StringContent(JsonSerializer.Serialize(articles), Encoding.UTF8, "application/json")
         });
         var http = new HttpClient(handler) { BaseAddress = new Uri("http://localhost/") };
-        var repo = new ArticleRepository(http, CreateFactory(CreateStorage()));
+        var logger = Substitute.For<ILogger<ArticleRepository>>();
+        var repo = new ArticleRepository(http, CreateFactory(CreateStorage()), logger);
 
         // Act
         List<Article> result = (await repo.GetAllWithoutHiddenAsync()).ToList();
@@ -54,7 +56,8 @@ public class ArticleRepositoryTests {
         // Arrange
         var handler = new TestHttpMessageHandler(_ => throw new HttpRequestException("boom"));
         var http = new HttpClient(handler) { BaseAddress = new Uri("http://localhost/") };
-        var repo = new ArticleRepository(http, CreateFactory(CreateStorage()));
+        var logger = Substitute.For<ILogger<ArticleRepository>>();
+        var repo = new ArticleRepository(http, CreateFactory(CreateStorage()), logger);
 
         // Act
         IEnumerable<Article> result = await repo.GetAllWithoutHiddenAsync();
@@ -75,7 +78,8 @@ public class ArticleRepositoryTests {
             Content = new StringContent(JsonSerializer.Serialize(articles), Encoding.UTF8, "application/json")
         });
         var http = new HttpClient(handler) { BaseAddress = new Uri("http://localhost/") };
-        var repo = new ArticleRepository(http, CreateFactory(CreateStorage()));
+        var logger = Substitute.For<ILogger<ArticleRepository>>();
+        var repo = new ArticleRepository(http, CreateFactory(CreateStorage()), logger);
 
         // Act
         _ = (await repo.GetAllWithoutHiddenAsync()).ToList();
@@ -92,7 +96,8 @@ public class ArticleRepositoryTests {
             Content = new StringContent("null", Encoding.UTF8, "application/json")
         });
         var http = new HttpClient(handler) { BaseAddress = new Uri("http://localhost/") };
-        var repo = new ArticleRepository(http, CreateFactory(CreateStorage()));
+        var logger = Substitute.For<ILogger<ArticleRepository>>();
+        var repo = new ArticleRepository(http, CreateFactory(CreateStorage()), logger);
 
         // Act
         IEnumerable<Article> result = await repo.GetAllWithoutHiddenAsync();
@@ -113,7 +118,8 @@ public class ArticleRepositoryTests {
             Content = new StringContent(JsonSerializer.Serialize(articles), Encoding.UTF8, "application/json")
         });
         var http = new HttpClient(handler) { BaseAddress = new Uri("http://localhost/") };
-        var repo = new ArticleRepository(http, CreateFactory(CreateStorage()));
+        var logger = Substitute.For<ILogger<ArticleRepository>>();
+        var repo = new ArticleRepository(http, CreateFactory(CreateStorage()), logger);
 
         // Act
         Task[] tasks = Enumerable.Range(0, 5)
@@ -133,7 +139,8 @@ public class ArticleRepositoryTests {
         storage.VerifyPermissionAsync().Returns(new ValueTask<bool>(true));
         storage.WriteIndexAsync(Arg.Any<string>()).Returns(new ValueTask<bool>(true));
 
-        var repo = new ArticleRepository(new HttpClient(), CreateFactory(storage));
+        var logger = Substitute.For<ILogger<ArticleRepository>>();
+        var repo = new ArticleRepository(new HttpClient(), CreateFactory(storage), logger);
         Article[] articles = [ArticleFaker.Create(21)];
 
         // Act
@@ -150,7 +157,8 @@ public class ArticleRepositoryTests {
         var storage = CreateStorage();
         storage.IsLocalhost.Returns(false);
 
-        var repo = new ArticleRepository(new HttpClient(), CreateFactory(storage));
+        var logger = Substitute.For<ILogger<ArticleRepository>>();
+        var repo = new ArticleRepository(new HttpClient(), CreateFactory(storage), logger);
         Article[] articles = [ArticleFaker.Create(22)];
 
         // Act
@@ -176,7 +184,8 @@ public class ArticleRepositoryTests {
             Content = new StringContent(JsonSerializer.Serialize(new[] { article }), Encoding.UTF8, "application/json")
         });
         var http = new HttpClient(handler) { BaseAddress = new Uri("http://localhost/") };
-        var repo = new ArticleRepository(http, CreateFactory(storage));
+        var logger = Substitute.For<ILogger<ArticleRepository>>();
+        var repo = new ArticleRepository(http, CreateFactory(storage), logger);
 
         // Act
         bool result = await repo.DeleteByIdAsync(article.Id);
@@ -194,7 +203,8 @@ public class ArticleRepositoryTests {
         storage.IsLocalhost.Returns(true);
         storage.HasAccessAsync().Returns(new ValueTask<bool>(false));
 
-        var repo = new ArticleRepository(new HttpClient(), CreateFactory(storage));
+        var logger = Substitute.For<ILogger<ArticleRepository>>();
+        var repo = new ArticleRepository(new HttpClient(), CreateFactory(storage), logger);
         Article article = ArticleFaker.Create(40);
 
         // Act
