@@ -99,6 +99,9 @@
     private List<WorldRule>? WorldRules { get; set; }
     private bool _isLoaded;
 
+    // -----------------------------------------------------------------------------------------------------------------
+    // Methods
+    // -----------------------------------------------------------------------------------------------------------------
     protected override async Task OnInitializedAsync() {
         IEnumerable<WorldRule> rules = await WorldRuleRepository.GetRulesAsync();
         WorldRules = rules

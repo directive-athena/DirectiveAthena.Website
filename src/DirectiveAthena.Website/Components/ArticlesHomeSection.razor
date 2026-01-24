@@ -140,11 +140,10 @@
     // Methods
     // -----------------------------------------------------------------------------------------------------------------
     protected override async Task OnInitializedAsync() {
-        IEnumerable<Article> posts = await ArticleRepository.GetPostsAsync();
-        IEnumerable<Article> enumerable = posts as Article[] ?? posts.ToArray();
+        Article[] posts = await ArticleRepository.GetPostsAsync();
         
-        HighlightedPost = enumerable.FirstOrDefault();
-        RemainingPosts = enumerable.Skip(1).Take(3);
+        HighlightedPost = posts.FirstOrDefault();
+        RemainingPosts = posts.Skip(1).Take(3);
         
         _isLoaded = true;
     }
