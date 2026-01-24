@@ -7,6 +7,7 @@ using DirectiveAthena.Website.Services.Localization;
 using DirectiveAthena.Website.Services.WorldRules;
 using DirectiveAthenaTests.Website.Helpers;
 using FluentValidation;
+using Microsoft.Extensions.Logging;
 using NSubstitute;
 
 namespace DirectiveAthenaTests.Website.Services.WorldRules;
@@ -42,7 +43,8 @@ public class WorldRuleManagerTests {
         storage ??= Substitute.For<IContentStorage>();
         http ??= new HttpClient();
         validator ??= new WorldRuleCollectionValidator(new WorldRuleValidator(localizationProvider));
-        return new WorldRuleManager(localizationProvider, CreateStorageFactory(storage), http, validator);
+        var logger = Substitute.For<ILogger<WorldRuleManager>>();
+        return new WorldRuleManager(localizationProvider, CreateStorageFactory(storage), http, validator, logger);
     }
 
     private static WorldRule CreateRule(int seed, bool includeNl = true) {

@@ -7,6 +7,7 @@ using System.Text.Json;
 using DirectiveAthena.Website.Services.FileSystem;
 using DirectiveAthena.Website.Services.WorldRules;
 using DirectiveAthenaTests.Website.Helpers;
+using Microsoft.Extensions.Logging;
 using NSubstitute;
 
 namespace DirectiveAthenaTests.Website.Services.WorldRules;
@@ -38,7 +39,8 @@ public class WorldRuleRepositoryTests {
         // Arrange
         var handler = new TestHttpMessageHandler(_ => throw new HttpRequestException("boom"));
         var http = new HttpClient(handler) { BaseAddress = new Uri("http://localhost/") };
-        var repo = new WorldRuleRepository(http, CreateFactory(CreateStorage()));
+        var logger = Substitute.For<ILogger<WorldRuleRepository>>();
+        var repo = new WorldRuleRepository(http, CreateFactory(CreateStorage()), logger);
 
         // Act
         IEnumerable<WorldRule> result = await repo.GetAllAsync();
@@ -59,7 +61,8 @@ public class WorldRuleRepositoryTests {
             Content = new StringContent(JsonSerializer.Serialize(rules), Encoding.UTF8, "application/json")
         });
         var http = new HttpClient(handler) { BaseAddress = new Uri("http://localhost/") };
-        var repo = new WorldRuleRepository(http, CreateFactory(CreateStorage()));
+        var logger = Substitute.For<ILogger<WorldRuleRepository>>();
+        var repo = new WorldRuleRepository(http, CreateFactory(CreateStorage()), logger);
 
         // Act
         _ = (await repo.GetAllAsync()).ToList();
@@ -76,7 +79,8 @@ public class WorldRuleRepositoryTests {
             Content = new StringContent("null", Encoding.UTF8, "application/json")
         });
         var http = new HttpClient(handler) { BaseAddress = new Uri("http://localhost/") };
-        var repo = new WorldRuleRepository(http, CreateFactory(CreateStorage()));
+        var logger = Substitute.For<ILogger<WorldRuleRepository>>();
+        var repo = new WorldRuleRepository(http, CreateFactory(CreateStorage()), logger);
 
         // Act
         IEnumerable<WorldRule> result = await repo.GetAllAsync();
@@ -93,7 +97,8 @@ public class WorldRuleRepositoryTests {
         storage.VerifyPermissionAsync().Returns(new ValueTask<bool>(true));
         storage.WriteIndexAsync(Arg.Any<string>()).Returns(new ValueTask<bool>(true));
 
-        var repo = new WorldRuleRepository(new HttpClient(), CreateFactory(storage));
+        var logger = Substitute.For<ILogger<WorldRuleRepository>>();
+        var repo = new WorldRuleRepository(new HttpClient(), CreateFactory(storage), logger);
         WorldRule[] rules = [CreateRule(10)];
 
         // Act
@@ -110,7 +115,8 @@ public class WorldRuleRepositoryTests {
         var storage = CreateStorage();
         storage.IsLocalhost.Returns(false);
 
-        var repo = new WorldRuleRepository(new HttpClient(), CreateFactory(storage));
+        var logger = Substitute.For<ILogger<WorldRuleRepository>>();
+        var repo = new WorldRuleRepository(new HttpClient(), CreateFactory(storage), logger);
         WorldRule[] rules = [CreateRule(11)];
 
         // Act
@@ -136,7 +142,8 @@ public class WorldRuleRepositoryTests {
             Content = new StringContent(JsonSerializer.Serialize(new[] { rule }), Encoding.UTF8, "application/json")
         });
         var http = new HttpClient(handler) { BaseAddress = new Uri("http://localhost/") };
-        var repo = new WorldRuleRepository(http, CreateFactory(storage));
+        var logger = Substitute.For<ILogger<WorldRuleRepository>>();
+        var repo = new WorldRuleRepository(http, CreateFactory(storage), logger);
 
         // Act
         bool result = await repo.DeleteByIdAsync(rule.Id);
@@ -154,7 +161,8 @@ public class WorldRuleRepositoryTests {
         storage.IsLocalhost.Returns(true);
         storage.HasAccessAsync().Returns(new ValueTask<bool>(false));
 
-        var repo = new WorldRuleRepository(new HttpClient(), CreateFactory(storage));
+        var logger = Substitute.For<ILogger<WorldRuleRepository>>();
+        var repo = new WorldRuleRepository(new HttpClient(), CreateFactory(storage), logger);
         WorldRule rule = CreateRule(30);
 
         // Act

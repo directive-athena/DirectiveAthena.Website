@@ -3,6 +3,7 @@
 // ---------------------------------------------------------------------------------------------------------------------
 using DirectiveAthena.Website.Services.FileSystem;
 using DirectiveAthenaTests.Website.Helpers;
+using Microsoft.Extensions.Logging;
 using Microsoft.JSInterop;
 using Microsoft.JSInterop.Infrastructure;
 using NSubstitute;
@@ -18,7 +19,8 @@ public class LocalFileStorageTests {
         var jsRuntime = Substitute.For<IJSRuntime>();
         jsRuntime.InvokeAsync<bool>("fsApi.isSupported", Arg.Any<CancellationToken>()).Returns(new ValueTask<bool>(true));
 
-        var manager = new LocalFileStorage(jsRuntime, new FakeNavigationManager());
+        var logger = Substitute.For<ILogger<LocalFileStorage>>();
+        var manager = new LocalFileStorage(jsRuntime, new FakeNavigationManager(), logger);
 
         // Act
         bool result = await manager.IsSupportedAsync();
@@ -34,7 +36,8 @@ public class LocalFileStorageTests {
         var jsRuntime = Substitute.For<IJSRuntime>();
         jsRuntime.InvokeAsync<bool>("fsApi.requestAccess", Arg.Any<CancellationToken>()).Returns(new ValueTask<bool>(true));
 
-        var manager = new LocalFileStorage(jsRuntime, new FakeNavigationManager());
+        var logger = Substitute.For<ILogger<LocalFileStorage>>();
+        var manager = new LocalFileStorage(jsRuntime, new FakeNavigationManager(), logger);
 
         // Act
         bool result = await manager.RequestAccessAsync();
@@ -50,7 +53,8 @@ public class LocalFileStorageTests {
         var jsRuntime = Substitute.For<IJSRuntime>();
         jsRuntime.InvokeAsync<bool>("fsApi.hasAccess", Arg.Any<CancellationToken>()).Returns(new ValueTask<bool>(true));
 
-        var manager = new LocalFileStorage(jsRuntime, new FakeNavigationManager());
+        var logger = Substitute.For<ILogger<LocalFileStorage>>();
+        var manager = new LocalFileStorage(jsRuntime, new FakeNavigationManager(), logger);
         
         // Act
         bool result = await manager.HasAccessAsync();
@@ -66,7 +70,8 @@ public class LocalFileStorageTests {
         var jsRuntime = Substitute.For<IJSRuntime>();
         jsRuntime.InvokeAsync<bool>("fsApi.verifyPermission", Arg.Any<CancellationToken>()).Returns(new ValueTask<bool>(true));
 
-        var manager = new LocalFileStorage(jsRuntime, new FakeNavigationManager());
+        var logger = Substitute.For<ILogger<LocalFileStorage>>();
+        var manager = new LocalFileStorage(jsRuntime, new FakeNavigationManager(), logger);
 
         // Act
         bool result = await manager.VerifyPermissionAsync();
@@ -83,7 +88,8 @@ public class LocalFileStorageTests {
         jsRuntime.InvokeAsync<IJSVoidResult>("fsApi.resetAccess", Arg.Any<CancellationToken>())
             .Returns(new ValueTask<IJSVoidResult>());
 
-        var manager = new LocalFileStorage(jsRuntime, new FakeNavigationManager());
+        var logger = Substitute.For<ILogger<LocalFileStorage>>();
+        var manager = new LocalFileStorage(jsRuntime, new FakeNavigationManager(), logger);
         
         // Act
         await manager.ResetAccessAsync();
@@ -99,7 +105,8 @@ public class LocalFileStorageTests {
         jsRuntime.InvokeAsync<bool>("fsApi.writeFile", Arg.Any<CancellationToken>(), Arg.Any<object?[]>())
             .Returns(new ValueTask<bool>(true));
 
-        var manager = new LocalFileStorage(jsRuntime, new FakeNavigationManager());
+        var logger = Substitute.For<ILogger<LocalFileStorage>>();
+        var manager = new LocalFileStorage(jsRuntime, new FakeNavigationManager(), logger);
 
         // Act
         bool result = await manager.WriteFileAsync("path.md", "content");
@@ -119,7 +126,8 @@ public class LocalFileStorageTests {
         jsRuntime.InvokeAsync<string?>("fsApi.readFile", Arg.Any<CancellationToken>(), Arg.Any<object?[]>())
             .Returns(new ValueTask<string?>("content"));
 
-        var manager = new LocalFileStorage(jsRuntime, new FakeNavigationManager());
+        var logger = Substitute.For<ILogger<LocalFileStorage>>();
+        var manager = new LocalFileStorage(jsRuntime, new FakeNavigationManager(), logger);
 
         // Act
         string? result = await manager.ReadFileAsync("path.md");
@@ -139,7 +147,8 @@ public class LocalFileStorageTests {
         jsRuntime.InvokeAsync<bool>("fsApi.deleteFile", Arg.Any<CancellationToken>(), Arg.Any<object?[]>())
             .Returns(new ValueTask<bool>(true));
 
-        var manager = new LocalFileStorage(jsRuntime, new FakeNavigationManager());
+        var logger = Substitute.For<ILogger<LocalFileStorage>>();
+        var manager = new LocalFileStorage(jsRuntime, new FakeNavigationManager(), logger);
 
         // Act
         bool result = await manager.DeleteFileAsync("path.md");

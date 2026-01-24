@@ -2,6 +2,8 @@
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
 using DirectiveAthena.Website.Services.Localization;
+using Microsoft.Extensions.Logging;
+using NSubstitute;
 using System.Globalization;
 
 namespace DirectiveAthenaTests.Website.Services.Localization;
@@ -21,7 +23,8 @@ public class LocalizationProviderTests {
         try {
             // Arrange
             CultureInfo.CurrentUICulture = new CultureInfo("nl");
-            var provider = new LocalizationProvider();
+            var logger = Substitute.For<ILogger<LocalizationProvider>>();
+            var provider = new LocalizationProvider(logger);
             
             // Act
             LocalizationInfo result = provider.GetCurrentLocalization();
@@ -38,7 +41,8 @@ public class LocalizationProviderTests {
     [Test]
     public async Task TryGetLocalization_ReturnsExpectedResults() {
         // Arrange
-        var provider = new LocalizationProvider();
+        var logger = Substitute.For<ILogger<LocalizationProvider>>();
+        var provider = new LocalizationProvider(logger);
 
         // Act
         bool found = provider.TryGetLocalization("en", out LocalizationInfo? en);
@@ -56,7 +60,8 @@ public class LocalizationProviderTests {
         // Arrange
         
         // Act
-        var provider = new LocalizationProvider();
+        var logger = Substitute.For<ILogger<LocalizationProvider>>();
+        var provider = new LocalizationProvider(logger);
 
         // Assert
         await Assert.That(provider.IsDefaultCultureCode("en")).IsTrue();

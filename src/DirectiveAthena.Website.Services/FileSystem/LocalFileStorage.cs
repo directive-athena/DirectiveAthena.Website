@@ -4,13 +4,14 @@
 using CodeOfChaos.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
+using Microsoft.Extensions.Logging;
 
 namespace DirectiveAthena.Website.Services.FileSystem;
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
 [InjectableScoped<ILocalFileStorage>]
-public class LocalFileStorage(IJSRuntime jsRuntime, NavigationManager navigationManager) : ILocalFileStorage {
+public class LocalFileStorage(IJSRuntime jsRuntime, NavigationManager navigationManager, ILogger<LocalFileStorage> logger) : ILocalFileStorage {
     public bool IsLocalhost {
         get {
             #if DEBUG
@@ -25,27 +26,50 @@ public class LocalFileStorage(IJSRuntime jsRuntime, NavigationManager navigation
     // -----------------------------------------------------------------------------------------------------------------
     // Methods
     // -----------------------------------------------------------------------------------------------------------------
-    public ValueTask<bool> IsSupportedAsync(CancellationToken ct = default)
-        => jsRuntime.InvokeAsync<bool>("fsApi.isSupported", ct);
+    public async ValueTask<bool> IsSupportedAsync(CancellationToken ct = default) {
+        bool result = await jsRuntime.InvokeAsync<bool>("fsApi.isSupported", ct);
+        logger.Debug("Local file system support: {Supported}.", result);
+        return result;
+    }
 
-    public ValueTask<bool> RequestAccessAsync(CancellationToken ct = default)
-        => jsRuntime.InvokeAsync<bool>("fsApi.requestAccess", ct);
+    public async ValueTask<bool> RequestAccessAsync(CancellationToken ct = default) {
+        bool result = await jsRuntime.InvokeAsync<bool>("fsApi.requestAccess", ct);
+        logger.Information("Requested local file access: {Granted}.", result);
+        return result;
+    }
 
-    public ValueTask<bool> HasAccessAsync(CancellationToken ct = default)
-        => jsRuntime.InvokeAsync<bool>("fsApi.hasAccess", ct);
+    public async ValueTask<bool> HasAccessAsync(CancellationToken ct = default) {
+        bool result = await jsRuntime.InvokeAsync<bool>("fsApi.hasAccess", ct);
+        logger.Debug("Local file access available: {Available}.", result);
+        return result;
+    }
 
-    public ValueTask<bool> VerifyPermissionAsync(CancellationToken ct = default)
-        => jsRuntime.InvokeAsync<bool>("fsApi.verifyPermission", ct);
+    public async ValueTask<bool> VerifyPermissionAsync(CancellationToken ct = default) {
+        bool result = await jsRuntime.InvokeAsync<bool>("fsApi.verifyPermission", ct);
+        logger.Debug("Local file permission verified: {Verified}.", result);
+        return result;
+    }
 
-    public ValueTask ResetAccessAsync(CancellationToken ct = default)
-        => jsRuntime.InvokeVoidAsync("fsApi.resetAccess", ct);
+    public async ValueTask ResetAccessAsync(CancellationToken ct = default) {
+        await jsRuntime.InvokeVoidAsync("fsApi.resetAccess", ct);
+        logger.Information("Local file access reset.");
+    }
 
-    public ValueTask<bool> WriteFileAsync(string relativePath, string content, CancellationToken ct = default)
-        => jsRuntime.InvokeAsync<bool>("fsApi.writeFile", ct, relativePath, content);
+    public async ValueTask<bool> WriteFileAsync(string relativePath, string content, CancellationToken ct = default) {
+        bool result = await jsRuntime.InvokeAsync<bool>("fsApi.writeFile", ct, relativePath, content);
+        logger.Information("Write file {Path}: {Result}.", relativePath, result ? "success" : "failure");
+        return result;
+    }
 
-    public ValueTask<string?> ReadFileAsync(string relativePath, CancellationToken ct = default)
-        => jsRuntime.InvokeAsync<string?>("fsApi.readFile", ct, relativePath);
+    public async ValueTask<string?> ReadFileAsync(string relativePath, CancellationToken ct = default) {
+        string? result = await jsRuntime.InvokeAsync<string?>("fsApi.readFile", ct, relativePath);
+        logger.Debug("Read file {Path}: {Result}.", relativePath, result is null ? "missing" : "ok");
+        return result;
+    }
 
-    public ValueTask<bool> DeleteFileAsync(string relativePath, CancellationToken ct = default)
-        => jsRuntime.InvokeAsync<bool>("fsApi.deleteFile", ct, relativePath);
+    public async ValueTask<bool> DeleteFileAsync(string relativePath, CancellationToken ct = default) {
+        bool result = await jsRuntime.InvokeAsync<bool>("fsApi.deleteFile", ct, relativePath);
+        logger.Information("Delete file {Path}: {Result}.", relativePath, result ? "success" : "failure");
+        return result;
+    }
 }
