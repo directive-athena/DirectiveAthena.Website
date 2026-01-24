@@ -27,7 +27,7 @@
                     <div class="d-flex flex-column">
                         <MudText
                             Typo="Typo.body1">@(post.Title.GetValueOrDefault("en") ?? Localizer[Shared.ListUntitled])</MudText>
-                        <MudText Typo="Typo.caption" Class="opacity-50">@post.Id</MudText>
+                        <MudText Typo="Typo.caption" Class="opacity-50">@post.Id.ToString("D")</MudText>
                         <div class="d-flex align-center gap-1">
                             @if (post.Hidden) {
                                 <MudChip T="string" Size="Size.Small" Color="Color.Default" Variant="Variant.Text" Icon="@Icons.Material.Filled.VisibilityOff">@Localizer[Shared.ListHidden]</MudChip>

@@ -140,7 +140,7 @@
     // Methods
     // -----------------------------------------------------------------------------------------------------------------
     protected override async Task OnInitializedAsync() {
-        Article[] posts = await ArticleRepository.GetPostsAsync();
+        Article[] posts = await ArticleRepository.GetAllAsync();
         
         HighlightedPost = posts.FirstOrDefault();
         RemainingPosts = posts.Skip(1).Take(3);
@@ -148,7 +148,7 @@
         _isLoaded = true;
     }
 
-    private void ViewPost(string id) {
-        Nav.NavigateTo($"/articles/{id}");
+    private void ViewPost(Guid id) {
+        Nav.NavigateTo($"/articles/{id:D}");
     }
 }

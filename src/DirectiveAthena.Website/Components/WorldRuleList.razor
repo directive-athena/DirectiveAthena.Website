@@ -26,7 +26,7 @@
                 <MudListItem Value="rule">
                     <div class="d-flex flex-column">
                         <MudText Typo="Typo.body1">@(rule.Question.GetValueOrDefault("en") ?? Localizer[Shared.ListUntitled])</MudText>
-                        <MudText Typo="Typo.caption" Class="opacity-50">@rule.Id</MudText>
+                        <MudText Typo="Typo.caption" Class="opacity-50">@rule.Id.ToString("D")</MudText>
                         <div class="d-flex align-center gap-1">
                             @if (string.IsNullOrEmpty(rule.Question.GetValueOrDefault("nl")) || string.IsNullOrEmpty(rule.Answer.GetValueOrDefault("nl"))) {
                                 <MudChip T="string" Size="Size.Small" Color="Color.Warning"

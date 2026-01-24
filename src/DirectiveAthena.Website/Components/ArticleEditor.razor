@@ -22,14 +22,14 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 <MudPaper Class="pa-6 card-glass no-hover">
     <div class="d-flex justify-space-between align-center mb-6">
-        <MudText Typo="Typo.h5">@string.Format(Localizer[Shared.EditorEditPost], Post.Id)</MudText>
+        <MudText Typo="Typo.h5">@string.Format(Localizer[Shared.EditorEditPost], Post.Id.ToString("D"))</MudText>
         <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error"
                        OnClick="@OnDeletePost"/>
     </div>
 
     <MudGrid>
         <MudItem xs="12" md="6">
-            <MudTextField Value="@Post.Id" Label="@Localizer[Shared.EditorUniqueId]"
+            <MudTextField Value="@Post.Id.ToString("D")" Label="@Localizer[Shared.EditorUniqueId]"
                           Required="true" ReadOnly="true"
                           HelperText="@Localizer[Shared.EditorIdHelperPost]"/>
         </MudItem>
@@ -59,7 +59,7 @@
 
         <MudItem xs="12">
             <MudDivider Class="my-4"/>
-            <MudTextField Value="@Post.File"
+            <MudTextField Value="@Post.MarkdownFileName"
                           Label="@string.Format(Localizer[Shared.EditorMarkdownFileLabel], "post.md")"
                           Required="true" ReadOnly="true"
                           HelperText="@Localizer[Shared.EditorMarkdownFileHelper]"/>
@@ -86,10 +86,10 @@
         <MudItem xs="12">
             <MudDivider Class="my-4"/>
             <LocalizedMarkdownEditor Title="@Localizer[Shared.MarkdownLabel]"
-                                     FileName="@Post.File"
+                                     FileName="@Post.MarkdownFileName"
                                      LoadContentAsync="@((string locale) => ArticleManager.GetRawMarkdownContentAsync(Post, locale))"
                                      BuildDefaultContent="@((string locale) => BuildDefaultMarkdown(locale))"
-                                     GetDiskPath="@((string locale) => DevFilePaths.GetMarkdownPath(locale, Post.File))"/>
+                                     GetDiskPath="@((string locale) => DevFilePaths.GetMarkdownPath(locale, Post.MarkdownFileName))"/>
         </MudItem>
 
         <MudItem xs="12" Class="mt-4">

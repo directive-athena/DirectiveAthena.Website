@@ -222,10 +222,10 @@
         .Distinct();
 
     protected override async Task OnInitializedAsync() {
-        IEnumerable<Article> posts = await ArticleRepository.GetPostsAsync(includeHidden: true);
+        IEnumerable<Article> posts = await ArticleRepository.GetAllWithoutHiddenAsync();
         _posts = posts.ToList();
 
-        IEnumerable<WorldRule> rules = await WorldRuleRepository.GetRulesAsync();
+        IEnumerable<WorldRule> rules = await WorldRuleRepository.GetAllAsync();
         _rules = rules.ToList();
 
         if (!DevFileSystemManager.IsLocalhost) return;
@@ -294,7 +294,7 @@
         _selectedPost = null;
 
         if (DevFileSystemManager.IsLocalhost && _hasAccess) {
-            bool success = await ArticleRepository.DeleteAsync(postToDelete, _posts);
+            bool success = await ArticleRepository.DeleteByIdAsync(postToDelete.Id);
             if (success) {
                 Snackbar.Add(Localizer[Shared.ContentManagerDeletePostSuccess], Severity.Success);
             }
@@ -318,7 +318,7 @@
         _selectedRule = null;
 
         if (DevFileSystemManager.IsLocalhost && _hasAccess) {
-            bool success = await WorldRuleRepository.DeleteAsync(ruleToDelete, _rules);
+            bool success = await WorldRuleRepository.DeleteByIdAsync(ruleToDelete.Id);
             if (success) {
                 Snackbar.Add(Localizer[Shared.ContentManagerDeleteRuleSuccess], Severity.Success);
             }
@@ -379,7 +379,8 @@
             return;
         }
 
-        string json = ArticleRepository.AsJsonString(_posts);
+        await ArticleRepository.SaveAsync(_posts);
+        string json = await ArticleRepository.GetAsJsonStringAsync();
         await DownloadFile("index.json", json);
     }
 
@@ -391,20 +392,23 @@
             return;
         }
 
-        string json = WorldRuleRepository.AsJsonString(_rules);
+        await WorldRuleRepository.SaveAsync(_rules);
+        string json = await WorldRuleRepository.GetAsJsonStringAsync();
         await DownloadFile("index.json", json);
     }
 
     private async Task CopyArticlesJson() {
         if (_posts is null) return;
-        string json = ArticleRepository.AsJsonString(_posts);
+        
+        string json = await ArticleRepository.GetAsJsonStringAsync();
         await JsRuntime.InvokeVoidAsync("navigator.clipboard.writeText", json);
         Snackbar.Add(Localizer[Shared.ContentManagerJsonCopied], Severity.Success);
     }
 
     private async Task CopyRulesJson() {
         if (_rules is null) return;
-        string json = WorldRuleRepository.AsJsonString(_rules);
+        
+        string json = await WorldRuleRepository.GetAsJsonStringAsync();
         await JsRuntime.InvokeVoidAsync("navigator.clipboard.writeText", json);
         Snackbar.Add(Localizer[Shared.ContentManagerJsonCopied], Severity.Success);
     }
@@ -421,7 +425,7 @@
         }
 
         foreach (KeyValuePair<string, string> stub in stubs) {
-            await DownloadFile($"{stub.Key}/{_selectedPost.File}", stub.Value);
+            await DownloadFile($"{stub.Key}/{_selectedPost.MarkdownFileName}", stub.Value);
         }
     }
 
@@ -437,7 +441,7 @@
         }
 
         foreach (KeyValuePair<string, string> stub in stubs) {
-            await DownloadFile($"{stub.Key}/{_selectedRule.File}", stub.Value);
+            await DownloadFile($"{stub.Key}/{_selectedRule.MarkdownFileName}", stub.Value);
         }
     }
 

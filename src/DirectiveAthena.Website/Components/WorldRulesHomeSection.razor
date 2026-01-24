@@ -103,7 +103,7 @@
     // Methods
     // -----------------------------------------------------------------------------------------------------------------
     protected override async Task OnInitializedAsync() {
-        IEnumerable<WorldRule> rules = await WorldRuleRepository.GetRulesAsync();
+        IEnumerable<WorldRule> rules = await WorldRuleRepository.GetAllAsync();
         WorldRules = rules
             .Where(rule => rule.ShowOnHomepage)
             .OrderByDescending(rule => ParseDate(rule.Date))

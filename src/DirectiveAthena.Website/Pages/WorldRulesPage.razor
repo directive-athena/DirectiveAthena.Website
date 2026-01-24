@@ -104,7 +104,7 @@
     private string? _selectedTag;
 
     protected override async Task OnInitializedAsync() {
-        IEnumerable<WorldRule> rules = await WorldRuleRepository.GetRulesAsync();
+        IEnumerable<WorldRule> rules = await WorldRuleRepository.GetAllAsync();
         List<WorldRuleView> viewRules = new();
         string locale = LocalizationProvider.GetCurrentLocalization().Code;
 

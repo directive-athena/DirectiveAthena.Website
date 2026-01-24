@@ -22,14 +22,14 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 <MudPaper Class="pa-6 card-glass no-hover">
     <div class="d-flex justify-space-between align-center mb-6">
-        <MudText Typo="Typo.h5">@string.Format(Localizer[Shared.EditorEditRule], Rule.Id)</MudText>
+        <MudText Typo="Typo.h5">@string.Format(Localizer[Shared.EditorEditRule], Rule.Id.ToString("D"))</MudText>
         <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error"
                        OnClick="@OnDeleteRule"/>
     </div>
 
     <MudGrid>
         <MudItem xs="12" md="6">
-            <MudTextField Value="@Rule.Id" Label="@Localizer[Shared.EditorUniqueId]"
+            <MudTextField Value="@Rule.Id.ToString("D")" Label="@Localizer[Shared.EditorUniqueId]"
                           Required="true" ReadOnly="true"
                           HelperText="@Localizer[Shared.EditorIdHelperRule]"/>
         </MudItem>
@@ -55,7 +55,7 @@
 
         <MudItem xs="12">
             <MudDivider Class="my-4"/>
-            <MudTextField Value="@Rule.File" Label="@string.Format(Localizer[Shared.EditorMarkdownFileLabel], "rule.md")"
+            <MudTextField Value="@Rule.MarkdownFileName" Label="@string.Format(Localizer[Shared.EditorMarkdownFileLabel], "rule.md")"
                           Required="true" ReadOnly="true"
                           HelperText="@Localizer[Shared.EditorMarkdownFileHelper]"/>
         </MudItem>
@@ -81,10 +81,10 @@
         <MudItem xs="12">
             <MudDivider Class="my-4"/>
             <LocalizedMarkdownEditor Title="@Localizer[Shared.MarkdownLabel]"
-                                     FileName="@Rule.File"
+                                     FileName="@Rule.MarkdownFileName"
                                      LoadContentAsync="@((string locale) => WorldRuleManager.GetRawMarkdownContentAsync(Rule, locale))"
                                      BuildDefaultContent="@((string locale) => BuildDefaultMarkdown(locale))"
-                                     GetDiskPath="@((string locale) => DevFilePaths.GetWorldRuleMarkdownPath(locale, Rule.File))"/>
+                                     GetDiskPath="@((string locale) => DevFilePaths.GetWorldRuleMarkdownPath(locale, Rule.MarkdownFileName))"/>
         </MudItem>
 
         <MudItem xs="12" Class="mt-4">
