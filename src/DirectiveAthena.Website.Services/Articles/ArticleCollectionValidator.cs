@@ -9,7 +9,7 @@ namespace DirectiveAthena.Website.Services.Articles;
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
 [InjectableTransient<IValidator<IEnumerable<Article>>>]
-public sealed class ArticleCollectionValidator : AbstractValidator<IEnumerable<Article>> {
+public class ArticleCollectionValidator : AbstractValidator<IEnumerable<Article>> {
     public ArticleCollectionValidator(IValidator<Article> articleValidator) {
         RuleFor(articles => articles)
             .NotNull();
@@ -20,24 +20,13 @@ public sealed class ArticleCollectionValidator : AbstractValidator<IEnumerable<A
         RuleFor(articles => articles)
             .Must(HasUniqueIds)
             .WithMessage("Duplicate IDs found!");
-
-        RuleFor(articles => articles)
-            .Must(HasUniqueFiles)
-            .WithMessage("Duplicate files found!");
     }
 
     // -----------------------------------------------------------------------------------------------------------------
     // Methods
     // -----------------------------------------------------------------------------------------------------------------
     private static bool HasUniqueIds(IEnumerable<Article> articles) {
-        HashSet<string> ids = new(StringComparer.Ordinal);
+        HashSet<Guid> ids = [];
         return articles.All(article => ids.Add(article.Id));
-
-    }
-
-    private static bool HasUniqueFiles(IEnumerable<Article> articles) {
-        HashSet<string> files = new(StringComparer.OrdinalIgnoreCase);
-        return articles.All(article => files.Add(article.File));
-
     }
 }

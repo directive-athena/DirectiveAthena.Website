@@ -11,7 +11,7 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Descriptors
 @* ------------------------------------------------------------------------------------------------------------------ *@
-@page "/articles/{Id}"
+@page "/articles/{Id:guid}"
 
 @inject IArticleRepository ArticleRepository
 @inject IArticleManager ArticleManager
@@ -103,7 +103,7 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 
 @code {
-    [Parameter] public string? Id { get; set; }
+    [Parameter] public Guid? Id { get; set; }
     
     private Article? _currentPost;
     private string _markdown = "";
@@ -117,15 +117,15 @@
     private string _shareRedditUrl = "";
 
     protected override async Task OnParametersSetAsync() {
-        if (!string.IsNullOrEmpty(Id)) {
-            await LoadPost(Id);
+        if (Id.HasValue) {
+            await LoadPost(Id.Value);
         }
     }
     
-    private async Task LoadPost(string id) {
+    private async Task LoadPost(Guid id) {
         _loading = true;
         _error = false;
-        _currentPost = await ArticleRepository.GetPostByIdAsync(id);
+        _currentPost = await ArticleRepository.GetByIdAsync(id);
 
         if (_currentPost is null) {
             _error = true;

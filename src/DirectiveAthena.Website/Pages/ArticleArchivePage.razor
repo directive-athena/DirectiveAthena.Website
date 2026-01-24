@@ -93,7 +93,7 @@
     private string? _selectedTag;
 
     protected override async Task OnInitializedAsync() {
-        IEnumerable<Article> posts = await ArticleRepository.GetPostsAsync();
+        IEnumerable<Article> posts = await ArticleRepository.GetAllWithoutHiddenAsync();
         _posts = posts.ToArray() ;
     }
 
@@ -105,7 +105,7 @@
     private void FilterByTag(string tag) => _selectedTag = tag;
     private void ClearTag() => _selectedTag = null;
 
-    private void ViewPost(string id) {
-        NavigationManager.NavigateTo($"/articles/{id}");
+    private void ViewPost(Guid id) {
+        NavigationManager.NavigateTo($"/articles/{id:D}");
     }
 }

@@ -1,20 +1,31 @@
 // ---------------------------------------------------------------------------------------------------------------------
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
+using DirectiveAthena.Website.Services.Articles;
+using DirectiveAthena.Website.Services.FileSystem;
+using DirectiveAthenaTests.Website.Helpers;
+using NSubstitute;
 using System.Net;
 using System.Text;
 using System.Text.Json;
-using DirectiveAthena.Website.Services.Articles;
-using DirectiveAthena.Website.Services.FileSystem;
-using DirectiveAthena.Website.Services.Localization;
-using DirectiveAthenaTests.Website.Helpers;
-using NSubstitute;
 
-namespace DirectiveAthenaTests.Website.Services;
+namespace DirectiveAthenaTests.Website.Services.Articles;
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
 public class ArticleRepositoryTests {
+    private static IContentStorage CreateStorage() {
+        var storage = Substitute.For<IContentStorage>();
+        storage.IndexContentPath.Returns("content/articles/index.json");
+        return storage;
+    }
+
+    private static IContentStorageFactory CreateFactory(IContentStorage storage) {
+        var factory = Substitute.For<IContentStorageFactory>();
+        factory.ForCategory(ContentCategory.Articles).Returns(storage);
+        return factory;
+    }
+
     [Test]
     public async Task GetPostsAsync_FiltersOutHiddenPosts() {
         // Arrange
@@ -28,10 +39,10 @@ public class ArticleRepositoryTests {
             Content = new StringContent(JsonSerializer.Serialize(articles), Encoding.UTF8, "application/json")
         });
         var http = new HttpClient(handler) { BaseAddress = new Uri("http://localhost/") };
-        var repo = new ArticleRepository(http, Substitute.For<IDevFileSystemManager>(), Substitute.For<ILocalizationProvider>(), Substitute.For<IDevFileSystemPaths>());
+        var repo = new ArticleRepository(http, CreateFactory(CreateStorage()));
 
         // Act
-        List<Article> result = (await repo.GetPostsAsync()).ToList();
+        List<Article> result = (await repo.GetAllWithoutHiddenAsync()).ToList();
 
         // Assert
         await Assert.That(result.Count).IsEqualTo(2);
@@ -43,10 +54,10 @@ public class ArticleRepositoryTests {
         // Arrange
         var handler = new TestHttpMessageHandler(_ => throw new HttpRequestException("boom"));
         var http = new HttpClient(handler) { BaseAddress = new Uri("http://localhost/") };
-        var repo = new ArticleRepository(http, Substitute.For<IDevFileSystemManager>(), Substitute.For<ILocalizationProvider>(), Substitute.For<IDevFileSystemPaths>());
+        var repo = new ArticleRepository(http, CreateFactory(CreateStorage()));
 
         // Act
-        IEnumerable<Article> result = await repo.GetPostsAsync();
+        IEnumerable<Article> result = await repo.GetAllWithoutHiddenAsync();
 
         // Assert
         await Assert.That(result.Any()).IsFalse();
@@ -64,11 +75,11 @@ public class ArticleRepositoryTests {
             Content = new StringContent(JsonSerializer.Serialize(articles), Encoding.UTF8, "application/json")
         });
         var http = new HttpClient(handler) { BaseAddress = new Uri("http://localhost/") };
-        var repo = new ArticleRepository(http, Substitute.For<IDevFileSystemManager>(), Substitute.For<ILocalizationProvider>(), Substitute.For<IDevFileSystemPaths>());
+        var repo = new ArticleRepository(http, CreateFactory(CreateStorage()));
 
         // Act
-        _ = (await repo.GetPostsAsync()).ToList();
-        _ = (await repo.GetPostsAsync(includeHidden: true)).ToList();
+        _ = (await repo.GetAllWithoutHiddenAsync()).ToList();
+        _ = (await repo.GetAllAsync()).ToList();
 
         // Assert
         await Assert.That(handler.CallCount).IsEqualTo(1);
@@ -81,10 +92,10 @@ public class ArticleRepositoryTests {
             Content = new StringContent("null", Encoding.UTF8, "application/json")
         });
         var http = new HttpClient(handler) { BaseAddress = new Uri("http://localhost/") };
-        var repo = new ArticleRepository(http, Substitute.For<IDevFileSystemManager>(), Substitute.For<ILocalizationProvider>(), Substitute.For<IDevFileSystemPaths>());
+        var repo = new ArticleRepository(http, CreateFactory(CreateStorage()));
 
         // Act
-        IEnumerable<Article> result = await repo.GetPostsAsync();
+        IEnumerable<Article> result = await repo.GetAllWithoutHiddenAsync();
 
         // Assert
         await Assert.That(result).IsEmpty();
@@ -102,11 +113,11 @@ public class ArticleRepositoryTests {
             Content = new StringContent(JsonSerializer.Serialize(articles), Encoding.UTF8, "application/json")
         });
         var http = new HttpClient(handler) { BaseAddress = new Uri("http://localhost/") };
-        var repo = new ArticleRepository(http, Substitute.For<IDevFileSystemManager>(), Substitute.For<ILocalizationProvider>(), Substitute.For<IDevFileSystemPaths>());
+        var repo = new ArticleRepository(http, CreateFactory(CreateStorage()));
 
         // Act
         Task[] tasks = Enumerable.Range(0, 5)
-            .Select(_ => repo.GetPostsAsync(includeHidden: true).AsTask())
+            .Select(_ => repo.GetAllAsync().AsTask())
             .ToArray<Task>();
         await Task.WhenAll(tasks);
 
@@ -117,15 +128,12 @@ public class ArticleRepositoryTests {
     [Test]
     public async Task SaveAsync_RespectsLocalhostAndPermissions() {
         // Arrange
-        var devFs = Substitute.For<IDevFileSystemManager>();
-        devFs.IsLocalhost.Returns(true);
-        devFs.VerifyPermissionAsync().Returns(new ValueTask<bool>(true));
-        devFs.WriteFileAsync(Arg.Any<string>(), Arg.Any<string>()).Returns(new ValueTask<bool>(true));
+        var storage = CreateStorage();
+        storage.IsLocalhost.Returns(true);
+        storage.VerifyPermissionAsync().Returns(new ValueTask<bool>(true));
+        storage.WriteIndexAsync(Arg.Any<string>()).Returns(new ValueTask<bool>(true));
 
-        var devFsPaths = Substitute.For<IDevFileSystemPaths>();
-        devFsPaths.GetIndexPath().Returns("index.json");
-
-        var repo = new ArticleRepository(new HttpClient(), devFs, Substitute.For<ILocalizationProvider>(), devFsPaths);
+        var repo = new ArticleRepository(new HttpClient(), CreateFactory(storage));
         Article[] articles = [ArticleFaker.Create(21)];
 
         // Act
@@ -133,16 +141,16 @@ public class ArticleRepositoryTests {
 
         // Assert
         await Assert.That(result).IsTrue();
-        await devFs.Received(1).WriteFileAsync(devFsPaths.GetIndexPath(), Arg.Any<string>());
+        await storage.Received(1).WriteIndexAsync(Arg.Any<string>());
     }
 
     [Test]
     public async Task SaveAsync_ReturnsFalseWhenNotLocalhost() {
         // Arrange
-        var devFs = Substitute.For<IDevFileSystemManager>();
-        devFs.IsLocalhost.Returns(false);
+        var storage = CreateStorage();
+        storage.IsLocalhost.Returns(false);
 
-        var repo = new ArticleRepository(new HttpClient(), devFs, Substitute.For<ILocalizationProvider>(), Substitute.For<IDevFileSystemPaths>());
+        var repo = new ArticleRepository(new HttpClient(), CreateFactory(storage));
         Article[] articles = [ArticleFaker.Create(22)];
 
         // Act
@@ -150,68 +158,50 @@ public class ArticleRepositoryTests {
 
         // Assert
         await Assert.That(result).IsFalse();
-        await devFs.DidNotReceiveWithAnyArgs().WriteFileAsync(null!, null!);
+        await storage.DidNotReceiveWithAnyArgs().WriteIndexAsync(null!);
     }
 
     [Test]
     public async Task DeleteAsync_DeletesLocalizedFilesAndSaves() {
         // Arrange
-        var devFs = Substitute.For<IDevFileSystemManager>();
-        devFs.IsLocalhost.Returns(true);
-        devFs.HasAccessAsync().Returns(new ValueTask<bool>(true));
-        devFs.VerifyPermissionAsync().Returns(new ValueTask<bool>(true));
-        devFs.DeleteFileAsync(Arg.Any<string>()).Returns(new ValueTask<bool>(true));
-        devFs.WriteFileAsync(Arg.Any<string>(), Arg.Any<string>()).Returns(new ValueTask<bool>(true));
-
-        LocalizationInfo[] localizations = [
-            new("en", "English", "EN", ""),
-            new("nl", "Nederlands", "NL", "")
-        ];
-
-        var localizationProvider = Substitute.For<ILocalizationProvider>();
-        localizationProvider.GetSupportedLocalizations().Returns(localizations);
-
         Article article = ArticleFaker.Create(30);
-        var devFsPaths = Substitute.For<IDevFileSystemPaths>();
-        devFsPaths.GetIndexPath().Returns("index.json");
-        devFsPaths.GetMarkdownPath("en", article.File).Returns($"en/{article.File}");
-        devFsPaths.GetMarkdownPath("nl", article.File).Returns($"nl/{article.File}");
+        var storage = CreateStorage();
+        storage.IsLocalhost.Returns(true);
+        storage.HasAccessAsync().Returns(new ValueTask<bool>(true));
+        storage.VerifyPermissionAsync().Returns(new ValueTask<bool>(true));
+        storage.DeleteLocalizedFilesAsync(article.MarkdownFileName).Returns(Task.FromResult(true));
+        storage.WriteIndexAsync(Arg.Any<string>()).Returns(new ValueTask<bool>(true));
 
-        var repo = new ArticleRepository(new HttpClient(), devFs, localizationProvider, devFsPaths);
-        Article[] articles = [article];
+        var handler = new TestHttpMessageHandler(_ => new HttpResponseMessage(HttpStatusCode.OK) {
+            Content = new StringContent(JsonSerializer.Serialize(new[] { article }), Encoding.UTF8, "application/json")
+        });
+        var http = new HttpClient(handler) { BaseAddress = new Uri("http://localhost/") };
+        var repo = new ArticleRepository(http, CreateFactory(storage));
 
         // Act
-        bool result = await repo.DeleteAsync(article, articles);
+        bool result = await repo.DeleteByIdAsync(article.Id);
 
         // Assert
         await Assert.That(result).IsTrue();
-        foreach (LocalizationInfo localization in localizations) {
-            string path = devFsPaths.GetMarkdownPath(localization.Code, article.File);
-            await devFs.Received(1).DeleteFileAsync(path);
-        }
-
-        await devFs.Received(1).WriteFileAsync(devFsPaths.GetIndexPath(), Arg.Any<string>());
+        await storage.Received(1).DeleteLocalizedFilesAsync(article.MarkdownFileName);
+        await storage.Received(1).WriteIndexAsync(Arg.Any<string>());
     }
 
     [Test]
     public async Task DeleteAsync_ReturnsFalseWhenNoAccess() {
         // Arrange
-        var devFs = Substitute.For<IDevFileSystemManager>();
-        devFs.IsLocalhost.Returns(true);
-        devFs.HasAccessAsync().Returns(new ValueTask<bool>(false));
+        var storage = CreateStorage();
+        storage.IsLocalhost.Returns(true);
+        storage.HasAccessAsync().Returns(new ValueTask<bool>(false));
 
-        var localizationProvider = Substitute.For<ILocalizationProvider>();
-        localizationProvider.GetSupportedLocalizations().Returns(new[] { new LocalizationInfo("en", "English", "EN", "") });
-
-        var repo = new ArticleRepository(new HttpClient(), devFs, localizationProvider, Substitute.For<IDevFileSystemPaths>());
+        var repo = new ArticleRepository(new HttpClient(), CreateFactory(storage));
         Article article = ArticleFaker.Create(40);
-        Article[] articles = [article];
 
         // Act
-        bool result = await repo.DeleteAsync(article, articles);
+        bool result = await repo.DeleteByIdAsync(article.Id);
 
         // Assert
         await Assert.That(result).IsFalse();
-        await devFs.DidNotReceiveWithAnyArgs().DeleteFileAsync(null!);
+        await storage.DidNotReceiveWithAnyArgs().DeleteLocalizedFilesAsync(null!);
     }
 }

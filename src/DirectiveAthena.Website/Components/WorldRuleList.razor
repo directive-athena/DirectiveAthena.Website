@@ -2,7 +2,7 @@
 @* Imports
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @using DirectiveAthena.Website.Resources
-@using DirectiveAthena.Website.Services.Articles
+@using DirectiveAthena.Website.Services.WorldRules
 @using Microsoft.Extensions.Localization
 
 @namespace DirectiveAthena.Website.Components
@@ -16,23 +16,19 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 <MudPaper Class="pa-4 card-glass mb-4">
     <div class="d-flex justify-space-between align-center mb-4">
-        <MudText Typo="Typo.h6">@Localizer[Shared.ListPosts]</MudText>
-        <MudIconButton Icon="@Icons.Material.Filled.Add" Color="Color.Primary" OnClick="@OnCreatePost"/>
+        <MudText Typo="Typo.h6">@Localizer[Shared.ListRules]</MudText>
+        <MudIconButton Icon="@Icons.Material.Filled.Add" Color="Color.Primary" OnClick="@OnCreateRule"/>
     </div>
-    <MudList T="Article" SelectedValue="SelectedPost" SelectedValueChanged="OnPostSelected"
+    <MudList T="WorldRule" SelectedValue="SelectedRule" SelectedValueChanged="OnRuleSelected"
              Color="Color.Primary">
-        @if (Posts is not null) {
-            foreach (Article post in Posts) {
-                <MudListItem Value="post">
+        @if (Rules is not null) {
+            foreach (WorldRule rule in Rules) {
+                <MudListItem Value="rule">
                     <div class="d-flex flex-column">
-                        <MudText
-                            Typo="Typo.body1">@(post.Title.GetValueOrDefault("en") ?? Localizer[Shared.ListUntitled])</MudText>
-                        <MudText Typo="Typo.caption" Class="opacity-50">@post.Id.ToString("D")</MudText>
+                        <MudText Typo="Typo.body1">@(rule.Question.GetValueOrDefault("en") ?? Localizer[Shared.ListUntitled])</MudText>
+                        <MudText Typo="Typo.caption" Class="opacity-50">@rule.Id.ToString("D")</MudText>
                         <div class="d-flex align-center gap-1">
-                            @if (post.Hidden) {
-                                <MudChip T="string" Size="Size.Small" Color="Color.Default" Variant="Variant.Text" Icon="@Icons.Material.Filled.VisibilityOff">@Localizer[Shared.ListHidden]</MudChip>
-                            }
-                            @if (string.IsNullOrEmpty(post.Title.GetValueOrDefault("nl")) || string.IsNullOrEmpty(post.Summary.GetValueOrDefault("nl"))) {
+                            @if (string.IsNullOrEmpty(rule.Question.GetValueOrDefault("nl")) || string.IsNullOrEmpty(rule.Answer.GetValueOrDefault("nl"))) {
                                 <MudChip T="string" Size="Size.Small" Color="Color.Warning"
                                          Variant="Variant.Text">@Localizer[Shared.ListMissingNl]
                                 </MudChip>
@@ -50,8 +46,8 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 
 @code {
-    [Parameter] public List<Article>? Posts { get; set; }
-    [Parameter] public Article? SelectedPost { get; set; }
-    [Parameter] public EventCallback<Article?> OnPostSelected { get; set; }
-    [Parameter] public EventCallback OnCreatePost { get; set; }
+    [Parameter] public List<WorldRule>? Rules { get; set; }
+    [Parameter] public WorldRule? SelectedRule { get; set; }
+    [Parameter] public EventCallback<WorldRule?> OnRuleSelected { get; set; }
+    [Parameter] public EventCallback OnCreateRule { get; set; }
 }

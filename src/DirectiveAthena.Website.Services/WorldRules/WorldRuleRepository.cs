@@ -1,14 +1,20 @@
 // ---------------------------------------------------------------------------------------------------------------------
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
-namespace DirectiveAthena.Website.Services.Articles;
+using CodeOfChaos.Extensions.DependencyInjection;
+using DirectiveAthena.Website.Services.FileSystem;
+
+namespace DirectiveAthena.Website.Services.WorldRules;
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
-public class Article : ContentBase {
-    public Dictionary<string, string> Title { get; set; } = new();
-    public Dictionary<string, string> Summary { get; set; } = new();
-    public string Date { get; set; } = "";
-    public List<string> Tags { get; set; } = [];
-    public bool Hidden { get; set; }
+[InjectableScoped<IWorldRuleRepository>]
+public class WorldRuleRepository(
+    HttpClient http,
+    IContentStorageFactory storageFactory
+) : ContentRepository<WorldRule>(
+    http,
+    storageFactory.ForCategory(ContentCategory.WorldRules)
+), IWorldRuleRepository {
+    protected override string IndexPath => Storage.IndexContentPath;
 }

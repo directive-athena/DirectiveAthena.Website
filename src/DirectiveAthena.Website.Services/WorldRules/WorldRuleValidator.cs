@@ -5,38 +5,42 @@ using CodeOfChaos.Extensions.DependencyInjection;
 using DirectiveAthena.Website.Services.Localization;
 using FluentValidation;
 
-namespace DirectiveAthena.Website.Services.Articles;
+namespace DirectiveAthena.Website.Services.WorldRules;
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
-[InjectableTransient<IValidator<Article>>]
-public class ArticleValidator : AbstractValidator<Article> {
+[InjectableTransient<IValidator<WorldRule>>]
+public  class WorldRuleValidator : AbstractValidator<WorldRule> {
     private readonly IReadOnlyCollection<LocalizationInfo> _localizations;
 
-    public ArticleValidator(ILocalizationProvider localizationProvider) {
+    public WorldRuleValidator(ILocalizationProvider localizationProvider) {
         _localizations = localizationProvider.GetSupportedLocalizations();
 
-        RuleFor(article => article.Id)
+        RuleFor(rule => rule.Id)
             .NotEqual(Guid.Empty)
-            .WithMessage("Some posts have missing Id!");
+            .WithMessage("Some rules have missing Id!");
 
-        RuleFor(article => article)
-            .Must(HasLocalizedTitles)
-            .WithMessage("Some posts have missing titles for one or more cultures!");
+        RuleFor(rule => rule.Date)
+            .NotEmpty()
+            .WithMessage("Some rules have missing dates!");
 
-        RuleFor(article => article)
-            .Must(HasLocalizedSummaries)
-            .WithMessage("Some posts have missing summaries for one or more cultures!");
+        RuleFor(rule => rule)
+            .Must(HasLocalizedQuestions)
+            .WithMessage("Some rules have missing questions for one or more cultures!");
+
+        RuleFor(rule => rule)
+            .Must(HasLocalizedAnswers)
+            .WithMessage("Some rules have missing answers for one or more cultures!");
     }
 
     // -----------------------------------------------------------------------------------------------------------------
     // Methods
     // -----------------------------------------------------------------------------------------------------------------
-    private bool HasLocalizedTitles(Article article)
-        => HasLocalizedValues(article.Title);
+    private bool HasLocalizedQuestions(WorldRule rule)
+        => HasLocalizedValues(rule.Question);
 
-    private bool HasLocalizedSummaries(Article article)
-        => HasLocalizedValues(article.Summary);
+    private bool HasLocalizedAnswers(WorldRule rule)
+        => HasLocalizedValues(rule.Answer);
 
     private bool HasLocalizedValues(Dictionary<string, string> values) {
         foreach (LocalizationInfo localization in _localizations) {

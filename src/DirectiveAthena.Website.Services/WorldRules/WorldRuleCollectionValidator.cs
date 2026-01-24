@@ -1,24 +1,33 @@
 // ---------------------------------------------------------------------------------------------------------------------
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
-using Microsoft.AspNetCore.Components;
+using CodeOfChaos.Extensions.DependencyInjection;
+using FluentValidation;
 
-namespace DirectiveAthenaTests.Website.Helpers;
+namespace DirectiveAthena.Website.Services.WorldRules;
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
-public  class FakeNavigationManager : NavigationManager {
-    public bool LastForceLoad { get; private set; }
+[InjectableTransient<IValidator<IEnumerable<WorldRule>>>]
+public  class WorldRuleCollectionValidator : AbstractValidator<IEnumerable<WorldRule>> {
+    public WorldRuleCollectionValidator(IValidator<WorldRule> ruleValidator) {
+        RuleFor(rules => rules)
+            .NotNull();
+
+        RuleForEach(rules => rules)
+            .SetValidator(ruleValidator);
+
+        RuleFor(rules => rules)
+            .Must(HasUniqueIds)
+            .WithMessage("Duplicate IDs found!");
+    }
 
     // -----------------------------------------------------------------------------------------------------------------
     // Methods
     // -----------------------------------------------------------------------------------------------------------------
-    public FakeNavigationManager(string baseUri = "http://localhost/", string uri = "http://localhost/") {
-        Initialize(baseUri, uri);
+    private static bool HasUniqueIds(IEnumerable<WorldRule> rules) {
+        HashSet<Guid> ids = [];
+        return rules.All(rule => ids.Add(rule.Id));
     }
 
-    protected override void NavigateToCore(string uri, bool forceLoad) {
-        LastForceLoad = forceLoad;
-        Uri = ToAbsoluteUri(uri).ToString();
-    }
 }

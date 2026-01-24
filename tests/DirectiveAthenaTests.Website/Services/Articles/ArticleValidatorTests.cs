@@ -7,7 +7,7 @@ using DirectiveAthenaTests.Website.Helpers;
 using FluentValidation.Results;
 using NSubstitute;
 
-namespace DirectiveAthenaTests.Website.Services.Validation;
+namespace DirectiveAthenaTests.Website.Services.Articles;
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
@@ -33,14 +33,14 @@ public class ArticleValidatorTests {
         // Arrange
         var validator = new ArticleValidator(CreateLocalizationProvider("en"));
         Article article = ArticleFaker.Create(300);
-        article.Id = "";
+        article.Id = Guid.Empty;
 
         // Act
         ValidationResult? result = await validator.ValidateAsync(article);
 
         // Assert
         await Assert.That(result.IsValid).IsFalse();
-        await Assert.That(result.Errors.Any(e => e.ErrorMessage == "Some posts have missing Id or File!")).IsTrue();
+        await Assert.That(result.Errors.Any(e => e.ErrorMessage == "Some posts have missing Id!")).IsTrue();
     }
 
     [Test]

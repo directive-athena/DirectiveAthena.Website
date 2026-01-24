@@ -67,6 +67,15 @@
   <data name="Nav.Writings" xml:space="preserve">
     <value>Writings</value>
   </data>
+  <data name="Nav.WorldRules" xml:space="preserve">
+    <value>World Rules</value>
+  </data>
+  <data name="Nav.WorldRulesManager" xml:space="preserve">
+    <value>World Rules Manager</value>
+  </data>
+  <data name="Nav.ContentManager" xml:space="preserve">
+    <value>Content Manager</value>
+  </data>
   <data name="Nav.Contact" xml:space="preserve">
     <value>Contact</value>
   </data>
@@ -133,6 +142,18 @@
   <data name="Home.Writings.Empty" xml:space="preserve">
     <value>No dispatches currently available. Check back soon for updates from the frontier.</value>
   </data>
+  <data name="Home.WorldRules.Title" xml:space="preserve">
+    <value>World Rules</value>
+  </data>
+  <data name="Home.WorldRules.Subtitle" xml:space="preserve">
+    <value>Constraints and canon anchors at a glance.</value>
+  </data>
+  <data name="Home.WorldRules.ViewAll" xml:space="preserve">
+    <value>View All Rules</value>
+  </data>
+  <data name="Home.WorldRules.Empty" xml:space="preserve">
+    <value>No rules available for the homepage yet.</value>
+  </data>
   <data name="Writings.Title" xml:space="preserve">
     <value>Writings - Directive Athena</value>
   </data>
@@ -177,6 +198,285 @@
   </data>
   <data name="Writings.Detail.ShareReddit" xml:space="preserve">
     <value>Reddit</value>
+  </data>
+  <data name="WorldRules.Title" xml:space="preserve">
+    <value>World Rules - Directive Athena</value>
+  </data>
+  <data name="WorldRules.Heading" xml:space="preserve">
+    <value>World Rules</value>
+  </data>
+  <data name="WorldRules.Subtitle" xml:space="preserve">
+    <value>Constraints, boundaries, and canon anchors for the setting.</value>
+  </data>
+  <data name="WorldRules.All" xml:space="preserve">
+    <value>All Rules</value>
+  </data>
+  <data name="WorldRules.Updated" xml:space="preserve">
+    <value>Updated {0}</value>
+  </data>
+  <data name="WorldRules.Empty" xml:space="preserve">
+    <value>No rules published yet. Add your first entry to begin shaping the canon.</value>
+  </data>
+  <data name="ContentManager.Title" xml:space="preserve">
+    <value>Content Manager - Directive Athena</value>
+  </data>
+  <data name="ContentManager.Heading" xml:space="preserve">
+    <value>Content Manager</value>
+  </data>
+  <data name="ContentManager.Chooser.Title" xml:space="preserve">
+    <value>What do you want to edit?</value>
+  </data>
+  <data name="ContentManager.Chooser.Subtitle" xml:space="preserve">
+    <value>Choose a content type to manage.</value>
+  </data>
+  <data name="ContentManager.Chooser.Writings" xml:space="preserve">
+    <value>Writings</value>
+  </data>
+  <data name="ContentManager.Chooser.WorldRules" xml:space="preserve">
+    <value>World Rules</value>
+  </data>
+  <data name="ContentManager.Chooser.Tags" xml:space="preserve">
+    <value>Tags</value>
+  </data>
+  <data name="ContentManager.ChooseAnother" xml:space="preserve">
+    <value>Choose Another</value>
+  </data>
+  <data name="ContentManager.ReadOnly.Label" xml:space="preserve">
+    <value>Read-Only Mode</value>
+  </data>
+  <data name="ContentManager.ReadOnly.Body" xml:space="preserve">
+    <value>Direct filesystem writes are only available on localhost and in DEBUG mode.</value>
+  </data>
+  <data name="ContentManager.Access.Label" xml:space="preserve">
+    <value>Write Access</value>
+  </data>
+  <data name="ContentManager.Access.Granted" xml:space="preserve">
+    <value>Granted</value>
+  </data>
+  <data name="ContentManager.Access.Required" xml:space="preserve">
+    <value>Required</value>
+  </data>
+  <data name="ContentManager.Access.Grant" xml:space="preserve">
+    <value>Grant Access</value>
+  </data>
+  <data name="ContentManager.Access.Reset" xml:space="preserve">
+    <value>Reset Access</value>
+  </data>
+  <data name="ContentManager.Access.Unsupported" xml:space="preserve">
+    <value>FS API Not Supported</value>
+  </data>
+  <data name="ContentManager.Access.GrantedToast" xml:space="preserve">
+    <value>Access granted!</value>
+  </data>
+  <data name="ContentManager.Access.FailedToast" xml:space="preserve">
+    <value>Failed to get access.</value>
+  </data>
+  <data name="ContentManager.Access.ResetToast" xml:space="preserve">
+    <value>Access reset.</value>
+  </data>
+  <data name="ContentManager.Tab.Writings" xml:space="preserve">
+    <value>Writings</value>
+  </data>
+  <data name="ContentManager.Tab.WorldRules" xml:space="preserve">
+    <value>World Rules</value>
+  </data>
+  <data name="ContentManager.Tab.Tags" xml:space="preserve">
+    <value>Tags</value>
+  </data>
+  <data name="ContentManager.SelectPost" xml:space="preserve">
+    <value>Select a post or create a new one.</value>
+  </data>
+  <data name="ContentManager.SelectRule" xml:space="preserve">
+    <value>Select a rule or create a new one.</value>
+  </data>
+  <data name="ContentManager.SaveIndex" xml:space="preserve">
+    <value>Save index.json</value>
+  </data>
+  <data name="ContentManager.DownloadIndex" xml:space="preserve">
+    <value>Download index.json</value>
+  </data>
+  <data name="ContentManager.CopyIndex" xml:space="preserve">
+    <value>Copy index.json to Clipboard</value>
+  </data>
+  <data name="ContentManager.IndexSaved" xml:space="preserve">
+    <value>index.json saved to disk!</value>
+  </data>
+  <data name="ContentManager.IndexSaveFailed" xml:space="preserve">
+    <value>Failed to save index.json.</value>
+  </data>
+  <data name="ContentManager.JsonCopied" xml:space="preserve">
+    <value>JSON copied to clipboard</value>
+  </data>
+  <data name="ContentManager.DeletePostConfirm" xml:space="preserve">
+    <value>Are you sure you want to delete this post?</value>
+  </data>
+  <data name="ContentManager.DeletePostSuccess" xml:space="preserve">
+    <value>Post and markdown files deleted.</value>
+  </data>
+  <data name="ContentManager.DeletePostPartial" xml:space="preserve">
+    <value>Post removed from list, but filesystem operation failed or was partial.</value>
+  </data>
+  <data name="ContentManager.DeletePostReadOnly" xml:space="preserve">
+    <value>Read-only mode: Post removed from list, but files were not deleted.</value>
+  </data>
+  <data name="ContentManager.DeleteRuleConfirm" xml:space="preserve">
+    <value>Are you sure you want to delete this rule?</value>
+  </data>
+  <data name="ContentManager.DeleteRuleSuccess" xml:space="preserve">
+    <value>Rule and markdown files deleted.</value>
+  </data>
+  <data name="ContentManager.DeleteRulePartial" xml:space="preserve">
+    <value>Rule removed from list, but filesystem operation failed or was partial.</value>
+  </data>
+  <data name="ContentManager.DeleteRuleReadOnly" xml:space="preserve">
+    <value>Read-only mode: Rule removed from list, but files were not deleted.</value>
+  </data>
+  <data name="ContentManager.MarkdownStubsSaved" xml:space="preserve">
+    <value>Markdown stubs saved to disk!</value>
+  </data>
+  <data name="ContentManager.MarkdownStubsSaveDisk" xml:space="preserve">
+    <value>Save Markdown Stubs to Disk</value>
+  </data>
+  <data name="ContentManager.MarkdownStubsDownload" xml:space="preserve">
+    <value>Download Markdown Stubs</value>
+  </data>
+  <data name="Editor.EditPost" xml:space="preserve">
+    <value>Edit Post: {0}</value>
+  </data>
+  <data name="Editor.EditRule" xml:space="preserve">
+    <value>Edit Rule: {0}</value>
+  </data>
+  <data name="Editor.UniqueId" xml:space="preserve">
+    <value>Unique ID</value>
+  </data>
+  <data name="Editor.IdHelperPost" xml:space="preserve">
+    <value>GUID is generated automatically for new posts.</value>
+  </data>
+  <data name="Editor.IdHelperRule" xml:space="preserve">
+    <value>GUID is generated automatically for new rules.</value>
+  </data>
+  <data name="Editor.DateLabel" xml:space="preserve">
+    <value>Date (YYYY-MM-DD)</value>
+  </data>
+  <data name="Editor.TitleLabel" xml:space="preserve">
+    <value>Title</value>
+  </data>
+  <data name="Editor.SummaryLabel" xml:space="preserve">
+    <value>Summary</value>
+  </data>
+  <data name="Editor.QuestionLabel" xml:space="preserve">
+    <value>Question</value>
+  </data>
+  <data name="Editor.AnswerLabel" xml:space="preserve">
+    <value>Answer</value>
+  </data>
+  <data name="Editor.HiddenLabel" xml:space="preserve">
+    <value>Hidden (Exclude from lists)</value>
+  </data>
+  <data name="Editor.NewPostTitle" xml:space="preserve">
+    <value>New Post</value>
+  </data>
+  <data name="Editor.NewRuleTitle" xml:space="preserve">
+    <value>New Rule</value>
+  </data>
+  <data name="Editor.MarkdownFileLabel" xml:space="preserve">
+    <value>Markdown Filename (e.g. {0})</value>
+  </data>
+  <data name="Editor.MarkdownFileHelper" xml:space="preserve">
+    <value>Filename matches GUID and cannot be changed.</value>
+  </data>
+  <data name="Editor.TagsTitle" xml:space="preserve">
+    <value>Tags</value>
+  </data>
+  <data name="Editor.AddTag" xml:space="preserve">
+    <value>Add Tag ID</value>
+  </data>
+  <data name="Editor.TagsHint" xml:space="preserve">
+    <value>Ensure Tag ID exists in the Tags tab.</value>
+  </data>
+  <data name="Markdown.Label" xml:space="preserve">
+    <value>Markdown</value>
+  </data>
+  <data name="MarkdownEditor.Title" xml:space="preserve">
+    <value>Markdown Editor</value>
+  </data>
+  <data name="MarkdownEditor.Locale" xml:space="preserve">
+    <value>Locale</value>
+  </data>
+  <data name="MarkdownEditor.SelectItem" xml:space="preserve">
+    <value>Select an item to edit its markdown.</value>
+  </data>
+  <data name="MarkdownEditor.Editing" xml:space="preserve">
+    <value>Editing: {0}/{1}</value>
+  </data>
+  <data name="MarkdownEditor.Content" xml:space="preserve">
+    <value>Markdown Content</value>
+  </data>
+  <data name="MarkdownEditor.Save" xml:space="preserve">
+    <value>Save to Disk</value>
+  </data>
+  <data name="MarkdownEditor.Download" xml:space="preserve">
+    <value>Download Markdown</value>
+  </data>
+  <data name="MarkdownEditor.Copy" xml:space="preserve">
+    <value>Copy to Clipboard</value>
+  </data>
+  <data name="MarkdownEditor.Reload" xml:space="preserve">
+    <value>Reload Original</value>
+  </data>
+  <data name="MarkdownEditor.FsRequired" xml:space="preserve">
+    <value>Filesystem access required.</value>
+  </data>
+  <data name="MarkdownEditor.SaveSuccess" xml:space="preserve">
+    <value>Saved {0}/{1} to disk!</value>
+  </data>
+  <data name="MarkdownEditor.SaveFailed" xml:space="preserve">
+    <value>Failed to save markdown file.</value>
+  </data>
+  <data name="TagsManager.Title" xml:space="preserve">
+    <value>Tags Management</value>
+  </data>
+  <data name="TagsManager.TagId" xml:space="preserve">
+    <value>Tag ID</value>
+  </data>
+  <data name="TagsManager.Actions" xml:space="preserve">
+    <value>Actions</value>
+  </data>
+  <data name="TagsManager.AddTag" xml:space="preserve">
+    <value>Add Tag</value>
+  </data>
+  <data name="TagsManager.SaveResx" xml:space="preserve">
+    <value>Save Resx ({0})</value>
+  </data>
+  <data name="TagsManager.DownloadResx" xml:space="preserve">
+    <value>Download Resx ({0})</value>
+  </data>
+  <data name="TagsManager.InUse" xml:space="preserve">
+    <value>Tags currently in use: {0}</value>
+  </data>
+  <data name="TagsManager.FsRequired" xml:space="preserve">
+    <value>Filesystem access required.</value>
+  </data>
+  <data name="TagsManager.SaveSuccess" xml:space="preserve">
+    <value>Saved {0} to disk!</value>
+  </data>
+  <data name="TagsManager.SaveFailed" xml:space="preserve">
+    <value>Failed to save RESX file.</value>
+  </data>
+  <data name="List.Posts" xml:space="preserve">
+    <value>Posts</value>
+  </data>
+  <data name="List.Rules" xml:space="preserve">
+    <value>Rules</value>
+  </data>
+  <data name="List.MissingNl" xml:space="preserve">
+    <value>Missing NL</value>
+  </data>
+  <data name="List.Hidden" xml:space="preserve">
+    <value>Hidden</value>
+  </data>
+  <data name="List.Untitled" xml:space="preserve">
+    <value>Untitled</value>
   </data>
   <data name="Story.Title" xml:space="preserve">
     <value>Story - Directive Athena</value>

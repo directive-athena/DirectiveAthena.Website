@@ -7,7 +7,7 @@ using DirectiveAthenaTests.Website.Helpers;
 using FluentValidation.Results;
 using NSubstitute;
 
-namespace DirectiveAthenaTests.Website.Services.Validation;
+namespace DirectiveAthenaTests.Website.Services.Articles;
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
@@ -45,25 +45,6 @@ public class ArticleCollectionValidatorTests {
         // Assert
         await Assert.That(result.IsValid).IsFalse();
         await Assert.That(result.Errors.Any(e => e.ErrorMessage == "Duplicate IDs found!")).IsTrue();
-    }
-
-    [Test]
-    public async Task Validate_RejectsDuplicateFiles_IgnoresCase() {
-        // Arrange
-        Article[] articles = [
-            ArticleFaker.Create(410),
-            ArticleFaker.Create(411)
-        ];
-        articles[1].File = articles[0].File.ToUpperInvariant();
-
-        var validator = new ArticleCollectionValidator(new ArticleValidator(CreateLocalizationProvider("en")));
-
-        // Act
-        ValidationResult? result = await validator.ValidateAsync(articles);
-
-        // Assert
-        await Assert.That(result.IsValid).IsFalse();
-        await Assert.That(result.Errors.Any(e => e.ErrorMessage == "Duplicate files found!")).IsTrue();
     }
 
     [Test]

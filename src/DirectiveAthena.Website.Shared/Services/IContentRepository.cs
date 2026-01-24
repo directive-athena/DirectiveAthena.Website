@@ -1,14 +1,15 @@
 // ---------------------------------------------------------------------------------------------------------------------
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
-namespace DirectiveAthena.Website.Services.Articles;
+namespace DirectiveAthena.Website.Services;
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
-public class Article : ContentBase {
-    public Dictionary<string, string> Title { get; set; } = new();
-    public Dictionary<string, string> Summary { get; set; } = new();
-    public string Date { get; set; } = "";
-    public List<string> Tags { get; set; } = [];
-    public bool Hidden { get; set; }
+public interface IContentRepository<T> where T : ContentBase {
+    ValueTask<T[]> GetAllAsync(CancellationToken ct = default);
+    ValueTask<T?> GetByIdAsync(Guid id, CancellationToken ct = default);
+    ValueTask<bool> DeleteByIdAsync(Guid id, CancellationToken ct = default);
+    
+    ValueTask<bool> SaveAsync(IEnumerable<T> items, CancellationToken ct = default);
+    ValueTask<string> GetAsJsonStringAsync(CancellationToken ct = default);
 }
