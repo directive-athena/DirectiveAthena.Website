@@ -56,6 +56,9 @@ jobs:
       - name: Build interop bundle
         run: npm run build
 
+      - name: Run TypeScript unit tests
+        run: npm run test:ts
+
       - name: Restore dependencies
         run: dotnet restore DirectiveAthena.Website.slnx
       
