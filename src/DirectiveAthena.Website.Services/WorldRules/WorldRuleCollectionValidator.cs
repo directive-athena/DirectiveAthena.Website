@@ -20,22 +20,14 @@ public sealed class WorldRuleCollectionValidator : AbstractValidator<IEnumerable
         RuleFor(rules => rules)
             .Must(HasUniqueIds)
             .WithMessage("Duplicate IDs found!");
-
-        RuleFor(rules => rules)
-            .Must(HasUniqueFiles)
-            .WithMessage("Duplicate files found!");
     }
 
     // -----------------------------------------------------------------------------------------------------------------
     // Methods
     // -----------------------------------------------------------------------------------------------------------------
     private static bool HasUniqueIds(IEnumerable<WorldRule> rules) {
-        HashSet<string> ids = new(StringComparer.Ordinal);
+        HashSet<Guid> ids = [];
         return rules.All(rule => ids.Add(rule.Id));
     }
 
-    private static bool HasUniqueFiles(IEnumerable<WorldRule> rules) {
-        HashSet<string> files = new(StringComparer.OrdinalIgnoreCase);
-        return rules.All(rule => files.Add(rule.File));
-    }
 }

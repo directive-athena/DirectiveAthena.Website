@@ -48,25 +48,6 @@ public class ArticleCollectionValidatorTests {
     }
 
     [Test]
-    public async Task Validate_RejectsDuplicateFiles_IgnoresCase() {
-        // Arrange
-        Article[] articles = [
-            ArticleFaker.Create(410),
-            ArticleFaker.Create(411)
-        ];
-        articles[1].File = articles[0].File.ToUpperInvariant();
-
-        var validator = new ArticleCollectionValidator(new ArticleValidator(CreateLocalizationProvider("en")));
-
-        // Act
-        ValidationResult? result = await validator.ValidateAsync(articles);
-
-        // Assert
-        await Assert.That(result.IsValid).IsFalse();
-        await Assert.That(result.Errors.Any(e => e.ErrorMessage == "Duplicate files found!")).IsTrue();
-    }
-
-    [Test]
     public async Task Validate_FailsWhenAnyArticleIsInvalid() {
         // Arrange
         Article valid = ArticleFaker.Create(420);

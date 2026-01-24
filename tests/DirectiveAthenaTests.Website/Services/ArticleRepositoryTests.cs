@@ -31,7 +31,7 @@ public class ArticleRepositoryTests {
         var repo = new ArticleRepository(http, Substitute.For<IDevFileSystemManager>(), Substitute.For<ILocalizationProvider>(), Substitute.For<IDevFileSystemPaths>());
 
         // Act
-        List<Article> result = (await repo.GetPostsAsync()).ToList();
+        List<Article> result = (await repo.GetAllWithoutHiddenAsync()).ToList();
 
         // Assert
         await Assert.That(result.Count).IsEqualTo(2);
@@ -46,7 +46,7 @@ public class ArticleRepositoryTests {
         var repo = new ArticleRepository(http, Substitute.For<IDevFileSystemManager>(), Substitute.For<ILocalizationProvider>(), Substitute.For<IDevFileSystemPaths>());
 
         // Act
-        IEnumerable<Article> result = await repo.GetPostsAsync();
+        IEnumerable<Article> result = await repo.GetAllWithoutHiddenAsync();
 
         // Assert
         await Assert.That(result.Any()).IsFalse();
@@ -67,8 +67,8 @@ public class ArticleRepositoryTests {
         var repo = new ArticleRepository(http, Substitute.For<IDevFileSystemManager>(), Substitute.For<ILocalizationProvider>(), Substitute.For<IDevFileSystemPaths>());
 
         // Act
-        _ = (await repo.GetPostsAsync()).ToList();
-        _ = (await repo.GetPostsAsync(includeHidden: true)).ToList();
+        _ = (await repo.GetAllWithoutHiddenAsync()).ToList();
+        _ = (await repo.GetAllAsync()).ToList();
 
         // Assert
         await Assert.That(handler.CallCount).IsEqualTo(1);
@@ -84,7 +84,7 @@ public class ArticleRepositoryTests {
         var repo = new ArticleRepository(http, Substitute.For<IDevFileSystemManager>(), Substitute.For<ILocalizationProvider>(), Substitute.For<IDevFileSystemPaths>());
 
         // Act
-        IEnumerable<Article> result = await repo.GetPostsAsync();
+        IEnumerable<Article> result = await repo.GetAllWithoutHiddenAsync();
 
         // Assert
         await Assert.That(result).IsEmpty();
@@ -106,7 +106,7 @@ public class ArticleRepositoryTests {
 
         // Act
         Task[] tasks = Enumerable.Range(0, 5)
-            .Select(_ => repo.GetPostsAsync(includeHidden: true).AsTask())
+            .Select(_ => repo.GetAllAsync().AsTask())
             .ToArray<Task>();
         await Task.WhenAll(tasks);
 
@@ -174,19 +174,18 @@ public class ArticleRepositoryTests {
         Article article = ArticleFaker.Create(30);
         var devFsPaths = Substitute.For<IDevFileSystemPaths>();
         devFsPaths.GetIndexPath().Returns("index.json");
-        devFsPaths.GetMarkdownPath("en", article.File).Returns($"en/{article.File}");
-        devFsPaths.GetMarkdownPath("nl", article.File).Returns($"nl/{article.File}");
+        devFsPaths.GetMarkdownPath("en", article.MarkdownFileName).Returns($"en/{article.MarkdownFileName}");
+        devFsPaths.GetMarkdownPath("nl", article.MarkdownFileName).Returns($"nl/{article.MarkdownFileName}");
 
         var repo = new ArticleRepository(new HttpClient(), devFs, localizationProvider, devFsPaths);
-        Article[] articles = [article];
 
         // Act
-        bool result = await repo.DeleteAsync(article, articles);
+        bool result = await repo.DeleteByIdAsync(article.Id);
 
         // Assert
         await Assert.That(result).IsTrue();
         foreach (LocalizationInfo localization in localizations) {
-            string path = devFsPaths.GetMarkdownPath(localization.Code, article.File);
+            string path = devFsPaths.GetMarkdownPath(localization.Code, article.MarkdownFileName);
             await devFs.Received(1).DeleteFileAsync(path);
         }
 
@@ -205,10 +204,9 @@ public class ArticleRepositoryTests {
 
         var repo = new ArticleRepository(new HttpClient(), devFs, localizationProvider, Substitute.For<IDevFileSystemPaths>());
         Article article = ArticleFaker.Create(40);
-        Article[] articles = [article];
 
         // Act
-        bool result = await repo.DeleteAsync(article, articles);
+        bool result = await repo.DeleteByIdAsync(article.Id);
 
         // Assert
         await Assert.That(result).IsFalse();

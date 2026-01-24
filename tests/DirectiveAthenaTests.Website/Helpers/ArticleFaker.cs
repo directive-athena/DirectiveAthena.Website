@@ -14,8 +14,7 @@ public static class ArticleFaker {
         var faker = new Faker {
             Random = new Randomizer(seed)
         };
-        string id = faker.Random.Guid().ToString("N");
-        string file = $"{id}.md";
+        Guid id = faker.Random.Guid();
 
         Dictionary<string, string> title = new() {
             ["en"] = faker.Lorem.Sentence(3)
@@ -36,7 +35,6 @@ public static class ArticleFaker {
             Summary = summary,
             Date = faker.Date.Recent(30).ToString("yyyy-MM-dd"),
             Tags = faker.Lorem.Words(2).ToList(),
-            File = file,
             Hidden = hidden
         };
     }

@@ -82,7 +82,7 @@ public class ArticleManagerTests {
         string result = manager.GetLocalizedFilePath(article);
 
         // Assert
-        await Assert.That(result).IsEqualTo($"content/articles/nl/{article.File}");
+        await Assert.That(result).IsEqualTo($"content/articles/nl/{article.MarkdownFileName}");
     }
 
     [Test]
@@ -113,15 +113,15 @@ public class ArticleManagerTests {
         // Assert
         await Assert.That(article.Title.Keys.ToHashSet()).IsEquivalentTo(expected);
         await Assert.That(article.Summary.Keys.ToHashSet()).IsEquivalentTo(expected);
-        await Assert.That(article.Id).IsNotNullOrWhiteSpace();
-        await Assert.That(article.File).IsNotNullOrWhiteSpace();
+        await Assert.That(article.Id).IsNotEqualTo(Guid.Empty);
+        await Assert.That(article.MarkdownFileName).IsNotNullOrWhiteSpace();
     }
 
     [Test]
-    public async Task Validate_RejectsMissingIdOrFile() {
+    public async Task Validate_RejectsMissingId() {
         // Arrange
         Article[] articles = [
-            new() { Id = "", File = "missing.md" }
+            new() { Id = Guid.Empty }
         ];
 
         ArticleManager manager = CreateManager(CreateLocalizationProvider("en"));
@@ -131,7 +131,7 @@ public class ArticleManagerTests {
 
         // Assert
         await Assert.That(result).IsFalse();
-        await Assert.That(error).IsEqualTo("Some posts have missing Id or File!");
+        await Assert.That(error).IsEqualTo("Some posts have missing Id!");
     }
 
     [Test]
@@ -151,25 +151,6 @@ public class ArticleManagerTests {
         // Assert
         await Assert.That(result).IsFalse();
         await Assert.That(error).IsEqualTo("Duplicate IDs found!");
-    }
-
-    [Test]
-    public async Task Validate_RejectsDuplicateFiles() {
-        // Arrange
-        Article[] articles = [
-            ArticleFaker.Create(150),
-            ArticleFaker.Create(151)
-        ];
-        articles[1].File = articles[0].File;
-
-        ArticleManager manager = CreateManager(CreateLocalizationProvider("en"));
-
-        // Act
-        bool result = manager.Validate(articles, out string? error);
-
-        // Assert
-        await Assert.That(result).IsFalse();
-        await Assert.That(error).IsEqualTo("Duplicate files found!");
     }
 
     [Test]
@@ -243,7 +224,7 @@ public class ArticleManagerTests {
         // Assert
         await Assert.That(stubs.Count).IsEqualTo(ArticleFaker.DefaultLocalizations().Count);
         foreach (LocalizationInfo localization in ArticleFaker.DefaultLocalizations()) {
-            string path = devFsPaths.GetMarkdownPath(localization.Code, article.File);
+            string path = devFsPaths.GetMarkdownPath(localization.Code, article.MarkdownFileName);
             await devFs.Received(1).WriteFileAsync(path, Arg.Any<string>());
         }
     }

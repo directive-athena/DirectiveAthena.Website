@@ -17,12 +17,8 @@ public sealed class ArticleValidator : AbstractValidator<Article> {
         _localizations = localizationProvider.GetSupportedLocalizations();
 
         RuleFor(article => article.Id)
-            .NotEmpty()
-            .WithMessage("Some posts have missing Id or File!");
-
-        RuleFor(article => article.File)
-            .NotEmpty()
-            .WithMessage("Some posts have missing Id or File!");
+            .NotEqual(Guid.Empty)
+            .WithMessage("Some posts have missing Id!");
 
         RuleFor(article => article)
             .Must(HasLocalizedTitles)
