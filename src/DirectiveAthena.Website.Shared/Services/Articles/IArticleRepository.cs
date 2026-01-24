@@ -5,8 +5,6 @@ namespace DirectiveAthena.Website.Services.Articles;
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
-public interface IArticleRepository : ICachedJsonRepository<Article> {
-    ValueTask<Article[]> GetPostsAsync(bool includeHidden = false, CancellationToken ct = default);
-    ValueTask<Article?> GetPostByIdAsync(string id, CancellationToken ct = default);
-    Task<bool> DeleteAsync(Article article, IEnumerable<Article> articles, CancellationToken ct = default);
+public interface IArticleRepository : IContentRepository<Article> {
+    ValueTask<Article[]> GetAllWithoutHiddenAsync(CancellationToken ct = default);
 }
