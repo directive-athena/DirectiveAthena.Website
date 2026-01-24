@@ -1,12 +1,11 @@
 ﻿// ---------------------------------------------------------------------------------------------------------------------
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
-namespace DirectiveAthena.Website.Services.Articles;
+namespace DirectiveAthena.Website.Services;
+
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
-public interface IArticleRepository : ICachedJsonRepository<Article> {
-    ValueTask<Article[]> GetPostsAsync(bool includeHidden = false, CancellationToken ct = default);
-    ValueTask<Article?> GetPostByIdAsync(string id, CancellationToken ct = default);
-    Task<bool> DeleteAsync(Article article, IEnumerable<Article> articles, CancellationToken ct = default);
+public interface ICachedJsonRepository<T> {
+    ValueTask<bool> SaveAsync(IEnumerable<T> items, CancellationToken ct = default);
 }
