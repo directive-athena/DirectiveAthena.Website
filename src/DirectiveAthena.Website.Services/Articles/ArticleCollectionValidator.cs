@@ -9,7 +9,7 @@ namespace DirectiveAthena.Website.Services.Articles;
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
 [InjectableTransient<IValidator<IEnumerable<Article>>>]
-public sealed class ArticleCollectionValidator : AbstractValidator<IEnumerable<Article>> {
+public class ArticleCollectionValidator : AbstractValidator<IEnumerable<Article>> {
     public ArticleCollectionValidator(IValidator<Article> articleValidator) {
         RuleFor(articles => articles)
             .NotNull();

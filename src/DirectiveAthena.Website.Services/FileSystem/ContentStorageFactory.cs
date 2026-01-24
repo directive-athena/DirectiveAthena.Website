@@ -9,7 +9,7 @@ namespace DirectiveAthena.Website.Services.FileSystem;
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
 [InjectableScoped<IContentStorageFactory>]
-public sealed class ContentStorageFactory(
+public class ContentStorageFactory(
     ILocalFileStorage fileStorage,
     ILocalizationProvider localizationProvider
 ) : IContentStorageFactory {

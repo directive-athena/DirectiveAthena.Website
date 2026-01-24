@@ -7,7 +7,7 @@ namespace DirectiveAthenaTests.Website.Helpers;
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
-public sealed class FakeNavigationManager : NavigationManager {
+public  class FakeNavigationManager : NavigationManager {
     public bool LastForceLoad { get; private set; }
 
     // -----------------------------------------------------------------------------------------------------------------

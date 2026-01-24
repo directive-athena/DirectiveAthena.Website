@@ -7,7 +7,7 @@ namespace DirectiveAthena.Website.Services.FileSystem;
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
-public sealed class ContentStorage(
+public class ContentStorage(
     ILocalFileStorage fileStorage,
     ILocalizationProvider localizationProvider,
     string categoryFolder

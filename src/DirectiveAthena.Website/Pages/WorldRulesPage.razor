@@ -133,7 +133,7 @@
     private void FilterByTag(string tag) => _selectedTag = tag;
     private void ClearTag() => _selectedTag = null;
 
-    private sealed record WorldRuleView(
+    private  record WorldRuleView(
         WorldRule Rule,
         string Title,
         string Summary,

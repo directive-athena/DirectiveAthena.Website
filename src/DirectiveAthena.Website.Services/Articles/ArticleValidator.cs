@@ -10,7 +10,7 @@ namespace DirectiveAthena.Website.Services.Articles;
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
 [InjectableTransient<IValidator<Article>>]
-public sealed class ArticleValidator : AbstractValidator<Article> {
+public class ArticleValidator : AbstractValidator<Article> {
     private readonly IReadOnlyCollection<LocalizationInfo> _localizations;
 
     public ArticleValidator(ILocalizationProvider localizationProvider) {

@@ -5,7 +5,7 @@ namespace DirectiveAthenaTests.Website.Helpers;
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
-public sealed class TestHttpMessageHandler(Func<HttpRequestMessage, HttpResponseMessage> handler) : HttpMessageHandler {
+public  class TestHttpMessageHandler(Func<HttpRequestMessage, HttpResponseMessage> handler) : HttpMessageHandler {
     public int CallCount { get; private set; }
 
     // -----------------------------------------------------------------------------------------------------------------
