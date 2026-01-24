@@ -22,49 +22,66 @@
         <div class="d-flex justify-space-between align-end mb-12">
             <div>
                 <MudText Typo="Typo.h2" Class="mb-4">@LocalizerShared[Shared.HomeWorldRulesTitle]</MudText>
-                <MudText Typo="Typo.body1" Class="text-secondary opacity-70">@LocalizerShared[Shared.HomeWorldRulesSubtitle]</MudText>
+                <MudText Typo="Typo.body1"
+                         Class="text-secondary opacity-70">@LocalizerShared[Shared.HomeWorldRulesSubtitle]</MudText>
             </div>
             <MudButton Variant="Variant.Text" Color="Color.Secondary" Href="/world-rules"
                        EndIcon="@Icons.Material.Filled.ArrowForward"
                        Class="d-none d-sm-flex">@LocalizerShared[Shared.HomeWorldRulesViewAll]</MudButton>
         </div>
 
-        @if (_rules is null) {
-            <div class="d-flex justify-center py-12">
-                <MudProgressCircular Color="Color.Secondary" Indeterminate="true" Size="Size.Large"/>
-            </div>
-        }
-        else if (!_rules.Any()) {
-            <MudCard Class="card-glass pa-8 text-center border-dashed">
-                <MudText Typo="Typo.h6" Class="opacity-50">@LocalizerShared[Shared.HomeWorldRulesEmpty]</MudText>
-            </MudCard>
-        }
-        else {
+        @if (!_isLoaded) {
             <MudGrid Spacing="6">
-                @foreach (WorldRule rule in _rules) {
+                @for (int i = 0; i < 2; i++) {
                     <MudItem xs="12" md="6">
-                        <MudCard Class="card-glass h-100 d-flex flex-column" @onclick="@(() => ViewRules())"
-                                 Style="cursor: pointer;">
+                        <MudCard Class="card-glass h-100 d-flex flex-column">
                             <MudCardContent Class="flex-grow-1 pa-8">
-                                <MudText Typo="Typo.h4"
-                                         Class="mb-4 SpaceGrotesk">@WorldRuleManager.GetLocalizedQuestion(rule)</MudText>
-                                <MudText Typo="Typo.body2" Class="text-secondary mb-6"
-                                         Style="line-height: 1.6;">
-                                    @WorldRuleManager.GetLocalizedAnswer(rule)
-                                </MudText>
-                                @if (rule.Tags.Count > 0) {
-                                    <div class="d-flex gap-1">
-                                        @foreach (string tag in rule.Tags.Take(2)) {
-                                            <span class="px-2 py-0 rounded"
-                                                  style="background: rgba(0, 229, 255, 0.1); color: var(--neon-cyan); font-size: 0.7rem; border: 1px solid rgba(0, 229, 255, 0.2);">@LocalizerTags[tag]</span>
-                                        }
-                                    </div>
-                                }
+                                <MudProgressLinear Color="Color.Secondary" Indeterminate="true" Class="mb-4"/>
+                                <MudProgressLinear Color="Color.Secondary" Indeterminate="true" Class="mb-4"
+                                                   Style="height: 10px;"/>
+                                <MudProgressLinear Color="Color.Secondary" Indeterminate="true" Class="mb-4"
+                                                   Style="height: 10px; width: 80%;"/>
+                                <MudProgressLinear Color="Color.Secondary" Indeterminate="true"
+                                                   Style="height: 10px; width: 50%;"/>
                             </MudCardContent>
                         </MudCard>
                     </MudItem>
                 }
             </MudGrid>
+        }
+        else if (WorldRules is not null) {
+            if (!WorldRules.Any()) {
+                <MudCard Class="card-glass pa-8 text-center border-dashed">
+                    <MudText Typo="Typo.h6" Class="opacity-50">@LocalizerShared[Shared.HomeWorldRulesEmpty]</MudText>
+                </MudCard>
+            }
+            else {
+                <MudGrid Spacing="6">
+                    @foreach (WorldRule rule in WorldRules) {
+                        <MudItem xs="12" md="6">
+                            <MudCard Class="card-glass h-100 d-flex flex-column" @onclick="@(() => ViewRules())"
+                                     Style="cursor: pointer;">
+                                <MudCardContent Class="flex-grow-1 pa-8">
+                                    <MudText Typo="Typo.h4"
+                                             Class="mb-4 SpaceGrotesk">@WorldRuleManager.GetLocalizedQuestion(rule)</MudText>
+                                    <MudText Typo="Typo.body2" Class="text-secondary mb-6"
+                                             Style="line-height: 1.6;">
+                                        @WorldRuleManager.GetLocalizedAnswer(rule)
+                                    </MudText>
+                                    @if (rule.Tags.Count > 0) {
+                                        <div class="d-flex gap-1">
+                                            @foreach (string tag in rule.Tags.Take(2)) {
+                                                <span class="px-2 py-0 rounded"
+                                                      style="background: rgba(0, 229, 255, 0.1); color: var(--neon-cyan); font-size: 0.7rem; border: 1px solid rgba(0, 229, 255, 0.2);">@LocalizerTags[tag]</span>
+                                            }
+                                        </div>
+                                    }
+                                </MudCardContent>
+                            </MudCard>
+                        </MudItem>
+                    }
+                </MudGrid>
+            }
         }
 
         <div class="d-flex justify-center mt-12 d-sm-none">
@@ -79,15 +96,18 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 
 @code {
-    private List<WorldRule>? _rules;
+    private List<WorldRule>? WorldRules { get; set; }
+    private bool _isLoaded;
 
     protected override async Task OnInitializedAsync() {
         IEnumerable<WorldRule> rules = await WorldRuleRepository.GetRulesAsync();
-        _rules = rules
+        WorldRules = rules
             .Where(rule => rule.ShowOnHomepage)
             .OrderByDescending(rule => ParseDate(rule.Date))
             .Take(4)
             .ToList();
+
+        _isLoaded = true;
     }
 
     private void ViewRules() {

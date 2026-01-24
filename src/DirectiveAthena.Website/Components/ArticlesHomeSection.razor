@@ -33,24 +33,40 @@
         <MudGrid Spacing="6">
             @* HighLight *@
             <MudItem xs="12">
-                @if (_post is not null) {
+                @if (!_isLoaded) {
+                    <MudCard Class="card-glass overflow-hidden">
+                        <MudGrid Spacing="0">
+                            <MudItem xs="12" md="7" Class="pa-8 d-flex flex-column justify-center">
+                                <MudProgressLinear Color="Color.Secondary" Indeterminate="true" Class="mb-6"/>
+                                <MudProgressLinear Color="Color.Secondary" Indeterminate="true" Class="mb-4" Style="height: 10px;"/>
+                                <MudProgressLinear Color="Color.Secondary" Indeterminate="true" Class="mb-4" Style="height: 10px; width: 80%;"/>
+                                <MudProgressLinear Color="Color.Secondary" Indeterminate="true" Class="mb-4" Style="height: 10px; width: 70%;"/>
+                                <MudProgressLinear Color="Color.Secondary" Indeterminate="true" Style="height: 10px; width: 40%;"/>
+                            </MudItem>
+                            <MudItem xs="12" md="5" Class="d-none d-md-flex align-center justify-center bg-glow pa-12">
+                                <MudProgressCircular Color="Color.Secondary" Indeterminate="true" Size="Size.Large"/>
+                            </MudItem>
+                        </MudGrid>
+                    </MudCard>
+                }
+                else if (HighlightedPost is not null) {
                     <MudCard Class="card-glass featured-card overflow-hidden"
-                             @onclick="@(_ => ViewPost(_post.Id) )" Style="cursor: pointer;">
+                             @onclick="@(_ => ViewPost(HighlightedPost.Id) )" Style="cursor: pointer;">
                         <MudGrid Spacing="0">
                             <MudItem xs="12" md="7" Class="pa-8 d-flex flex-column justify-center">
                                 <MudText Typo="Typo.caption" Color="Color.Primary"
                                          Style="letter-spacing: 0.2em; text-transform: uppercase;"
                                          Class="mb-4">@Localizer[Shared.HomeWritingsLatestLabel]</MudText>
                                 <MudText Typo="Typo.h3"
-                                         Class="mb-4 SpaceGrotesk">@ArticleManager.GetLocalizedTitle(_post)</MudText>
+                                         Class="mb-4 SpaceGrotesk">@ArticleManager.GetLocalizedTitle(HighlightedPost)</MudText>
                                 <MudText Typo="Typo.body1" Class="text-secondary mb-8"
                                          Style="font-size: 1.1rem;">
-                                    @ArticleManager.GetLocalizedSummary(_post)
+                                    @ArticleManager.GetLocalizedSummary(HighlightedPost)
                                 </MudText>
                                 <div class="d-flex align-center gap-4">
                                     <MudButton Variant="Variant.Filled" Color="Color.Primary"
                                                Class="px-6">@Localizer[Shared.HomeWritingsReadFull]</MudButton>
-                                    <MudText Typo="Typo.caption" Class="opacity-50">@_post.Date</MudText>
+                                    <MudText Typo="Typo.caption" Class="opacity-50">@HighlightedPost.Date</MudText>
                                 </div>
                             </MudItem>
                             <MudItem xs="12" md="5"
@@ -67,8 +83,22 @@
             </MudItem>
             
             @* Recent Writings *@
-            @if (_posts is not null && _posts.Any()) {
-                foreach (Article post in _posts) {
+            @if (!_isLoaded) {
+                for (int i = 0; i < 3; i++) {
+                    <MudItem xs="12" md="4">
+                        <MudCard Class="card-glass h-100 d-flex flex-column">
+                            <MudCardContent Class="flex-grow-1 pa-6">
+                                <MudProgressLinear Color="Color.Secondary" Indeterminate="true" Class="mb-4"/>
+                                <MudProgressLinear Color="Color.Secondary" Indeterminate="true" Class="mb-4" Style="height: 10px;"/>
+                                <MudProgressLinear Color="Color.Secondary" Indeterminate="true" Class="mb-4" Style="height: 10px; width: 75%;"/>
+                                <MudProgressLinear Color="Color.Secondary" Indeterminate="true" Style="height: 10px; width: 50%;"/>
+                            </MudCardContent>
+                        </MudCard>
+                    </MudItem>
+                }
+            }
+            else if (RemainingPosts is not null && RemainingPosts.Any()) {
+                foreach (Article post in RemainingPosts) {
                     <MudItem xs="12" md="4">
                         <MudCard Class="card-glass h-100 d-flex flex-column"
                                  @onclick="@(() => ViewPost(post.Id))"
@@ -102,8 +132,8 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 
 @code {
-    private IEnumerable<Article>? _posts;
-    private Article? _post;
+    private IEnumerable<Article>? RemainingPosts { get; set; }
+    private Article? HighlightedPost { get; set; }
     private bool _isLoaded;
 
     // -----------------------------------------------------------------------------------------------------------------
@@ -113,8 +143,8 @@
         IEnumerable<Article> posts = await ArticleRepository.GetPostsAsync();
         IEnumerable<Article> enumerable = posts as Article[] ?? posts.ToArray();
         
-        _post = enumerable.FirstOrDefault();
-        _posts = enumerable.Skip(1).Take(3);
+        HighlightedPost = enumerable.FirstOrDefault();
+        RemainingPosts = enumerable.Skip(1).Take(3);
         
         _isLoaded = true;
     }
