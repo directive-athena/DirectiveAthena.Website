@@ -39,7 +39,7 @@
         </MudItem>
 
         <MudItem xs="12">
-            <MudSwitch @bind-Value="Post.Hidden" Label="@Localizer[Shared.EditorHiddenLabel]" Color="Color.Primary" />
+            <MudSwitch @bind-Value="Post.Hidden" Label="@Localizer[Shared.EditorHiddenLabel]" Color="Color.Primary"/>
         </MudItem>
 
         @foreach (LocalizationInfo culture in LocalizationProvider.GetSupportedLocalizations()) {
@@ -59,7 +59,8 @@
 
         <MudItem xs="12">
             <MudDivider Class="my-4"/>
-            <MudTextField Value="@Post.File" Label="@string.Format(Localizer[Shared.EditorMarkdownFileLabel], "post.md")"
+            <MudTextField Value="@Post.File"
+                          Label="@string.Format(Localizer[Shared.EditorMarkdownFileLabel], "post.md")"
                           Required="true" ReadOnly="true"
                           HelperText="@Localizer[Shared.EditorMarkdownFileHelper]"/>
         </MudItem>
@@ -74,7 +75,7 @@
                 }
             </div>
             <div class="d-flex gap-2">
-                <MudTextField @bind-Value="_newTag" Label="@Localizer[Shared.EditorAddTag]" Onkeydown="@OnTagKey"/>
+                <MudTextField @bind-Value="_newTag" Label="@Localizer[Shared.EditorAddTag]" @Onkeydown="@OnTagKey"/>
                 <MudIconButton Icon="@Icons.Material.Filled.Add" OnClick="@AddTag"/>
             </div>
             <MudText Typo="Typo.caption" Class="mt-1 d-block">
@@ -123,19 +124,19 @@
     // -----------------------------------------------------------------------------------------------------------------
     // Methods
     // -----------------------------------------------------------------------------------------------------------------
-    private string GetTitle(string culture) 
+    private string GetTitle(string culture)
         => Post.Title.GetValueOrDefault(culture) ?? "";
-    private void SetTitle(string culture, string value) 
+    private void SetTitle(string culture, string value)
         => Post.Title[culture] = value;
 
-    private string GetSummary(string culture) 
+    private string GetSummary(string culture)
         => Post.Summary.GetValueOrDefault(culture) ?? "";
     private void SetSummary(string culture, string value)
         => Post.Summary[culture] = value;
 
     private void AddTag() {
         if (string.IsNullOrWhiteSpace(_newTag)) return;
-        
+
         string trimmedTag = _newTag.Trim();
         if (Post.Tags.Contains(trimmedTag)) {
             _newTag = "";
