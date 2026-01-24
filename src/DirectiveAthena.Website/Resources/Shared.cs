@@ -37,6 +37,10 @@ public class Shared {
     public const string HomeWritingsReadMore = "Home.Writings.ReadMore";
     public const string HomeWritingsViewAll = "Home.Writings.ViewAll";
     public const string HomeWritingsEmpty = "Home.Writings.Empty";
+    public const string HomeWorldRulesTitle = "Home.WorldRules.Title";
+    public const string HomeWorldRulesSubtitle = "Home.WorldRules.Subtitle";
+    public const string HomeWorldRulesViewAll = "Home.WorldRules.ViewAll";
+    public const string HomeWorldRulesEmpty = "Home.WorldRules.Empty";
     public const string WritingsTitle = "Writings.Title";
     public const string WritingsArchiveTitle = "Writings.Archive.Title";
     public const string WritingsArchiveSubtitle = "Writings.Archive.Subtitle";

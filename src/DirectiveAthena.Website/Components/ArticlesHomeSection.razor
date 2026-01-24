@@ -1,0 +1,125 @@
+﻿@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Imports
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@using DirectiveAthena.Website.Resources
+@using DirectiveAthena.Website.Services.Articles
+@using Microsoft.Extensions.Localization
+
+@namespace DirectiveAthena.Website.Components
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Descriptors
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@inherits WebsiteComponentBase
+
+@inject IArticleRepository ArticleRepository
+@inject IArticleManager ArticleManager
+@inject NavigationManager Nav
+@inject IStringLocalizer<Shared> Localizer
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Html
+@* ------------------------------------------------------------------------------------------------------------------ *@
+<section id="writings" class="py-32">
+    <MudContainer MaxWidth="MaxWidth.Large">
+        <div class="d-flex justify-space-between align-end mb-12">
+            <div>
+                <MudText Typo="Typo.h2" Class="mb-4">@Localizer[Shared.HomeWritingsTitle]</MudText>
+                <MudText Typo="Typo.body1" Class="text-secondary opacity-70">@Localizer[Shared.HomeWritingsSubtitle]</MudText>
+            </div>
+            <MudButton Variant="Variant.Text" Color="Color.Secondary" Href="/articles"
+                       EndIcon="@Icons.Material.Filled.ArrowForward"
+                       Class="d-none d-sm-flex">@Localizer[Shared.HomeWritingsViewArchive]</MudButton>
+        </div>
+
+        <MudGrid Spacing="6">
+            @* HighLight *@
+            <MudItem xs="12">
+                @if (_post is not null) {
+                    <MudCard Class="card-glass featured-card overflow-hidden"
+                             @onclick="@(_ => ViewPost(_post.Id) )" Style="cursor: pointer;">
+                        <MudGrid Spacing="0">
+                            <MudItem xs="12" md="7" Class="pa-8 d-flex flex-column justify-center">
+                                <MudText Typo="Typo.caption" Color="Color.Primary"
+                                         Style="letter-spacing: 0.2em; text-transform: uppercase;"
+                                         Class="mb-4">@Localizer[Shared.HomeWritingsLatestLabel]</MudText>
+                                <MudText Typo="Typo.h3"
+                                         Class="mb-4 SpaceGrotesk">@ArticleManager.GetLocalizedTitle(_post)</MudText>
+                                <MudText Typo="Typo.body1" Class="text-secondary mb-8"
+                                         Style="font-size: 1.1rem;">
+                                    @ArticleManager.GetLocalizedSummary(_post)
+                                </MudText>
+                                <div class="d-flex align-center gap-4">
+                                    <MudButton Variant="Variant.Filled" Color="Color.Primary"
+                                               Class="px-6">@Localizer[Shared.HomeWritingsReadFull]</MudButton>
+                                    <MudText Typo="Typo.caption" Class="opacity-50">@_post.Date</MudText>
+                                </div>
+                            </MudItem>
+                            <MudItem xs="12" md="5"
+                                     Class="d-none d-md-flex align-center justify-center bg-glow pa-12">
+                                <MudIcon Icon="@Icons.Material.Filled.AutoStories" Size="Size.Large"
+                                         Style="font-size: 8rem; opacity: 0.2;"/>
+                            </MudItem>
+                        </MudGrid>
+                    </MudCard>
+                }
+                else if (_isLoaded) {
+                    <EmptyWritingsState/>
+                }
+            </MudItem>
+            
+            @* Recent Writings *@
+            @if (_posts is not null && _posts.Any()) {
+                foreach (Article post in _posts) {
+                    <MudItem xs="12" md="4">
+                        <MudCard Class="card-glass h-100 d-flex flex-column"
+                                 @onclick="@(() => ViewPost(post.Id))"
+                                 Style="cursor: pointer;">
+                            <MudCardContent Class="flex-grow-1 pa-6">
+                                <MudText Typo="Typo.caption" Color="Color.Secondary"
+                                         Class="mb-2 d-block">@post.Date</MudText>
+                                <MudText Typo="Typo.h5"
+                                         Class="mb-4 SpaceGrotesk">@ArticleManager.GetLocalizedTitle(post)</MudText>
+                                <MudText Typo="Typo.body2" Class="text-secondary opacity-70 mb-4"
+                                         Style="line-height: 1.5;">
+                                    @ArticleManager.GetLocalizedSummary(post)
+                                </MudText>
+                                <MudButton Variant="Variant.Text" Color="Color.Secondary"
+                                           Class="pa-0">@Localizer[Shared.HomeWritingsReadMore]</MudButton>
+                            </MudCardContent>
+                        </MudCard>
+                    </MudItem>
+                }
+            }
+        </MudGrid>
+            
+        <div class="d-flex justify-center mt-12 d-sm-none">
+            <MudButton Variant="Variant.Outlined" Color="Color.Secondary"
+                       Href="/articles">@Localizer[Shared.HomeWritingsViewAll]</MudButton>
+        </div>
+    </MudContainer>
+</section>
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Code
+@* ------------------------------------------------------------------------------------------------------------------ *@
+
+@code {
+    private IEnumerable<Article>? _posts;
+    private Article? _post;
+    private bool _isLoaded;
+
+    // -----------------------------------------------------------------------------------------------------------------
+    // Methods
+    // -----------------------------------------------------------------------------------------------------------------
+    protected override async Task OnInitializedAsync() {
+        IEnumerable<Article> posts = await ArticleRepository.GetPostsAsync();
+        IEnumerable<Article> enumerable = posts as Article[] ?? posts.ToArray();
+        
+        _post = enumerable.FirstOrDefault();
+        _posts = enumerable.Skip(1).Take(3);
+        
+        _isLoaded = true;
+    }
+
+    private void ViewPost(string id) {
+        Nav.NavigateTo($"/articles/{id}");
+    }
+}

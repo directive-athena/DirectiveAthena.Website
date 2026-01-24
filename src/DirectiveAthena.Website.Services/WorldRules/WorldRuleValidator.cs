@@ -20,6 +20,10 @@ public sealed class WorldRuleValidator : AbstractValidator<WorldRule> {
             .NotEmpty()
             .WithMessage("Some rules have missing Id or File!");
 
+        RuleFor(rule => rule.Id)
+            .Must(id => Guid.TryParse(id, out _))
+            .WithMessage("Some rules have invalid Ids!");
+
         RuleFor(rule => rule.File)
             .NotEmpty()
             .WithMessage("Some rules have missing Id or File!");

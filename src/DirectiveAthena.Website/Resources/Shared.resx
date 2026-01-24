@@ -142,6 +142,18 @@
   <data name="Home.Writings.Empty" xml:space="preserve">
     <value>No dispatches currently available. Check back soon for updates from the frontier.</value>
   </data>
+  <data name="Home.WorldRules.Title" xml:space="preserve">
+    <value>World Rules</value>
+  </data>
+  <data name="Home.WorldRules.Subtitle" xml:space="preserve">
+    <value>Constraints and canon anchors at a glance.</value>
+  </data>
+  <data name="Home.WorldRules.ViewAll" xml:space="preserve">
+    <value>View All Rules</value>
+  </data>
+  <data name="Home.WorldRules.Empty" xml:space="preserve">
+    <value>No rules available for the homepage yet.</value>
+  </data>
   <data name="Writings.Title" xml:space="preserve">
     <value>Writings - Directive Athena</value>
   </data>

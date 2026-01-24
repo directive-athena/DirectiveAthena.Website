@@ -1,16 +1,1 @@
-[
-  {
-    "id": "sample-rule",
-    "question": {
-      "en": "Sample question",
-      "nl": "Voorbeeldvraag"
-    },
-    "answer": {
-      "en": "Replace this entry with your first rule.",
-      "nl": "Vervang dit item met je eerste regel."
-    },
-    "date": "2026-01-23",
-    "tags": [],
-    "file": "sample-rule.md"
-  }
-]
+[]

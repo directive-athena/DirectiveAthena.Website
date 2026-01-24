@@ -6,6 +6,7 @@ using CodeOfChaos.Extensions.DependencyInjection;
 using System.Net.Http.Json;
 using DirectiveAthena.Website.Services.FileSystem;
 using DirectiveAthena.Website.Services.Localization;
+using System.Collections.Immutable;
 
 namespace DirectiveAthena.Website.Services.Articles;
 // ---------------------------------------------------------------------------------------------------------------------
@@ -19,7 +20,7 @@ public class ArticleRepository(
     IDevFileSystemPaths devFsPaths
 ) : IArticleRepository {
     private readonly SemaphoreSlim _lock = new(1, 1);
-    private Article[]? _articles;
+    private ImmutableArray<Article> _articles;
     
     private static readonly JsonSerializerOptions Options = new() {
         WriteIndented = true,
@@ -29,15 +30,15 @@ public class ArticleRepository(
     // -----------------------------------------------------------------------------------------------------------------
     // Methods
     // -----------------------------------------------------------------------------------------------------------------
-    public async ValueTask<IEnumerable<Article>> GetPostsAsync(bool includeHidden = false, CancellationToken ct = default) {
-        if (_articles is not null) return includeHidden ? _articles : _articles.Where(p => !p.Hidden);
+    public async ValueTask<Article[]> GetPostsAsync(bool includeHidden = false, CancellationToken ct = default) {
+        if (!_articles.IsDefaultOrEmpty) return includeHidden ? _articles.ToArray() : _articles.Where(p => !p.Hidden).ToArray();
 
         await _lock.WaitAsync(ct);
         try {
-            if (_articles is not null) return includeHidden ? _articles : _articles.Where(p => !p.Hidden);
+            if (!_articles.IsDefaultOrEmpty) return includeHidden ? _articles.ToArray() : _articles.Where(p => !p.Hidden).ToArray();
 
-            _articles = await http.GetFromJsonAsync<Article[]>("content/articles/index.json", ct);
-            _articles ??= []; // if it is still null, set to an empty array
+            Article[]? articles =  await http.GetFromJsonAsync<Article[]>("content/articles/index.json", ct);
+            _articles = [..articles ?? []];
         }
         catch {
             _articles = [];
@@ -46,11 +47,11 @@ public class ArticleRepository(
             _lock.Release();
         }
 
-        return includeHidden ? _articles : _articles.Where(p => !p.Hidden);
+        return includeHidden ? _articles.ToArray() : _articles.Where(p => !p.Hidden).ToArray();
     }
 
     public async ValueTask<Article?> GetPostByIdAsync(string id, CancellationToken ct = default) {
-        IEnumerable<Article> articles = await GetPostsAsync(includeHidden: true, ct);
+        IEnumerable<Article> articles = await GetPostsAsync(includeHidden: true, ct: ct);
         return articles.FirstOrDefault(p => p.Id == id);
     }
 

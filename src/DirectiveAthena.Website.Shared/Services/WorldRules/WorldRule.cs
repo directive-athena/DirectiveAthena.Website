@@ -12,4 +12,5 @@ public class WorldRule {
     public string Date { get; set; } = "";
     public List<string> Tags { get; set; } = [];
     public string File { get; set; } = "";
+    public bool ShowOnHomepage { get; set; } = true;
 }

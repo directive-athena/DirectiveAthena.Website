@@ -30,4 +30,9 @@
       <ProjectReference Include="..\DirectiveAthena.Website.Services\DirectiveAthena.Website.Services.csproj" />
       <ProjectReference Include="..\DirectiveAthena.Website.Shared\DirectiveAthena.Website.Shared.csproj" />
     </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="wwwroot\content\world-rules\en\" />
+      <Folder Include="wwwroot\content\world-rules\nl\" />
+    </ItemGroup>
 </Project>

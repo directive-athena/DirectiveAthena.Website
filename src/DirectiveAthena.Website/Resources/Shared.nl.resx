@@ -142,6 +142,18 @@
   <data name="Home.Writings.Empty" xml:space="preserve">
     <value>Momenteel geen berichten beschikbaar. Kom later terug voor updates van het front.</value>
   </data>
+  <data name="Home.WorldRules.Title" xml:space="preserve">
+    <value>Wereldregels</value>
+  </data>
+  <data name="Home.WorldRules.Subtitle" xml:space="preserve">
+    <value>Beperkingen en canonische ankers in een oogopslag.</value>
+  </data>
+  <data name="Home.WorldRules.ViewAll" xml:space="preserve">
+    <value>Bekijk alle regels</value>
+  </data>
+  <data name="Home.WorldRules.Empty" xml:space="preserve">
+    <value>Nog geen regels beschikbaar voor de homepage.</value>
+  </data>
   <data name="Writings.Title" xml:space="preserve">
     <value>Geschriften - Directive Athena</value>
   </data>
