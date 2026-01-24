@@ -27,12 +27,12 @@ public class WorldRuleManager(
 
     public string GetLocalizedFilePath(WorldRule rule) {
         LocalizationInfo localization = localizationProvider.GetCurrentLocalization();
-        return $"content/world-rules/{localization.Code}/{rule.File}";
+        return $"content/world-rules/{localization.Code}/{rule.MarkdownFileName}";
     }
 
     public async Task<string> GetRawMarkdownContentAsync(WorldRule rule, string locale, CancellationToken ct = default) {
         try {
-            return await http.GetStringAsync($"content/world-rules/{locale}/{rule.File}", ct);
+            return await http.GetStringAsync($"content/world-rules/{locale}/{rule.MarkdownFileName}", ct);
         }
         catch {
             return string.Empty;
@@ -40,7 +40,7 @@ public class WorldRuleManager(
     }
 
     public WorldRule NewRule() {
-        string id = Guid.NewGuid().ToString();
+        var id = Guid.CreateVersion7();
         IReadOnlyCollection<LocalizationInfo> locals = localizationProvider.GetSupportedLocalizations();
 
         Dictionary<string, string> questions = locals.ToDictionary(c => c.Code, _ => "New Rule");
@@ -51,7 +51,6 @@ public class WorldRuleManager(
             Date = DateTime.Now.ToString("yyyy-MM-dd"),
             Question = questions,
             Answer = answers,
-            File = $"{id}.md",
             Tags = []
         };
     }
@@ -76,7 +75,7 @@ public class WorldRuleManager(
         if (!writeToDisk || !devFs.IsLocalhost || !await devFs.HasAccessAsync() || !await devFs.VerifyPermissionAsync()) return stubs;
 
         foreach (KeyValuePair<string, string> stub in stubs) {
-            await devFs.WriteFileAsync(devFsPaths.GetWorldRuleMarkdownPath(stub.Key, rule.File), stub.Value);
+            await devFs.WriteFileAsync(devFsPaths.GetWorldRuleMarkdownPath(stub.Key, rule.MarkdownFileName), stub.Value);
         }
 
         return stubs;

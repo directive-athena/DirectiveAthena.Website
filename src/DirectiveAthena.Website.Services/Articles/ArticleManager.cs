@@ -35,12 +35,12 @@ public class ArticleManager(
 
     public string GetLocalizedFilePath(Article article) {
         LocalizationInfo localization = localizationProvider.GetCurrentLocalization();
-        return $"content/articles/{localization.Code}/{article.File}";
+        return $"content/articles/{localization.Code}/{article.MarkdownFileName}";
     }
 
     public async Task<string> GetRawMarkdownContentAsync(Article article, string locale, CancellationToken ct = default) {
         try {
-            return await http.GetStringAsync($"content/articles/{locale}/{article.File}", ct);
+            return await http.GetStringAsync($"content/articles/{locale}/{article.MarkdownFileName}", ct);
         }
         catch {
             return string.Empty;
@@ -48,7 +48,7 @@ public class ArticleManager(
     }
 
     public Article NewArticle() {
-        string id = Guid.NewGuid().ToString();
+        var id = Guid.CreateVersion7();
         IReadOnlyCollection<LocalizationInfo> locals = localizationProvider.GetSupportedLocalizations();
         
         Dictionary<string, string> titles = locals.ToDictionary(c => c.Code, _ => "New Post");
@@ -59,7 +59,6 @@ public class ArticleManager(
             Date = DateTime.Now.ToString("yyyy-MM-dd"),
             Title = titles,
             Summary = summaries,
-            File = $"{id}.md",
             Tags = [],
             Hidden = false
         };
@@ -85,7 +84,7 @@ public class ArticleManager(
         if (!writeToDisk || !devFs.IsLocalhost || !await devFs.HasAccessAsync() || !await devFs.VerifyPermissionAsync()) return stubs;
 
         foreach (KeyValuePair<string, string> stub in stubs) {
-            await devFs.WriteFileAsync(devFsPaths.GetMarkdownPath(stub.Key, article.File), stub.Value);
+            await devFs.WriteFileAsync(devFsPaths.GetMarkdownPath(stub.Key, article.MarkdownFileName), stub.Value);
         }
 
         return stubs;
