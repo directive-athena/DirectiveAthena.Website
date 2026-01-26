@@ -776,4 +776,4 @@ dist
 
 # Local-only config (WASM)
 /src/DirectiveAthena.Website/wwwroot/appsettings.local.json
-/src/DirectiveAthena.Website.DevServer/appsettings.local.json
+/src/DirectiveAthena.WebsiteDevServer/appsettings.local.json

@@ -11,10 +11,10 @@
   <Folder Name="/src/">
     <Project Path="src/DirectiveAthena.Website.ClientAssets/DirectiveAthena.Website.ClientAssets.csproj" />
     <Project Path="src/DirectiveAthena.Website.Components/DirectiveAthena.Website.Components.csproj" />
-    <Project Path="src/DirectiveAthena.Website.DevServer/DirectiveAthena.Website.DevServer.csproj" />
     <Project Path="src/DirectiveAthena.Website.Services/DirectiveAthena.Website.Services.csproj" />
     <Project Path="src/DirectiveAthena.Website.Shared/DirectiveAthena.Website.Shared.csproj" />
     <Project Path="src/DirectiveAthena.Website/DirectiveAthena.Website.csproj" />
+    <Project Path="src/DirectiveAthena.WebsiteDevServer/DirectiveAthena.WebsiteDevServer.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/DirectiveAthenaTests.Website/DirectiveAthenaTests.Website.csproj" />
