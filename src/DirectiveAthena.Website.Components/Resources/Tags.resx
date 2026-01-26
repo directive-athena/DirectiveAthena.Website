@@ -63,4 +63,7 @@
   <data name="Tag.Thankyou" xml:space="preserve">
     <value>Thank you</value>
   </data>
+  <data name="NewTag" xml:space="preserve">
+    <value>a</value>
+  </data>
 </root>
