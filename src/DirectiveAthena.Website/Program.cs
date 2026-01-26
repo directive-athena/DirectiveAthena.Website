@@ -17,9 +17,12 @@ namespace DirectiveAthena.Website;
 // ---------------------------------------------------------------------------------------------------------------------
 public static class Program {
     public static async Task Main(string[] args) {
+        // -------------------------------------------------------------------------------------------------------------
+        // Builder
+        // -------------------------------------------------------------------------------------------------------------
         var builder = WebAssemblyHostBuilder.CreateDefault(args);
         builder.Configuration.AddJsonFile("appsettings.local.json", optional: true, reloadOnChange: false);
-
+        
         LogEventLevel minimumLevel = builder.HostEnvironment.IsDevelopment()
             ? LogEventLevel.Debug
             : LogEventLevel.Information;
@@ -33,7 +36,7 @@ public static class Program {
             .WriteTo.Console()
             .CreateLogger();
         Log.Logger = logger;
-
+        
         builder.Logging.ClearProviders();
         builder.Logging.AddSerilog(logger, dispose: true);
         
@@ -47,6 +50,9 @@ public static class Program {
         
         builder.Services.AddWebsiteServices();
 
+        // -------------------------------------------------------------------------------------------------------------
+        // App
+        // -------------------------------------------------------------------------------------------------------------
         WebAssemblyHost host = builder.Build();
 
         var cultureInitializer = host.Services.GetRequiredService<ILocalizationInitializer>();
