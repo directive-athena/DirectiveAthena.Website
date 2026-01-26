@@ -7,7 +7,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="AWSSDK.S3" />
         <PackageReference Include="CodeOfChaos.Extensions.DependencyInjection" />
         <PackageReference Include="CodeOfChaos.Extensions.DependencyInjection.Generators">
             <PrivateAssets>all</PrivateAssets>
@@ -16,6 +15,7 @@
         <PackageReference Include="InfiniLore.InfiniBlazor" />
         <PackageReference Include="JetBrains.Annotations" />
         <PackageReference Include="FluentValidation" />
+        <PackageReference Include="Minio" />
         <PackageReference Include="MudBlazor" />
     </ItemGroup>
 

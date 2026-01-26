@@ -141,5 +141,5 @@ static IMinioClient CreateMinioClient(R2StorageOptions options, ILogger logger) 
     return client;
 }
 
-[UsedImplicitly] internal sealed record ProxyUploadRequest(string Key, string Content, string ContentType);
-[UsedImplicitly] internal sealed record ProxyDeleteRequest(string Key);
+[UsedImplicitly] internal record ProxyUploadRequest(string Key, string Content, string ContentType);
+[UsedImplicitly] internal record ProxyDeleteRequest(string Key);

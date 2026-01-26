@@ -1,13 +1,13 @@
 // ---------------------------------------------------------------------------------------------------------------------
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
-using System.Net;
 using System.Net.Http.Json;
 using System.Text.Json;
-using Amazon.S3;
-using Amazon.S3.Model;
 using DirectiveAthena.Website.Services.Localization;
+using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
+using Minio;
+using Minio.DataModel.Args;
 
 namespace DirectiveAthena.Website.Services.ContentStorage;
 // ---------------------------------------------------------------------------------------------------------------------
@@ -19,7 +19,7 @@ public class R2ContentStorage(
     string categoryFolder,
     Uri publicBaseUri,
     HttpClient httpClient,
-    IAmazonS3? s3Client,
+    IMinioClient? minioClient,
     ILogger logger
 ) : IContentStorage {
     private readonly bool _canWrite = options.CanWrite;
@@ -42,7 +42,7 @@ public class R2ContentStorage(
         }
 
         string key = NormalizeKey(relativePath);
-        if (s3Client is null) {
+        if (minioClient is null) {
             if (_proxyUploadEndpoint is not null) {
                 return await WriteFileWithProxyAsync(key, content, ct);
             }
@@ -51,16 +51,18 @@ public class R2ContentStorage(
             return false;
         }
 
-        PutObjectRequest request = new() {
-            BucketName = options.BucketName!,
-            Key = key,
-            ContentBody = content,
-            ContentType = ResolveContentType(key)
-        };
-
         try {
-            PutObjectResponse response = await s3Client.PutObjectAsync(request, ct);
-            return response.HttpStatusCode is HttpStatusCode.OK or HttpStatusCode.NoContent;
+            byte[] contentBytes = System.Text.Encoding.UTF8.GetBytes(content);
+            using var contentStream = new MemoryStream(contentBytes);
+            var putArgs = new PutObjectArgs()
+                .WithBucket(options.BucketName!)
+                .WithObject(key)
+                .WithStreamData(contentStream)
+                .WithObjectSize(contentBytes.Length)
+                .WithContentType(ResolveContentType(key));
+
+            await minioClient.PutObjectAsync(putArgs, ct);
+            return true;
         }
         catch (Exception ex) {
             logger.Warning(ex, "Failed to write R2 object {Key}.", key);
@@ -75,7 +77,7 @@ public class R2ContentStorage(
         }
 
         string key = NormalizeKey(relativePath);
-        if (s3Client is null) {
+        if (minioClient is null) {
             if (_proxyDeleteEndpoint is not null) {
                 return await DeleteFileWithProxyAsync(key, ct);
             }
@@ -84,16 +86,12 @@ public class R2ContentStorage(
             return false;
         }
 
-        DeleteObjectRequest request = new() {
-            BucketName = options.BucketName!,
-            Key = key
-        };
-
         try {
-            DeleteObjectResponse response = await s3Client.DeleteObjectAsync(request, ct);
-            return response.HttpStatusCode is HttpStatusCode.OK or HttpStatusCode.NoContent;
-        }
-        catch (AmazonS3Exception ex) when (ex.StatusCode == HttpStatusCode.NotFound) {
+            var deleteArgs = new RemoveObjectArgs()
+                .WithBucket(options.BucketName!)
+                .WithObject(key);
+
+            await minioClient.RemoveObjectAsync(deleteArgs, ct);
             return true;
         }
         catch (Exception ex) {
@@ -149,9 +147,8 @@ public class R2ContentStorage(
 
     private async ValueTask<bool> WriteFileWithProxyAsync(string key, string content, CancellationToken ct) {
         var payload = new ProxyUploadRequest(key, content, ResolveContentType(key));
-        using var request = new HttpRequestMessage(HttpMethod.Post, _proxyUploadEndpoint) {
-            Content = JsonContent.Create(payload, options: _jsonOptions)
-        };
+        using var request = new HttpRequestMessage(HttpMethod.Post, _proxyUploadEndpoint);
+        request.Content = JsonContent.Create(payload, options: _jsonOptions);
 
         try {
             using HttpResponseMessage response = await httpClient.SendAsync(request, ct);
@@ -165,9 +162,8 @@ public class R2ContentStorage(
 
     private async ValueTask<bool> DeleteFileWithProxyAsync(string key, CancellationToken ct) {
         var payload = new ProxyDeleteRequest(key);
-        using var request = new HttpRequestMessage(HttpMethod.Post, _proxyDeleteEndpoint) {
-            Content = JsonContent.Create(payload, options: _jsonOptions)
-        };
+        using var request = new HttpRequestMessage(HttpMethod.Post, _proxyDeleteEndpoint);
+        request.Content = JsonContent.Create(payload, options: _jsonOptions);
 
         try {
             using HttpResponseMessage response = await httpClient.SendAsync(request, ct);
@@ -179,15 +175,14 @@ public class R2ContentStorage(
         }
     }
 
-    private sealed record ProxyUploadRequest(string Key, string Content, string ContentType);
-    private sealed record ProxyDeleteRequest(string Key);
+    [UsedImplicitly] private record ProxyUploadRequest(string Key, string Content, string ContentType);
+    [UsedImplicitly] private record ProxyDeleteRequest(string Key);
 
     private static Uri? BuildProxyEndpoint(string? proxyEndpoint, string operation) {
-        if (!string.IsNullOrWhiteSpace(proxyEndpoint)) {
-            string baseUrl = proxyEndpoint.Trim().TrimEnd('/');
-            return new Uri($"{baseUrl}/{operation}", UriKind.Absolute);
-        }
+        if (string.IsNullOrWhiteSpace(proxyEndpoint)) return null;
 
-        return null;
+        string baseUrl = proxyEndpoint.Trim().TrimEnd('/');
+        return new Uri($"{baseUrl}/{operation}", UriKind.Absolute);
+
     }
 }

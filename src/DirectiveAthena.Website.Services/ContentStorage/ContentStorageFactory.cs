@@ -1,13 +1,11 @@
 // ---------------------------------------------------------------------------------------------------------------------
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
-using Amazon;
-using Amazon.Runtime;
-using Amazon.S3;
 using CodeOfChaos.Extensions.DependencyInjection;
 using DirectiveAthena.Website.Services.Localization;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Logging;
+using Minio;
 
 namespace DirectiveAthena.Website.Services.ContentStorage;
 // ---------------------------------------------------------------------------------------------------------------------
@@ -32,7 +30,7 @@ public class ContentStorageFactory(
             folder,
             BuildPublicBaseUri(r2Options.Value, r2Logger),
             httpClient,
-            CreateS3Client(r2Options.Value, r2Logger),
+            CreateMinioClient(r2Options.Value, r2Logger),
             r2Logger
         );
     }
@@ -56,7 +54,7 @@ public class ContentStorageFactory(
         return new Uri(baseUrl, UriKind.Absolute);
     }
 
-    private static AmazonS3Client? CreateS3Client(R2StorageOptions options, ILogger logger) {
+    private static IMinioClient? CreateMinioClient(R2StorageOptions options, ILogger logger) {
         if (OperatingSystem.IsBrowser()) {
             logger.Warning("R2 client is not supported in browser contexts; proxy uploads must be used for writes.");
             return null;
@@ -72,27 +70,19 @@ public class ContentStorageFactory(
             return null;
         }
 
-        bool useAutoRegion = string.IsNullOrWhiteSpace(options.Region)
-            || options.Region.Equals("auto", StringComparison.OrdinalIgnoreCase);
-        string regionName = useAutoRegion ? "us-east-1" : options.Region;
-
-        AmazonS3Config config = new() {
-            ServiceURL = $"https://{options.AccountId}.r2.cloudflarestorage.com",
-            ForcePathStyle = true,
-            RegionEndpoint = RegionEndpoint.GetBySystemName(regionName),
-            AuthenticationRegion = regionName
-        };
-
-        AWSCredentials credentials;
-        if (options.IsWriteConfigured) {
-            credentials = new BasicAWSCredentials(options.AccessKeyId!, options.SecretAccessKey!);
-        }
-        else {
-            credentials = new AnonymousAWSCredentials();
-            logger.Warning("R2 credentials are missing; using anonymous client for reads only.");
+        if (string.IsNullOrWhiteSpace(options.AccessKeyId) || string.IsNullOrWhiteSpace(options.SecretAccessKey)) {
+            logger.Warning("R2 credentials are missing; MinIO client requires access keys for writes.");
+            return null;
         }
 
-        logger.Debug("Created R2 S3 client for {AccountId}.", options.AccountId);
-        return new AmazonS3Client(credentials, config);
+        string endpointHost = $"{options.AccountId}.r2.cloudflarestorage.com";
+        IMinioClient client = new MinioClient()
+            .WithEndpoint(endpointHost)
+            .WithCredentials(options.AccessKeyId, options.SecretAccessKey)
+            .WithSSL()
+            .Build();
+
+        logger.Debug("Created R2 MinIO client for {AccountId}.", options.AccountId);
+        return client;
     }
 }

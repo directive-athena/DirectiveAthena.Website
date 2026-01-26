@@ -3,7 +3,6 @@
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
   </PropertyGroup>
   <ItemGroup>
-    <PackageVersion Include="AWSSDK.S3" Version="4.0.17.3" />
     <PackageVersion Include="CodeOfChaos.Extensions" Version="0.87.2" />
     <PackageVersion Include="CodeOfChaos.Extensions.DependencyInjection" Version="0.87.2" />
     <PackageVersion Include="CodeOfChaos.Extensions.DependencyInjection.Generators" Version="0.87.2" />

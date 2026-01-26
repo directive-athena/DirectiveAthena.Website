@@ -2,13 +2,16 @@
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
 using System.Net;
-using Amazon.S3;
-using Amazon.S3.Model;
+using System.Text;
 using DirectiveAthena.Website.Services.ContentStorage;
 using DirectiveAthena.Website.Services.Localization;
 using Microsoft.Extensions.Logging;
+using Minio;
+using Minio.DataModel.Args;
+using Minio.DataModel.Response;
 using NSubstitute;
 using DirectiveAthenaTests.Website.Helpers;
+using System.Reflection;
 
 namespace DirectiveAthenaTests.Website.Services.ContentStorage;
 // ---------------------------------------------------------------------------------------------------------------------
@@ -35,7 +38,7 @@ public class R2ContentStorageTests {
 
     private static R2ContentStorage CreateStorage(
         R2StorageOptions options,
-        IAmazonS3? s3Client,
+        IMinioClient? minioClient,
         ILocalizationProvider? localizationProvider = null,
         HttpClient? httpClient = null,
         string categoryFolder = "content/articles",
@@ -44,7 +47,25 @@ public class R2ContentStorageTests {
         localizationProvider ??= CreateLocalizationProvider("en");
         var logger = Substitute.For<ILogger>();
         httpClient ??= new HttpClient(new TestHttpMessageHandler(_ => new HttpResponseMessage(HttpStatusCode.OK)));
-        return new R2ContentStorage(localizationProvider, options, categoryFolder, new Uri(publicBaseUrl), httpClient, s3Client, logger);
+        return new R2ContentStorage(localizationProvider, options, categoryFolder, new Uri(publicBaseUrl), httpClient, minioClient, logger);
+    }
+
+    private static T? GetPrivateFieldValue<T>(object instance, string fieldName) {
+        Type? type = instance.GetType();
+        while (type is not null) {
+            FieldInfo? field = type.GetField(fieldName, BindingFlags.Instance | BindingFlags.NonPublic);
+            if (field is not null) {
+                return (T?)field.GetValue(instance);
+            }
+            type = type.BaseType;
+        }
+
+        return default;
+    }
+
+    private static bool HasObjectName(RemoveObjectArgs request, string suffix) {
+        string? key = GetPrivateFieldValue<string>(request, "<ObjectName>k__BackingField");
+        return key is not null && key.EndsWith(suffix, StringComparison.OrdinalIgnoreCase);
     }
 
     [Test]
@@ -57,15 +78,15 @@ public class R2ContentStorageTests {
             SecretAccessKey = "secret",
             BucketName = "bucket"
         };
-        var s3Client = Substitute.For<IAmazonS3>();
-        R2ContentStorage storage = CreateStorage(options, s3Client);
+        var minioClient = Substitute.For<IMinioClient>();
+        R2ContentStorage storage = CreateStorage(options, minioClient);
 
         // Act
         bool result = await storage.WriteFileAsync("content/articles/index.json", "{}");
 
         // Assert
         await Assert.That(result).IsFalse();
-        await s3Client.DidNotReceive().PutObjectAsync(Arg.Any<PutObjectRequest>(), Arg.Any<CancellationToken>());
+        await minioClient.DidNotReceive().PutObjectAsync(Arg.Any<PutObjectArgs>(), Arg.Any<CancellationToken>());
     }
 
     [Test]
@@ -83,12 +104,12 @@ public class R2ContentStorageTests {
     [Test]
     public async Task WriteFileAsync_SendsNormalizedJsonRequest() {
         // Arrange
-        PutObjectRequest? captured = null;
-        var s3Client = Substitute.For<IAmazonS3>();
-        s3Client.PutObjectAsync(Arg.Do<PutObjectRequest>(request => captured = request), Arg.Any<CancellationToken>())
-            .Returns(Task.FromResult(new PutObjectResponse { HttpStatusCode = HttpStatusCode.OK }));
+        PutObjectArgs? captured = null;
+        var minioClient = Substitute.For<IMinioClient>();
+        minioClient.PutObjectAsync(Arg.Do<PutObjectArgs>(request => captured = request), Arg.Any<CancellationToken>())
+            .Returns(Task.FromResult(new PutObjectResponse(HttpStatusCode.OK, "etag", new Dictionary<string, string>(), 0, "")));
 
-        R2ContentStorage storage = CreateStorage(WriteEnabledOptions(), s3Client);
+        R2ContentStorage storage = CreateStorage(WriteEnabledOptions(), minioClient);
 
         // Act
         bool result = await storage.WriteFileAsync("/content/articles/index.json", "{ \"ok\": true }");
@@ -96,20 +117,20 @@ public class R2ContentStorageTests {
         // Assert
         await Assert.That(result).IsTrue();
         await Assert.That(captured is not null).IsTrue();
-        await Assert.That(captured!.Key).IsEqualTo("content/articles/index.json");
-        await Assert.That(captured.ContentType).IsEqualTo("application/json");
-        await Assert.That(captured.ContentBody).IsEqualTo("{ \"ok\": true }");
+        await Assert.That(GetPrivateFieldValue<string>(captured!, "<ObjectName>k__BackingField")).IsEqualTo("content/articles/index.json");
+        await Assert.That(GetPrivateFieldValue<string>(captured!, "<ContentType>k__BackingField")).IsEqualTo("application/json");
+        await Assert.That(GetPrivateFieldValue<long>(captured!, "<ObjectSize>k__BackingField")).IsEqualTo(Encoding.UTF8.GetByteCount("{ \"ok\": true }"));
     }
 
     [Test]
     public async Task WriteFileAsync_SendsMarkdownContentType() {
         // Arrange
-        PutObjectRequest? captured = null;
-        var s3Client = Substitute.For<IAmazonS3>();
-        s3Client.PutObjectAsync(Arg.Do<PutObjectRequest>(request => captured = request), Arg.Any<CancellationToken>())
-            .Returns(Task.FromResult(new PutObjectResponse { HttpStatusCode = HttpStatusCode.OK }));
+        PutObjectArgs? captured = null;
+        var minioClient = Substitute.For<IMinioClient>();
+        minioClient.PutObjectAsync(Arg.Do<PutObjectArgs>(request => captured = request), Arg.Any<CancellationToken>())
+            .Returns(Task.FromResult(new PutObjectResponse(HttpStatusCode.OK, "etag", new Dictionary<string, string>(), 0, "")));
 
-        R2ContentStorage storage = CreateStorage(WriteEnabledOptions(), s3Client);
+        R2ContentStorage storage = CreateStorage(WriteEnabledOptions(), minioClient);
 
         // Act
         bool result = await storage.WriteFileAsync("content/articles/en/post.md", "# Title");
@@ -117,19 +138,24 @@ public class R2ContentStorageTests {
         // Assert
         await Assert.That(result).IsTrue();
         await Assert.That(captured is not null).IsTrue();
-        await Assert.That(captured!.ContentType).IsEqualTo("text/markdown");
+        await Assert.That(GetPrivateFieldValue<string>(captured!, "<ContentType>k__BackingField")).IsEqualTo("text/markdown");
     }
 
     [Test]
     public async Task DeleteLocalizedFilesAsync_DeletesAllLocalizedFiles() {
         // Arrange
-        var s3Client = Substitute.For<IAmazonS3>();
+        var minioClient = Substitute.For<IMinioClient>();
         var keys = new List<string>();
-        s3Client.DeleteObjectAsync(Arg.Do<DeleteObjectRequest>(request => keys.Add(request.Key)), Arg.Any<CancellationToken>())
-            .Returns(Task.FromResult(new DeleteObjectResponse { HttpStatusCode = HttpStatusCode.NoContent }));
+        minioClient.RemoveObjectAsync(Arg.Do<RemoveObjectArgs>(request => {
+                string? key = GetPrivateFieldValue<string>(request, "<ObjectName>k__BackingField");
+                if (!string.IsNullOrWhiteSpace(key)) {
+                    keys.Add(key);
+                }
+            }), Arg.Any<CancellationToken>())
+            .Returns(Task.CompletedTask);
 
         ILocalizationProvider localizationProvider = CreateLocalizationProvider("en", "nl");
-        R2ContentStorage storage = CreateStorage(WriteEnabledOptions(), s3Client, localizationProvider);
+        R2ContentStorage storage = CreateStorage(WriteEnabledOptions(), minioClient, localizationProvider);
 
         // Act
         bool result = await storage.DeleteLocalizedFilesAsync("post.md");
@@ -142,28 +168,28 @@ public class R2ContentStorageTests {
     }
 
     [Test]
-    public async Task DeleteLocalizedFilesAsync_TreatsNotFoundAsSuccess() {
+    public async Task DeleteLocalizedFilesAsync_ReturnsFalseOnFailure() {
         // Arrange
-        var s3Client = Substitute.For<IAmazonS3>();
-        s3Client.DeleteObjectAsync(
-                Arg.Is<DeleteObjectRequest>(request => request.Key.EndsWith("/en/post.md", StringComparison.OrdinalIgnoreCase)),
+        var minioClient = Substitute.For<IMinioClient>();
+        minioClient.RemoveObjectAsync(
+                Arg.Is<RemoveObjectArgs>(request => HasObjectName(request, "/en/post.md")),
                 Arg.Any<CancellationToken>()
             )
-            .Returns(Task.FromException<DeleteObjectResponse>(new AmazonS3Exception("missing") { StatusCode = HttpStatusCode.NotFound }));
-        s3Client.DeleteObjectAsync(
-                Arg.Is<DeleteObjectRequest>(request => request.Key.EndsWith("/nl/post.md", StringComparison.OrdinalIgnoreCase)),
+            .Returns(Task.FromException(new InvalidOperationException("missing")));
+        minioClient.RemoveObjectAsync(
+                Arg.Is<RemoveObjectArgs>(request => HasObjectName(request, "/nl/post.md")),
                 Arg.Any<CancellationToken>()
             )
-            .Returns(Task.FromResult(new DeleteObjectResponse { HttpStatusCode = HttpStatusCode.NoContent }));
+            .Returns(Task.CompletedTask);
 
         ILocalizationProvider localizationProvider = CreateLocalizationProvider("en", "nl");
-        R2ContentStorage storage = CreateStorage(WriteEnabledOptions(), s3Client, localizationProvider);
+        R2ContentStorage storage = CreateStorage(WriteEnabledOptions(), minioClient, localizationProvider);
 
         // Act
         bool result = await storage.DeleteLocalizedFilesAsync("post.md");
 
         // Assert
-        await Assert.That(result).IsTrue();
+        await Assert.That(result).IsFalse();
     }
 
     [Test]
