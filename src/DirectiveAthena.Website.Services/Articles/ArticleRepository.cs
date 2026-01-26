@@ -11,11 +11,9 @@ namespace DirectiveAthena.Website.Services.Articles;
 // ---------------------------------------------------------------------------------------------------------------------
 [InjectableScoped<IArticleRepository>]
 public class ArticleRepository(
-    HttpClient http,
     IContentStorageFactory storageFactory,
     ILogger<ArticleRepository> logger
 ) : ContentRepository<Article>(
-        http,
         storageFactory.ForCategory(ContentCategory.Articles),
         logger
     ),

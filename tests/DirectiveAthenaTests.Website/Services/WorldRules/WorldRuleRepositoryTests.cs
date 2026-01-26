@@ -3,10 +3,9 @@
 // ---------------------------------------------------------------------------------------------------------------------
 using DirectiveAthena.Website.Services.ContentStorage;
 using System.Net;
-using System.Text;
 using System.Text.Json;
+using System.Net.Http.Headers;
 using DirectiveAthena.Website.Services.WorldRules;
-using DirectiveAthenaTests.Website.Helpers;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
 
@@ -37,10 +36,11 @@ public class WorldRuleRepositoryTests {
     [Test]
     public async Task GetRulesAsync_HandlesHttpClientFailure() {
         // Arrange
-        var handler = new TestHttpMessageHandler(_ => throw new HttpRequestException("boom"));
-        var http = new HttpClient(handler) { BaseAddress = new Uri("http://localhost/") };
+        IContentStorage storage = CreateStorage();
+        storage.ReadIndexAsync(Arg.Any<EntityTagHeaderValue?>(), Arg.Any<DateTimeOffset?>(), Arg.Any<CancellationToken>())
+            .Returns(Task.FromException<ContentReadResult>(new HttpRequestException("boom")));
         var logger = Substitute.For<ILogger<WorldRuleRepository>>();
-        var repo = new WorldRuleRepository(http, CreateFactory(CreateStorage()), logger);
+        var repo = new WorldRuleRepository(CreateFactory(storage), logger);
 
         // Act
         IEnumerable<WorldRule> result = await repo.GetAllAsync();
@@ -57,30 +57,29 @@ public class WorldRuleRepositoryTests {
             CreateRule(2)
         ];
 
-        var handler = new TestHttpMessageHandler(_ => new HttpResponseMessage(HttpStatusCode.OK) {
-            Content = new StringContent(JsonSerializer.Serialize(rules), Encoding.UTF8, "application/json")
-        });
-        var http = new HttpClient(handler) { BaseAddress = new Uri("http://localhost/") };
+        IContentStorage storage = CreateStorage();
+        storage.ReadIndexAsync(Arg.Any<EntityTagHeaderValue?>(), Arg.Any<DateTimeOffset?>(), Arg.Any<CancellationToken>())
+            .Returns(Task.FromResult(new ContentReadResult(HttpStatusCode.OK, JsonSerializer.Serialize(rules), null, null)));
         var logger = Substitute.For<ILogger<WorldRuleRepository>>();
-        var repo = new WorldRuleRepository(http, CreateFactory(CreateStorage()), logger);
+        var repo = new WorldRuleRepository(CreateFactory(storage), logger);
 
         // Act
         _ = (await repo.GetAllAsync()).ToList();
         _ = (await repo.GetAllAsync()).ToList();
 
         // Assert
-        await Assert.That(handler.CallCount).IsEqualTo(1);
+        _ = storage.Received(1)
+            .ReadIndexAsync(Arg.Any<EntityTagHeaderValue?>(), Arg.Any<DateTimeOffset?>(), Arg.Any<CancellationToken>());
     }
 
     [Test]
     public async Task GetRulesAsync_ReturnsEmptyWhenResponseNull() {
         // Arrange
-        var handler = new TestHttpMessageHandler(_ => new HttpResponseMessage(HttpStatusCode.OK) {
-            Content = new StringContent("null", Encoding.UTF8, "application/json")
-        });
-        var http = new HttpClient(handler) { BaseAddress = new Uri("http://localhost/") };
+        IContentStorage storage = CreateStorage();
+        storage.ReadIndexAsync(Arg.Any<EntityTagHeaderValue?>(), Arg.Any<DateTimeOffset?>(), Arg.Any<CancellationToken>())
+            .Returns(Task.FromResult(new ContentReadResult(HttpStatusCode.OK, "null", null, null)));
         var logger = Substitute.For<ILogger<WorldRuleRepository>>();
-        var repo = new WorldRuleRepository(http, CreateFactory(CreateStorage()), logger);
+        var repo = new WorldRuleRepository(CreateFactory(storage), logger);
 
         // Act
         IEnumerable<WorldRule> result = await repo.GetAllAsync();
@@ -96,7 +95,7 @@ public class WorldRuleRepositoryTests {
         storage.WriteIndexAsync(Arg.Any<string>()).Returns(new ValueTask<bool>(true));
 
         var logger = Substitute.For<ILogger<WorldRuleRepository>>();
-        var repo = new WorldRuleRepository(new HttpClient(), CreateFactory(storage), logger);
+        var repo = new WorldRuleRepository(CreateFactory(storage), logger);
         WorldRule[] rules = [CreateRule(10)];
 
         // Act
@@ -114,7 +113,7 @@ public class WorldRuleRepositoryTests {
         storage.WriteIndexAsync(Arg.Any<string>()).Returns(new ValueTask<bool>(false));
 
         var logger = Substitute.For<ILogger<WorldRuleRepository>>();
-        var repo = new WorldRuleRepository(new HttpClient(), CreateFactory(storage), logger);
+        var repo = new WorldRuleRepository(CreateFactory(storage), logger);
         WorldRule[] rules = [CreateRule(11)];
 
         // Act
@@ -132,13 +131,10 @@ public class WorldRuleRepositoryTests {
         IContentStorage storage = CreateStorage();
         storage.DeleteLocalizedFilesAsync(rule.MarkdownFileName).Returns(Task.FromResult(true));
         storage.WriteIndexAsync(Arg.Any<string>()).Returns(new ValueTask<bool>(true));
-
-        var handler = new TestHttpMessageHandler(_ => new HttpResponseMessage(HttpStatusCode.OK) {
-            Content = new StringContent(JsonSerializer.Serialize(new[] { rule }), Encoding.UTF8, "application/json")
-        });
-        var http = new HttpClient(handler) { BaseAddress = new Uri("http://localhost/") };
+        storage.ReadIndexAsync(Arg.Any<EntityTagHeaderValue?>(), Arg.Any<DateTimeOffset?>(), Arg.Any<CancellationToken>())
+            .Returns(Task.FromResult(new ContentReadResult(HttpStatusCode.OK, JsonSerializer.Serialize(new[] { rule }), null, null)));
         var logger = Substitute.For<ILogger<WorldRuleRepository>>();
-        var repo = new WorldRuleRepository(http, CreateFactory(storage), logger);
+        var repo = new WorldRuleRepository(CreateFactory(storage), logger);
 
         // Act
         bool result = await repo.DeleteByIdAsync(rule.Id);
@@ -155,13 +151,10 @@ public class WorldRuleRepositoryTests {
         WorldRule rule = CreateRule(30);
         IContentStorage storage = CreateStorage();
         storage.DeleteLocalizedFilesAsync(rule.MarkdownFileName).Returns(Task.FromResult(false));
-
-        var handler = new TestHttpMessageHandler(_ => new HttpResponseMessage(HttpStatusCode.OK) {
-            Content = new StringContent(JsonSerializer.Serialize(new[] { rule }), Encoding.UTF8, "application/json")
-        });
-        var http = new HttpClient(handler) { BaseAddress = new Uri("http://localhost/") };
+        storage.ReadIndexAsync(Arg.Any<EntityTagHeaderValue?>(), Arg.Any<DateTimeOffset?>(), Arg.Any<CancellationToken>())
+            .Returns(Task.FromResult(new ContentReadResult(HttpStatusCode.OK, JsonSerializer.Serialize(new[] { rule }), null, null)));
         var logger = Substitute.For<ILogger<WorldRuleRepository>>();
-        var repo = new WorldRuleRepository(http, CreateFactory(storage), logger);
+        var repo = new WorldRuleRepository(CreateFactory(storage), logger);
 
         // Act
         bool result = await repo.DeleteByIdAsync(rule.Id);

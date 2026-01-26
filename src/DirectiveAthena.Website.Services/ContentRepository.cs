@@ -5,7 +5,6 @@ using DirectiveAthena.Website.Services.ContentStorage;
 using System.Collections.Immutable;
 using System.Net;
 using System.Net.Http.Headers;
-using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
 using Microsoft.Extensions.Logging;
@@ -14,7 +13,7 @@ namespace DirectiveAthena.Website.Services;
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
-public abstract class ContentRepository<T>(HttpClient http, IContentStorage contentStorage, ILogger logger) : IContentRepository<T>
+public abstract class ContentRepository<T>(IContentStorage contentStorage, ILogger logger) : IContentRepository<T>
     where T : ContentBase {
     protected ILogger Logger { get; } = logger;
     private readonly SemaphoreSlim _lock = new(1, 1);
@@ -29,7 +28,8 @@ public abstract class ContentRepository<T>(HttpClient http, IContentStorage cont
 
     protected abstract string IndexPath { get; }
 
-    private readonly JsonSerializerOptions _jsonSerializerOptions = new() {
+    private readonly JsonSerializerOptions _jsonReadOptions = new(JsonSerializerDefaults.Web);
+    private readonly JsonSerializerOptions _jsonWriteOptions = new() {
         WriteIndented = true,
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase
     };
@@ -84,7 +84,7 @@ public abstract class ContentRepository<T>(HttpClient http, IContentStorage cont
     // -----------------------------------------------------------------------------------------------------------------
     private async ValueTask<string> AsJsonStringAsync(IEnumerable<T> items, CancellationToken ct = default) {
         await using MemoryStream stream = new();
-        await JsonSerializer.SerializeAsync(stream, items, _jsonSerializerOptions, ct);
+        await JsonSerializer.SerializeAsync(stream, items, _jsonWriteOptions, ct);
         return Encoding.UTF8.GetString(stream.ToArray());
     }
 
@@ -130,11 +130,7 @@ public abstract class ContentRepository<T>(HttpClient http, IContentStorage cont
 
     private async Task RefreshCacheAsync(DateTimeOffset now, CancellationToken ct) {
         Logger.Debug("Refreshing {ContentType} cache from {Path}.", typeof(T).Name, IndexPath);
-        using HttpRequestMessage request = new(HttpMethod.Get, IndexPath);
-        if (_etag is not null) request.Headers.IfNoneMatch.Add(_etag);
-        else if (_lastModifiedUtc is not null) request.Headers.IfModifiedSince = _lastModifiedUtc;
-
-        using HttpResponseMessage response = await http.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, ct);
+        ContentReadResult response = await Storage.ReadIndexAsync(_etag, _lastModifiedUtc, ct);
         if (response.StatusCode == HttpStatusCode.NotFound) {
             Logger.Warning("{ContentType} index not found at {Path}; treating as empty dataset.", typeof(T).Name, IndexPath);
             ItemsById = ImmutableDictionary<Guid, T>.Empty;
@@ -147,18 +143,23 @@ public abstract class ContentRepository<T>(HttpClient http, IContentStorage cont
 
         if (response.StatusCode == HttpStatusCode.NotModified && _hasLoaded) {
             _lastRefreshUtc = now;
-            if (response.Headers.ETag is not null) _etag = response.Headers.ETag;
-            if (response.Content.Headers.LastModified is not null) _lastModifiedUtc = response.Content.Headers.LastModified;
+            if (response.ETag is not null) _etag = response.ETag;
+            if (response.LastModifiedUtc is not null) _lastModifiedUtc = response.LastModifiedUtc;
             Logger.Debug("{ContentType} cache not modified; updated refresh markers.", typeof(T).Name);
             return;
         }
 
-        response.EnsureSuccessStatusCode();
-        T[]? items = await response.Content.ReadFromJsonAsync<T[]>(cancellationToken: ct);
+        if (!response.IsSuccessStatusCode) {
+            throw new HttpRequestException($"Failed to load {typeof(T).Name} index: {response.StatusCode}.");
+        }
+
+        T[]? items = string.IsNullOrWhiteSpace(response.Content)
+            ? []
+            : JsonSerializer.Deserialize<T[]>(response.Content, _jsonReadOptions);
         ItemsById = BuildIndex(items ?? []);
         _hasLoaded = true;
-        _etag = response.Headers.ETag;
-        _lastModifiedUtc = response.Content.Headers.LastModified;
+        _etag = response.ETag;
+        _lastModifiedUtc = response.LastModifiedUtc;
         _lastRefreshUtc = now;
         Logger.Information("Loaded {Count} {ContentType} items into cache.", ItemsById.Count, typeof(T).Name);
     }

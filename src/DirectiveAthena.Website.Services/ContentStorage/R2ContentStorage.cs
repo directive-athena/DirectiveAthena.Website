@@ -1,7 +1,9 @@
 // ---------------------------------------------------------------------------------------------------------------------
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
+using System.Net;
 using System.Net.Http.Json;
+using System.Net.Http.Headers;
 using System.Text.Json;
 using DirectiveAthena.Website.Services.Localization;
 using JetBrains.Annotations;
@@ -35,6 +37,24 @@ public class R2ContentStorage(
     // -----------------------------------------------------------------------------------------------------------------
     // File Access
     // -----------------------------------------------------------------------------------------------------------------
+    public async Task<ContentReadResult> ReadIndexAsync(EntityTagHeaderValue? etag, DateTimeOffset? lastModifiedUtc, CancellationToken ct = default) {
+        using HttpRequestMessage request = new(HttpMethod.Get, IndexContentPath);
+        if (etag is not null) request.Headers.IfNoneMatch.Add(etag);
+        else if (lastModifiedUtc is not null) request.Headers.IfModifiedSince = lastModifiedUtc;
+
+        using HttpResponseMessage response = await httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, ct);
+        string? content = response.StatusCode == HttpStatusCode.NotModified
+            ? null
+            : await response.Content.ReadAsStringAsync(ct);
+
+        return new ContentReadResult(
+            response.StatusCode,
+            content,
+            response.Headers.ETag,
+            response.Content.Headers.LastModified
+        );
+    }
+
     public async ValueTask<bool> WriteFileAsync(string relativePath, string content, CancellationToken ct = default) {
         if (!_canWrite) {
             logger.Warning("Skipping write for {Path} because R2 writes are not enabled.", relativePath);

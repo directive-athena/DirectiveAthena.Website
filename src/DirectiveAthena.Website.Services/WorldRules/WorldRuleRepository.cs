@@ -11,11 +11,9 @@ namespace DirectiveAthena.Website.Services.WorldRules;
 // ---------------------------------------------------------------------------------------------------------------------
 [InjectableScoped<IWorldRuleRepository>]
 public class WorldRuleRepository(
-    HttpClient http,
     IContentStorageFactory storageFactory,
     ILogger<WorldRuleRepository> logger
 ) : ContentRepository<WorldRule>(
-        http,
         storageFactory.ForCategory(ContentCategory.WorldRules),
         logger
     ),

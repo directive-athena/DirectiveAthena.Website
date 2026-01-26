@@ -32,6 +32,12 @@
   <ItemGroup Condition="'$(Configuration)' != 'Debug'">
       <Content Remove="wwwroot\appsettings.local.json" />
   </ItemGroup>
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="wwwroot\content\articles\en\17171717-1717-4177-9177-171717171717.md" />
+    <_ContentIncludedByDefault Remove="wwwroot\content\articles\index.json" />
+    <_ContentIncludedByDefault Remove="wwwroot\content\articles\nl\17171717-1717-4177-9177-171717171717.md" />
+    <_ContentIncludedByDefault Remove="wwwroot\content\world-rules\index.json" />
+  </ItemGroup>
 
   <Target Name="BuildWebpackRelease" BeforeTargets="Publish" Condition="'$(Configuration)' == 'Release'">
     <Message Text="Building webpack bundle (Release)..." Importance="high" />
