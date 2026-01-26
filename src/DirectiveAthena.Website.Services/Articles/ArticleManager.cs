@@ -90,7 +90,7 @@ public class ArticleManager(
             c => c.Code,
             c => $"# {article.Title.GetValueOrDefault(c.Code)}");
 
-        if (!writeToDisk || !_storage.IsLocalhost || !await _storage.HasAccessAsync() || !await _storage.VerifyPermissionAsync()) {
+        if (!writeToDisk || !_storage.IsWritable || !await _storage.HasAccessAsync() || !await _storage.VerifyPermissionAsync()) {
             logger.Debug("Generated article stubs for {Id} without writing to disk.", article.Id);
             return stubs;
         }

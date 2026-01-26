@@ -10,7 +10,6 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Descriptors
 @* ------------------------------------------------------------------------------------------------------------------ *@
-@inject ILocalFileStorage LocalFileStorage
 @inject IJSRuntime JsRuntime
 @inject ISnackbar Snackbar
 @inject IStringLocalizer<Shared> Localizer
@@ -32,7 +31,7 @@
         </div>
     </div>
 
-    @if (string.IsNullOrWhiteSpace(FileName) || LoadContentAsync is null || GetDiskPath is null || BuildDefaultContent is null) {
+    @if (string.IsNullOrWhiteSpace(FileName) || LoadContentAsync is null || BuildDefaultContent is null || Storage is null) {
         <MudAlert Severity="Severity.Info">@Localizer[Shared.MarkdownEditorSelectItem]</MudAlert>
     }
     else {
@@ -44,7 +43,7 @@
                       Lines="16" Variant="Variant.Outlined" Class="mb-4"/>
 
         <div class="d-flex gap-4">
-            @if (LocalFileStorage.IsLocalhost) {
+            @if (Storage.IsWritable) {
                 <MudButton Variant="Variant.Filled" Color="Color.Success" OnClick="@SaveMarkdown"
                            StartIcon="@Icons.Material.Filled.Save">
                     @Localizer[Shared.MarkdownEditorSave]
@@ -75,9 +74,9 @@
 @code {
     [Parameter] public string Title { get; set; } = "";
     [Parameter] public string? FileName { get; set; }
+    [Parameter, EditorRequired] public IContentStorage? Storage { get; set; }
     [Parameter] public Func<string, Task<string>>? LoadContentAsync { get; set; }
     [Parameter] public Func<string, string>? BuildDefaultContent { get; set; }
-    [Parameter] public Func<string, string>? GetDiskPath { get; set; }
 
     private string _selectedLocale = "en";
     private string _content = "";
@@ -103,7 +102,7 @@
     }
 
     private async Task LoadContent() {
-        if (string.IsNullOrWhiteSpace(FileName) || LoadContentAsync is null || GetDiskPath is null || BuildDefaultContent is null) {
+        if (string.IsNullOrWhiteSpace(FileName) || LoadContentAsync is null || BuildDefaultContent is null || Storage is null) {
             _content = "";
             return;
         }
@@ -113,8 +112,9 @@
             return;
         }
 
-        if (LocalFileStorage.IsLocalhost && await LocalFileStorage.HasAccessAsync()) {
-            string? diskContent = await LocalFileStorage.ReadFileAsync(GetDiskPath(_selectedLocale));
+        if (Storage.IsWritable && await Storage.HasAccessAsync()) {
+            string path = Storage.GetMarkdownDiskPath(_selectedLocale, FileName);
+            string? diskContent = await Storage.ReadFileAsync(path);
             if (diskContent is not null) {
                 _content = diskContent;
                 return;
@@ -137,26 +137,28 @@
     }
 
     private async Task SaveDraftAsync(string locale) {
-        if (string.IsNullOrWhiteSpace(FileName) || GetDiskPath is null) return;
+        if (string.IsNullOrWhiteSpace(FileName) || Storage is null) return;
 
         _drafts[locale] = _content;
 
-        if (!LocalFileStorage.IsLocalhost) return;
-        if (!await LocalFileStorage.HasAccessAsync()) return;
-        if (!await LocalFileStorage.VerifyPermissionAsync()) return;
+        if (!Storage.IsWritable) return;
+        if (!await Storage.HasAccessAsync()) return;
+        if (!await Storage.VerifyPermissionAsync()) return;
 
-        await LocalFileStorage.WriteFileAsync(GetDiskPath(locale), _content);
+        string path = Storage.GetMarkdownDiskPath(locale, FileName);
+        await Storage.WriteFileAsync(path, _content);
     }
 
     private async Task SaveMarkdown() {
-        if (string.IsNullOrWhiteSpace(FileName) || GetDiskPath is null || !LocalFileStorage.IsLocalhost) return;
+        if (string.IsNullOrWhiteSpace(FileName) || Storage is null || !Storage.IsWritable) return;
 
-        if (!await LocalFileStorage.VerifyPermissionAsync()) {
+        if (!await Storage.VerifyPermissionAsync()) {
             Snackbar.Add(Localizer[Shared.MarkdownEditorFsRequired], Severity.Warning);
             return;
         }
 
-        bool success = await LocalFileStorage.WriteFileAsync(GetDiskPath(_selectedLocale), _content);
+        string path = Storage.GetMarkdownDiskPath(_selectedLocale, FileName);
+        bool success = await Storage.WriteFileAsync(path, _content);
         if (success) {
             Snackbar.Add(string.Format(Localizer[Shared.MarkdownEditorSaveSuccess], _selectedLocale, FileName), Severity.Success);
         }

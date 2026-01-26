@@ -48,8 +48,8 @@ public abstract class ContentRepository<T>(HttpClient http, IContentStorage cont
     }
 
     public async ValueTask<bool> SaveAsync(IEnumerable<T> items, CancellationToken ct = default) {
-        if (!Storage.IsLocalhost) {
-            Logger.Debug("Skipping save for {ContentType} because storage is not localhost.", typeof(T).Name);
+        if (!Storage.IsWritable) {
+            Logger.Debug("Skipping save for {ContentType} because storage is not writable.", typeof(T).Name);
             return false;
         }
 
@@ -68,8 +68,8 @@ public abstract class ContentRepository<T>(HttpClient http, IContentStorage cont
 
     public async ValueTask<bool> DeleteByIdAsync(Guid id, CancellationToken ct = default) {
         _ = ct;
-        if (!Storage.IsLocalhost || !await Storage.HasAccessAsync(ct)) {
-            Logger.Warning("Skipping delete for {ContentType} {Id} because storage access is unavailable.", typeof(T).Name, id);
+        if (!Storage.IsWritable || !await Storage.HasAccessAsync(ct)) {
+            Logger.Warning("Skipping delete for {ContentType} {Id} because storage is not writable or access is unavailable.", typeof(T).Name, id);
             return false;
         }
 

@@ -81,7 +81,7 @@ public class WorldRuleManager(
             c => c.Code,
             c => $"# {rule.Question.GetValueOrDefault(c.Code)}\n\n{rule.Answer.GetValueOrDefault(c.Code)}");
 
-        if (!writeToDisk || !_storage.IsLocalhost || !await _storage.HasAccessAsync(ct) || !await _storage.VerifyPermissionAsync(ct)) {
+        if (!writeToDisk || !_storage.IsWritable || !await _storage.HasAccessAsync(ct) || !await _storage.VerifyPermissionAsync(ct)) {
             logger.Debug("Generated world rule stubs for {Id} without writing to disk.", rule.Id);
             return stubs;
         }

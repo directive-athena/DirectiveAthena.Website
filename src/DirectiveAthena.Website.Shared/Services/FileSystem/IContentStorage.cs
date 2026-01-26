@@ -8,6 +8,8 @@ namespace DirectiveAthena.Website.Services.FileSystem;
 // ---------------------------------------------------------------------------------------------------------------------
 public interface IContentStorage {
     bool IsLocalhost { get; }
+    bool IsWritable { get; }
+    bool RequiresLocalFileSystemAccess { get; }
     ValueTask<bool> HasAccessAsync(CancellationToken ct = default);
     ValueTask<bool> VerifyPermissionAsync(CancellationToken ct = default);
     string IndexContentPath { get; }

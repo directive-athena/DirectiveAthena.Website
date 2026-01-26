@@ -17,6 +17,8 @@ public class ContentStorage(
     private const string SourceRoot = "src/DirectiveAthena.Website/wwwroot";
 
     public bool IsLocalhost => fileStorage.IsLocalhost;
+    public bool IsWritable => fileStorage.IsLocalhost;
+    public bool RequiresLocalFileSystemAccess => true;
     public string IndexContentPath => $"{categoryFolder}/index.json";
 
     // -----------------------------------------------------------------------------------------------------------------

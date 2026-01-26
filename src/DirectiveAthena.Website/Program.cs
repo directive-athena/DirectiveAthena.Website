@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using MudBlazor.Services;
 using DirectiveAthena.Website.Services;
+using DirectiveAthena.Website.Services.FileSystem;
 using DirectiveAthena.Website.Services.Localization;
 using Serilog;
 using Serilog.Core;
@@ -17,6 +18,7 @@ namespace DirectiveAthena.Website;
 public static class Program {
     public static async Task Main(string[] args) {
         var builder = WebAssemblyHostBuilder.CreateDefault(args);
+        builder.Configuration.AddJsonFile("appsettings.local.json", optional: true, reloadOnChange: false);
 
         LogEventLevel minimumLevel = builder.HostEnvironment.IsDevelopment()
             ? LogEventLevel.Debug
@@ -41,6 +43,7 @@ public static class Program {
         builder.Services.AddScoped(_ => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
         builder.Services.AddMudServices();
         builder.Services.AddLocalization();
+        builder.Services.Configure<R2StorageOptions>(builder.Configuration.GetSection("ContentStorage:R2"));
         
         builder.Services.AddWebsiteServices();
 

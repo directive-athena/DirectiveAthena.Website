@@ -36,6 +36,40 @@ Where content lives:
 
 Note: direct file writes use the browser File System Access API and are only available on `localhost`. In production, the manager offers download/copy workflows.
 
+## Content Storage (R2)
+
+The public site reads content from a public R2 bucket. The `wwwroot/appsettings.json` file is generated during the GitHub Pages workflow and is not committed.
+
+Public config shape:
+
+```json
+{
+  "ContentStorage": {
+    "R2": {
+      "PublicBaseUrl": "https://content.example.com/",
+      "EnableWrites": false
+    }
+  }
+}
+```
+
+Manager-only config (local file, not committed):
+
+```json
+{
+  "ContentStorage": {
+    "R2": {
+      "PublicBaseUrl": "https://content.example.com/",
+      "BucketName": "directiveathena-website-content",
+      "AccountId": "YOUR_ACCOUNT_ID",
+      "AccessKeyId": "YOUR_R2_ACCESS_KEY_ID",
+      "SecretAccessKey": "YOUR_R2_SECRET_ACCESS_KEY",
+      "EnableWrites": true
+    }
+  }
+}
+```
+
 ## Localization
 
 - UI strings and tag labels are stored in `.resx` files under `src/DirectiveAthena.Website/Resources`.

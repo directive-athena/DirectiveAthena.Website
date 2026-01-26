@@ -86,13 +86,13 @@
             <MudDivider Class="my-4"/>
             <LocalizedMarkdownEditor Title="@Localizer[Shared.MarkdownLabel]"
                                      FileName="@Post.MarkdownFileName"
+                                     Storage="_storage"
                                      LoadContentAsync="@((string locale) => ArticleManager.GetRawMarkdownContentAsync(Post, locale))"
-                                     BuildDefaultContent="@((string locale) => BuildDefaultMarkdown(locale))"
-                                     GetDiskPath="@((string locale) => _storage.GetMarkdownDiskPath(locale, Post.MarkdownFileName))"/>
+                                     BuildDefaultContent="@((string locale) => BuildDefaultMarkdown(locale))"/>
         </MudItem>
 
         <MudItem xs="12" Class="mt-4">
-            @if (_storage.IsLocalhost) {
+            @if (_storage.IsWritable) {
                 <MudButton Variant="Variant.Filled" Color="Color.Info" OnClick="@OnGenerateStubs"
                            StartIcon="@Icons.Material.Filled.NoteAdd">
                     @Localizer[Shared.ContentManagerMarkdownStubsSaveDisk]

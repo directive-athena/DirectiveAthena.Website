@@ -3,6 +3,7 @@
 // ---------------------------------------------------------------------------------------------------------------------
 using CodeOfChaos.Extensions.DependencyInjection;
 using DirectiveAthena.Website.Services.Localization;
+using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Logging;
 
 namespace DirectiveAthena.Website.Services.FileSystem;
@@ -11,16 +12,24 @@ namespace DirectiveAthena.Website.Services.FileSystem;
 // ---------------------------------------------------------------------------------------------------------------------
 [InjectableScoped<IContentStorageFactory>]
 public class ContentStorageFactory(
+    HttpClient http,
     ILocalFileStorage fileStorage,
     ILocalizationProvider localizationProvider,
+    IOptions<R2StorageOptions> r2Options,
     ILoggerFactory loggerFactory
 ) : IContentStorageFactory {
     private const string ContentRoot = "content";
 
     public IContentStorage ForCategory(ContentCategory category) {
         string folder = GetCategoryFolder(category);
+        if (r2Options.Value.IsReadConfigured) {
+            ILogger r2Logger = loggerFactory.CreateLogger<R2ContentStorage>();
+            r2Logger.Debug("Creating R2 content storage for {Category} at {Folder}.", category, folder);
+            return new R2ContentStorage(http, fileStorage, localizationProvider, r2Options, folder, r2Logger);
+        }
+
         ILogger storageLogger = loggerFactory.CreateLogger<ContentStorage>();
-        storageLogger.Debug("Creating content storage for {Category} at {Folder}.", category, folder);
+        storageLogger.Debug("Creating local content storage for {Category} at {Folder}.", category, folder);
         return new ContentStorage(fileStorage, localizationProvider, folder, storageLogger);
     }
 
