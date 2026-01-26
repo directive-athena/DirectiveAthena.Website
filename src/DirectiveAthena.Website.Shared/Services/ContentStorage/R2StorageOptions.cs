@@ -8,7 +8,7 @@ namespace DirectiveAthena.Website.Services.ContentStorage;
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
-public sealed class R2StorageOptions {
+public class R2StorageOptions {
     [UsedImplicitly] public string? AccountId { get; init; }
     [UsedImplicitly] public string? AccessKeyId { get; init; }
     [UsedImplicitly] public string? SecretAccessKey { get; init; }
