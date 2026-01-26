@@ -48,16 +48,6 @@ public abstract class ContentRepository<T>(HttpClient http, IContentStorage cont
     }
 
     public async ValueTask<bool> SaveAsync(IEnumerable<T> items, CancellationToken ct = default) {
-        if (!Storage.IsWritable) {
-            Logger.Debug("Skipping save for {ContentType} because storage is not writable.", typeof(T).Name);
-            return false;
-        }
-
-        if (!await Storage.VerifyPermissionAsync(ct)) {
-            Logger.Warning("Missing permission to save {ContentType} index.", typeof(T).Name);
-            return false;
-        }
-
         ICollection<T> itemList = items as ICollection<T> ?? items.ToArray();
         Logger.Information("Saving {ContentType} index with {Count} items.", typeof(T).Name, itemList.Count);
         string json = await AsJsonStringAsync(itemList, ct);
@@ -67,17 +57,6 @@ public abstract class ContentRepository<T>(HttpClient http, IContentStorage cont
     }
 
     public async ValueTask<bool> DeleteByIdAsync(Guid id, CancellationToken ct = default) {
-        _ = ct;
-        if (!Storage.IsWritable || !await Storage.HasAccessAsync(ct)) {
-            Logger.Warning("Skipping delete for {ContentType} {Id} because storage is not writable or access is unavailable.", typeof(T).Name, id);
-            return false;
-        }
-
-        if (!await Storage.VerifyPermissionAsync(ct)) {
-            Logger.Warning("Missing permission to delete {ContentType} {Id}.", typeof(T).Name, id);
-            return false;
-        }
-
         await EnsureCacheAsync(ct);
         if (!ItemsById.TryGetValue(id, out T? item)) {
             Logger.Warning("{ContentType} {Id} not found for deletion.", typeof(T).Name, id);

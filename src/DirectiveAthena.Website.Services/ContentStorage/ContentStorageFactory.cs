@@ -1,6 +1,9 @@
 // ---------------------------------------------------------------------------------------------------------------------
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
+using Amazon;
+using Amazon.Runtime;
+using Amazon.S3;
 using CodeOfChaos.Extensions.DependencyInjection;
 using DirectiveAthena.Website.Services.Localization;
 using Microsoft.Extensions.Options;
@@ -21,12 +24,15 @@ public class ContentStorageFactory(
     public IContentStorage ForCategory(ContentCategory category) {
         string folder = GetCategoryFolder(category);
         ILogger r2Logger = loggerFactory.CreateLogger<R2ContentStorage>();
-        if (!r2Options.Value.IsReadConfigured) {
-            r2Logger.Warning("R2 read configuration is missing; content reads may fail.");
-        }
-
         r2Logger.Debug("Creating R2 content storage for {Category} at {Folder}.", category, folder);
-        return new R2ContentStorage(localizationProvider, r2Options, folder, r2Logger);
+        
+        return new R2ContentStorage(localizationProvider,
+            r2Options.Value,
+            folder,
+            BuildPublicBaseUri(r2Options.Value, r2Logger),
+            CreateS3Client(r2Options.Value, r2Logger),
+            r2Logger
+        );
     }
 
     private static string GetCategoryFolder(ContentCategory category)
@@ -35,4 +41,46 @@ public class ContentStorageFactory(
             ContentCategory.WorldRules => $"{ContentRoot}/world-rules",
             _ => throw new ArgumentOutOfRangeException(nameof(category), category, "Unsupported content category.")
         };
+    
+    private static Uri BuildPublicBaseUri(R2StorageOptions options, ILogger logger) {
+        if (string.IsNullOrWhiteSpace(options.PublicBaseUrl)) {
+            logger.Warning("R2 public base URL is missing; content reads may fail.");
+            return new Uri("https://localhost/");
+        }
+
+        string baseUrl = options.PublicBaseUrl.Trim();
+        if (!baseUrl.EndsWith('/')) baseUrl += "/";
+
+        return new Uri(baseUrl, UriKind.Absolute);
+    }
+
+    private static AmazonS3Client? CreateS3Client(R2StorageOptions options, ILogger logger) {
+        if (string.IsNullOrWhiteSpace(options.AccountId) || string.IsNullOrWhiteSpace(options.BucketName)) {
+            logger.Warning("R2 account or bucket is missing; content reads and writes may fail.");
+            return null;
+        }
+
+        string regionName = string.IsNullOrWhiteSpace(options.Region) || options.Region.Equals("auto", StringComparison.OrdinalIgnoreCase)
+            ? "us-east-1"
+            : options.Region;
+
+        AmazonS3Config config = new() {
+            ServiceURL = $"https://{options.AccountId}.r2.cloudflarestorage.com",
+            ForcePathStyle = true,
+            RegionEndpoint = RegionEndpoint.GetBySystemName(regionName),
+            AuthenticationRegion = regionName
+        };
+
+        AWSCredentials credentials;
+        if (options.IsWriteConfigured) {
+            credentials = new BasicAWSCredentials(options.AccessKeyId!, options.SecretAccessKey!);
+        }
+        else {
+            credentials = new AnonymousAWSCredentials();
+            logger.Warning("R2 credentials are missing; using anonymous client for reads only.");
+        }
+
+        logger.Debug("Created R2 S3 client for {AccountId}.", options.AccountId);
+        return new AmazonS3Client(credentials, config);
+    }
 }

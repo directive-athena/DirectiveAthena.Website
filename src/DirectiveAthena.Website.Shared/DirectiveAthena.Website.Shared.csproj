@@ -9,6 +9,7 @@
 
     <ItemGroup>
       <PackageReference Include="CodeOfChaos.Extensions" />
+      <PackageReference Include="JetBrains.Annotations" />
     </ItemGroup>
 
 </Project>

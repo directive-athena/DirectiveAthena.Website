@@ -92,18 +92,16 @@
         </MudItem>
 
         <MudItem xs="12" Class="mt-4">
-            @if (_storage.IsWritable) {
-                <MudButton Variant="Variant.Filled" Color="Color.Info" OnClick="@OnGenerateStubs"
+            <div class="d-flex gap-2">
+                <MudButton Variant="Variant.Filled" Color="Color.Info" OnClick="@(() => OnGenerateStubs.InvokeAsync(true))"
                            StartIcon="@Icons.Material.Filled.NoteAdd">
                     @Localizer[Shared.ContentManagerMarkdownStubsSaveDisk]
                 </MudButton>
-            }
-            else {
-                <MudButton Variant="Variant.Filled" Color="Color.Info" OnClick="@OnGenerateStubs"
+                <MudButton Variant="Variant.Filled" Color="Color.Info" OnClick="@(() => OnGenerateStubs.InvokeAsync(false))"
                            StartIcon="@Icons.Material.Filled.Download">
                     @Localizer[Shared.ContentManagerMarkdownStubsDownload]
                 </MudButton>
-            }
+            </div>
         </MudItem>
     </MudGrid>
 </MudPaper>
@@ -115,7 +113,7 @@
 @code {
     [Parameter, EditorRequired] public Article Post { get; set; } = null!;
     [Parameter] public EventCallback OnDeletePost { get; set; }
-    [Parameter] public EventCallback OnGenerateStubs { get; set; }
+    [Parameter] public EventCallback<bool> OnGenerateStubs { get; set; }
     [Parameter] public EventCallback OnTagsChanged { get; set; }
 
     private string _newTag = "";

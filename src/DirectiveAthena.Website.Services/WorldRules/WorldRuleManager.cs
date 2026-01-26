@@ -75,24 +75,27 @@ public class WorldRuleManager(
         return false;
     }
 
-    public async Task<Dictionary<string, string>> GenerateStubsAsync(WorldRule rule, bool writeToDisk = false, CancellationToken ct = default) {
+    public async Task<(Dictionary<string, string> Stubs, bool WroteAll)> GenerateStubsAsync(WorldRule rule, bool writeToDisk = false, CancellationToken ct = default) {
         IReadOnlyCollection<LocalizationInfo> locals = localizationProvider.GetSupportedLocalizations();
         Dictionary<string, string> stubs = locals.ToDictionary(
             c => c.Code,
             c => $"# {rule.Question.GetValueOrDefault(c.Code)}\n\n{rule.Answer.GetValueOrDefault(c.Code)}");
 
-        if (!writeToDisk || !_storage.IsWritable || !await _storage.HasAccessAsync(ct) || !await _storage.VerifyPermissionAsync(ct)) {
+        if (!writeToDisk) {
             logger.Debug("Generated world rule stubs for {Id} without writing to disk.", rule.Id);
-            return stubs;
+            return (stubs, false);
         }
 
+        bool wroteAll = true;
         foreach (KeyValuePair<string, string> stub in stubs) {
             string path = _storage.GetMarkdownDiskPath(stub.Key, rule.MarkdownFileName);
-            await _storage.WriteFileAsync(path, stub.Value, ct);
+            if (!await _storage.WriteFileAsync(path, stub.Value, ct)) {
+                wroteAll = false;
+            }
         }
 
-        logger.Information("Generated and wrote world rule stubs for {Id}.", rule.Id);
-        return stubs;
+        logger.Information("Generated and wrote world rule stubs for {Id} {Result}.", rule.Id, wroteAll ? "succeeded" : "failed");
+        return (stubs, wroteAll);
     }
 
     public async Task EnsureResxAsync(CancellationToken ct = default) {

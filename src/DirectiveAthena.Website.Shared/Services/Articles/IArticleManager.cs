@@ -13,6 +13,6 @@ public interface IArticleManager {
 
     Article NewArticle();
     bool Validate(IEnumerable<Article> articles, out string? errorMessage);
-    Task<Dictionary<string, string>> GenerateStubsAsync(Article article, bool writeToDisk = false, CancellationToken ct = default);
+    Task<(Dictionary<string, string> Stubs, bool WroteAll)> GenerateStubsAsync(Article article, bool writeToDisk = false, CancellationToken ct = default);
     Task EnsureResxAsync(CancellationToken ct = default);
 }

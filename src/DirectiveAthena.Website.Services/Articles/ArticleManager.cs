@@ -82,24 +82,27 @@ public class ArticleManager(
         return false;
     }
 
-    public async Task<Dictionary<string, string>> GenerateStubsAsync(Article article, bool writeToDisk = false, CancellationToken ct = default) {
+    public async Task<(Dictionary<string, string> Stubs, bool WroteAll)> GenerateStubsAsync(Article article, bool writeToDisk = false, CancellationToken ct = default) {
         IReadOnlyCollection<LocalizationInfo> locals = localizationProvider.GetSupportedLocalizations();
         Dictionary<string, string> stubs = locals.ToDictionary(
             c => c.Code,
             c => $"# {article.Title.GetValueOrDefault(c.Code)}");
 
-        if (!writeToDisk || !_storage.IsWritable || !await _storage.HasAccessAsync() || !await _storage.VerifyPermissionAsync()) {
+        if (!writeToDisk) {
             logger.Debug("Generated article stubs for {Id} without writing to disk.", article.Id);
-            return stubs;
+            return (stubs, false);
         }
 
+        bool wroteAll = true;
         foreach (KeyValuePair<string, string> stub in stubs) {
             string path = _storage.GetMarkdownDiskPath(stub.Key, article.MarkdownFileName);
-            await _storage.WriteFileAsync(path, stub.Value);
+            if (!await _storage.WriteFileAsync(path, stub.Value, ct)) {
+                wroteAll = false;
+            }
         }
 
-        logger.Information("Generated and wrote article stubs for {Id}.", article.Id);
-        return stubs;
+        logger.Information("Generated and wrote article stubs for {Id} {Result}.", article.Id, wroteAll ? "succeeded" : "failed");
+        return (stubs, wroteAll);
     }
 
     public async Task EnsureResxAsync(CancellationToken ct = default) {

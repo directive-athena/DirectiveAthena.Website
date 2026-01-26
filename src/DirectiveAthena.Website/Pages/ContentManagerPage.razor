@@ -4,7 +4,6 @@
 @using DirectiveAthena.Website.Components
 @using DirectiveAthena.Website.Resources
 @using DirectiveAthena.Website.Services.Articles
-@using DirectiveAthena.Website.Services.ContentStorage
 @using DirectiveAthena.Website.Services.WorldRules
 @using Microsoft.Extensions.Localization
 
@@ -23,7 +22,6 @@
 @inject IArticleManager ArticleManager
 @inject IWorldRuleRepository WorldRuleRepository
 @inject IWorldRuleManager WorldRuleManager
-@inject IContentStorageFactory ContentStorageFactory
 @inject IJSRuntime JsRuntime
 @inject ISnackbar Snackbar
 @inject IStringLocalizer<Shared> Localizer
@@ -45,74 +43,32 @@
     else {
         @if (ShowRemoteStorageBanner) {
             <MudAlert Severity="Severity.Info" Variant="Variant.Filled" Class="mb-6">
-                <b>Content storage:</b> Remote (R2). Read: enabled. Write: @(IsWritable ? "enabled" : "disabled").
+                <b>Content storage:</b> Remote (R2).
             </MudAlert>
         }
-        if (IsReadOnly) {
-            <MudAlert Severity="Severity.Info" Variant="Variant.Filled" Class="mb-6">
-                <b>@Localizer[Shared.ContentManagerReadOnlyLabel]:</b>
-                @Localizer[Shared.ContentManagerReadOnlyBody]
-            </MudAlert>
-        }
-        else {
-            if (_activeTab < 0) {
-                <MudPaper Class="pa-8 card-glass text-center">
-                    <MudText Typo="Typo.h5" Class="mb-4">@Localizer[Shared.ContentManagerChooserTitle]</MudText>
-                    <MudText Typo="Typo.body2" Class="text-secondary mb-6">
-                        @Localizer[Shared.ContentManagerChooserSubtitle]
-                    </MudText>
-                    <div class="d-flex flex-wrap justify-center gap-4">
-                        <MudButton Variant="Variant.Filled" Color="Color.Secondary" StartIcon="@Icons.Material.Filled.Article"
-                                   OnClick="@(() => SelectTab(0))">
-                            @Localizer[Shared.ContentManagerChooserWritings]
-                        </MudButton>
-                        <MudButton Variant="Variant.Filled" Color="Color.Secondary" StartIcon="@Icons.Material.Filled.Rule"
-                                   OnClick="@(() => SelectTab(1))">
-                            @Localizer[Shared.ContentManagerChooserWorldRules]
-                        </MudButton>
-                        <MudButton Variant="Variant.Outlined" Color="Color.Secondary" StartIcon="@Icons.Material.Filled.Label"
-                                   OnClick="@(() => SelectTab(2))">
-                            @Localizer[Shared.ContentManagerChooserTags]
-                        </MudButton>
-                    </div>
-                </MudPaper>
-            }
-            else {
-                <div class="d-flex justify-end mb-4">
-                    <MudButton Variant="Variant.Text" Color="Color.Secondary" OnClick="@BackToChooser"
-                               StartIcon="@Icons.Material.Filled.ArrowBack">
-                        @Localizer[Shared.ContentManagerChooseAnother]
-                    </MudButton>
-                </div>
-                <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6"
-                         @bind-ActivePanelIndex="_activeTab">
+        <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6"
+                 @bind-ActivePanelIndex="_activeTab">
                 <MudTabPanel Text="@Localizer[Shared.ContentManagerTabWritings]" Icon="@Icons.Material.Filled.Article">
                     <MudGrid>
                         <MudItem xs="12" md="4">
                             <ArticleList Posts="_posts" SelectedPost="_selectedPost"
                                          OnPostSelected="OnPostSelected" OnCreatePost="CreateNewPost"/>
 
-                            @switch (CanWriteArticles) {
-                                case true:
-                                    <MudButton Variant="Variant.Filled" Color="Color.Success" FullWidth="true"
-                                               OnClick="@SaveAllArticles"
-                                               StartIcon="@Icons.Material.Filled.Save" Class="mb-4">
-                                        @Localizer[Shared.ContentManagerSaveIndex]
-                                    </MudButton>
-                                    break;
-                                case false:
-                                    <MudButton Variant="Variant.Filled" Color="Color.Secondary" FullWidth="true"
-                                               OnClick="@ExportArticlesJson"
-                                               StartIcon="@Icons.Material.Filled.Download" Class="mb-4">
-                                        @Localizer[Shared.ContentManagerDownloadIndex]
-                                    </MudButton>
-                                    <MudButton Variant="Variant.Outlined" Color="Color.Info" FullWidth="true"
-                                               OnClick="@CopyArticlesJson"
-                                               StartIcon="@Icons.Material.Filled.ContentCopy">
-                                        @Localizer[Shared.ContentManagerCopyIndex]
-                                    </MudButton>
-                                    break;
-                            }
+                            <MudButton Variant="Variant.Filled" Color="Color.Success" FullWidth="true"
+                                       OnClick="@SaveAllArticles"
+                                       StartIcon="@Icons.Material.Filled.Save" Class="mb-4">
+                                @Localizer[Shared.ContentManagerSaveIndex]
+                            </MudButton>
+                            <MudButton Variant="Variant.Filled" Color="Color.Secondary" FullWidth="true"
+                                       OnClick="@ExportArticlesJson"
+                                       StartIcon="@Icons.Material.Filled.Download" Class="mb-4">
+                                @Localizer[Shared.ContentManagerDownloadIndex]
+                            </MudButton>
+                            <MudButton Variant="Variant.Outlined" Color="Color.Info" FullWidth="true"
+                                       OnClick="@CopyArticlesJson"
+                                       StartIcon="@Icons.Material.Filled.ContentCopy">
+                                @Localizer[Shared.ContentManagerCopyIndex]
+                            </MudButton>
                         </MudItem>
 
                         <MudItem xs="12" md="8">
@@ -136,27 +92,21 @@
                             <WorldRuleList Rules="_rules" SelectedRule="_selectedRule"
                                            OnRuleSelected="OnRuleSelected" OnCreateRule="CreateNewRule"/>
 
-                            @switch (CanWriteRules) {
-                                case true:
-                                    <MudButton Variant="Variant.Filled" Color="Color.Success" FullWidth="true"
-                                               OnClick="@SaveAllRules"
-                                               StartIcon="@Icons.Material.Filled.Save" Class="mb-4">
-                                        @Localizer[Shared.ContentManagerSaveIndex]
-                                    </MudButton>
-                                    break;
-                                case false:
-                                    <MudButton Variant="Variant.Filled" Color="Color.Secondary" FullWidth="true"
-                                               OnClick="@ExportRulesJson"
-                                               StartIcon="@Icons.Material.Filled.Download" Class="mb-4">
-                                        @Localizer[Shared.ContentManagerDownloadIndex]
-                                    </MudButton>
-                                    <MudButton Variant="Variant.Outlined" Color="Color.Info" FullWidth="true"
-                                               OnClick="@CopyRulesJson"
-                                               StartIcon="@Icons.Material.Filled.ContentCopy">
-                                        @Localizer[Shared.ContentManagerCopyIndex]
-                                    </MudButton>
-                                    break;
-                            }
+                            <MudButton Variant="Variant.Filled" Color="Color.Success" FullWidth="true"
+                                       OnClick="@SaveAllRules"
+                                       StartIcon="@Icons.Material.Filled.Save" Class="mb-4">
+                                @Localizer[Shared.ContentManagerSaveIndex]
+                            </MudButton>
+                            <MudButton Variant="Variant.Filled" Color="Color.Secondary" FullWidth="true"
+                                       OnClick="@ExportRulesJson"
+                                       StartIcon="@Icons.Material.Filled.Download" Class="mb-4">
+                                @Localizer[Shared.ContentManagerDownloadIndex]
+                            </MudButton>
+                            <MudButton Variant="Variant.Outlined" Color="Color.Info" FullWidth="true"
+                                       OnClick="@CopyRulesJson"
+                                       StartIcon="@Icons.Material.Filled.ContentCopy">
+                                @Localizer[Shared.ContentManagerCopyIndex]
+                            </MudButton>
                         </MudItem>
 
                         <MudItem xs="12" md="8">
@@ -177,9 +127,7 @@
                 <MudTabPanel Text="@Localizer[Shared.ContentManagerTabTags]" Icon="@Icons.Material.Filled.Label">
                     <TagsEditor UsedTags="@AllTags"/>
                 </MudTabPanel>
-                </MudTabs>
-            }
-        }
+        </MudTabs>
     }
 </MudContainer>
 
@@ -192,15 +140,9 @@
     private Article? _selectedPost;
     private List<WorldRule>? _rules;
     private WorldRule? _selectedRule;
-    private IContentStorage _articleStorage = null!;
-    private IContentStorage _ruleStorage = null!;
-    private int _activeTab = -1;
+    private int _activeTab;
 
-    private bool CanWriteArticles => _articleStorage.IsWritable;
-    private bool CanWriteRules => _ruleStorage.IsWritable;
-    private bool IsReadOnly => !CanWriteArticles && !CanWriteRules;
     private bool ShowRemoteStorageBanner => true;
-    private bool IsWritable => _articleStorage.IsWritable || _ruleStorage.IsWritable;
 
     private IEnumerable<string> AllTags =>
         (_posts ?? [])
@@ -209,9 +151,6 @@
         .Distinct();
 
     protected override async Task OnInitializedAsync() {
-        _articleStorage = ContentStorageFactory.ForCategory(ContentCategory.Articles);
-        _ruleStorage = ContentStorageFactory.ForCategory(ContentCategory.WorldRules);
-
         IEnumerable<Article> posts = await ArticleRepository.GetAllWithoutHiddenAsync();
         _posts = posts.ToList();
 
@@ -237,14 +176,6 @@
         _rules?.Insert(0, _selectedRule);
     }
 
-    private void SelectTab(int index) {
-        _activeTab = index;
-    }
-
-    private void BackToChooser() {
-        _activeTab = -1;
-    }
-
     private async Task DeletePost() {
         if (_selectedPost is null || _posts is null) return;
 
@@ -255,17 +186,12 @@
         _posts.Remove(postToDelete);
         _selectedPost = null;
 
-        if (CanWriteArticles) {
-            bool success = await ArticleRepository.DeleteByIdAsync(postToDelete.Id);
-            if (success) {
-                Snackbar.Add(Localizer[Shared.ContentManagerDeletePostSuccess], Severity.Success);
-            }
-            else {
-                Snackbar.Add(Localizer[Shared.ContentManagerDeletePostPartial], Severity.Warning);
-            }
+        bool success = await ArticleRepository.DeleteByIdAsync(postToDelete.Id);
+        if (success) {
+            Snackbar.Add(Localizer[Shared.ContentManagerDeletePostSuccess], Severity.Success);
         }
         else {
-            Snackbar.Add(Localizer[Shared.ContentManagerDeletePostReadOnly], Severity.Warning);
+            Snackbar.Add(Localizer[Shared.ContentManagerDeletePostPartial], Severity.Warning);
         }
     }
 
@@ -279,17 +205,12 @@
         _rules.Remove(ruleToDelete);
         _selectedRule = null;
 
-        if (CanWriteRules) {
-            bool success = await WorldRuleRepository.DeleteByIdAsync(ruleToDelete.Id);
-            if (success) {
-                Snackbar.Add(Localizer[Shared.ContentManagerDeleteRuleSuccess], Severity.Success);
-            }
-            else {
-                Snackbar.Add(Localizer[Shared.ContentManagerDeleteRulePartial], Severity.Warning);
-            }
+        bool success = await WorldRuleRepository.DeleteByIdAsync(ruleToDelete.Id);
+        if (success) {
+            Snackbar.Add(Localizer[Shared.ContentManagerDeleteRuleSuccess], Severity.Success);
         }
         else {
-            Snackbar.Add(Localizer[Shared.ContentManagerDeleteRuleReadOnly], Severity.Warning);
+            Snackbar.Add(Localizer[Shared.ContentManagerDeleteRulePartial], Severity.Warning);
         }
     }
 
@@ -369,34 +290,32 @@
         Snackbar.Add(Localizer[Shared.ContentManagerJsonCopied], Severity.Success);
     }
 
-    private async Task GenerateArticleStubs() {
+    private async Task GenerateArticleStubs(bool writeToDisk) {
         if (_selectedPost is null) return;
 
-        bool writeToDisk = CanWriteArticles;
-        Dictionary<string, string> stubs = await ArticleManager.GenerateStubsAsync(_selectedPost, writeToDisk);
+        var result = await ArticleManager.GenerateStubsAsync(_selectedPost, writeToDisk);
 
         if (writeToDisk) {
-            Snackbar.Add(Localizer[Shared.ContentManagerMarkdownStubsSaved], Severity.Success);
+            Snackbar.Add(result.WroteAll ? Localizer[Shared.ContentManagerMarkdownStubsSaved] : Localizer[Shared.ContentManagerIndexSaveFailed], result.WroteAll ? Severity.Success : Severity.Error);
             return;
         }
 
-        foreach (KeyValuePair<string, string> stub in stubs) {
+        foreach (KeyValuePair<string, string> stub in result.Stubs) {
             await DownloadFile($"{stub.Key}/{_selectedPost.MarkdownFileName}", stub.Value);
         }
     }
 
-    private async Task GenerateRuleStubs() {
+    private async Task GenerateRuleStubs(bool writeToDisk) {
         if (_selectedRule is null) return;
 
-        bool writeToDisk = CanWriteRules;
-        Dictionary<string, string> stubs = await WorldRuleManager.GenerateStubsAsync(_selectedRule, writeToDisk);
+        var result = await WorldRuleManager.GenerateStubsAsync(_selectedRule, writeToDisk);
 
         if (writeToDisk) {
-            Snackbar.Add(Localizer[Shared.ContentManagerMarkdownStubsSaved], Severity.Success);
+            Snackbar.Add(result.WroteAll ? Localizer[Shared.ContentManagerMarkdownStubsSaved] : Localizer[Shared.ContentManagerIndexSaveFailed], result.WroteAll ? Severity.Success : Severity.Error);
             return;
         }
 
-        foreach (KeyValuePair<string, string> stub in stubs) {
+        foreach (KeyValuePair<string, string> stub in result.Stubs) {
             await DownloadFile($"{stub.Key}/{_selectedRule.MarkdownFileName}", stub.Value);
         }
     }

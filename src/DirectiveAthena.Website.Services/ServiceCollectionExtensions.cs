@@ -1,6 +1,7 @@
 ﻿// ---------------------------------------------------------------------------------------------------------------------
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
+using DirectiveAthena.Website.Services.ContentStorage;
 using DirectiveAthena.Website.Services.Markdown;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.Extensions.DependencyInjection;
@@ -18,6 +19,15 @@ public static class ServiceCollectionExtensions {
         });
 
         services.RegisterServicesFromDirectiveAthenaWebsiteServices();
+
+        services.AddKeyedScoped<IContentStorage>(
+            ContentCategory.Articles,
+            (provider, key) => provider.GetRequiredService<IContentStorageFactory>().ForCategory((ContentCategory)(key ?? throw new ArgumentNullException(nameof(key))))
+        );
+        services.AddKeyedScoped<IContentStorage>(
+            ContentCategory.WorldRules, 
+            (provider, key) => provider.GetRequiredService<IContentStorageFactory>().ForCategory((ContentCategory)(key ?? throw new ArgumentNullException(nameof(key))))
+        );
         
         return services;
     }

@@ -43,22 +43,18 @@
                       Lines="16" Variant="Variant.Outlined" Class="mb-4"/>
 
         <div class="d-flex gap-4">
-            @if (Storage.IsWritable) {
-                <MudButton Variant="Variant.Filled" Color="Color.Success" OnClick="@SaveMarkdown"
-                           StartIcon="@Icons.Material.Filled.Save">
-                    @Localizer[Shared.MarkdownEditorSave]
-                </MudButton>
-            }
-            else {
-                <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="@DownloadMarkdown"
-                           StartIcon="@Icons.Material.Filled.Download">
-                    @Localizer[Shared.MarkdownEditorDownload]
-                </MudButton>
-                <MudButton Variant="Variant.Outlined" Color="Color.Info" OnClick="@CopyToClipboard"
-                           StartIcon="@Icons.Material.Filled.ContentCopy">
-                    @Localizer[Shared.MarkdownEditorCopy]
-                </MudButton>
-            }
+            <MudButton Variant="Variant.Filled" Color="Color.Success" OnClick="@SaveMarkdown"
+                       StartIcon="@Icons.Material.Filled.Save">
+                @Localizer[Shared.MarkdownEditorSave]
+            </MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="@DownloadMarkdown"
+                       StartIcon="@Icons.Material.Filled.Download">
+                @Localizer[Shared.MarkdownEditorDownload]
+            </MudButton>
+            <MudButton Variant="Variant.Outlined" Color="Color.Info" OnClick="@CopyToClipboard"
+                       StartIcon="@Icons.Material.Filled.ContentCopy">
+                @Localizer[Shared.MarkdownEditorCopy]
+            </MudButton>
             <MudButton Variant="Variant.Text" Color="Color.Default" OnClick="@LoadContent"
                        StartIcon="@Icons.Material.Filled.Refresh">
                 @Localizer[Shared.MarkdownEditorReload]
@@ -112,15 +108,6 @@
             return;
         }
 
-        if (Storage.IsWritable && await Storage.HasAccessAsync()) {
-            string path = Storage.GetMarkdownDiskPath(_selectedLocale, FileName);
-            string? diskContent = await Storage.ReadFileAsync(path);
-            if (diskContent is not null) {
-                _content = diskContent;
-                return;
-            }
-        }
-
         _content = await LoadContentAsync(_selectedLocale);
         if (string.IsNullOrEmpty(_content)) {
             _content = BuildDefaultContent(_selectedLocale);
@@ -141,21 +128,12 @@
 
         _drafts[locale] = _content;
 
-        if (!Storage.IsWritable) return;
-        if (!await Storage.HasAccessAsync()) return;
-        if (!await Storage.VerifyPermissionAsync()) return;
-
         string path = Storage.GetMarkdownDiskPath(locale, FileName);
-        await Storage.WriteFileAsync(path, _content);
+        _ = await Storage.WriteFileAsync(path, _content);
     }
 
     private async Task SaveMarkdown() {
-        if (string.IsNullOrWhiteSpace(FileName) || Storage is null || !Storage.IsWritable) return;
-
-        if (!await Storage.VerifyPermissionAsync()) {
-            Snackbar.Add(Localizer[Shared.MarkdownEditorFsRequired], Severity.Warning);
-            return;
-        }
+        if (string.IsNullOrWhiteSpace(FileName) || Storage is null) return;
 
         string path = Storage.GetMarkdownDiskPath(_selectedLocale, FileName);
         bool success = await Storage.WriteFileAsync(path, _content);

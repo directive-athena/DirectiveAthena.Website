@@ -172,22 +172,20 @@ public class WorldRuleManagerTests {
         WorldRuleManager manager = CreateManager(localizationProvider, storage);
 
         // Act
-        Dictionary<string, string> stubs = await manager.GenerateStubsAsync(rule, writeToDisk: false);
+        var result = await manager.GenerateStubsAsync(rule, writeToDisk: false);
 
         // Assert
-        await Assert.That(stubs.Count).IsEqualTo(localizationProvider.GetSupportedLocalizations().Count);
+        await Assert.That(result.Stubs.Count).IsEqualTo(localizationProvider.GetSupportedLocalizations().Count);
+        await Assert.That(result.WroteAll).IsFalse();
         await storage.DidNotReceiveWithAnyArgs().WriteFileAsync(null!, null!);
     }
 
     [Test]
-    public async Task GenerateStubsAsync_WritesWhenLocalhostAndPermitted() {
+    public async Task GenerateStubsAsync_WritesWhenRequested() {
         // Arrange
         WorldRule rule = CreateRule(21);
         var storage = Substitute.For<IContentStorage>();
         ILocalizationProvider localizationProvider = CreateLocalizationProvider("en");
-        storage.IsWritable.Returns(true);
-        storage.HasAccessAsync().Returns(new ValueTask<bool>(true));
-        storage.VerifyPermissionAsync().Returns(new ValueTask<bool>(true));
         storage.WriteFileAsync(Arg.Any<string>(), Arg.Any<string>()).Returns(new ValueTask<bool>(true));
         storage.GetMarkdownDiskPath(Arg.Any<string>(), Arg.Any<string>())
             .Returns(call => $"{call.ArgAt<string>(0)}/{call.ArgAt<string>(1)}");
@@ -195,10 +193,11 @@ public class WorldRuleManagerTests {
         WorldRuleManager manager = CreateManager(localizationProvider, storage);
 
         // Act
-        Dictionary<string, string> stubs = await manager.GenerateStubsAsync(rule, writeToDisk: true);
+        var result = await manager.GenerateStubsAsync(rule, writeToDisk: true);
 
         // Assert
-        await Assert.That(stubs.Count).IsEqualTo(localizationProvider.GetSupportedLocalizations().Count);
+        await Assert.That(result.Stubs.Count).IsEqualTo(localizationProvider.GetSupportedLocalizations().Count);
+        await Assert.That(result.WroteAll).IsTrue();
         foreach (LocalizationInfo localization in localizationProvider.GetSupportedLocalizations()) {
             string path = storage.GetMarkdownDiskPath(localization.Code, rule.MarkdownFileName);
             await storage.Received(1).WriteFileAsync(path, Arg.Any<string>());

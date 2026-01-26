@@ -132,11 +132,9 @@ public class ArticleRepositoryTests {
     }
 
     [Test]
-    public async Task SaveAsync_RespectsLocalhostAndPermissions() {
+    public async Task SaveAsync_WritesIndex() {
         // Arrange
         var storage = CreateStorage();
-        storage.IsWritable.Returns(true);
-        storage.VerifyPermissionAsync().Returns(new ValueTask<bool>(true));
         storage.WriteIndexAsync(Arg.Any<string>()).Returns(new ValueTask<bool>(true));
 
         var logger = Substitute.For<ILogger<ArticleRepository>>();
@@ -152,10 +150,10 @@ public class ArticleRepositoryTests {
     }
 
     [Test]
-    public async Task SaveAsync_ReturnsFalseWhenNotWritable() {
+    public async Task SaveAsync_ReturnsFalseWhenWriteFails() {
         // Arrange
         var storage = CreateStorage();
-        storage.IsWritable.Returns(false);
+        storage.WriteIndexAsync(Arg.Any<string>()).Returns(new ValueTask<bool>(false));
 
         var logger = Substitute.For<ILogger<ArticleRepository>>();
         var repo = new ArticleRepository(new HttpClient(), CreateFactory(storage), logger);
@@ -166,7 +164,7 @@ public class ArticleRepositoryTests {
 
         // Assert
         await Assert.That(result).IsFalse();
-        await storage.DidNotReceiveWithAnyArgs().WriteIndexAsync(null!);
+        await storage.Received(1).WriteIndexAsync(Arg.Any<string>());
     }
 
     [Test]
@@ -174,9 +172,6 @@ public class ArticleRepositoryTests {
         // Arrange
         Article article = ArticleFaker.Create(30);
         var storage = CreateStorage();
-        storage.IsWritable.Returns(true);
-        storage.HasAccessAsync().Returns(new ValueTask<bool>(true));
-        storage.VerifyPermissionAsync().Returns(new ValueTask<bool>(true));
         storage.DeleteLocalizedFilesAsync(article.MarkdownFileName).Returns(Task.FromResult(true));
         storage.WriteIndexAsync(Arg.Any<string>()).Returns(new ValueTask<bool>(true));
 
@@ -197,21 +192,25 @@ public class ArticleRepositoryTests {
     }
 
     [Test]
-    public async Task DeleteAsync_ReturnsFalseWhenNoAccess() {
+    public async Task DeleteAsync_ReturnsFalseWhenLocalizedDeleteFails() {
         // Arrange
-        var storage = CreateStorage();
-        storage.IsWritable.Returns(true);
-        storage.HasAccessAsync().Returns(new ValueTask<bool>(false));
-
-        var logger = Substitute.For<ILogger<ArticleRepository>>();
-        var repo = new ArticleRepository(new HttpClient(), CreateFactory(storage), logger);
         Article article = ArticleFaker.Create(40);
+        var storage = CreateStorage();
+        storage.DeleteLocalizedFilesAsync(article.MarkdownFileName).Returns(Task.FromResult(false));
+
+        var handler = new TestHttpMessageHandler(_ => new HttpResponseMessage(HttpStatusCode.OK) {
+            Content = new StringContent(JsonSerializer.Serialize(new[] { article }), Encoding.UTF8, "application/json")
+        });
+        var http = new HttpClient(handler) { BaseAddress = new Uri("http://localhost/") };
+        var logger = Substitute.For<ILogger<ArticleRepository>>();
+        var repo = new ArticleRepository(http, CreateFactory(storage), logger);
 
         // Act
         bool result = await repo.DeleteByIdAsync(article.Id);
 
         // Assert
         await Assert.That(result).IsFalse();
-        await storage.DidNotReceiveWithAnyArgs().DeleteLocalizedFilesAsync(null!);
+        await storage.Received(1).DeleteLocalizedFilesAsync(article.MarkdownFileName);
+        await storage.DidNotReceiveWithAnyArgs().WriteIndexAsync(null!);
     }
 }
