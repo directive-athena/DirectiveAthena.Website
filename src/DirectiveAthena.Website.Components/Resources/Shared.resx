@@ -245,7 +245,7 @@
     <value>Copy index.json to Clipboard</value>
   </data>
   <data name="ContentManager.IndexSaved" xml:space="preserve">
-    <value>index.json saved to disk!</value>
+    <value>index.json saved to R2!</value>
   </data>
   <data name="ContentManager.IndexSaveFailed" xml:space="preserve">
     <value>Failed to save index.json.</value>
@@ -260,7 +260,7 @@
     <value>Post and markdown files deleted.</value>
   </data>
   <data name="ContentManager.DeletePostPartial" xml:space="preserve">
-    <value>Post removed from list, but filesystem operation failed or was partial.</value>
+    <value>Post removed from list, but R2 delete failed or was partial.</value>
   </data>
   <data name="ContentManager.DeleteRuleConfirm" xml:space="preserve">
     <value>Are you sure you want to delete this rule?</value>
@@ -269,13 +269,13 @@
     <value>Rule and markdown files deleted.</value>
   </data>
   <data name="ContentManager.DeleteRulePartial" xml:space="preserve">
-    <value>Rule removed from list, but filesystem operation failed or was partial.</value>
+    <value>Rule removed from list, but R2 delete failed or was partial.</value>
   </data>
   <data name="ContentManager.MarkdownStubsSaved" xml:space="preserve">
-    <value>Markdown stubs saved to disk!</value>
+    <value>Markdown stubs saved to R2!</value>
   </data>
   <data name="ContentManager.MarkdownStubsSaveDisk" xml:space="preserve">
-    <value>Save Markdown Stubs to Disk</value>
+    <value>Save Markdown Stubs to R2</value>
   </data>
   <data name="ContentManager.MarkdownStubsDownload" xml:space="preserve">
     <value>Download Markdown Stubs</value>
@@ -353,7 +353,7 @@
     <value>Markdown Content</value>
   </data>
   <data name="MarkdownEditor.Save" xml:space="preserve">
-    <value>Save to Disk</value>
+    <value>Save to R2</value>
   </data>
   <data name="MarkdownEditor.Download" xml:space="preserve">
     <value>Download Markdown</value>
@@ -365,7 +365,7 @@
     <value>Reload Original</value>
   </data>
   <data name="MarkdownEditor.SaveSuccess" xml:space="preserve">
-    <value>Saved {0}/{1} to disk!</value>
+    <value>Saved {0}/{1} to R2!</value>
   </data>
   <data name="MarkdownEditor.SaveFailed" xml:space="preserve">
     <value>Failed to save markdown file.</value>

@@ -154,7 +154,7 @@
         .Distinct();
 
     protected override async Task OnInitializedAsync() {
-        IEnumerable<Article> posts = await ArticleRepository.GetAllWithoutHiddenAsync();
+        IEnumerable<Article> posts = await ArticleRepository.GetAllAsync();
         _posts = posts.ToList();
 
         IEnumerable<WorldRule> rules = await WorldRuleRepository.GetAllAsync();
