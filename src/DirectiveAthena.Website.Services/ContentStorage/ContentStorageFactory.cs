@@ -19,6 +19,7 @@ public class ContentStorageFactory(
     ILoggerFactory loggerFactory
 ) : IContentStorageFactory {
     private const string ContentRoot = "content";
+    private static bool _browserWarningLogged;
 
     public IContentStorage ForCategory(ContentCategory category) {
         string folder = GetCategoryFolder(category);
@@ -56,7 +57,10 @@ public class ContentStorageFactory(
 
     private static IMinioClient? CreateMinioClient(R2StorageOptions options, ILogger logger) {
         if (OperatingSystem.IsBrowser()) {
-            logger.Warning("R2 client is not supported in browser contexts; proxy uploads must be used for writes.");
+            if (!_browserWarningLogged) {
+                logger.Debug("R2 client is not supported in browser contexts; proxy uploads must be used for writes.");
+                _browserWarningLogged = true;
+            }
             return null;
         }
 

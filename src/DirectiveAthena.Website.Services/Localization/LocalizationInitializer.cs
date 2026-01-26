@@ -18,8 +18,8 @@ public class LocalizationInitializer(
 ) : ILocalizationInitializer {
 
     public async Task ApplyPreferredCultureAsync() {
-        string result = await jsRuntime.InvokeAsync<string>("localStorage.getItem", "culture");
-        if (!localizationProvider.TryGetLocalization(result, out LocalizationInfo? culture)) {
+        string? result = await jsRuntime.InvokeAsync<string?>("localStorage.getItem", "culture");
+        if (string.IsNullOrWhiteSpace(result) || !localizationProvider.TryGetLocalization(result, out LocalizationInfo? culture)) {
             logger.Information("No stored culture found; using default {Culture}.", localizationProvider.DefaultLocalization.Code);
             culture = localizationProvider.DefaultLocalization;
         }
