@@ -6,7 +6,7 @@
   <Folder Name="/.dev-tools/github/">
     <File Path=".github/dependabot.yml" />
     <File Path=".github/workflows/publishGithubPages.yml" />
-    <File Path=".github/workflows/pullRequestTests.yml" />
+    <File Path=".github/workflows/onPullRequestTests.yml" />
   </Folder>
   <Folder Name="/src/">
     <Project Path="src/DirectiveAthena.Website.ClientAssets/DirectiveAthena.Website.ClientAssets.csproj" />

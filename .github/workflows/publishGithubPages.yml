@@ -27,12 +27,17 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+    run-tests:
+        name: Run Multi-Platform Tests
+        uses: ./.github/workflows/lib_testing.yml
+        secrets: inherit
   # Single deploy job since we're just deploying
   deploy:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
+    needs: run-tests
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
