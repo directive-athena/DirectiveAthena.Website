@@ -58,7 +58,12 @@ public class ContentStorageFactory(
 
     private static AmazonS3Client? CreateS3Client(R2StorageOptions options, ILogger logger) {
         if (OperatingSystem.IsBrowser()) {
-            logger.Warning("R2 client is not supported in browser contexts; presigned uploads must be used for writes.");
+            logger.Warning("R2 client is not supported in browser contexts; proxy uploads must be used for writes.");
+            return null;
+        }
+
+        if (!string.IsNullOrWhiteSpace(options.ProxyEndpoint)) {
+            logger.Information("R2 proxy endpoint configured; using proxy uploads instead of direct S3 client.");
             return null;
         }
 

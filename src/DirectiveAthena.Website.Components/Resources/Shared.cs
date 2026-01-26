@@ -13,7 +13,6 @@ public class Shared {
     public const string NavStory = "Nav.Story";
     public const string NavWritings = "Nav.Writings";
     public const string NavWorldRules = "Nav.WorldRules";
-    public const string NavWorldRulesManager = "Nav.WorldRulesManager";
     public const string NavContentManager = "Nav.ContentManager";
     public const string NavContact = "Nav.Contact";
     public const string BrandName = "Brand.Name";

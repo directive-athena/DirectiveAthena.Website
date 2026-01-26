@@ -21,15 +21,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <EmbeddedResource Update="Resources\Shared.nl.resx">
-        <DependentUpon>Shared.cs</DependentUpon>
-      </EmbeddedResource>
-      <EmbeddedResource Update="Resources\Tags.nl.resx">
-        <DependentUpon>Tags.cs</DependentUpon>
-      </EmbeddedResource>
-    </ItemGroup>
-
-    <ItemGroup>
+      <ProjectReference Include="..\DirectiveAthena.Website.Components\DirectiveAthena.Website.Components.csproj" />
       <ProjectReference Include="..\DirectiveAthena.Website.Services\DirectiveAthena.Website.Services.csproj" />
       <ProjectReference Include="..\DirectiveAthena.Website.Shared\DirectiveAthena.Website.Shared.csproj" />
     </ItemGroup>

@@ -9,10 +9,10 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Html
 @* ------------------------------------------------------------------------------------------------------------------ *@
-<MudThemeProvider Theme="_theme" DefaultScrollbar="true" IsDarkMode="true"/>
-<MudPopoverProvider/>
-<MudDialogProvider/>
-<MudSnackbarProvider/>
+<WebsiteThemeProviders />
+<MudPopoverProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
 
 <Router AppAssembly="@typeof(App).Assembly" NotFoundPage="typeof(Pages.NotFoundPage)">
     <Found Context="routeData">
@@ -24,42 +24,3 @@
 @* Code
 @* ------------------------------------------------------------------------------------------------------------------ *@
 
-@code {
-    private readonly MudTheme _theme = new() {
-        PaletteDark = new PaletteDark {
-            Primary = "#802040",// Magenta/Rose from logo
-            Secondary = "#00E5FF",// Neon Cyan highlight
-            Tertiary = "#4A148C",// Deep purple
-            Info = "#00B0FF",
-            Success = "#1f995e",
-            Warning = "#b37406",
-            Error = "#FF1744",
-            AppbarBackground = "rgba(10, 14, 28, 0.7)",// Deep navy with transparency
-            AppbarText = "#FFFFFF",
-            Background = "#0A0E1C",// Deep cosmic navy
-            Surface = "#111827",
-            DrawerBackground = "#0A0E1C",
-            DrawerText = "#FFFFFF",
-            TextPrimary = "#F9FAFB",
-            TextSecondary = "#9CA3AF",
-            ActionDefault = "#00E5FF",
-            ActionDisabled = "rgba(255,255,255, 0.26)",
-            ActionDisabledBackground = "rgba(255,255,255, 0.12)",
-            Divider = "rgba(255,255,255, 0.12)"
-        },
-        Typography = new Typography {
-            Default = new DefaultTypography {
-                FontFamily = ["Inter", "Roboto", "Helvetica", "Arial", "sans-serif"]
-            },
-            H1 = new H1Typography { FontFamily = ["Space Grotesk", "sans-serif"], FontSize = "4rem", FontWeight = "700", LetterSpacing = "-0.02em" },
-            H2 = new H2Typography { FontFamily = ["Space Grotesk", "sans-serif"], FontSize = "3rem", FontWeight = "700" },
-            H3 = new H3Typography { FontFamily = ["Space Grotesk", "sans-serif"], FontSize = "2rem", FontWeight = "600" },
-            H4 = new H4Typography { FontFamily = ["Space Grotesk", "sans-serif"], FontSize = "1.5rem", FontWeight = "600" },
-            Button = new ButtonTypography { FontFamily = ["Space Grotesk", "sans-serif"], FontWeight = "600", LetterSpacing = "0.05em", TextTransform = "uppercase" }
-        },
-        LayoutProperties = new LayoutProperties {
-            DefaultBorderRadius = "8px"
-        }
-    };
-
-}

@@ -16,12 +16,7 @@ public class R2StorageOptions {
     [UsedImplicitly] public string? PublicBaseUrl { get; init; }
     [UsedImplicitly] public bool EnableWrites { get; init; }
     [UsedImplicitly] public string Region { get; init; } = "auto";
-    [UsedImplicitly] public string? PresignEndpoint { get; init; }
     [UsedImplicitly] public string? ProxyEndpoint { get; init; }
-
-    public bool IsPresignConfigured =>
-        EnableWrites
-        && !PresignEndpoint.IsNullOrWhiteSpace();
 
     public bool IsWriteConfigured =>
         EnableWrites
@@ -30,5 +25,5 @@ public class R2StorageOptions {
         && !SecretAccessKey.IsNullOrWhiteSpace()
         && !BucketName.IsNullOrWhiteSpace();
 
-    public bool CanWrite => IsWriteConfigured || IsPresignConfigured;
+    public bool CanWrite => IsWriteConfigured || (!ProxyEndpoint.IsNullOrWhiteSpace() && EnableWrites);
 }

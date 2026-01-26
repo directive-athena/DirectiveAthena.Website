@@ -13,6 +13,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\DirectiveAthena.Website\DirectiveAthena.Website.csproj" />
+      <ProjectReference Include="..\DirectiveAthena.Website.Components\DirectiveAthena.Website.Components.csproj" />
+    <ProjectReference Include="..\DirectiveAthena.Website.Services\DirectiveAthena.Website.Services.csproj" />
     <ProjectReference Include="..\DirectiveAthena.Website.Shared\DirectiveAthena.Website.Shared.csproj" />
   </ItemGroup>
 

@@ -70,9 +70,6 @@
   <data name="Nav.WorldRules" xml:space="preserve">
     <value>World Rules</value>
   </data>
-  <data name="Nav.WorldRulesManager" xml:space="preserve">
-    <value>World Rules Manager</value>
-  </data>
   <data name="Nav.ContentManager" xml:space="preserve">
     <value>Content Manager</value>
   </data>

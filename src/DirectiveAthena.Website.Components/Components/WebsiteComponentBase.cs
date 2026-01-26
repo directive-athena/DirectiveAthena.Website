@@ -3,6 +3,7 @@
 // ---------------------------------------------------------------------------------------------------------------------
 using DirectiveAthena.Website.Services.Localization;
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Logging;
 
 namespace DirectiveAthena.Website.Components;
 // ---------------------------------------------------------------------------------------------------------------------

@@ -1,13 +1,11 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Imports
 @* ------------------------------------------------------------------------------------------------------------------ *@
-@using DirectiveAthena.Website.Components
 @using DirectiveAthena.Website.Resources
 @using DirectiveAthena.Website.Services.Articles
 @using DirectiveAthena.Website.Services.WorldRules
-@using Microsoft.Extensions.Localization
 
-@namespace DirectiveAthena.Website.Pages
+@namespace DirectiveAthena.Website.DevServer.Pages
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Descriptors
 @* ------------------------------------------------------------------------------------------------------------------ *@
@@ -27,10 +25,15 @@
 @inject IStringLocalizer<Shared> Localizer
 
 @inherits WebsiteComponentBase
+@rendermode RenderMode.InteractiveServer
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Html
 @* ------------------------------------------------------------------------------------------------------------------ *@
 <PageTitle>@Localizer[Shared.ContentManagerTitle]</PageTitle>
+
+<MudPopoverProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
 
 <MudContainer MaxWidth="MaxWidth.Large" Class="py-12">
     <div class="d-flex justify-space-between align-center mb-8">

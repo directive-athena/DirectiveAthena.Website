@@ -23,11 +23,8 @@ public class R2ContentStorage(
     ILogger logger
 ) : IContentStorage {
     private readonly bool _canWrite = options.CanWrite;
-    private readonly Uri? _presignEndpoint = string.IsNullOrWhiteSpace(options.PresignEndpoint)
-        ? null
-        : new Uri(options.PresignEndpoint.Trim(), UriKind.Absolute);
-    private readonly Uri? _proxyUploadEndpoint = BuildProxyEndpoint(options.ProxyEndpoint, options.PresignEndpoint, "upload");
-    private readonly Uri? _proxyDeleteEndpoint = BuildProxyEndpoint(options.ProxyEndpoint, options.PresignEndpoint, "delete");
+    private readonly Uri? _proxyUploadEndpoint = BuildProxyEndpoint(options.ProxyEndpoint, "upload");
+    private readonly Uri? _proxyDeleteEndpoint = BuildProxyEndpoint(options.ProxyEndpoint, "delete");
     private readonly JsonSerializerOptions _jsonOptions = new() {
         PropertyNameCaseInsensitive = true,
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase
@@ -50,7 +47,8 @@ public class R2ContentStorage(
                 return await WriteFileWithProxyAsync(key, content, ct);
             }
 
-            return await WriteFileWithPresignAsync(key, content, ct);
+            logger.Warning("Skipping write for {Path} because proxy endpoint is not configured.", key);
+            return false;
         }
 
         PutObjectRequest request = new() {
@@ -82,7 +80,8 @@ public class R2ContentStorage(
                 return await DeleteFileWithProxyAsync(key, ct);
             }
 
-            return await DeleteFileWithPresignAsync(key, ct);
+            logger.Warning("Skipping delete for {Path} because proxy endpoint is not configured.", key);
+            return false;
         }
 
         DeleteObjectRequest request = new() {
@@ -180,103 +179,15 @@ public class R2ContentStorage(
         }
     }
 
-    private async ValueTask<bool> WriteFileWithPresignAsync(string key, string content, CancellationToken ct) {
-        if (_presignEndpoint is null) {
-            logger.Warning("Skipping write for {Path} because presign endpoint is not configured.", key);
-            return false;
-        }
-
-        PresignResponse? presign = await RequestPresignedUrlAsync(key, "PUT", ResolveContentType(key), ct);
-        if (presign is null || string.IsNullOrWhiteSpace(presign.Url)) return false;
-
-        using var uploadRequest = new HttpRequestMessage(HttpMethod.Put, presign.Url);
-        using var uploadContent = new StringContent(content, System.Text.Encoding.UTF8, ResolveContentType(key));
-        AddPresignHeaders(uploadRequest, uploadContent, presign.Headers);
-        uploadRequest.Content = uploadContent;
-
-        try {
-            using HttpResponseMessage response = await httpClient.SendAsync(uploadRequest, ct);
-            return response.IsSuccessStatusCode;
-        }
-        catch (Exception ex) {
-            logger.Warning(ex, "Failed to upload R2 object {Key} via presigned URL.", key);
-            return false;
-        }
-    }
-
-    private async ValueTask<bool> DeleteFileWithPresignAsync(string key, CancellationToken ct) {
-        if (_presignEndpoint is null) {
-            logger.Warning("Skipping delete for {Path} because presign endpoint is not configured.", key);
-            return false;
-        }
-
-        PresignResponse? presign = await RequestPresignedUrlAsync(key, "DELETE", null, ct);
-        if (presign is null || string.IsNullOrWhiteSpace(presign.Url)) return false;
-
-        using var deleteRequest = new HttpRequestMessage(HttpMethod.Delete, presign.Url);
-        AddPresignHeaders(deleteRequest, null, presign.Headers);
-
-        try {
-            using HttpResponseMessage response = await httpClient.SendAsync(deleteRequest, ct);
-            return response.IsSuccessStatusCode;
-        }
-        catch (Exception ex) {
-            logger.Warning(ex, "Failed to delete R2 object {Key} via presigned URL.", key);
-            return false;
-        }
-    }
-
-    private async Task<PresignResponse?> RequestPresignedUrlAsync(string key, string method, string? contentType, CancellationToken ct) {
-        var payload = new PresignRequest(key, method, contentType);
-        using var request = new HttpRequestMessage(HttpMethod.Post, _presignEndpoint) {
-            Content = JsonContent.Create(payload, options: _jsonOptions)
-        };
-
-        try {
-            using HttpResponseMessage response = await httpClient.SendAsync(request, ct);
-            if (!response.IsSuccessStatusCode) {
-                logger.Warning("Presign request for {Key} failed with {StatusCode}.", key, response.StatusCode);
-                return null;
-            }
-
-            return await response.Content.ReadFromJsonAsync<PresignResponse>(_jsonOptions, ct);
-        }
-        catch (Exception ex) {
-            logger.Warning(ex, "Failed to request presigned URL for {Key}.", key);
-            return null;
-        }
-    }
-
-    private static void AddPresignHeaders(
-        HttpRequestMessage request,
-        HttpContent? content,
-        IReadOnlyDictionary<string, string>? headers
-    ) {
-        if (headers is null || headers.Count == 0) return;
-
-        foreach ((string key, string value) in headers) {
-            if (!request.Headers.TryAddWithoutValidation(key, value)) {
-                content?.Headers.TryAddWithoutValidation(key, value);
-            }
-        }
-    }
-
-    private sealed record PresignRequest(string Key, string Method, string? ContentType);
-    private sealed record PresignResponse(string Url, Dictionary<string, string>? Headers);
     private sealed record ProxyUploadRequest(string Key, string Content, string ContentType);
     private sealed record ProxyDeleteRequest(string Key);
 
-    private static Uri? BuildProxyEndpoint(string? proxyEndpoint, string? presignEndpoint, string operation) {
+    private static Uri? BuildProxyEndpoint(string? proxyEndpoint, string operation) {
         if (!string.IsNullOrWhiteSpace(proxyEndpoint)) {
             string baseUrl = proxyEndpoint.Trim().TrimEnd('/');
             return new Uri($"{baseUrl}/{operation}", UriKind.Absolute);
         }
 
-        if (string.IsNullOrWhiteSpace(presignEndpoint)) return null;
-        string trimmed = presignEndpoint.Trim();
-        if (!trimmed.EndsWith("/presign", StringComparison.OrdinalIgnoreCase)) return null;
-
-        string basePresign = trimmed[..^"/presign".Length];
-        return new Uri($"{basePresign}/{operation}", UriKind.Absolute);
+        return null;
     }
 }

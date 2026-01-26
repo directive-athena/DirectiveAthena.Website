@@ -2,7 +2,6 @@
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
 using System.Net;
-using System.Text.Json;
 using Amazon.S3;
 using Amazon.S3.Model;
 using DirectiveAthena.Website.Services.ContentStorage;
@@ -165,84 +164,6 @@ public class R2ContentStorageTests {
 
         // Assert
         await Assert.That(result).IsTrue();
-    }
-
-    [Test]
-    public async Task WriteFileAsync_UsesPresignEndpointWhenClientMissing() {
-        // Arrange
-        var presignPayload = new {
-            Url = "https://uploads.example.com/content/articles/en/post.md",
-            Headers = new Dictionary<string, string> { ["x-test"] = "ok" }
-        };
-
-        var handler = new TestHttpMessageHandler(request => {
-            if (request.RequestUri is not null && request.RequestUri.AbsoluteUri.EndsWith("/sign", StringComparison.OrdinalIgnoreCase)) {
-                string json = JsonSerializer.Serialize(presignPayload);
-                return new HttpResponseMessage(HttpStatusCode.OK) {
-                    Content = new StringContent(json, System.Text.Encoding.UTF8, "application/json")
-                };
-            }
-
-            return request.Method == HttpMethod.Put
-                ? new HttpResponseMessage(HttpStatusCode.OK)
-                : new HttpResponseMessage(HttpStatusCode.BadRequest);
-        });
-
-        var httpClient = new HttpClient(handler) { BaseAddress = new Uri("https://api.example.com/") };
-        var options = new R2StorageOptions {
-            EnableWrites = true,
-            AccountId = "account",
-            AccessKeyId = "access",
-            SecretAccessKey = "secret",
-            BucketName = "bucket",
-            PresignEndpoint = "https://api.example.com/sign"
-        };
-
-        R2ContentStorage storage = CreateStorage(options, null, httpClient: httpClient);
-
-        // Act
-        bool result = await storage.WriteFileAsync("content/articles/en/post.md", "# Title");
-
-        // Assert
-        await Assert.That(result).IsTrue();
-        await Assert.That(handler.CallCount).IsEqualTo(2);
-    }
-
-    [Test]
-    public async Task DeleteLocalizedFilesAsync_UsesPresignEndpointWhenClientMissing() {
-        // Arrange
-        var handler = new TestHttpMessageHandler(request => {
-            if (request.RequestUri is not null && request.RequestUri.AbsoluteUri.EndsWith("/sign", StringComparison.OrdinalIgnoreCase)) {
-                string json = JsonSerializer.Serialize(new { Url = "https://uploads.example.com/delete" });
-                return new HttpResponseMessage(HttpStatusCode.OK) {
-                    Content = new StringContent(json, System.Text.Encoding.UTF8, "application/json")
-                };
-            }
-
-            return request.Method == HttpMethod.Delete
-                ? new HttpResponseMessage(HttpStatusCode.NoContent)
-                : new HttpResponseMessage(HttpStatusCode.BadRequest);
-        });
-
-        var httpClient = new HttpClient(handler) { BaseAddress = new Uri("https://api.example.com/") };
-        var options = new R2StorageOptions {
-            EnableWrites = true,
-            AccountId = "account",
-            AccessKeyId = "access",
-            SecretAccessKey = "secret",
-            BucketName = "bucket",
-            PresignEndpoint = "https://api.example.com/sign"
-        };
-
-        ILocalizationProvider localizationProvider = CreateLocalizationProvider("en", "nl");
-        R2ContentStorage storage = CreateStorage(options, null, localizationProvider, httpClient);
-
-        // Act
-        bool result = await storage.DeleteLocalizedFilesAsync("post.md");
-
-        // Assert
-        await Assert.That(result).IsTrue();
-        await Assert.That(handler.CallCount).IsEqualTo(4);
     }
 
     [Test]
