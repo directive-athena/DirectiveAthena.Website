@@ -4,7 +4,7 @@
 using DirectiveAthena.Website.Services;
 using DirectiveAthena.Website.Services.Articles;
 using DirectiveAthena.Website.Services.Contact;
-using DirectiveAthena.Website.Services.FileSystem;
+using DirectiveAthena.Website.Services.ContentStorage;
 using DirectiveAthena.Website.Services.Localization;
 using DirectiveAthena.Website.Services.WorldRules;
 using FluentValidation;

@@ -6,7 +6,7 @@ using DirectiveAthena.Website.Services.Localization;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Logging;
 
-namespace DirectiveAthena.Website.Services.FileSystem;
+namespace DirectiveAthena.Website.Services.ContentStorage;
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------

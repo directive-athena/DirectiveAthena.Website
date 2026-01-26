@@ -2,7 +2,7 @@
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
 using DirectiveAthena.Website.Services.Articles;
-using DirectiveAthena.Website.Services.FileSystem;
+using DirectiveAthena.Website.Services.ContentStorage;
 using DirectiveAthena.Website.Services.Localization;
 using DirectiveAthenaTests.Website.Helpers;
 using Microsoft.Extensions.Logging;
