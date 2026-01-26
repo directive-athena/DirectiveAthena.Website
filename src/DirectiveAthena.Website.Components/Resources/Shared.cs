@@ -63,23 +63,6 @@ public class Shared {
     public const string WorldRulesEmpty = "WorldRules.Empty";
     public const string ContentManagerTitle = "ContentManager.Title";
     public const string ContentManagerHeading = "ContentManager.Heading";
-    public const string ContentManagerChooserTitle = "ContentManager.Chooser.Title";
-    public const string ContentManagerChooserSubtitle = "ContentManager.Chooser.Subtitle";
-    public const string ContentManagerChooserWritings = "ContentManager.Chooser.Writings";
-    public const string ContentManagerChooserWorldRules = "ContentManager.Chooser.WorldRules";
-    public const string ContentManagerChooserTags = "ContentManager.Chooser.Tags";
-    public const string ContentManagerChooseAnother = "ContentManager.ChooseAnother";
-    public const string ContentManagerReadOnlyLabel = "ContentManager.ReadOnly.Label";
-    public const string ContentManagerReadOnlyBody = "ContentManager.ReadOnly.Body";
-    public const string ContentManagerAccessLabel = "ContentManager.Access.Label";
-    public const string ContentManagerAccessGranted = "ContentManager.Access.Granted";
-    public const string ContentManagerAccessRequired = "ContentManager.Access.Required";
-    public const string ContentManagerAccessGrant = "ContentManager.Access.Grant";
-    public const string ContentManagerAccessReset = "ContentManager.Access.Reset";
-    public const string ContentManagerAccessUnsupported = "ContentManager.Access.Unsupported";
-    public const string ContentManagerAccessGrantedToast = "ContentManager.Access.GrantedToast";
-    public const string ContentManagerAccessFailedToast = "ContentManager.Access.FailedToast";
-    public const string ContentManagerAccessResetToast = "ContentManager.Access.ResetToast";
     public const string ContentManagerTabWritings = "ContentManager.Tab.Writings";
     public const string ContentManagerTabWorldRules = "ContentManager.Tab.WorldRules";
     public const string ContentManagerTabTags = "ContentManager.Tab.Tags";
@@ -94,11 +77,9 @@ public class Shared {
     public const string ContentManagerDeletePostConfirm = "ContentManager.DeletePostConfirm";
     public const string ContentManagerDeletePostSuccess = "ContentManager.DeletePostSuccess";
     public const string ContentManagerDeletePostPartial = "ContentManager.DeletePostPartial";
-    public const string ContentManagerDeletePostReadOnly = "ContentManager.DeletePostReadOnly";
     public const string ContentManagerDeleteRuleConfirm = "ContentManager.DeleteRuleConfirm";
     public const string ContentManagerDeleteRuleSuccess = "ContentManager.DeleteRuleSuccess";
     public const string ContentManagerDeleteRulePartial = "ContentManager.DeleteRulePartial";
-    public const string ContentManagerDeleteRuleReadOnly = "ContentManager.DeleteRuleReadOnly";
     public const string ContentManagerMarkdownStubsSaved = "ContentManager.MarkdownStubsSaved";
     public const string ContentManagerMarkdownStubsDownload = "ContentManager.MarkdownStubsDownload";
     public const string ContentManagerMarkdownStubsSaveDisk = "ContentManager.MarkdownStubsSaveDisk";
@@ -130,7 +111,6 @@ public class Shared {
     public const string MarkdownEditorDownload = "MarkdownEditor.Download";
     public const string MarkdownEditorCopy = "MarkdownEditor.Copy";
     public const string MarkdownEditorReload = "MarkdownEditor.Reload";
-    public const string MarkdownEditorFsRequired = "MarkdownEditor.FsRequired";
     public const string MarkdownEditorSaveSuccess = "MarkdownEditor.SaveSuccess";
     public const string MarkdownEditorSaveFailed = "MarkdownEditor.SaveFailed";
     public const string TagsManagerTitle = "TagsManager.Title";
@@ -161,5 +141,4 @@ public class Shared {
     public const string NotFoundMessage = "NotFound.Message";
     public const string NotFoundGoHome = "NotFound.GoHome";
     public const string NotFoundBrowseArticles = "NotFound.BrowseArticles";
-    public const string NavWritingsManager = "Nav.WritingsManager";
 }

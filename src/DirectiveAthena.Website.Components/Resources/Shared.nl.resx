@@ -220,57 +220,6 @@
   <data name="ContentManager.Heading" xml:space="preserve">
     <value>Contentbeheer</value>
   </data>
-  <data name="ContentManager.Chooser.Title" xml:space="preserve">
-    <value>Wat wil je bewerken?</value>
-  </data>
-  <data name="ContentManager.Chooser.Subtitle" xml:space="preserve">
-    <value>Kies een contenttype om te beheren.</value>
-  </data>
-  <data name="ContentManager.Chooser.Writings" xml:space="preserve">
-    <value>Geschriften</value>
-  </data>
-  <data name="ContentManager.Chooser.WorldRules" xml:space="preserve">
-    <value>Wereldregels</value>
-  </data>
-  <data name="ContentManager.Chooser.Tags" xml:space="preserve">
-    <value>Tags</value>
-  </data>
-  <data name="ContentManager.ChooseAnother" xml:space="preserve">
-    <value>Kies iets anders</value>
-  </data>
-  <data name="ContentManager.ReadOnly.Label" xml:space="preserve">
-    <value>Alleen-lezen</value>
-  </data>
-  <data name="ContentManager.ReadOnly.Body" xml:space="preserve">
-      <value>R2-schrijftoegang is uitgeschakeld. Schakel schrijftoegang in om content te bewerken.</value>
-    </data>
-  <data name="ContentManager.Access.Label" xml:space="preserve">
-    <value>Schrijftoegang</value>
-  </data>
-  <data name="ContentManager.Access.Granted" xml:space="preserve">
-    <value>Verleend</value>
-  </data>
-  <data name="ContentManager.Access.Required" xml:space="preserve">
-    <value>Vereist</value>
-  </data>
-  <data name="ContentManager.Access.Grant" xml:space="preserve">
-    <value>Toegang geven</value>
-  </data>
-  <data name="ContentManager.Access.Reset" xml:space="preserve">
-    <value>Toegang resetten</value>
-  </data>
-  <data name="ContentManager.Access.Unsupported" xml:space="preserve">
-    <value>FS API niet ondersteund</value>
-  </data>
-  <data name="ContentManager.Access.GrantedToast" xml:space="preserve">
-    <value>Toegang verleend!</value>
-  </data>
-  <data name="ContentManager.Access.FailedToast" xml:space="preserve">
-    <value>Toegang verkrijgen mislukt.</value>
-  </data>
-  <data name="ContentManager.Access.ResetToast" xml:space="preserve">
-    <value>Toegang gereset.</value>
-  </data>
   <data name="ContentManager.Tab.Writings" xml:space="preserve">
     <value>Geschriften</value>
   </data>
@@ -313,9 +262,6 @@
   <data name="ContentManager.DeletePostPartial" xml:space="preserve">
     <value>Bericht verwijderd uit de lijst, maar de bestandssysteemactie is mislukt of was gedeeltelijk.</value>
   </data>
-  <data name="ContentManager.DeletePostReadOnly" xml:space="preserve">
-    <value>Alleen-lezen: bericht verwijderd uit de lijst, maar bestanden zijn niet verwijderd.</value>
-  </data>
   <data name="ContentManager.DeleteRuleConfirm" xml:space="preserve">
     <value>Weet je zeker dat je deze regel wilt verwijderen?</value>
   </data>
@@ -324,9 +270,6 @@
   </data>
   <data name="ContentManager.DeleteRulePartial" xml:space="preserve">
     <value>Regel verwijderd uit de lijst, maar de bestandssysteemactie is mislukt of was gedeeltelijk.</value>
-  </data>
-  <data name="ContentManager.DeleteRuleReadOnly" xml:space="preserve">
-    <value>Alleen-lezen: regel verwijderd uit de lijst, maar bestanden zijn niet verwijderd.</value>
   </data>
   <data name="ContentManager.MarkdownStubsSaved" xml:space="preserve">
     <value>Markdown-stubs opgeslagen op schijf!</value>
@@ -421,9 +364,6 @@
   <data name="MarkdownEditor.Reload" xml:space="preserve">
     <value>Origineel opnieuw laden</value>
   </data>
-  <data name="MarkdownEditor.FsRequired" xml:space="preserve">
-    <value>Bestandssysteemtoegang vereist.</value>
-  </data>
   <data name="MarkdownEditor.SaveSuccess" xml:space="preserve">
     <value>{0}/{1} opgeslagen op schijf!</value>
   </data>
@@ -514,7 +454,4 @@
   <data name="Story.Section2" xml:space="preserve">
     <value>Volg mee om het verhaal voort te zetten</value>
   </data>
-    <data name="Nav.WritingsManager" xml:space="preserve">
-        <value>Writings Manager</value>
-    </data>
 </root>

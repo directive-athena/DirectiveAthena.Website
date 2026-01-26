@@ -220,57 +220,6 @@
   <data name="ContentManager.Heading" xml:space="preserve">
     <value>Content Manager</value>
   </data>
-  <data name="ContentManager.Chooser.Title" xml:space="preserve">
-    <value>What do you want to edit?</value>
-  </data>
-  <data name="ContentManager.Chooser.Subtitle" xml:space="preserve">
-    <value>Choose a content type to manage.</value>
-  </data>
-  <data name="ContentManager.Chooser.Writings" xml:space="preserve">
-    <value>Writings</value>
-  </data>
-  <data name="ContentManager.Chooser.WorldRules" xml:space="preserve">
-    <value>World Rules</value>
-  </data>
-  <data name="ContentManager.Chooser.Tags" xml:space="preserve">
-    <value>Tags</value>
-  </data>
-  <data name="ContentManager.ChooseAnother" xml:space="preserve">
-    <value>Choose Another</value>
-  </data>
-  <data name="ContentManager.ReadOnly.Label" xml:space="preserve">
-    <value>Read-Only Mode</value>
-  </data>
-  <data name="ContentManager.ReadOnly.Body" xml:space="preserve">
-    <value>R2 writes are disabled. Enable write access to edit content.</value>
-  </data>
-  <data name="ContentManager.Access.Label" xml:space="preserve">
-    <value>Write Access</value>
-  </data>
-  <data name="ContentManager.Access.Granted" xml:space="preserve">
-    <value>Granted</value>
-  </data>
-  <data name="ContentManager.Access.Required" xml:space="preserve">
-    <value>Required</value>
-  </data>
-  <data name="ContentManager.Access.Grant" xml:space="preserve">
-    <value>Grant Access</value>
-  </data>
-  <data name="ContentManager.Access.Reset" xml:space="preserve">
-    <value>Reset Access</value>
-  </data>
-  <data name="ContentManager.Access.Unsupported" xml:space="preserve">
-    <value>FS API Not Supported</value>
-  </data>
-  <data name="ContentManager.Access.GrantedToast" xml:space="preserve">
-    <value>Access granted!</value>
-  </data>
-  <data name="ContentManager.Access.FailedToast" xml:space="preserve">
-    <value>Failed to get access.</value>
-  </data>
-  <data name="ContentManager.Access.ResetToast" xml:space="preserve">
-    <value>Access reset.</value>
-  </data>
   <data name="ContentManager.Tab.Writings" xml:space="preserve">
     <value>Writings</value>
   </data>
@@ -313,9 +262,6 @@
   <data name="ContentManager.DeletePostPartial" xml:space="preserve">
     <value>Post removed from list, but filesystem operation failed or was partial.</value>
   </data>
-  <data name="ContentManager.DeletePostReadOnly" xml:space="preserve">
-    <value>Read-only mode: Post removed from list, but files were not deleted.</value>
-  </data>
   <data name="ContentManager.DeleteRuleConfirm" xml:space="preserve">
     <value>Are you sure you want to delete this rule?</value>
   </data>
@@ -324,9 +270,6 @@
   </data>
   <data name="ContentManager.DeleteRulePartial" xml:space="preserve">
     <value>Rule removed from list, but filesystem operation failed or was partial.</value>
-  </data>
-  <data name="ContentManager.DeleteRuleReadOnly" xml:space="preserve">
-    <value>Read-only mode: Rule removed from list, but files were not deleted.</value>
   </data>
   <data name="ContentManager.MarkdownStubsSaved" xml:space="preserve">
     <value>Markdown stubs saved to disk!</value>
@@ -421,9 +364,6 @@
   <data name="MarkdownEditor.Reload" xml:space="preserve">
     <value>Reload Original</value>
   </data>
-  <data name="MarkdownEditor.FsRequired" xml:space="preserve">
-    <value>Filesystem access required.</value>
-  </data>
   <data name="MarkdownEditor.SaveSuccess" xml:space="preserve">
     <value>Saved {0}/{1} to disk!</value>
   </data>
@@ -514,7 +454,4 @@
   <data name="NotFound.BrowseArticles" xml:space="preserve">
     <value>Browse articles</value>
   </data>
-    <data name="Nav.WritingsManager" xml:space="preserve">
-        <value>Writings Manager</value>
-    </data>
 </root>
