@@ -2,8 +2,10 @@
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
 using System.Net;
-using System.Security.Cryptography;
-using System.Text;
+using Amazon;
+using Amazon.Runtime;
+using Amazon.S3;
+using Amazon.S3.Model;
 using DirectiveAthena.Website.Services.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -13,8 +15,6 @@ namespace DirectiveAthena.Website.Services.FileSystem;
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
 public class R2ContentStorage(
-    HttpClient http,
-    ILocalFileStorage localFileStorage,
     ILocalizationProvider localizationProvider,
     IOptions<R2StorageOptions> options,
     string categoryFolder,
@@ -22,11 +22,9 @@ public class R2ContentStorage(
 ) : IContentStorage {
     private readonly R2StorageOptions _options = options.Value;
     private readonly Uri _publicBaseUri = BuildPublicBaseUri(options.Value, logger);
-    private readonly Uri _bucketEndpoint = BuildBucketEndpoint(options.Value, logger);
+    private readonly IAmazonS3? _s3Client = CreateS3Client(options.Value, logger);
 
-    public bool IsLocalhost => localFileStorage.IsLocalhost;
     public bool IsWritable => _options.IsWriteConfigured;
-    public bool RequiresLocalFileSystemAccess => false;
     public string IndexContentPath => BuildPublicUrl(GetIndexDiskPath());
 
     // -----------------------------------------------------------------------------------------------------------------
@@ -44,34 +42,53 @@ public class R2ContentStorage(
             return false;
         }
 
-        string key = NormalizeKey(relativePath);
-        byte[] payload = Encoding.UTF8.GetBytes(content);
-        using HttpRequestMessage request = new(HttpMethod.Put, BuildBucketUrl(key));
-        request.Content = new ByteArrayContent(payload);
-        request.Content.Headers.ContentType = new(ResolveContentType(key));
-        SignRequest(request, payload);
-
-        using HttpResponseMessage response = await http.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, ct);
-        if (!response.IsSuccessStatusCode) {
-            logger.Warning("Failed to write R2 object {Key}: {StatusCode}.", key, response.StatusCode);
+        if (_s3Client is null) {
+            logger.Warning("Skipping write for {Path} because R2 client is not configured.", relativePath);
+            return false;
         }
 
-        return response.IsSuccessStatusCode;
+        string key = NormalizeKey(relativePath);
+        PutObjectRequest request = new() {
+            BucketName = _options.BucketName!,
+            Key = key,
+            ContentBody = content,
+            ContentType = ResolveContentType(key)
+        };
+
+        try {
+            PutObjectResponse response = await _s3Client.PutObjectAsync(request, ct);
+            return response.HttpStatusCode is HttpStatusCode.OK or HttpStatusCode.NoContent;
+        }
+        catch (Exception ex) {
+            logger.Warning(ex, "Failed to write R2 object {Key}.", key);
+            return false;
+        }
     }
 
     public async ValueTask<string?> ReadFileAsync(string relativePath, CancellationToken ct = default) {
+        if (_s3Client is null) {
+            logger.Warning("Skipping read for {Path} because R2 client is not configured.", relativePath);
+            return null;
+        }
+
         string key = NormalizeKey(relativePath);
-        using HttpResponseMessage response = await http.GetAsync(BuildPublicUrl(key), ct);
-        if (response.StatusCode == HttpStatusCode.NotFound) {
+        GetObjectRequest request = new() {
+            BucketName = _options.BucketName!,
+            Key = key
+        };
+
+        try {
+            using GetObjectResponse response = await _s3Client.GetObjectAsync(request, ct);
+            using StreamReader reader = new(response.ResponseStream);
+            return await reader.ReadToEndAsync(ct);
+        }
+        catch (AmazonS3Exception ex) when (ex.StatusCode == HttpStatusCode.NotFound) {
             return null;
         }
-
-        if (!response.IsSuccessStatusCode) {
-            logger.Warning("Failed to read R2 object {Key}: {StatusCode}.", key, response.StatusCode);
+        catch (Exception ex) {
+            logger.Warning(ex, "Failed to read R2 object {Key}.", key);
             return null;
         }
-
-        return await response.Content.ReadAsStringAsync(ct);
     }
 
     public async ValueTask<bool> DeleteFileAsync(string relativePath, CancellationToken ct = default) {
@@ -80,20 +97,28 @@ public class R2ContentStorage(
             return false;
         }
 
-        string key = NormalizeKey(relativePath);
-        using HttpRequestMessage request = new(HttpMethod.Delete, BuildBucketUrl(key));
-        SignRequest(request, Array.Empty<byte>());
+        if (_s3Client is null) {
+            logger.Warning("Skipping delete for {Path} because R2 client is not configured.", relativePath);
+            return false;
+        }
 
-        using HttpResponseMessage response = await http.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, ct);
-        if (response.StatusCode == HttpStatusCode.NotFound) {
+        string key = NormalizeKey(relativePath);
+        DeleteObjectRequest request = new() {
+            BucketName = _options.BucketName!,
+            Key = key
+        };
+
+        try {
+            DeleteObjectResponse response = await _s3Client.DeleteObjectAsync(request, ct);
+            return response.HttpStatusCode is HttpStatusCode.OK or HttpStatusCode.NoContent;
+        }
+        catch (AmazonS3Exception ex) when (ex.StatusCode == HttpStatusCode.NotFound) {
             return true;
         }
-
-        if (!response.IsSuccessStatusCode) {
-            logger.Warning("Failed to delete R2 object {Key}: {StatusCode}.", key, response.StatusCode);
+        catch (Exception ex) {
+            logger.Warning(ex, "Failed to delete R2 object {Key}.", key);
+            return false;
         }
-
-        return response.IsSuccessStatusCode;
     }
 
     // -----------------------------------------------------------------------------------------------------------------
@@ -125,68 +150,10 @@ public class R2ContentStorage(
         return success;
     }
 
-    // -----------------------------------------------------------------------------------------------------------------
-    // Signing Helpers
-    // -----------------------------------------------------------------------------------------------------------------
-    private void SignRequest(HttpRequestMessage request, byte[] payload) {
-        string region = string.IsNullOrWhiteSpace(_options.Region) ? "auto" : _options.Region;
-        DateTimeOffset now = DateTimeOffset.UtcNow;
-        string amzDate = now.ToString("yyyyMMddTHHmmssZ");
-        string dateStamp = now.ToString("yyyyMMdd");
-        string payloadHash = ToHexHash(payload);
-
-        request.Headers.TryAddWithoutValidation("x-amz-date", amzDate);
-        request.Headers.TryAddWithoutValidation("x-amz-content-sha256", payloadHash);
-
-        string canonicalUri = GetCanonicalUri(request.RequestUri);
-        string canonicalHeaders = $"host:{request.RequestUri!.Host}\n" +
-                                  $"x-amz-content-sha256:{payloadHash}\n" +
-                                  $"x-amz-date:{amzDate}\n";
-        const string signedHeaders = "host;x-amz-content-sha256;x-amz-date";
-        string canonicalRequest = $"{request.Method}\n{canonicalUri}\n\n{canonicalHeaders}\n{signedHeaders}\n{payloadHash}";
-        string canonicalRequestHash = ToHexHash(Encoding.UTF8.GetBytes(canonicalRequest));
-        string credentialScope = $"{dateStamp}/{region}/s3/aws4_request";
-        string stringToSign = $"AWS4-HMAC-SHA256\n{amzDate}\n{credentialScope}\n{canonicalRequestHash}";
-
-        byte[] signingKey = GetSignatureKey(_options.SecretAccessKey!, dateStamp, region, "s3");
-        string signature = ToHexString(HmacSha256(signingKey, stringToSign));
-        string authorization = $"AWS4-HMAC-SHA256 Credential={_options.AccessKeyId}/{credentialScope}, SignedHeaders={signedHeaders}, Signature={signature}";
-
-        request.Headers.TryAddWithoutValidation("Authorization", authorization);
-    }
-
-    private static string GetCanonicalUri(Uri? requestUri) {
-        string path = requestUri?.AbsolutePath ?? "/";
-        if (string.IsNullOrEmpty(path)) return "/";
-
-        string[] segments = path.Split('/', StringSplitOptions.RemoveEmptyEntries);
-        string canonical = "/" + string.Join("/", segments.Select(Uri.EscapeDataString));
-        return canonical;
-    }
-
-    private static byte[] HmacSha256(byte[] key, string data) {
-        using var hmac = new HMACSHA256(key);
-        return hmac.ComputeHash(Encoding.UTF8.GetBytes(data));
-    }
-
-    private static byte[] GetSignatureKey(string secretKey, string dateStamp, string region, string service) {
-        byte[] kDate = HmacSha256(Encoding.UTF8.GetBytes($"AWS4{secretKey}"), dateStamp);
-        byte[] kRegion = HmacSha256(kDate, region);
-        byte[] kService = HmacSha256(kRegion, service);
-        return HmacSha256(kService, "aws4_request");
-    }
-
-    private static string ToHexHash(byte[] data) {
-        byte[] hash = SHA256.HashData(data);
-        return Convert.ToHexString(hash).ToLowerInvariant();
-    }
-
-    private static string ToHexString(byte[] data)
-        => Convert.ToHexString(data).ToLowerInvariant();
-
     private static string ResolveContentType(string key) {
         if (key.EndsWith(".json", StringComparison.OrdinalIgnoreCase)) return "application/json";
         if (key.EndsWith(".md", StringComparison.OrdinalIgnoreCase)) return "text/markdown";
+
         return "text/plain";
     }
 
@@ -198,11 +165,6 @@ public class R2ContentStorage(
         return new Uri(_publicBaseUri, key).ToString();
     }
 
-    private Uri BuildBucketUrl(string relativePath) {
-        string key = NormalizeKey(relativePath);
-        return new Uri(_bucketEndpoint, key);
-    }
-
     private static Uri BuildPublicBaseUri(R2StorageOptions options, ILogger logger) {
         if (string.IsNullOrWhiteSpace(options.PublicBaseUrl)) {
             logger.Warning("R2 public base URL is missing; content reads may fail.");
@@ -210,19 +172,38 @@ public class R2ContentStorage(
         }
 
         string baseUrl = options.PublicBaseUrl.Trim();
-        if (!baseUrl.EndsWith("/")) {
-            baseUrl += "/";
-        }
+        if (!baseUrl.EndsWith('/')) baseUrl += "/";
 
         return new Uri(baseUrl, UriKind.Absolute);
     }
 
-    private static Uri BuildBucketEndpoint(R2StorageOptions options, ILogger logger) {
+    private static IAmazonS3? CreateS3Client(R2StorageOptions options, ILogger logger) {
         if (string.IsNullOrWhiteSpace(options.AccountId) || string.IsNullOrWhiteSpace(options.BucketName)) {
-            logger.Warning("R2 account or bucket is missing; writes will fail.");
-            return new Uri("https://localhost/");
+            logger.Warning("R2 account or bucket is missing; content reads and writes may fail.");
+            return null;
         }
 
-        return new Uri($"https://{options.AccountId}.r2.cloudflarestorage.com/{options.BucketName}/", UriKind.Absolute);
+        string regionName = string.IsNullOrWhiteSpace(options.Region) || options.Region.Equals("auto", StringComparison.OrdinalIgnoreCase)
+            ? "us-east-1"
+            : options.Region;
+
+        AmazonS3Config config = new() {
+            ServiceURL = $"https://{options.AccountId}.r2.cloudflarestorage.com",
+            ForcePathStyle = true,
+            RegionEndpoint = RegionEndpoint.GetBySystemName(regionName),
+            AuthenticationRegion = regionName
+        };
+
+        AWSCredentials credentials;
+        if (options.IsWriteConfigured) {
+            credentials = new BasicAWSCredentials(options.AccessKeyId!, options.SecretAccessKey!);
+        }
+        else {
+            credentials = new AnonymousAWSCredentials();
+            logger.Warning("R2 credentials are missing; using anonymous client for reads only.");
+        }
+
+        logger.Debug("Created R2 S3 client for {AccountId}.", options.AccountId);
+        return new AmazonS3Client(credentials, config);
     }
 }

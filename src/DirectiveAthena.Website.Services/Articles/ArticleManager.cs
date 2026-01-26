@@ -1,7 +1,6 @@
 ﻿// ---------------------------------------------------------------------------------------------------------------------
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
-using System.Xml.Linq;
 using CodeOfChaos.Extensions.DependencyInjection;
 using DirectiveAthena.Website.Services.FileSystem;
 using DirectiveAthena.Website.Services.Localization;
@@ -17,7 +16,6 @@ namespace DirectiveAthena.Website.Services.Articles;
 public class ArticleManager(
     ILocalizationProvider localizationProvider,
     IContentStorageFactory storageFactory,
-    IResourceStorage resourceStorage,
     HttpClient http,
     IValidator<IEnumerable<Article>> validator,
     ILogger<ArticleManager> logger
@@ -105,37 +103,8 @@ public class ArticleManager(
     }
 
     public async Task EnsureResxAsync(CancellationToken ct = default) {
-        if (!resourceStorage.IsLocalhost || !await resourceStorage.HasAccessAsync()) {
-            logger.Debug("Skipping resx generation because resource storage is unavailable.");
-            return;
-        }
-
-        foreach (LocalizationInfo culture in localizationProvider.GetSupportedLocalizations()) {
-            string? content = await resourceStorage.ReadSharedResxAsync(culture.Code, ct);
-            if (content is not null) {
-                logger.Debug("Shared resx already exists for {Culture}.", culture.Code);
-                continue;
-            }
-
-            XDocument newResx = CreateNewResx();
-            await resourceStorage.WriteSharedResxAsync(culture.Code, newResx.ToString(), ct);
-            logger.Information("Created shared resx for {Culture}.", culture.Code);
-        }
-    }
-
-    private static XDocument CreateNewResx() {
-        return new XDocument(
-            new XElement("root",
-                new XElement("resheader", new XAttribute("name", "resmimetype"),
-                    new XElement("value", "text/microsoft-resx")),
-                new XElement("resheader", new XAttribute("name", "version"), new XElement("value", "2.0")),
-                new XElement("resheader", new XAttribute("name", "reader"),
-                    new XElement("value",
-                        "System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089")),
-                new XElement("resheader", new XAttribute("name", "writer"),
-                    new XElement("value",
-                        "System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"))
-            )
-        );
+        _ = ct;
+        logger.Debug("Resx generation is disabled in R2-only mode.");
+        await Task.CompletedTask;
     }
 }

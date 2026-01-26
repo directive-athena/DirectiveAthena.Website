@@ -33,8 +33,6 @@ public class ServiceCollectionExtensionsTests {
         await Assert.That(services).Any(s => s.ServiceType == typeof(IContactInfoProvider));
         
         await Assert.That(services).Any(s => s.ServiceType == typeof(IContentStorageFactory));
-        await Assert.That(services).Any(s => s.ServiceType == typeof(ILocalFileStorage));
-        await Assert.That(services).Any(s => s.ServiceType == typeof(IResourceStorage));
         
         await Assert.That(services).Any(s => s.ServiceType == typeof(ILocalizationInitializer));
         await Assert.That(services).Any(s => s.ServiceType == typeof(ILocalizationProvider));

@@ -185,7 +185,7 @@ public class WorldRuleManagerTests {
         WorldRule rule = CreateRule(21);
         var storage = Substitute.For<IContentStorage>();
         ILocalizationProvider localizationProvider = CreateLocalizationProvider("en");
-        storage.IsLocalhost.Returns(true);
+        storage.IsWritable.Returns(true);
         storage.HasAccessAsync().Returns(new ValueTask<bool>(true));
         storage.VerifyPermissionAsync().Returns(new ValueTask<bool>(true));
         storage.WriteFileAsync(Arg.Any<string>(), Arg.Any<string>()).Returns(new ValueTask<bool>(true));

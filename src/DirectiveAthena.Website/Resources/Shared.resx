@@ -245,7 +245,7 @@
     <value>Read-Only Mode</value>
   </data>
   <data name="ContentManager.ReadOnly.Body" xml:space="preserve">
-    <value>Direct filesystem writes are only available on localhost and in DEBUG mode.</value>
+    <value>R2 writes are disabled. Enable write access to edit content.</value>
   </data>
   <data name="ContentManager.Access.Label" xml:space="preserve">
     <value>Write Access</value>

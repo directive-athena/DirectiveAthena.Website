@@ -37,15 +37,13 @@ public class ArticleManagerTests {
     private static ArticleManager CreateManager(
         ILocalizationProvider localizationProvider,
         IContentStorage? storage = null,
-        IResourceStorage? resourceStorage = null,
         HttpClient? http = null
     ) {
         storage ??= Substitute.For<IContentStorage>();
-        resourceStorage ??= Substitute.For<IResourceStorage>();
         http ??= new HttpClient();
         var validator = new ArticleCollectionValidator(new ArticleValidator(localizationProvider));
         var logger = Substitute.For<ILogger<ArticleManager>>();
-        return new ArticleManager(localizationProvider, CreateStorageFactory(storage), resourceStorage, http, validator, logger);
+        return new ArticleManager(localizationProvider, CreateStorageFactory(storage), http, validator, logger);
     }
 
     // -----------------------------------------------------------------------------------------------------------------
@@ -217,7 +215,7 @@ public class ArticleManagerTests {
         // Arrange
         Article article = ArticleFaker.Create(121);
         var storage = Substitute.For<IContentStorage>();
-        storage.IsLocalhost.Returns(true);
+        storage.IsWritable.Returns(true);
         storage.HasAccessAsync().Returns(new ValueTask<bool>(true));
         storage.VerifyPermissionAsync().Returns(new ValueTask<bool>(true));
         storage.WriteFileAsync(Arg.Any<string>(), Arg.Any<string>()).Returns(new ValueTask<bool>(true));
@@ -237,40 +235,4 @@ public class ArticleManagerTests {
         }
     }
 
-    [Test]
-    public async Task EnsureResxAsync_CreatesMissingResxFiles() {
-        // Arrange
-        var resourceStorage = Substitute.For<IResourceStorage>();
-        resourceStorage.IsLocalhost.Returns(true);
-        resourceStorage.HasAccessAsync().Returns(new ValueTask<bool>(true));
-        resourceStorage.ReadSharedResxAsync("en").Returns(new ValueTask<string?>("existing"));
-        resourceStorage.ReadSharedResxAsync("nl").Returns(new ValueTask<string?>());
-        resourceStorage.WriteSharedResxAsync(Arg.Any<string>(), Arg.Any<string>())
-            .Returns(new ValueTask<bool>(true));
-        
-        // Act
-        ArticleManager manager = CreateManager(CreateLocalizationProvider("en"), resourceStorage: resourceStorage);
-        await manager.EnsureResxAsync();
-
-        // Assert
-        await resourceStorage.DidNotReceive().WriteSharedResxAsync("en", Arg.Any<string>());
-        await resourceStorage.Received(1).WriteSharedResxAsync("nl", Arg.Any<string>());
-    }
-
-    [Test]
-    public async Task EnsureResxAsync_DoesNotReadOrWriteWhenNotLocalhost() {
-        // Arrange
-        var resourceStorage = Substitute.For<IResourceStorage>();
-        resourceStorage.IsLocalhost.Returns(false);
-        resourceStorage.HasAccessAsync().Returns(new ValueTask<bool>(true));
-
-        ArticleManager manager = CreateManager(CreateLocalizationProvider("en"), resourceStorage: resourceStorage);
-
-        // Act
-        await manager.EnsureResxAsync();
-
-        // Assert
-        await resourceStorage.DidNotReceiveWithAnyArgs().ReadSharedResxAsync(null!);
-        await resourceStorage.DidNotReceiveWithAnyArgs().WriteSharedResxAsync(null!, null!);
-    }
 }

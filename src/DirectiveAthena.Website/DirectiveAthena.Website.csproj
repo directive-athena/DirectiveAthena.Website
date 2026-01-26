@@ -35,9 +35,11 @@
       <ProjectReference Include="..\DirectiveAthena.Website.Shared\DirectiveAthena.Website.Shared.csproj" />
     </ItemGroup>
 
-  <ItemGroup>
-      <Folder Include="wwwroot\content\world-rules\en\" />
-      <Folder Include="wwwroot\content\world-rules\nl\" />
+  <ItemGroup Condition="'$(Configuration)' == 'Debug'">
+      <Content Update="wwwroot\appsettings.local.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(Configuration)' != 'Debug'">
+      <Content Remove="wwwroot\appsettings.local.json" />
   </ItemGroup>
 
   <Target Name="BuildWebpackRelease" BeforeTargets="Publish" Condition="'$(Configuration)' == 'Release'">

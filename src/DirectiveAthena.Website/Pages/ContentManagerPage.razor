@@ -24,7 +24,6 @@
 @inject IWorldRuleRepository WorldRuleRepository
 @inject IWorldRuleManager WorldRuleManager
 @inject IContentStorageFactory ContentStorageFactory
-@inject ILocalFileStorage LocalFileStorage
 @inject IJSRuntime JsRuntime
 @inject ISnackbar Snackbar
 @inject IStringLocalizer<Shared> Localizer
@@ -38,30 +37,6 @@
 <MudContainer MaxWidth="MaxWidth.Large" Class="py-12">
     <div class="d-flex justify-space-between align-center mb-8">
         <MudText Typo="Typo.h3">@Localizer[Shared.ContentManagerHeading]</MudText>
-
-        @if (_requiresLocalAccess) {
-            <div class="d-flex align-center gap-4">
-                @if (_fsSupported) {
-                    <MudChip T="string" Color="@(_hasAccess ? Color.Success : Color.Warning)"
-                             Icon="@(_hasAccess ? Icons.Material.Filled.CheckCircle : Icons.Material.Filled.Warning)">
-                        @Localizer[Shared.ContentManagerAccessLabel]: @(_hasAccess ? Localizer[Shared.ContentManagerAccessGranted] : Localizer[Shared.ContentManagerAccessRequired])
-                    </MudChip>
-                    if (!_hasAccess) {
-                        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="@RequestAccess">
-                            @Localizer[Shared.ContentManagerAccessGrant]
-                        </MudButton>
-                    }
-                    else {
-                        <MudButton Variant="Variant.Outlined" Color="Color.Secondary" Size="Size.Small"
-                                   OnClick="@ResetAccess">@Localizer[Shared.ContentManagerAccessReset]
-                        </MudButton>
-                    }
-                }
-                else {
-                    <MudAlert Severity="Severity.Error" Dense="true">@Localizer[Shared.ContentManagerAccessUnsupported]</MudAlert>
-                }
-            </div>
-        }
     </div>
 
     @if (_posts is null || _rules is null) {
@@ -219,15 +194,12 @@
     private WorldRule? _selectedRule;
     private IContentStorage _articleStorage = null!;
     private IContentStorage _ruleStorage = null!;
-    private bool _fsSupported;
-    private bool _hasAccess;
     private int _activeTab = -1;
-    private bool _requiresLocalAccess;
 
-    private bool CanWriteArticles => _articleStorage.IsWritable && _hasAccess;
-    private bool CanWriteRules => _ruleStorage.IsWritable && _hasAccess;
+    private bool CanWriteArticles => _articleStorage.IsWritable;
+    private bool CanWriteRules => _ruleStorage.IsWritable;
     private bool IsReadOnly => !CanWriteArticles && !CanWriteRules;
-    private bool ShowRemoteStorageBanner => !_requiresLocalAccess;
+    private bool ShowRemoteStorageBanner => true;
     private bool IsWritable => _articleStorage.IsWritable || _ruleStorage.IsWritable;
 
     private IEnumerable<string> AllTags =>
@@ -239,49 +211,12 @@
     protected override async Task OnInitializedAsync() {
         _articleStorage = ContentStorageFactory.ForCategory(ContentCategory.Articles);
         _ruleStorage = ContentStorageFactory.ForCategory(ContentCategory.WorldRules);
-        _requiresLocalAccess = _articleStorage.RequiresLocalFileSystemAccess || _ruleStorage.RequiresLocalFileSystemAccess;
 
         IEnumerable<Article> posts = await ArticleRepository.GetAllWithoutHiddenAsync();
         _posts = posts.ToList();
 
         IEnumerable<WorldRule> rules = await WorldRuleRepository.GetAllAsync();
         _rules = rules.ToList();
-
-        if (_requiresLocalAccess) {
-            _fsSupported = await LocalFileStorage.IsSupportedAsync();
-            if (_fsSupported) {
-                _hasAccess = await LocalFileStorage.HasAccessAsync();
-            }
-
-            if (_hasAccess) {
-                await ArticleManager.EnsureResxAsync();
-            }
-        }
-        else {
-            _hasAccess = await _articleStorage.HasAccessAsync();
-        }
-
-    }
-
-    private async Task RequestAccess() {
-        if (!_requiresLocalAccess) return;
-
-        if (await LocalFileStorage.RequestAccessAsync()) {
-            _hasAccess = true;
-            await ArticleManager.EnsureResxAsync();
-            Snackbar.Add(Localizer[Shared.ContentManagerAccessGrantedToast], Severity.Success);
-        }
-        else {
-            Snackbar.Add(Localizer[Shared.ContentManagerAccessFailedToast], Severity.Error);
-        }
-    }
-
-    private async Task ResetAccess() {
-        if (!_requiresLocalAccess) return;
-
-        await LocalFileStorage.ResetAccessAsync();
-        _hasAccess = false;
-        Snackbar.Add(Localizer[Shared.ContentManagerAccessResetToast], Severity.Info);
     }
 
     private void OnPostSelected(Article? post) {
@@ -372,9 +307,6 @@
         }
         else {
             Snackbar.Add(Localizer[Shared.ContentManagerIndexSaveFailed], Severity.Error);
-            if (_requiresLocalAccess && !await LocalFileStorage.HasAccessAsync()) {
-                _hasAccess = false;
-            }
         }
     }
 
@@ -392,9 +324,6 @@
         }
         else {
             Snackbar.Add(Localizer[Shared.ContentManagerIndexSaveFailed], Severity.Error);
-            if (_requiresLocalAccess && !await LocalFileStorage.HasAccessAsync()) {
-                _hasAccess = false;
-            }
         }
     }
 

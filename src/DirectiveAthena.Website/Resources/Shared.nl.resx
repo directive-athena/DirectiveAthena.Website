@@ -245,8 +245,8 @@
     <value>Alleen-lezen</value>
   </data>
   <data name="ContentManager.ReadOnly.Body" xml:space="preserve">
-    <value>Direct schrijven naar het bestandssysteem is alleen beschikbaar op localhost en in DEBUG-modus.</value>
-  </data>
+      <value>R2-schrijftoegang is uitgeschakeld. Schakel schrijftoegang in om content te bewerken.</value>
+    </data>
   <data name="ContentManager.Access.Label" xml:space="preserve">
     <value>Schrijftoegang</value>
   </data>

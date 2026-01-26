@@ -143,7 +143,11 @@ public abstract class ContentRepository<T>(HttpClient http, IContentStorage cont
         => !_hasLoaded || _lastRefreshUtc is null || now - _lastRefreshUtc.Value > GetRefreshWindow();
 
     private TimeSpan GetRefreshWindow()
-        => Storage.IsLocalhost ? DevRefreshWindow : CacheRefreshWindow;
+#if DEBUG
+        => DevRefreshWindow;
+#else
+        => CacheRefreshWindow;
+#endif
 
     private async Task RefreshCacheAsync(DateTimeOffset now, CancellationToken ct) {
         Logger.Debug("Refreshing {ContentType} cache from {Path}.", typeof(T).Name, IndexPath);
@@ -152,6 +156,16 @@ public abstract class ContentRepository<T>(HttpClient http, IContentStorage cont
         else if (_lastModifiedUtc is not null) request.Headers.IfModifiedSince = _lastModifiedUtc;
 
         using HttpResponseMessage response = await http.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, ct);
+        if (response.StatusCode == HttpStatusCode.NotFound) {
+            Logger.Warning("{ContentType} index not found at {Path}; treating as empty dataset.", typeof(T).Name, IndexPath);
+            ItemsById = ImmutableDictionary<Guid, T>.Empty;
+            _hasLoaded = true;
+            _etag = null;
+            _lastModifiedUtc = null;
+            _lastRefreshUtc = now;
+            return;
+        }
+
         if (response.StatusCode == HttpStatusCode.NotModified && _hasLoaded) {
             _lastRefreshUtc = now;
             if (response.Headers.ETag is not null) _etag = response.Headers.ETag;

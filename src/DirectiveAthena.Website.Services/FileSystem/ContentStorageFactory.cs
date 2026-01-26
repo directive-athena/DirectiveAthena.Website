@@ -12,8 +12,6 @@ namespace DirectiveAthena.Website.Services.FileSystem;
 // ---------------------------------------------------------------------------------------------------------------------
 [InjectableScoped<IContentStorageFactory>]
 public class ContentStorageFactory(
-    HttpClient http,
-    ILocalFileStorage fileStorage,
     ILocalizationProvider localizationProvider,
     IOptions<R2StorageOptions> r2Options,
     ILoggerFactory loggerFactory
@@ -22,15 +20,13 @@ public class ContentStorageFactory(
 
     public IContentStorage ForCategory(ContentCategory category) {
         string folder = GetCategoryFolder(category);
-        if (r2Options.Value.IsReadConfigured) {
-            ILogger r2Logger = loggerFactory.CreateLogger<R2ContentStorage>();
-            r2Logger.Debug("Creating R2 content storage for {Category} at {Folder}.", category, folder);
-            return new R2ContentStorage(http, fileStorage, localizationProvider, r2Options, folder, r2Logger);
+        ILogger r2Logger = loggerFactory.CreateLogger<R2ContentStorage>();
+        if (!r2Options.Value.IsReadConfigured) {
+            r2Logger.Warning("R2 read configuration is missing; content reads may fail.");
         }
 
-        ILogger storageLogger = loggerFactory.CreateLogger<ContentStorage>();
-        storageLogger.Debug("Creating local content storage for {Category} at {Folder}.", category, folder);
-        return new ContentStorage(fileStorage, localizationProvider, folder, storageLogger);
+        r2Logger.Debug("Creating R2 content storage for {Category} at {Folder}.", category, folder);
+        return new R2ContentStorage(localizationProvider, r2Options, folder, r2Logger);
     }
 
     private static string GetCategoryFolder(ContentCategory category)

@@ -93,7 +93,7 @@ public class WorldRuleRepositoryTests {
     public async Task SaveAsync_RespectsLocalhostAndPermissions() {
         // Arrange
         var storage = CreateStorage();
-        storage.IsLocalhost.Returns(true);
+        storage.IsWritable.Returns(true);
         storage.VerifyPermissionAsync().Returns(new ValueTask<bool>(true));
         storage.WriteIndexAsync(Arg.Any<string>()).Returns(new ValueTask<bool>(true));
 
@@ -110,10 +110,10 @@ public class WorldRuleRepositoryTests {
     }
 
     [Test]
-    public async Task SaveAsync_ReturnsFalseWhenNotLocalhost() {
+    public async Task SaveAsync_ReturnsFalseWhenNotWritable() {
         // Arrange
         var storage = CreateStorage();
-        storage.IsLocalhost.Returns(false);
+        storage.IsWritable.Returns(false);
 
         var logger = Substitute.For<ILogger<WorldRuleRepository>>();
         var repo = new WorldRuleRepository(new HttpClient(), CreateFactory(storage), logger);
@@ -132,7 +132,7 @@ public class WorldRuleRepositoryTests {
         // Arrange
         WorldRule rule = CreateRule(20);
         var storage = CreateStorage();
-        storage.IsLocalhost.Returns(true);
+        storage.IsWritable.Returns(true);
         storage.HasAccessAsync().Returns(new ValueTask<bool>(true));
         storage.VerifyPermissionAsync().Returns(new ValueTask<bool>(true));
         storage.DeleteLocalizedFilesAsync(rule.MarkdownFileName).Returns(Task.FromResult(true));
@@ -158,7 +158,7 @@ public class WorldRuleRepositoryTests {
     public async Task DeleteAsync_ReturnsFalseWhenNoAccess() {
         // Arrange
         var storage = CreateStorage();
-        storage.IsLocalhost.Returns(true);
+        storage.IsWritable.Returns(true);
         storage.HasAccessAsync().Returns(new ValueTask<bool>(false));
 
         var logger = Substitute.For<ILogger<WorldRuleRepository>>();
