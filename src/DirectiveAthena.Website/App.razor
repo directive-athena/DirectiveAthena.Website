@@ -1,6 +1,8 @@
 ﻿@* ------------------------------------------------------------------------------------------------------------------ *@
 @* Imports
 @* ------------------------------------------------------------------------------------------------------------------ *@
+@using DirectiveAthena.WebsiteDevServer.Pages
+
 @namespace DirectiveAthena.Website
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Descriptors
@@ -14,7 +16,7 @@
 <MudDialogProvider />
 <MudSnackbarProvider />
 
-<Router AppAssembly="@typeof(App).Assembly" NotFoundPage="typeof(Pages.NotFoundPage)">
+<Router AppAssembly="@typeof(App).Assembly" NotFoundPage="typeof(NotFoundPage)">
     <Found Context="routeData">
         <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)"/>
     </Found>

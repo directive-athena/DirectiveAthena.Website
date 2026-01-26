@@ -10,7 +10,7 @@ namespace DirectiveAthena.WebsiteDevServer;
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
-public class ApiEndpoints {
+public static class ApiEndpoints {
     private static IMinioClient CreateMinioClient(R2StorageOptions options, ILogger logger) {
         if (options.AccountId.IsNullOrWhiteSpace() || options.BucketName.IsNullOrWhiteSpace()) {
             throw new InvalidOperationException("R2 account and bucket must be configured for writes.");
