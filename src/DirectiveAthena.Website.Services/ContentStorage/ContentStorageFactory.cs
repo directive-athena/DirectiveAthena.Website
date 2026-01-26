@@ -17,6 +17,7 @@ namespace DirectiveAthena.Website.Services.ContentStorage;
 public class ContentStorageFactory(
     ILocalizationProvider localizationProvider,
     IOptions<R2StorageOptions> r2Options,
+    HttpClient httpClient,
     ILoggerFactory loggerFactory
 ) : IContentStorageFactory {
     private const string ContentRoot = "content";
@@ -30,6 +31,7 @@ public class ContentStorageFactory(
             r2Options.Value,
             folder,
             BuildPublicBaseUri(r2Options.Value, r2Logger),
+            httpClient,
             CreateS3Client(r2Options.Value, r2Logger),
             r2Logger
         );
@@ -55,14 +57,19 @@ public class ContentStorageFactory(
     }
 
     private static AmazonS3Client? CreateS3Client(R2StorageOptions options, ILogger logger) {
+        if (OperatingSystem.IsBrowser()) {
+            logger.Warning("R2 client is not supported in browser contexts; presigned uploads must be used for writes.");
+            return null;
+        }
+
         if (string.IsNullOrWhiteSpace(options.AccountId) || string.IsNullOrWhiteSpace(options.BucketName)) {
             logger.Warning("R2 account or bucket is missing; content reads and writes may fail.");
             return null;
         }
 
-        string regionName = string.IsNullOrWhiteSpace(options.Region) || options.Region.Equals("auto", StringComparison.OrdinalIgnoreCase)
-            ? "us-east-1"
-            : options.Region;
+        bool useAutoRegion = string.IsNullOrWhiteSpace(options.Region)
+            || options.Region.Equals("auto", StringComparison.OrdinalIgnoreCase);
+        string regionName = useAutoRegion ? "us-east-1" : options.Region;
 
         AmazonS3Config config = new() {
             ServiceURL = $"https://{options.AccountId}.r2.cloudflarestorage.com",

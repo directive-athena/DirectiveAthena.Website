@@ -92,7 +92,7 @@ public class WorldRuleRepositoryTests {
     [Test]
     public async Task SaveAsync_WritesIndex() {
         // Arrange
-        var storage = CreateStorage();
+        IContentStorage storage = CreateStorage();
         storage.WriteIndexAsync(Arg.Any<string>()).Returns(new ValueTask<bool>(true));
 
         var logger = Substitute.For<ILogger<WorldRuleRepository>>();
@@ -110,7 +110,7 @@ public class WorldRuleRepositoryTests {
     [Test]
     public async Task SaveAsync_ReturnsFalseWhenWriteFails() {
         // Arrange
-        var storage = CreateStorage();
+        IContentStorage storage = CreateStorage();
         storage.WriteIndexAsync(Arg.Any<string>()).Returns(new ValueTask<bool>(false));
 
         var logger = Substitute.For<ILogger<WorldRuleRepository>>();
@@ -129,7 +129,7 @@ public class WorldRuleRepositoryTests {
     public async Task DeleteAsync_DeletesLocalizedFilesAndSaves() {
         // Arrange
         WorldRule rule = CreateRule(20);
-        var storage = CreateStorage();
+        IContentStorage storage = CreateStorage();
         storage.DeleteLocalizedFilesAsync(rule.MarkdownFileName).Returns(Task.FromResult(true));
         storage.WriteIndexAsync(Arg.Any<string>()).Returns(new ValueTask<bool>(true));
 
@@ -153,7 +153,7 @@ public class WorldRuleRepositoryTests {
     public async Task DeleteAsync_ReturnsFalseWhenLocalizedDeleteFails() {
         // Arrange
         WorldRule rule = CreateRule(30);
-        var storage = CreateStorage();
+        IContentStorage storage = CreateStorage();
         storage.DeleteLocalizedFilesAsync(rule.MarkdownFileName).Returns(Task.FromResult(false));
 
         var handler = new TestHttpMessageHandler(_ => new HttpResponseMessage(HttpStatusCode.OK) {

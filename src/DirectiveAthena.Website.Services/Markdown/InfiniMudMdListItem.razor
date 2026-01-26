@@ -30,7 +30,7 @@
 @code {
     private Dictionary<string, object> GetAttributes() {
         var attrs = new Dictionary<string, object>();
-        var style = SyntaxNode.IsInapplicable ? "text-decoration: line-through; opacity: 0.6;" : "";
+        string style = SyntaxNode.IsInapplicable ? "text-decoration: line-through; opacity: 0.6;" : "";
         if (!string.IsNullOrEmpty(style)) attrs["style"] = style;
         return attrs;
     }

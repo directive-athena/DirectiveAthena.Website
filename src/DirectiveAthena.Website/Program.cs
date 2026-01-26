@@ -40,8 +40,10 @@ public static class Program {
         builder.Logging.ClearProviders();
         builder.Logging.AddSerilog(logger, dispose: true);
 
+        #if DEBUG
         await TryLoadLocalSettingsAsync(builder, logger);
-
+        #endif
+        
         builder.RootComponents.Add<App>("#app");
         builder.RootComponents.Add<HeadOutlet>("head::after");
 
@@ -63,6 +65,7 @@ public static class Program {
         await host.RunAsync();
     }
 
+    #if DEBUG
     private static async Task TryLoadLocalSettingsAsync(WebAssemblyHostBuilder builder, Logger logger) {
         try {
             using HttpClient http = new();
@@ -78,4 +81,5 @@ public static class Program {
             logger.Debug(ex, "appsettings.local.json not loaded.");
         }
     }
+    #endif
 }

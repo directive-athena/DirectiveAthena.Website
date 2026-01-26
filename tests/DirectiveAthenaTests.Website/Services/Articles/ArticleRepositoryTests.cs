@@ -134,7 +134,7 @@ public class ArticleRepositoryTests {
     [Test]
     public async Task SaveAsync_WritesIndex() {
         // Arrange
-        var storage = CreateStorage();
+        IContentStorage storage = CreateStorage();
         storage.WriteIndexAsync(Arg.Any<string>()).Returns(new ValueTask<bool>(true));
 
         var logger = Substitute.For<ILogger<ArticleRepository>>();
@@ -152,7 +152,7 @@ public class ArticleRepositoryTests {
     [Test]
     public async Task SaveAsync_ReturnsFalseWhenWriteFails() {
         // Arrange
-        var storage = CreateStorage();
+        IContentStorage storage = CreateStorage();
         storage.WriteIndexAsync(Arg.Any<string>()).Returns(new ValueTask<bool>(false));
 
         var logger = Substitute.For<ILogger<ArticleRepository>>();
@@ -171,7 +171,7 @@ public class ArticleRepositoryTests {
     public async Task DeleteAsync_DeletesLocalizedFilesAndSaves() {
         // Arrange
         Article article = ArticleFaker.Create(30);
-        var storage = CreateStorage();
+        IContentStorage storage = CreateStorage();
         storage.DeleteLocalizedFilesAsync(article.MarkdownFileName).Returns(Task.FromResult(true));
         storage.WriteIndexAsync(Arg.Any<string>()).Returns(new ValueTask<bool>(true));
 
@@ -195,7 +195,7 @@ public class ArticleRepositoryTests {
     public async Task DeleteAsync_ReturnsFalseWhenLocalizedDeleteFails() {
         // Arrange
         Article article = ArticleFaker.Create(40);
-        var storage = CreateStorage();
+        IContentStorage storage = CreateStorage();
         storage.DeleteLocalizedFilesAsync(article.MarkdownFileName).Returns(Task.FromResult(false));
 
         var handler = new TestHttpMessageHandler(_ => new HttpResponseMessage(HttpStatusCode.OK) {

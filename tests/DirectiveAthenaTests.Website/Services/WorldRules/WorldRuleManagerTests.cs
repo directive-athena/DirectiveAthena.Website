@@ -172,7 +172,7 @@ public class WorldRuleManagerTests {
         WorldRuleManager manager = CreateManager(localizationProvider, storage);
 
         // Act
-        var result = await manager.GenerateStubsAsync(rule, writeToDisk: false);
+        (Dictionary<string, string> Stubs, bool WroteAll) result = await manager.GenerateStubsAsync(rule, writeToDisk: false);
 
         // Assert
         await Assert.That(result.Stubs.Count).IsEqualTo(localizationProvider.GetSupportedLocalizations().Count);
@@ -193,7 +193,7 @@ public class WorldRuleManagerTests {
         WorldRuleManager manager = CreateManager(localizationProvider, storage);
 
         // Act
-        var result = await manager.GenerateStubsAsync(rule, writeToDisk: true);
+        (Dictionary<string, string> Stubs, bool WroteAll) result = await manager.GenerateStubsAsync(rule, writeToDisk: true);
 
         // Assert
         await Assert.That(result.Stubs.Count).IsEqualTo(localizationProvider.GetSupportedLocalizations().Count);

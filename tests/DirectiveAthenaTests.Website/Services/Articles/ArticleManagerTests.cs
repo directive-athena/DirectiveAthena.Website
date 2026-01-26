@@ -203,7 +203,7 @@ public class ArticleManagerTests {
         ArticleManager manager = CreateManager(CreateLocalizationProvider("en"), storage);
         
         // Act
-        var result = await manager.GenerateStubsAsync(article, writeToDisk: false);
+        (Dictionary<string, string> Stubs, bool WroteAll) result = await manager.GenerateStubsAsync(article, writeToDisk: false);
 
         // Assert
         await Assert.That(result.Stubs.Count).IsEqualTo(ArticleFaker.DefaultLocalizations().Count);
@@ -223,7 +223,7 @@ public class ArticleManagerTests {
         ArticleManager manager = CreateManager(CreateLocalizationProvider("en"), storage);
 
         // Act
-        var result = await manager.GenerateStubsAsync(article, writeToDisk: true);
+        (Dictionary<string, string> Stubs, bool WroteAll) result = await manager.GenerateStubsAsync(article, writeToDisk: true);
 
         // Assert
         await Assert.That(result.Stubs.Count).IsEqualTo(ArticleFaker.DefaultLocalizations().Count);

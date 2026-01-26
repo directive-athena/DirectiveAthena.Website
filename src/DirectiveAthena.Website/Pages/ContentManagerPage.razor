@@ -293,7 +293,7 @@
     private async Task GenerateArticleStubs(bool writeToDisk) {
         if (_selectedPost is null) return;
 
-        var result = await ArticleManager.GenerateStubsAsync(_selectedPost, writeToDisk);
+        (Dictionary<string, string> Stubs, bool WroteAll) result = await ArticleManager.GenerateStubsAsync(_selectedPost, writeToDisk);
 
         if (writeToDisk) {
             Snackbar.Add(result.WroteAll ? Localizer[Shared.ContentManagerMarkdownStubsSaved] : Localizer[Shared.ContentManagerIndexSaveFailed], result.WroteAll ? Severity.Success : Severity.Error);
@@ -308,7 +308,7 @@
     private async Task GenerateRuleStubs(bool writeToDisk) {
         if (_selectedRule is null) return;
 
-        var result = await WorldRuleManager.GenerateStubsAsync(_selectedRule, writeToDisk);
+        (Dictionary<string, string> Stubs, bool WroteAll) result = await WorldRuleManager.GenerateStubsAsync(_selectedRule, writeToDisk);
 
         if (writeToDisk) {
             Snackbar.Add(result.WroteAll ? Localizer[Shared.ContentManagerMarkdownStubsSaved] : Localizer[Shared.ContentManagerIndexSaveFailed], result.WroteAll ? Severity.Success : Severity.Error);

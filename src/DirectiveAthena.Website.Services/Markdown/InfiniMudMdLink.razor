@@ -25,7 +25,7 @@
 @code {
     private Dictionary<string, object> GetAttributes() {
         var attrs = new Dictionary<string, object>();
-        var title = GetTitle();
+        string? title = GetTitle();
         if (title != null) attrs["title"] = title;
         return attrs;
     }
