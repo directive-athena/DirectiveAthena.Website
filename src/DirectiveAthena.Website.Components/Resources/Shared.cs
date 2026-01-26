@@ -159,5 +159,7 @@ public class Shared {
     public const string ContactReturn = "Contact.Return";
     public const string NotFoundTitle = "NotFound.Title";
     public const string NotFoundMessage = "NotFound.Message";
+    public const string NotFoundGoHome = "NotFound.GoHome";
+    public const string NotFoundBrowseArticles = "NotFound.BrowseArticles";
     public const string NavWritingsManager = "Nav.WritingsManager";
 }

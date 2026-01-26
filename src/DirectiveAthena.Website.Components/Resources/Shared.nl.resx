@@ -500,10 +500,16 @@
     <value>Terug naar Hoofdkwartier</value>
   </data>
   <data name="NotFound.Title" xml:space="preserve">
-    <value>Niet Gevonden</value>
+    <value>Pagina niet gevonden</value>
   </data>
   <data name="NotFound.Message" xml:space="preserve">
-    <value>Sorry, de inhoud die u zoekt bestaat niet.</value>
+    <value>De pagina die u zoekt bestaat niet of is verplaatst.</value>
+  </data>
+  <data name="NotFound.GoHome" xml:space="preserve">
+    <value>Ga naar home</value>
+  </data>
+  <data name="NotFound.BrowseArticles" xml:space="preserve">
+    <value>Bekijk artikelen</value>
   </data>
   <data name="Story.Section2" xml:space="preserve">
     <value>Volg mee om het verhaal voort te zetten</value>
