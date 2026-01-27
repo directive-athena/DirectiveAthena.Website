@@ -11,7 +11,10 @@
       "src\\DirectiveAthenaWeb.Services.Localization\\DirectiveAthenaWeb.Services.Localization.csproj",
       "src\\DirectiveAthenaWeb.Services\\DirectiveAthenaWeb.Services.csproj",
       "src\\DirectiveAthenaWeb.Shared\\DirectiveAthenaWeb.Shared.csproj",
-      "tests\\DirectiveAthenaWebTests\\DirectiveAthenaWebTests.csproj"
+        
+      "tests\\DirectiveAthenaWebTests\\DirectiveAthenaWebTests.csproj",
+      "tests\\DirectiveAthenaWebTests.Content.Faq\\DirectiveAthenaWebTests.Content.Faq.csproj",
+      "tests\\DirectiveAthenaWebTests.Content.Writing\\DirectiveAthenaWebTests.Content.Writing.csproj"
     ]
   }
 }
