@@ -15,6 +15,7 @@
         <PackageReference Include="InfiniLore.InfiniBlazor" />
         <PackageReference Include="JetBrains.Annotations" />
         <PackageReference Include="FluentValidation" />
+        <PackageReference Include="Minio" />
         <PackageReference Include="MudBlazor" />
     </ItemGroup>
 

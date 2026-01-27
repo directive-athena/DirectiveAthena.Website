@@ -2,7 +2,7 @@
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
 using DirectiveAthena.Website.Services.Articles;
-using DirectiveAthena.Website.Services.FileSystem;
+using DirectiveAthena.Website.Services.ContentStorage;
 using DirectiveAthena.Website.Services.Localization;
 using DirectiveAthenaTests.Website.Helpers;
 using Microsoft.Extensions.Logging;
@@ -37,15 +37,13 @@ public class ArticleManagerTests {
     private static ArticleManager CreateManager(
         ILocalizationProvider localizationProvider,
         IContentStorage? storage = null,
-        IResourceStorage? resourceStorage = null,
         HttpClient? http = null
     ) {
         storage ??= Substitute.For<IContentStorage>();
-        resourceStorage ??= Substitute.For<IResourceStorage>();
         http ??= new HttpClient();
         var validator = new ArticleCollectionValidator(new ArticleValidator(localizationProvider));
         var logger = Substitute.For<ILogger<ArticleManager>>();
-        return new ArticleManager(localizationProvider, CreateStorageFactory(storage), resourceStorage, http, validator, logger);
+        return new ArticleManager(localizationProvider, CreateStorageFactory(storage), http, validator, logger);
     }
 
     // -----------------------------------------------------------------------------------------------------------------
@@ -205,21 +203,19 @@ public class ArticleManagerTests {
         ArticleManager manager = CreateManager(CreateLocalizationProvider("en"), storage);
         
         // Act
-        Dictionary<string, string> stubs = await manager.GenerateStubsAsync(article, writeToDisk: false);
+        (Dictionary<string, string> Stubs, bool WroteAll) result = await manager.GenerateStubsAsync(article, writeToDisk: false);
 
         // Assert
-        await Assert.That(stubs.Count).IsEqualTo(ArticleFaker.DefaultLocalizations().Count);
+        await Assert.That(result.Stubs.Count).IsEqualTo(ArticleFaker.DefaultLocalizations().Count);
+        await Assert.That(result.WroteAll).IsFalse();
         await storage.DidNotReceiveWithAnyArgs().WriteFileAsync(null!, null!);
     }
 
     [Test]
-    public async Task GenerateStubsAsync_WritesWhenLocalhostAndPermitted() {
+    public async Task GenerateStubsAsync_WritesWhenRequested() {
         // Arrange
         Article article = ArticleFaker.Create(121);
         var storage = Substitute.For<IContentStorage>();
-        storage.IsLocalhost.Returns(true);
-        storage.HasAccessAsync().Returns(new ValueTask<bool>(true));
-        storage.VerifyPermissionAsync().Returns(new ValueTask<bool>(true));
         storage.WriteFileAsync(Arg.Any<string>(), Arg.Any<string>()).Returns(new ValueTask<bool>(true));
         storage.GetMarkdownDiskPath(Arg.Any<string>(), Arg.Any<string>())
             .Returns(call => $"{call.ArgAt<string>(0)}/{call.ArgAt<string>(1)}");
@@ -227,50 +223,15 @@ public class ArticleManagerTests {
         ArticleManager manager = CreateManager(CreateLocalizationProvider("en"), storage);
 
         // Act
-        Dictionary<string, string> stubs = await manager.GenerateStubsAsync(article, writeToDisk: true);
+        (Dictionary<string, string> Stubs, bool WroteAll) result = await manager.GenerateStubsAsync(article, writeToDisk: true);
 
         // Assert
-        await Assert.That(stubs.Count).IsEqualTo(ArticleFaker.DefaultLocalizations().Count);
+        await Assert.That(result.Stubs.Count).IsEqualTo(ArticleFaker.DefaultLocalizations().Count);
+        await Assert.That(result.WroteAll).IsTrue();
         foreach (LocalizationInfo localization in ArticleFaker.DefaultLocalizations()) {
             string path = storage.GetMarkdownDiskPath(localization.Code, article.MarkdownFileName);
             await storage.Received(1).WriteFileAsync(path, Arg.Any<string>());
         }
     }
 
-    [Test]
-    public async Task EnsureResxAsync_CreatesMissingResxFiles() {
-        // Arrange
-        var resourceStorage = Substitute.For<IResourceStorage>();
-        resourceStorage.IsLocalhost.Returns(true);
-        resourceStorage.HasAccessAsync().Returns(new ValueTask<bool>(true));
-        resourceStorage.ReadSharedResxAsync("en").Returns(new ValueTask<string?>("existing"));
-        resourceStorage.ReadSharedResxAsync("nl").Returns(new ValueTask<string?>());
-        resourceStorage.WriteSharedResxAsync(Arg.Any<string>(), Arg.Any<string>())
-            .Returns(new ValueTask<bool>(true));
-        
-        // Act
-        ArticleManager manager = CreateManager(CreateLocalizationProvider("en"), resourceStorage: resourceStorage);
-        await manager.EnsureResxAsync();
-
-        // Assert
-        await resourceStorage.DidNotReceive().WriteSharedResxAsync("en", Arg.Any<string>());
-        await resourceStorage.Received(1).WriteSharedResxAsync("nl", Arg.Any<string>());
-    }
-
-    [Test]
-    public async Task EnsureResxAsync_DoesNotReadOrWriteWhenNotLocalhost() {
-        // Arrange
-        var resourceStorage = Substitute.For<IResourceStorage>();
-        resourceStorage.IsLocalhost.Returns(false);
-        resourceStorage.HasAccessAsync().Returns(new ValueTask<bool>(true));
-
-        ArticleManager manager = CreateManager(CreateLocalizationProvider("en"), resourceStorage: resourceStorage);
-
-        // Act
-        await manager.EnsureResxAsync();
-
-        // Assert
-        await resourceStorage.DidNotReceiveWithAnyArgs().ReadSharedResxAsync(null!);
-        await resourceStorage.DidNotReceiveWithAnyArgs().WriteSharedResxAsync(null!, null!);
-    }
 }

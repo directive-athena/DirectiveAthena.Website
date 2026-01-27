@@ -2,7 +2,7 @@
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
 using CodeOfChaos.Extensions.DependencyInjection;
-using DirectiveAthena.Website.Services.FileSystem;
+using DirectiveAthena.Website.Services.ContentStorage;
 using Microsoft.Extensions.Logging;
 
 namespace DirectiveAthena.Website.Services.WorldRules;
@@ -11,11 +11,9 @@ namespace DirectiveAthena.Website.Services.WorldRules;
 // ---------------------------------------------------------------------------------------------------------------------
 [InjectableScoped<IWorldRuleRepository>]
 public class WorldRuleRepository(
-    HttpClient http,
     IContentStorageFactory storageFactory,
     ILogger<WorldRuleRepository> logger
 ) : ContentRepository<WorldRule>(
-        http,
         storageFactory.ForCategory(ContentCategory.WorldRules),
         logger
     ),

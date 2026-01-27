@@ -4,6 +4,7 @@
 using DirectiveAthena.Website.Services.Localization;
 using DirectiveAthena.Website.Services.WorldRules;
 using FluentValidation;
+using FluentValidation.Results;
 using NSubstitute;
 
 namespace DirectiveAthenaTests.Website.Services.WorldRules;
@@ -44,7 +45,7 @@ public class WorldRuleValidatorTests {
         var validator = new WorldRuleValidator(CreateLocalizationProvider());
 
         // Act
-        var result = validator.Validate(rule);
+        ValidationResult? result = validator.Validate(rule);
 
         // Assert
         await Assert.That(result.IsValid).IsFalse();
@@ -59,7 +60,7 @@ public class WorldRuleValidatorTests {
         var validator = new WorldRuleValidator(CreateLocalizationProvider());
 
         // Act
-        var result = validator.Validate(rule);
+        ValidationResult? result = validator.Validate(rule);
 
         // Assert
         await Assert.That(result.IsValid).IsFalse();
@@ -74,7 +75,7 @@ public class WorldRuleValidatorTests {
         var validator = new WorldRuleValidator(CreateLocalizationProvider());
 
         // Act
-        var result = validator.Validate(rule);
+        ValidationResult? result = validator.Validate(rule);
 
         // Assert
         await Assert.That(result.IsValid).IsFalse();
@@ -90,7 +91,7 @@ public class WorldRuleValidatorTests {
         var validator = new WorldRuleValidator(CreateLocalizationProvider());
 
         // Act
-        var result = validator.Validate(rule);
+        ValidationResult? result = validator.Validate(rule);
 
         // Assert
         await Assert.That(result.IsValid).IsFalse();
@@ -113,7 +114,7 @@ public class WorldRuleValidatorTests {
         var collectionValidator = new WorldRuleCollectionValidator(ruleValidator);
 
         // Act
-        var result = collectionValidator.Validate(rules);
+        ValidationResult? result = collectionValidator.Validate(rules);
 
         // Assert
         await Assert.That(result.IsValid).IsFalse();

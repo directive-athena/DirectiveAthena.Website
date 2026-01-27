@@ -13,7 +13,6 @@
         <PackageReference Include="JetBrains.Annotations" />
         <PackageReference Include="FluentValidation" />
         <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" />
-        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" PrivateAssets="all" />
         <PackageReference Include="MudBlazor" />
         <PackageReference Include="Serilog" />
         <PackageReference Include="Serilog.Extensions.Logging" />
@@ -22,22 +21,22 @@
     </ItemGroup>
 
     <ItemGroup>
-      <EmbeddedResource Update="Resources\Shared.nl.resx">
-        <DependentUpon>Shared.cs</DependentUpon>
-      </EmbeddedResource>
-      <EmbeddedResource Update="Resources\Tags.nl.resx">
-        <DependentUpon>Tags.cs</DependentUpon>
-      </EmbeddedResource>
-    </ItemGroup>
-
-    <ItemGroup>
+      <ProjectReference Include="..\DirectiveAthena.Website.Components\DirectiveAthena.Website.Components.csproj" />
       <ProjectReference Include="..\DirectiveAthena.Website.Services\DirectiveAthena.Website.Services.csproj" />
       <ProjectReference Include="..\DirectiveAthena.Website.Shared\DirectiveAthena.Website.Shared.csproj" />
     </ItemGroup>
 
+  <ItemGroup Condition="'$(Configuration)' == 'Debug'">
+      <Content Update="wwwroot\appsettings.local.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(Configuration)' != 'Debug'">
+      <Content Remove="wwwroot\appsettings.local.json" />
+  </ItemGroup>
   <ItemGroup>
-      <Folder Include="wwwroot\content\world-rules\en\" />
-      <Folder Include="wwwroot\content\world-rules\nl\" />
+    <_ContentIncludedByDefault Remove="wwwroot\content\articles\en\17171717-1717-4177-9177-171717171717.md" />
+    <_ContentIncludedByDefault Remove="wwwroot\content\articles\index.json" />
+    <_ContentIncludedByDefault Remove="wwwroot\content\articles\nl\17171717-1717-4177-9177-171717171717.md" />
+    <_ContentIncludedByDefault Remove="wwwroot\content\world-rules\index.json" />
   </ItemGroup>
 
   <Target Name="BuildWebpackRelease" BeforeTargets="Publish" Condition="'$(Configuration)' == 'Release'">

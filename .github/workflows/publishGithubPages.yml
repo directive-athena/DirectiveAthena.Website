@@ -26,6 +26,7 @@ concurrency:
 jobs:
   run-tests:
     name: Run Multi-Platform Tests
+    # noinspection UndefinedAction
     uses: ./.github/workflows/lib_testing.yml
     secrets: inherit
 
@@ -66,10 +67,10 @@ jobs:
         working-directory: src/DirectiveAthena.Website.ClientAssets
 
       - name: Restore dependencies
-        run: dotnet restore DirectiveAthena.Website.slnx
+        run: dotnet restore DirectiveAthena.Website.GithubPages.slnf
 
       - name: Run tests
-        run: dotnet test --solution DirectiveAthena.Website.slnx --configuration Release --no-restore
+        run: dotnet test --solution DirectiveAthena.Website.GithubPages.slnf --configuration Release --no-restore
 
       - name: Bump site version
         id: version

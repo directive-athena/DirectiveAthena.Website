@@ -1,0 +1,157 @@
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Imports
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@using DirectiveAthena.Website.Resources
+@using DirectiveAthena.Website.Services.ContentStorage
+@using DirectiveAthena.Website.Services.Localization
+@using Microsoft.Extensions.Localization
+
+@namespace DirectiveAthena.Website.Components
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Descriptors
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@inject IJSRuntime JsRuntime
+@inject ISnackbar Snackbar
+@inject IStringLocalizer<Shared> Localizer
+
+@inherits WebsiteComponentBase
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Html
+@* ------------------------------------------------------------------------------------------------------------------ *@
+<MudPaper Class="pa-6 card-glass no-hover">
+    <div class="d-flex justify-space-between align-center mb-4">
+        <MudText Typo="Typo.h6">@TitleText</MudText>
+        <div class="d-flex gap-2">
+            <MudSelect T="string" Label="@Localizer[Shared.MarkdownEditorLocale]" Value="@_selectedLocale"
+                       ValueChanged="@OnLocaleChanged" Class="width-100">
+                @foreach (LocalizationInfo culture in LocalizationProvider.GetSupportedLocalizations()) {
+                    <MudSelectItem Value="@culture.Code">@culture.DisplayName</MudSelectItem>
+                }
+            </MudSelect>
+        </div>
+    </div>
+
+    @if (string.IsNullOrWhiteSpace(FileName) || LoadContentAsync is null || BuildDefaultContent is null || Storage is null) {
+        <MudAlert Severity="Severity.Info">@Localizer[Shared.MarkdownEditorSelectItem]</MudAlert>
+    }
+    else {
+        <MudText Typo="Typo.subtitle1" Class="mb-2">
+            @string.Format(Localizer[Shared.MarkdownEditorEditing], _selectedLocale, FileName)
+        </MudText>
+
+        <MudTextField T="string" @bind-Value="_content" Label="@Localizer[Shared.MarkdownEditorContent]"
+                      Lines="16" Variant="Variant.Outlined" Class="mb-4"/>
+
+        <div class="d-flex gap-4">
+            <MudButton Variant="Variant.Filled" Color="Color.Success" OnClick="@SaveMarkdown"
+                       StartIcon="@Icons.Material.Filled.Save">
+                @Localizer[Shared.MarkdownEditorSave]
+            </MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="@DownloadMarkdown"
+                       StartIcon="@Icons.Material.Filled.Download">
+                @Localizer[Shared.MarkdownEditorDownload]
+            </MudButton>
+            <MudButton Variant="Variant.Outlined" Color="Color.Info" OnClick="@CopyToClipboard"
+                       StartIcon="@Icons.Material.Filled.ContentCopy">
+                @Localizer[Shared.MarkdownEditorCopy]
+            </MudButton>
+            <MudButton Variant="Variant.Text" Color="Color.Default" OnClick="@LoadContent"
+                       StartIcon="@Icons.Material.Filled.Refresh">
+                @Localizer[Shared.MarkdownEditorReload]
+            </MudButton>
+        </div>
+    }
+</MudPaper>
+
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Code
+@* ------------------------------------------------------------------------------------------------------------------ *@
+
+@code {
+    [Parameter] public string Title { get; set; } = "";
+    [Parameter] public string? FileName { get; set; }
+    [Parameter, EditorRequired] public IContentStorage? Storage { get; set; }
+    [Parameter] public Func<string, Task<string>>? LoadContentAsync { get; set; }
+    [Parameter] public Func<string, string>? BuildDefaultContent { get; set; }
+
+    private string _selectedLocale = "en";
+    private string _content = "";
+    private string? _lastFile;
+    private string _lastLocale = "";
+    private readonly Dictionary<string, string> _drafts = new(StringComparer.OrdinalIgnoreCase);
+    private string TitleText => string.IsNullOrWhiteSpace(Title)
+        ? Localizer[Shared.MarkdownEditorTitle]
+        : Title;
+
+    protected override async Task OnParametersSetAsync() {
+        if (_lastFile != FileName) {
+            _lastFile = FileName;
+            _drafts.Clear();
+        }
+
+        // ReSharper disable once RedundantCheckBeforeAssignment
+        if (_selectedLocale != _lastLocale) {
+            _lastLocale = _selectedLocale;
+        }
+
+        await LoadContent();
+    }
+
+    private async Task LoadContent() {
+        if (string.IsNullOrWhiteSpace(FileName) || LoadContentAsync is null || BuildDefaultContent is null || Storage is null) {
+            _content = "";
+            return;
+        }
+
+        if (_drafts.TryGetValue(_selectedLocale, out string? draft)) {
+            _content = draft;
+            return;
+        }
+
+        _content = await LoadContentAsync(_selectedLocale);
+        if (string.IsNullOrEmpty(_content)) {
+            _content = BuildDefaultContent(_selectedLocale);
+        }
+    }
+
+    private async Task OnLocaleChanged(string newLocale) {
+        if (string.Equals(newLocale, _selectedLocale, StringComparison.OrdinalIgnoreCase)) return;
+
+        await SaveDraftAsync(_selectedLocale);
+        _selectedLocale = newLocale;
+        _lastLocale = newLocale;
+        await LoadContent();
+    }
+
+    private async Task SaveDraftAsync(string locale) {
+        if (string.IsNullOrWhiteSpace(FileName) || Storage is null) return;
+
+        _drafts[locale] = _content;
+
+        string path = Storage.GetMarkdownDiskPath(locale, FileName);
+        _ = await Storage.WriteFileAsync(path, _content);
+    }
+
+    private async Task SaveMarkdown() {
+        if (string.IsNullOrWhiteSpace(FileName) || Storage is null) return;
+
+        string path = Storage.GetMarkdownDiskPath(_selectedLocale, FileName);
+        bool success = await Storage.WriteFileAsync(path, _content);
+        if (success) {
+            Snackbar.Add(string.Format(Localizer[Shared.MarkdownEditorSaveSuccess], _selectedLocale, FileName), Severity.Success);
+        }
+        else {
+            Snackbar.Add(Localizer[Shared.MarkdownEditorSaveFailed], Severity.Error);
+        }
+    }
+
+    private async Task DownloadMarkdown() {
+        if (string.IsNullOrWhiteSpace(FileName)) return;
+        string path = $"{_selectedLocale}/{FileName}";
+        await JsRuntime.InvokeVoidAsync("downloadFile", path, _content);
+    }
+
+    private async Task CopyToClipboard() {
+        await JsRuntime.InvokeVoidAsync("navigator.clipboard.writeText", _content);
+    }
+}

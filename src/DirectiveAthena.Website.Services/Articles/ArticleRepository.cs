@@ -2,7 +2,7 @@
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
 using CodeOfChaos.Extensions.DependencyInjection;
-using DirectiveAthena.Website.Services.FileSystem;
+using DirectiveAthena.Website.Services.ContentStorage;
 using Microsoft.Extensions.Logging;
 
 namespace DirectiveAthena.Website.Services.Articles;
@@ -11,11 +11,9 @@ namespace DirectiveAthena.Website.Services.Articles;
 // ---------------------------------------------------------------------------------------------------------------------
 [InjectableScoped<IArticleRepository>]
 public class ArticleRepository(
-    HttpClient http,
     IContentStorageFactory storageFactory,
     ILogger<ArticleRepository> logger
 ) : ContentRepository<Article>(
-        http,
         storageFactory.ForCategory(ContentCategory.Articles),
         logger
     ),

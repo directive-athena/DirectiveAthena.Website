@@ -773,3 +773,7 @@ dist
 # End of https://www.toptal.com/developers/gitignore/api/csharp,dotnetcore,rider,jetbrains,jetbrains+all,obsidian,node
 
 .temp/
+
+# Local-only config (WASM)
+/src/DirectiveAthena.Website/wwwroot/appsettings.local.json
+/src/DirectiveAthena.WebsiteDevServer/appsettings.local.json

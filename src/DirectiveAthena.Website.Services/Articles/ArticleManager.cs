@@ -1,9 +1,8 @@
 ﻿// ---------------------------------------------------------------------------------------------------------------------
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
-using System.Xml.Linq;
 using CodeOfChaos.Extensions.DependencyInjection;
-using DirectiveAthena.Website.Services.FileSystem;
+using DirectiveAthena.Website.Services.ContentStorage;
 using DirectiveAthena.Website.Services.Localization;
 using FluentValidation;
 using FluentValidation.Results;
@@ -17,7 +16,6 @@ namespace DirectiveAthena.Website.Services.Articles;
 public class ArticleManager(
     ILocalizationProvider localizationProvider,
     IContentStorageFactory storageFactory,
-    IResourceStorage resourceStorage,
     HttpClient http,
     IValidator<IEnumerable<Article>> validator,
     ILogger<ArticleManager> logger
@@ -84,58 +82,32 @@ public class ArticleManager(
         return false;
     }
 
-    public async Task<Dictionary<string, string>> GenerateStubsAsync(Article article, bool writeToDisk = false, CancellationToken ct = default) {
+    public async Task<(Dictionary<string, string> Stubs, bool WroteAll)> GenerateStubsAsync(Article article, bool writeToDisk = false, CancellationToken ct = default) {
         IReadOnlyCollection<LocalizationInfo> locals = localizationProvider.GetSupportedLocalizations();
         Dictionary<string, string> stubs = locals.ToDictionary(
             c => c.Code,
             c => $"# {article.Title.GetValueOrDefault(c.Code)}");
 
-        if (!writeToDisk || !_storage.IsLocalhost || !await _storage.HasAccessAsync() || !await _storage.VerifyPermissionAsync()) {
+        if (!writeToDisk) {
             logger.Debug("Generated article stubs for {Id} without writing to disk.", article.Id);
-            return stubs;
+            return (stubs, false);
         }
 
+        bool wroteAll = true;
         foreach (KeyValuePair<string, string> stub in stubs) {
             string path = _storage.GetMarkdownDiskPath(stub.Key, article.MarkdownFileName);
-            await _storage.WriteFileAsync(path, stub.Value);
+            if (!await _storage.WriteFileAsync(path, stub.Value, ct)) {
+                wroteAll = false;
+            }
         }
 
-        logger.Information("Generated and wrote article stubs for {Id}.", article.Id);
-        return stubs;
+        logger.Information("Generated and wrote article stubs for {Id} {Result}.", article.Id, wroteAll ? "succeeded" : "failed");
+        return (stubs, wroteAll);
     }
 
     public async Task EnsureResxAsync(CancellationToken ct = default) {
-        if (!resourceStorage.IsLocalhost || !await resourceStorage.HasAccessAsync()) {
-            logger.Debug("Skipping resx generation because resource storage is unavailable.");
-            return;
-        }
-
-        foreach (LocalizationInfo culture in localizationProvider.GetSupportedLocalizations()) {
-            string? content = await resourceStorage.ReadSharedResxAsync(culture.Code, ct);
-            if (content is not null) {
-                logger.Debug("Shared resx already exists for {Culture}.", culture.Code);
-                continue;
-            }
-
-            XDocument newResx = CreateNewResx();
-            await resourceStorage.WriteSharedResxAsync(culture.Code, newResx.ToString(), ct);
-            logger.Information("Created shared resx for {Culture}.", culture.Code);
-        }
-    }
-
-    private static XDocument CreateNewResx() {
-        return new XDocument(
-            new XElement("root",
-                new XElement("resheader", new XAttribute("name", "resmimetype"),
-                    new XElement("value", "text/microsoft-resx")),
-                new XElement("resheader", new XAttribute("name", "version"), new XElement("value", "2.0")),
-                new XElement("resheader", new XAttribute("name", "reader"),
-                    new XElement("value",
-                        "System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089")),
-                new XElement("resheader", new XAttribute("name", "writer"),
-                    new XElement("value",
-                        "System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"))
-            )
-        );
+        _ = ct;
+        logger.Debug("Resx generation is disabled in R2-only mode.");
+        await Task.CompletedTask;
     }
 }

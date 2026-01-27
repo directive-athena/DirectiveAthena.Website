@@ -1,0 +1,13 @@
+﻿{
+  "solution": {
+    "path": "DirectiveAthena.Website.slnx",
+    "projects": [
+      "src\\DirectiveAthena.Website.ClientAssets\\DirectiveAthena.Website.ClientAssets.csproj",
+      "src\\DirectiveAthena.Website.Components\\DirectiveAthena.Website.Components.csproj",
+      "src\\DirectiveAthena.Website.Services\\DirectiveAthena.Website.Services.csproj",
+      "src\\DirectiveAthena.Website.Shared\\DirectiveAthena.Website.Shared.csproj",
+      "src\\DirectiveAthena.Website\\DirectiveAthena.Website.csproj",
+      "tests\\DirectiveAthenaTests.Website\\DirectiveAthenaTests.Website.csproj"
+    ]
+  }
+}

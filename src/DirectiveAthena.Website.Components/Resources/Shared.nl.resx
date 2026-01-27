@@ -1,0 +1,457 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Nav.Home" xml:space="preserve">
+    <value>Home</value>
+  </data>
+  <data name="Nav.Story" xml:space="preserve">
+    <value>Verhaal</value>
+  </data>
+  <data name="Nav.Writings" xml:space="preserve">
+    <value>Geschriften</value>
+  </data>
+  <data name="Nav.WorldRules" xml:space="preserve">
+    <value>Wereldregels</value>
+  </data>
+  <data name="Nav.ContentManager" xml:space="preserve">
+    <value>Contentbeheer</value>
+  </data>
+  <data name="Nav.Contact" xml:space="preserve">
+    <value>Contact</value>
+  </data>
+  <data name="Brand.Name" xml:space="preserve">
+    <value>Directive Athena</value>
+  </data>
+  <data name="Footer.Description" xml:space="preserve">
+    <value>Een project van Anna Sas om haar visie te laten zien op een sciencefictionwereld waarin er geen goede of slechte uitkomsten zijn. Alleen geschiedenis, die voortschrijdt.</value>
+  </data>
+  <data name="Footer.Copyright" xml:space="preserve">
+    <value>© {0} Anna Sas. Gebouwd met Blazor &amp; MudBlazor.</value>
+  </data>
+  <data name="Footer.Version" xml:space="preserve">
+    <value>Versie {0}</value>
+  </data>
+    <data name="Home.Title" xml:space="preserve">
+    <value>Directive Athena</value>
+  </data>
+  <data name="Home.Hero.Title" xml:space="preserve">
+    <value>Directive Athena</value>
+  </data>
+  <data name="Home.Hero.Subtitle" xml:space="preserve">
+    <value>Een sciencefictionproject waarin technologie en politieke intriges de boventoon voeren.</value>
+  </data>
+  <data name="Home.Hero.Body" xml:space="preserve">
+    <value>Een persoonlijk schrijfproject van Anna Sas, dat bedoeld is om een verzameling verhalen en video-spelletjes te worden.</value>
+  </data>
+  <data name="Home.Hero.Explore" xml:space="preserve">
+    <value>Verken Directive Athena</value>
+  </data>
+  <data name="Home.Hero.Read" xml:space="preserve">
+    <value>Lees de Geschriften</value>
+  </data>
+  <data name="Home.Live.Title" xml:space="preserve">
+    <value>Live Ontwikkeling</value>
+  </data>
+  <data name="Home.Live.Subtitle" xml:space="preserve">
+    <value>Bekijk het ontwikkelingsproces live op Twitch.</value>
+  </data>
+  <data name="Home.Live.Follow" xml:space="preserve">
+    <value>Volg op Twitch</value>
+  </data>
+  <data name="Home.Writings.Title" xml:space="preserve">
+    <value>Laatste Intel</value>
+  </data>
+  <data name="Home.Writings.Subtitle" xml:space="preserve">
+    <value>Recente berichten van het front.</value>
+  </data>
+  <data name="Home.Writings.ViewArchive" xml:space="preserve">
+    <value>Bekijk Archief</value>
+  </data>
+  <data name="Home.Writings.LatestLabel" xml:space="preserve">
+    <value>Nieuwste Bericht</value>
+  </data>
+  <data name="Home.Writings.ReadFull" xml:space="preserve">
+    <value>Lees Volledig Bericht</value>
+  </data>
+  <data name="Home.Writings.ReadMore" xml:space="preserve">
+    <value>Lees Meer</value>
+  </data>
+  <data name="Home.Writings.ViewAll" xml:space="preserve">
+    <value>Bekijk Alle Geschriften</value>
+  </data>
+  <data name="Home.Writings.Empty" xml:space="preserve">
+    <value>Momenteel geen berichten beschikbaar. Kom later terug voor updates van het front.</value>
+  </data>
+  <data name="Home.WorldRules.Title" xml:space="preserve">
+    <value>Wereldregels</value>
+  </data>
+  <data name="Home.WorldRules.Subtitle" xml:space="preserve">
+    <value>Beperkingen en canonische ankers in een oogopslag.</value>
+  </data>
+  <data name="Home.WorldRules.ViewAll" xml:space="preserve">
+    <value>Bekijk alle regels</value>
+  </data>
+  <data name="Home.WorldRules.Empty" xml:space="preserve">
+    <value>Nog geen regels beschikbaar voor de homepage.</value>
+  </data>
+  <data name="Writings.Title" xml:space="preserve">
+    <value>Geschriften - Directive Athena</value>
+  </data>
+  <data name="Writings.Archive.Title" xml:space="preserve">
+    <value>Archief</value>
+  </data>
+  <data name="Writings.Archive.Subtitle" xml:space="preserve">
+    <value>Een verzameling van alle geschriften en fragmenten die tot nu toe zijn gepubliceerd. Blijf op de hoogte voor meer nieuws.</value>
+  </data>
+  <data name="Writings.Archive.AllPosts" xml:space="preserve">
+    <value>Alle Berichten</value>
+  </data>
+  <data name="Writings.Archive.ReadArticle" xml:space="preserve">
+    <value>Lees Artikel</value>
+  </data>
+  <data name="Writings.Detail.Back" xml:space="preserve">
+    <value>Terug naar Archief</value>
+  </data>
+  <data name="Writings.Detail.Error" xml:space="preserve">
+    <value>Kan de inhoud van dit bericht niet laden.</value>
+  </data>
+  <data name="Writings.Detail.BackBottom" xml:space="preserve">
+    <value>Terug naar alle geschriften</value>
+  </data>
+  <data name="Writings.Detail.ReadTime" xml:space="preserve">
+    <value>Leestijd {0} min</value>
+  </data>
+  <data name="Writings.Detail.CopyLink" xml:space="preserve">
+    <value>Kopieer link</value>
+  </data>
+  <data name="Writings.Detail.LinkCopied" xml:space="preserve">
+    <value>Link gekopieerd</value>
+  </data>
+  <data name="Writings.Detail.ShareLabel" xml:space="preserve">
+    <value>Delen</value>
+  </data>
+  <data name="Writings.Detail.ShareTwitter" xml:space="preserve">
+    <value>Twitter</value>
+  </data>
+  <data name="Writings.Detail.ShareBluesky" xml:space="preserve">
+    <value>Bluesky</value>
+  </data>
+  <data name="Writings.Detail.ShareReddit" xml:space="preserve">
+    <value>Reddit</value>
+  </data>
+  <data name="WorldRules.Title" xml:space="preserve">
+    <value>Wereldregels - Directive Athena</value>
+  </data>
+  <data name="WorldRules.Heading" xml:space="preserve">
+    <value>Wereldregels</value>
+  </data>
+  <data name="WorldRules.Subtitle" xml:space="preserve">
+    <value>Beperkingen, grenzen en canonische ankers voor de setting.</value>
+  </data>
+  <data name="WorldRules.All" xml:space="preserve">
+    <value>Alle regels</value>
+  </data>
+  <data name="WorldRules.Updated" xml:space="preserve">
+    <value>Bijgewerkt {0}</value>
+  </data>
+  <data name="WorldRules.Empty" xml:space="preserve">
+    <value>Nog geen regels gepubliceerd. Voeg je eerste item toe om de canon te vormen.</value>
+  </data>
+  <data name="ContentManager.Title" xml:space="preserve">
+    <value>Contentbeheer - Directive Athena</value>
+  </data>
+  <data name="ContentManager.Heading" xml:space="preserve">
+    <value>Contentbeheer</value>
+  </data>
+  <data name="ContentManager.Tab.Writings" xml:space="preserve">
+    <value>Geschriften</value>
+  </data>
+  <data name="ContentManager.Tab.WorldRules" xml:space="preserve">
+    <value>Wereldregels</value>
+  </data>
+  <data name="ContentManager.Tab.Tags" xml:space="preserve">
+    <value>Tags</value>
+  </data>
+  <data name="ContentManager.SelectPost" xml:space="preserve">
+    <value>Selecteer een bericht of maak een nieuw bericht.</value>
+  </data>
+  <data name="ContentManager.SelectRule" xml:space="preserve">
+    <value>Selecteer een regel of maak een nieuwe regel.</value>
+  </data>
+  <data name="ContentManager.SaveIndex" xml:space="preserve">
+    <value>index.json opslaan</value>
+  </data>
+  <data name="ContentManager.DownloadIndex" xml:space="preserve">
+    <value>index.json downloaden</value>
+  </data>
+  <data name="ContentManager.CopyIndex" xml:space="preserve">
+    <value>index.json kopieren naar klembord</value>
+  </data>
+  <data name="ContentManager.IndexSaved" xml:space="preserve">
+    <value>index.json opgeslagen in R2!</value>
+  </data>
+  <data name="ContentManager.IndexSaveFailed" xml:space="preserve">
+    <value>Opslaan van index.json mislukt.</value>
+  </data>
+  <data name="ContentManager.JsonCopied" xml:space="preserve">
+    <value>JSON gekopieerd naar klembord</value>
+  </data>
+  <data name="ContentManager.DeletePostConfirm" xml:space="preserve">
+    <value>Weet je zeker dat je dit bericht wilt verwijderen?</value>
+  </data>
+  <data name="ContentManager.DeletePostSuccess" xml:space="preserve">
+    <value>Bericht en markdown-bestanden verwijderd.</value>
+  </data>
+  <data name="ContentManager.DeletePostPartial" xml:space="preserve">
+    <value>Bericht verwijderd uit de lijst, maar R2-verwijderen is mislukt of was gedeeltelijk.</value>
+  </data>
+  <data name="ContentManager.DeleteRuleConfirm" xml:space="preserve">
+    <value>Weet je zeker dat je deze regel wilt verwijderen?</value>
+  </data>
+  <data name="ContentManager.DeleteRuleSuccess" xml:space="preserve">
+    <value>Regel en markdown-bestanden verwijderd.</value>
+  </data>
+  <data name="ContentManager.DeleteRulePartial" xml:space="preserve">
+    <value>Regel verwijderd uit de lijst, maar R2-verwijderen is mislukt of was gedeeltelijk.</value>
+  </data>
+  <data name="ContentManager.MarkdownStubsSaved" xml:space="preserve">
+    <value>Markdown-stubs opgeslagen in R2!</value>
+  </data>
+  <data name="ContentManager.MarkdownStubsSaveDisk" xml:space="preserve">
+    <value>Markdown-stubs opslaan in R2</value>
+  </data>
+  <data name="ContentManager.MarkdownStubsDownload" xml:space="preserve">
+    <value>Markdown-stubs downloaden</value>
+  </data>
+  <data name="Editor.EditPost" xml:space="preserve">
+    <value>Bericht bewerken: {0}</value>
+  </data>
+  <data name="Editor.EditRule" xml:space="preserve">
+    <value>Regel bewerken: {0}</value>
+  </data>
+  <data name="Editor.UniqueId" xml:space="preserve">
+    <value>Unieke ID</value>
+  </data>
+  <data name="Editor.IdHelperPost" xml:space="preserve">
+    <value>GUID wordt automatisch gegenereerd voor nieuwe berichten.</value>
+  </data>
+  <data name="Editor.IdHelperRule" xml:space="preserve">
+    <value>GUID wordt automatisch gegenereerd voor nieuwe regels.</value>
+  </data>
+  <data name="Editor.DateLabel" xml:space="preserve">
+    <value>Datum (JJJJ-MM-DD)</value>
+  </data>
+  <data name="Editor.TitleLabel" xml:space="preserve">
+    <value>Titel</value>
+  </data>
+  <data name="Editor.SummaryLabel" xml:space="preserve">
+    <value>Samenvatting</value>
+  </data>
+  <data name="Editor.QuestionLabel" xml:space="preserve">
+    <value>Vraag</value>
+  </data>
+  <data name="Editor.AnswerLabel" xml:space="preserve">
+    <value>Antwoord</value>
+  </data>
+  <data name="Editor.HiddenLabel" xml:space="preserve">
+    <value>Verborgen (niet tonen in lijsten)</value>
+  </data>
+  <data name="Editor.NewPostTitle" xml:space="preserve">
+    <value>Nieuw bericht</value>
+  </data>
+  <data name="Editor.NewRuleTitle" xml:space="preserve">
+    <value>Nieuwe regel</value>
+  </data>
+  <data name="Editor.MarkdownFileLabel" xml:space="preserve">
+    <value>Markdown-bestandsnaam (bijv. {0})</value>
+  </data>
+  <data name="Editor.MarkdownFileHelper" xml:space="preserve">
+    <value>Bestandsnaam komt overeen met de GUID en kan niet worden gewijzigd.</value>
+  </data>
+  <data name="Editor.TagsTitle" xml:space="preserve">
+    <value>Tags</value>
+  </data>
+  <data name="Editor.AddTag" xml:space="preserve">
+    <value>Tag-ID toevoegen</value>
+  </data>
+  <data name="Editor.TagsHint" xml:space="preserve">
+    <value>Zorg dat de Tag-ID in het tabblad Tags bestaat.</value>
+  </data>
+  <data name="Markdown.Label" xml:space="preserve">
+    <value>Markdown</value>
+  </data>
+  <data name="MarkdownEditor.Title" xml:space="preserve">
+    <value>Markdown-editor</value>
+  </data>
+  <data name="MarkdownEditor.Locale" xml:space="preserve">
+    <value>Taal</value>
+  </data>
+  <data name="MarkdownEditor.SelectItem" xml:space="preserve">
+    <value>Selecteer een item om de markdown te bewerken.</value>
+  </data>
+  <data name="MarkdownEditor.Editing" xml:space="preserve">
+    <value>Bewerken: {0}/{1}</value>
+  </data>
+  <data name="MarkdownEditor.Content" xml:space="preserve">
+    <value>Markdown-inhoud</value>
+  </data>
+  <data name="MarkdownEditor.Save" xml:space="preserve">
+    <value>Opslaan in R2</value>
+  </data>
+  <data name="MarkdownEditor.Download" xml:space="preserve">
+    <value>Markdown downloaden</value>
+  </data>
+  <data name="MarkdownEditor.Copy" xml:space="preserve">
+    <value>Kopieren naar klembord</value>
+  </data>
+  <data name="MarkdownEditor.Reload" xml:space="preserve">
+    <value>Origineel opnieuw laden</value>
+  </data>
+  <data name="MarkdownEditor.SaveSuccess" xml:space="preserve">
+    <value>{0}/{1} opgeslagen in R2!</value>
+  </data>
+  <data name="MarkdownEditor.SaveFailed" xml:space="preserve">
+    <value>Markdown-bestand opslaan mislukt.</value>
+  </data>
+  <data name="TagsManager.Title" xml:space="preserve">
+    <value>Tags beheren</value>
+  </data>
+  <data name="TagsManager.TagId" xml:space="preserve">
+    <value>Tag-ID</value>
+  </data>
+  <data name="TagsManager.Actions" xml:space="preserve">
+    <value>Acties</value>
+  </data>
+  <data name="TagsManager.AddTag" xml:space="preserve">
+    <value>Tag toevoegen</value>
+  </data>
+  <data name="TagsManager.SaveResx" xml:space="preserve">
+    <value>Resx opslaan ({0})</value>
+  </data>
+  <data name="TagsManager.DownloadResx" xml:space="preserve">
+    <value>Resx downloaden ({0})</value>
+  </data>
+  <data name="TagsManager.InUse" xml:space="preserve">
+    <value>Tags in gebruik: {0}</value>
+  </data>
+  <data name="TagsManager.FsRequired" xml:space="preserve">
+    <value>Bestandssysteemtoegang vereist.</value>
+  </data>
+  <data name="TagsManager.SaveSuccess" xml:space="preserve">
+    <value>{0} opgeslagen op schijf!</value>
+  </data>
+  <data name="TagsManager.SaveFailed" xml:space="preserve">
+    <value>RESX-bestand opslaan mislukt.</value>
+  </data>
+  <data name="List.Posts" xml:space="preserve">
+    <value>Berichten</value>
+  </data>
+  <data name="List.Rules" xml:space="preserve">
+    <value>Regels</value>
+  </data>
+  <data name="List.MissingNl" xml:space="preserve">
+    <value>NL ontbreekt</value>
+  </data>
+  <data name="List.Hidden" xml:space="preserve">
+    <value>Verborgen</value>
+  </data>
+  <data name="List.Untitled" xml:space="preserve">
+    <value>Zonder titel</value>
+  </data>
+  <data name="Story.Title" xml:space="preserve">
+    <value>Verhaal - Directive Athena</value>
+  </data>
+  <data name="Story.Heading" xml:space="preserve">
+    <value>Wat is Directive Athena?</value>
+  </data>
+  <data name="Story.Section1" xml:space="preserve">
+    <value>Het hoofdverhaal volgt het koppel Gray en Ruby terwijl ze zich een weg banen door het leger van de UAC. Hun relatie komt onder druk te staan wanneer Ruby zich aansluit bij het verzet en Gray moet omgaan met het feit dat hij lid is van een van de machtigste families op aarde. Ondertussen raken de machinaties op de maan langzaam maar zeker steeds meer verweven met de aarde en verstoren ze de eeuwigdurende oorlog die op aarde woedt. </value>
+  </data>
+  <data name="Story.Back" xml:space="preserve">
+    <value>Terug naar Home</value>
+  </data>
+  <data name="Contact.Title" xml:space="preserve">
+    <value>Contact - Directive Athena</value>
+  </data>
+  <data name="Contact.Heading" xml:space="preserve">
+    <value>Contact</value>
+  </data>
+  <data name="Contact.Subtitle" xml:space="preserve">
+    <value>Neem contact met ons op via onze officiële kanalen of volg onze voortgang op sociale media.</value>
+  </data>
+  <data name="Contact.Return" xml:space="preserve">
+    <value>Terug naar Hoofdkwartier</value>
+  </data>
+  <data name="NotFound.Title" xml:space="preserve">
+    <value>Pagina niet gevonden</value>
+  </data>
+  <data name="NotFound.Message" xml:space="preserve">
+    <value>De pagina die u zoekt bestaat niet of is verplaatst.</value>
+  </data>
+  <data name="NotFound.GoHome" xml:space="preserve">
+    <value>Ga naar home</value>
+  </data>
+  <data name="NotFound.BrowseArticles" xml:space="preserve">
+    <value>Bekijk artikelen</value>
+  </data>
+  <data name="Story.Section2" xml:space="preserve">
+    <value>Volg mee om het verhaal voort te zetten</value>
+  </data>
+</root>

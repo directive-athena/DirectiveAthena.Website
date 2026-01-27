@@ -26,7 +26,7 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (var rowNode in SyntaxNode.GetRows()) {
+        @foreach (TableRowMdSyntaxNode rowNode in SyntaxNode.GetRows()) {
             <tr>
                 @{ ReadOnlySpan<IMdSyntaxNode> nodes = rowNode.GetChildrenSpan(); }
                 @for (int index = 0; index < nodes.Length; index++) {
