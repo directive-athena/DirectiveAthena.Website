@@ -38,12 +38,14 @@ public class Shared {
     public const string ContentManagerTitle = "ContentManager.Title";
     public const string EditorAddTag = "Editor.AddTag";
     public const string EditorAnswerLabel = "Editor.AnswerLabel";
+    public const string EditorCreatedAtLabel = "Editor.CreatedAtLabel";
     public const string EditorDateLabel = "Editor.DateLabel";
     public const string EditorEditPost = "Editor.EditPost";
     public const string EditorEditRule = "Editor.EditRule";
     public const string EditorHiddenLabel = "Editor.HiddenLabel";
     public const string EditorIdHelperPost = "Editor.IdHelperPost";
     public const string EditorIdHelperRule = "Editor.IdHelperRule";
+    public const string EditorLastModifiedAtLabel = "Editor.LastModifiedAtLabel";
     public const string EditorMarkdownFileHelper = "Editor.MarkdownFileHelper";
     public const string EditorMarkdownFileLabel = "Editor.MarkdownFileLabel";
     public const string EditorNewPostTitle = "Editor.NewPostTitle";

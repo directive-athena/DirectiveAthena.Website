@@ -21,7 +21,7 @@ public class ArticleRepository(
     // -----------------------------------------------------------------------------------------------------------------
     public async ValueTask<Article[]> GetAllWithoutHiddenAsync(CancellationToken ct = default) {
         await EnsureCacheAsync(ct);
-        Article[] results = ItemsById.Values.Where(p => !p.Hidden).ToArray();
+        Article[] results = ItemsById.Values.Where(p => !p.IsHidden).ToArray();
         Logger.Debug("Filtered {Count} visible articles from {Total} cached items.", results.Length, ItemsById.Count);
         return results;
     }

@@ -50,6 +50,7 @@ public abstract class ContentRepository<T>(IContentStorage contentStorage, ILogg
 
     public async ValueTask<bool> SaveAsync(IEnumerable<T> items, CancellationToken ct = default) {
         ICollection<T> itemList = items as ICollection<T> ?? items.ToArray();
+        ApplyTimestampsForSave(itemList, DateTime.UtcNow);
         Logger.Information("Saving {ContentType} index with {Count} items.", typeof(T).Name, itemList.Count);
         string json = await AsJsonStringAsync(itemList, ct);
         bool success = await Storage.WriteIndexAsync(json, ct);
@@ -72,7 +73,7 @@ public abstract class ContentRepository<T>(IContentStorage contentStorage, ILogg
 
         T[] updatedItems = ItemsById.Remove(id).Values.ToArray();
         Logger.Information("Deleted {ContentType} {Id}, saving updated index.", typeof(T).Name, id);
-        return await SaveAsync(updatedItems, ct);
+        return await SaveIndexAsync(updatedItems, ct);
     }
 
     public async ValueTask<string> GetAsJsonStringAsync(CancellationToken ct = default) {
@@ -219,6 +220,7 @@ public abstract class ContentRepository<T>(IContentStorage contentStorage, ILogg
         T[]? items = string.IsNullOrWhiteSpace(response.Content)
             ? []
             : JsonSerializer.Deserialize<T[]>(response.Content, _jsonReadOptions);
+        NormalizeMissingTimestamps(items ?? [], DateTime.UtcNow);
         ItemsById = BuildIndex(items ?? []);
         _hasLoaded = true;
         _etag = response.ETag;
@@ -234,5 +236,35 @@ public abstract class ContentRepository<T>(IContentStorage contentStorage, ILogg
         }
 
         return builder.ToImmutable();
+    }
+
+    private async ValueTask<bool> SaveIndexAsync(IEnumerable<T> items, CancellationToken ct) {
+        ICollection<T> itemList = items as ICollection<T> ?? items.ToArray();
+        NormalizeMissingTimestamps(itemList, DateTime.UtcNow);
+        Logger.Information("Saving {ContentType} index with {Count} items.", typeof(T).Name, itemList.Count);
+        string json = await AsJsonStringAsync(itemList, ct);
+        bool success = await Storage.WriteIndexAsync(json, ct);
+        Logger.Information("Save {ContentType} index {Result}.", typeof(T).Name, success ? "succeeded" : "failed");
+        return success;
+    }
+
+    private static void ApplyTimestampsForSave(IEnumerable<T> items, DateTime nowUtc) {
+        foreach (T item in items) {
+            if (item.CreatedAt == default) {
+                item.CreatedAt = nowUtc;
+            }
+            item.LastModifiedAt = nowUtc;
+        }
+    }
+
+    private static void NormalizeMissingTimestamps(IEnumerable<T> items, DateTime nowUtc) {
+        foreach (T item in items) {
+            if (item.CreatedAt == default) {
+                item.CreatedAt = nowUtc;
+            }
+            if (item.LastModifiedAt == default) {
+                item.LastModifiedAt = item.CreatedAt;
+            }
+        }
     }
 }

@@ -33,9 +33,8 @@ public static class ArticleFaker {
             Id = id,
             Title = title,
             Summary = summary,
-            Date = faker.Date.Recent(30).ToString("yyyy-MM-dd"),
             Tags = faker.Lorem.Words(2).ToList(),
-            Hidden = hidden
+            IsHidden = hidden
         };
     }
 

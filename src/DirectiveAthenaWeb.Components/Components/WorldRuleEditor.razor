@@ -33,8 +33,12 @@
                           HelperText="@Localizer[Shared.EditorIdHelperRule]"/>
         </MudItem>
         <MudItem xs="12" md="6">
-            <MudTextField @bind-Value="Rule.Date" Label="@Localizer[Shared.EditorDateLabel]"
-                          Required="true"/>
+            <MudTextField Value="@FormatDate(Rule.CreatedAt)" Label="@Localizer[Shared.EditorCreatedAtLabel]"
+                          Required="true" ReadOnly="true"/>
+        </MudItem>
+        <MudItem xs="12" md="6">
+            <MudTextField Value="@FormatDate(Rule.LastModifiedAt)" Label="@Localizer[Shared.EditorLastModifiedAtLabel]"
+                          Required="true" ReadOnly="true"/>
         </MudItem>
 
         @foreach (LocalizationInfo culture in LocalizationProvider.GetSupportedLocalizations()) {
@@ -162,6 +166,9 @@
             _ = OnTagsChanged.InvokeAsync();
         }
     }
+
+    private static string FormatDate(DateTime date)
+        => date == DateTime.MinValue ? string.Empty : date.ToString("yyyy-MM-dd");
 
     private string BuildDefaultMarkdown(string locale) {
         string question = Rule.Question.GetValueOrDefault(locale) ?? Localizer[Shared.EditorNewRuleTitle];

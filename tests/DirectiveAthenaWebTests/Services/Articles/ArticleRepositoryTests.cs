@@ -41,7 +41,7 @@ public class ArticleRepositoryTests {
 
         // Assert
         await Assert.That(result.Count).IsEqualTo(2);
-        await Assert.That(result.Any(p => p.Hidden)).IsFalse();
+        await Assert.That(result.Any(p => p.IsHidden)).IsFalse();
     }
 
     [Test]

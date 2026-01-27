@@ -71,7 +71,7 @@
                                 <div class="d-flex align-center gap-4">
                                     <MudButton Variant="Variant.Filled" Color="Color.Primary"
                                                Class="px-6">@Localizer[Shared.HomeWritingsReadFull]</MudButton>
-                                    <MudText Typo="Typo.caption" Class="opacity-50">@HighlightedPost.Date</MudText>
+                                    <MudText Typo="Typo.caption" Class="opacity-50">@FormatDate(HighlightedPost.CreatedAt)</MudText>
                                 </div>
                             </MudItem>
                             <MudItem xs="12" md="5"
@@ -113,7 +113,7 @@
                                  Style="cursor: pointer;">
                             <MudCardContent Class="flex-grow-1 pa-6">
                                 <MudText Typo="Typo.caption" Color="Color.Secondary"
-                                         Class="mb-2 d-block">@post.Date</MudText>
+                                         Class="mb-2 d-block">@FormatDate(post.CreatedAt)</MudText>
                                 <MudText Typo="Typo.h5"
                                          Class="mb-4 SpaceGrotesk">@ArticleManager.GetLocalizedTitle(post)</MudText>
                                 <MudText Typo="Typo.body2" Class="text-secondary opacity-70 mb-4"
@@ -159,4 +159,7 @@
     private void ViewPost(Guid id) {
         Nav.NavigateTo($"/articles/{id:D}");
     }
+
+    private static string FormatDate(DateTime date)
+        => date == DateTime.MinValue ? string.Empty : date.ToString("yyyy-MM-dd");
 }

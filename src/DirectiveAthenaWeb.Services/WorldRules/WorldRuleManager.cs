@@ -47,6 +47,7 @@ public class WorldRuleManager(
 
     public WorldRule NewRule() {
         var id = Guid.CreateVersion7();
+        DateTime now = DateTime.UtcNow;
         IReadOnlyCollection<LocalizationInfo> locals = localizationProvider.GetSupportedLocalizations();
 
         Dictionary<string, string> questions = locals.ToDictionary(c => c.Code, _ => "New Rule");
@@ -57,7 +58,9 @@ public class WorldRuleManager(
             Date = DateTime.UtcNow.ToString("yyyy-MM-dd"),
             Question = questions,
             Answer = answers,
-            Tags = []
+            Tags = [],
+            CreatedAt = now,
+            LastModifiedAt = now
         };
         logger.Information("Created new world rule stub {Id}.", rule.Id);
         return rule;

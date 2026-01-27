@@ -300,8 +300,14 @@
     <data name="Editor.IdHelperRule" xml:space="preserve">
     <value>GUID is generated automatically for new rules.</value>
   </data>
+    <data name="Editor.CreatedAtLabel" xml:space="preserve">
+    <value>Created (UTC)</value>
+  </data>
     <data name="Editor.DateLabel" xml:space="preserve">
     <value>Date (YYYY-MM-DD)</value>
+  </data>
+    <data name="Editor.LastModifiedAtLabel" xml:space="preserve">
+    <value>Last Modified (UTC)</value>
   </data>
     <data name="Editor.TitleLabel" xml:space="preserve">
     <value>Title</value>

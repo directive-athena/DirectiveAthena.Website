@@ -33,12 +33,18 @@
                           HelperText="@Localizer[Shared.EditorIdHelperPost]"/>
         </MudItem>
         <MudItem xs="12" md="6">
-            <MudTextField @bind-Value="Post.Date" Label="@Localizer[Shared.EditorDateLabel]"
-                          Required="true"/>
+            <MudTextField Value="@FormatDate(Post.CreatedAt)" Label="@Localizer[Shared.EditorCreatedAtLabel]"
+                          Required="true" ReadOnly="true"/>
         </MudItem>
+        @if (Post.LastModifiedAt != DateTime.MinValue) {
+            <MudItem xs="12" md="6">
+                <MudTextField Value="@FormatDate(Post.LastModifiedAt)" Label="@Localizer[Shared.EditorLastModifiedAtLabel]"
+                              Required="true" ReadOnly="true"/>
+            </MudItem>
+        }
 
         <MudItem xs="12">
-            <MudSwitch @bind-Value="Post.Hidden" Label="@Localizer[Shared.EditorHiddenLabel]" Color="Color.Primary"/>
+            <MudSwitch @bind-Value="Post.IsHidden" Label="@Localizer[Shared.EditorHiddenLabel]" Color="Color.Primary"/>
         </MudItem>
 
         @foreach (LocalizationInfo culture in LocalizationProvider.GetSupportedLocalizations()) {
@@ -166,6 +172,9 @@
             _ = OnTagsChanged.InvokeAsync();
         }
     }
+
+    private static string FormatDate(DateTime date)
+        => date == DateTime.MinValue ? string.Empty : date.ToString("yyyy-MM-dd");
 
     private string BuildDefaultMarkdown(string locale) {
         string title = Post.Title.GetValueOrDefault(locale) ?? Localizer[Shared.EditorNewPostTitle];

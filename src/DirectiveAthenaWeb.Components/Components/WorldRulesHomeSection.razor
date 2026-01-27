@@ -106,7 +106,7 @@
         IEnumerable<WorldRule> rules = await WorldRuleRepository.GetAllAsync();
         WorldRules = rules
             .Where(rule => rule.ShowOnHomepage)
-            .OrderByDescending(rule => ParseDate(rule.Date))
+            .OrderByDescending(rule => rule.LastModifiedAt)
             .Take(4)
             .ToList();
 
@@ -117,7 +117,4 @@
         NavigationManager.NavigateTo("/world-rules");
     }
 
-    private static DateTime ParseDate(string? value) {
-        return DateTime.TryParse(value, out DateTime parsed) ? parsed : DateTime.MinValue;
-    }
 }
