@@ -18,7 +18,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\DirectiveAthenaWeb.Services\DirectiveAthenaWeb.Services.csproj" />
-    <ProjectReference Include="..\..\src\DirectiveAthenaWeb\DirectiveAthenaWeb.csproj" />
+    <ProjectReference Include="..\..\src\DirectiveAthenaWeb.Client\DirectiveAthenaWeb.Client.csproj" />
   </ItemGroup>
 
 </Project>

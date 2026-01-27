@@ -22,7 +22,7 @@ public class ArticleListTests {
         ctx.Services.AddMudServices();
         ctx.Services.AddLocalization();
         ctx.JSInterop.SetupVoid("mudKeyInterceptor.connect", _ => true);
-        IStringLocalizer<Shared> localizer = ctx.Services.GetRequiredService<IStringLocalizer<Shared>>();
+        var localizer = ctx.Services.GetRequiredService<IStringLocalizer<Shared>>();
 
         Article post = ArticleFaker.Create(200, hidden: true, includeNl: false);
         List<Article> posts = [post];

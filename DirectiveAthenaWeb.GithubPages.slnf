@@ -2,7 +2,7 @@
     "solution": {
         "path": "DirectiveAthenaWeb.slnx",
         "projects": [
-            "src\\DirectiveAthenaWeb\\DirectiveAthenaWeb.csproj", 
+            "src\\DirectiveAthenaWeb.Client\\DirectiveAthenaWeb.Client.csproj", 
             "src\\DirectiveAthenaWeb.Components\\DirectiveAthenaWeb.Components.csproj", 
             "src\\DirectiveAthenaWeb.Services\\DirectiveAthenaWeb.Services.csproj", 
             "src\\DirectiveAthenaWeb.Services.Js\\DirectiveAthenaWeb.Services.Js.csproj",

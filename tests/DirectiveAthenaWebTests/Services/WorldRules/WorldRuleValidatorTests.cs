@@ -102,7 +102,7 @@ public class WorldRuleValidatorTests {
     [Test]
     public async Task WorldRuleCollectionValidator_RejectsDuplicateIds() {
         // Arrange
-        Guid sharedId = Guid.NewGuid();
+        var sharedId = Guid.NewGuid();
         WorldRule[] rules = [
             CreateValidRule(),
             CreateValidRule()
