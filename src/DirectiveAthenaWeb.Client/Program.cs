@@ -21,7 +21,6 @@ public static class Program {
         // Builder
         // -------------------------------------------------------------------------------------------------------------
         var builder = WebAssemblyHostBuilder.CreateDefault(args);
-        builder.Configuration.AddJsonFile("appsettings.local.json", optional: true, reloadOnChange: false);
 
         LogEventLevel minimumLevel = builder.HostEnvironment.IsDevelopment()
             ? LogEventLevel.Debug
@@ -39,10 +38,6 @@ public static class Program {
 
         builder.Logging.ClearProviders();
         builder.Logging.AddSerilog(logger, dispose: true);
-
-        #if DEBUG
-        await TryLoadLocalSettingsAsync(builder, logger);
-        #endif
         
         builder.RootComponents.Add<App>("#app");
         builder.RootComponents.Add<HeadOutlet>("head::after");
@@ -64,22 +59,4 @@ public static class Program {
 
         await host.RunAsync();
     }
-
-    #if DEBUG
-    private static async Task TryLoadLocalSettingsAsync(WebAssemblyHostBuilder builder, Logger logger) {
-        try {
-            using HttpClient http = new();
-            http.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress);
-            await using Stream stream = await http.GetStreamAsync("appsettings.local.json");
-            using MemoryStream buffer = new();
-            await stream.CopyToAsync(buffer);
-            buffer.Position = 0;
-            builder.Configuration.AddJsonStream(buffer);
-            logger.Information("Loaded appsettings.local.json via HTTP.");
-        }
-        catch (Exception ex) {
-            logger.Debug(ex, "appsettings.local.json not loaded.");
-        }
-    }
-    #endif
 }
