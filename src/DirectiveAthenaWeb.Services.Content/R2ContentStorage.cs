@@ -3,7 +3,6 @@
 // ---------------------------------------------------------------------------------------------------------------------
 using DirectiveAthenaWeb.Services.ContentStorage;
 using DirectiveAthenaWeb.Services.Localization;
-using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 using Minio;
 using Minio.DataModel.Args;
@@ -108,7 +107,7 @@ public class R2ContentStorage(
         }
 
         try {
-            var deleteArgs = new RemoveObjectArgs()
+            RemoveObjectArgs? deleteArgs = new RemoveObjectArgs()
                 .WithBucket(options.BucketName!)
                 .WithObject(key);
 
@@ -195,11 +194,7 @@ public class R2ContentStorage(
             return false;
         }
     }
-
-    [UsedImplicitly] private record ProxyUploadRequest(string Key, string Content, string ContentType);
-
-    [UsedImplicitly] private record ProxyDeleteRequest(string Key);
-
+    
     private static Uri? BuildProxyEndpoint(string? proxyEndpoint, string operation) {
         if (string.IsNullOrWhiteSpace(proxyEndpoint)) return null;
 

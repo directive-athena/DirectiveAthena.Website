@@ -58,10 +58,10 @@ public class ContentStorageFactory(
 
     private static IMinioClient? CreateMinioClient(R2StorageOptions options, ILogger logger) {
         if (OperatingSystem.IsBrowser()) {
-            if (!_browserWarningLogged) {
-                logger.Debug("R2 client is not supported in browser contexts; proxy uploads must be used for writes.");
-                _browserWarningLogged = true;
-            }
+            if (_browserWarningLogged) return null;
+
+            logger.Debug("R2 client is not supported in browser contexts; proxy uploads must be used for writes.");
+            _browserWarningLogged = true;
 
             return null;
         }

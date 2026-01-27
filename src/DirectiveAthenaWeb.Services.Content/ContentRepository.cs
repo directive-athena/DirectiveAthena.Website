@@ -15,10 +15,8 @@ namespace DirectiveAthenaWeb.Services.Content;
 // ---------------------------------------------------------------------------------------------------------------------
 public abstract class ContentRepository<T>(IContentStorage contentStorage, ILogger logger) : IContentRepository<T>
     where T : ContentBase {
-    protected ILogger Logger { get; } = logger;
     private readonly SemaphoreSlim _lock = new(1, 1);
-    protected IContentStorage Storage { get; } = contentStorage;
-    protected ImmutableDictionary<Guid, T> ItemsById { get; private set; } = ImmutableDictionary<Guid, T>.Empty;
+    private ImmutableDictionary<Guid, T> ItemsById { get; set; } = ImmutableDictionary<Guid, T>.Empty;
     private bool _hasLoaded;
     private EntityTagHeaderValue? _etag;
     private DateTimeOffset? _lastModifiedUtc;
@@ -80,22 +78,22 @@ public abstract class ContentRepository<T>(IContentStorage contentStorage, ILogg
     public async ValueTask<bool> SaveAsync(IEnumerable<T> items, CancellationToken ct = default) {
         ICollection<T> itemList = items as ICollection<T> ?? items.ToArray();
         ApplyTimestampsForSave(itemList, DateTime.UtcNow);
-        Logger.Information("Saving {ContentType} index with {Count} items.", typeof(T).Name, itemList.Count);
+        logger.Information("Saving {ContentType} index with {Count} items.", typeof(T).Name, itemList.Count);
         string json = await AsJsonStringAsync(itemList, ct);
-        bool success = await Storage.WriteIndexAsync(json, ct);
-        Logger.Information("Save {ContentType} index {Result}.", typeof(T).Name, success ? "succeeded" : "failed");
+        bool success = await contentStorage.WriteIndexAsync(json, ct);
+        logger.Information("Save {ContentType} index {Result}.", typeof(T).Name, success ? "succeeded" : "failed");
         return success;
     }
 
     public async ValueTask<bool> SoftDeleteByIdAsync(Guid id, CancellationToken ct = default) {
         await EnsureCacheAsync(ct);
         if (!ItemsById.TryGetValue(id, out T? item)) {
-            Logger.Warning("{ContentType} {Id} not found for soft deletion.", typeof(T).Name, id);
+            logger.Warning("{ContentType} {Id} not found for soft deletion.", typeof(T).Name, id);
             return false;
         }
 
         if (item.IsSoftDeleted) {
-            Logger.Debug("{ContentType} {Id} already soft deleted.", typeof(T).Name, id);
+            logger.Debug("{ContentType} {Id} already soft deleted.", typeof(T).Name, id);
             return true;
         }
 
@@ -103,7 +101,7 @@ public abstract class ContentRepository<T>(IContentStorage contentStorage, ILogg
         item.SoftDeletedAt = now;
         item.LastModifiedAt = now;
 
-        Logger.Information("Soft deleted {ContentType} {Id}, saving updated index.", typeof(T).Name, id);
+        logger.Information("Soft deleted {ContentType} {Id}, saving updated index.", typeof(T).Name, id);
         return await SaveIndexAsync(ItemsById.Values, ct);
     }
 
@@ -114,18 +112,18 @@ public abstract class ContentRepository<T>(IContentStorage contentStorage, ILogg
     public async ValueTask<bool> HardDeleteByIdAsync(Guid id, CancellationToken ct = default) {
         await EnsureCacheAsync(ct);
         if (!ItemsById.TryGetValue(id, out T? item)) {
-            Logger.Warning("{ContentType} {Id} not found for deletion.", typeof(T).Name, id);
+            logger.Warning("{ContentType} {Id} not found for deletion.", typeof(T).Name, id);
             return false;
         }
 
-        bool allDeleted = await Storage.DeleteLocalizedFilesAsync(item.MarkdownFileName, ct);
+        bool allDeleted = await contentStorage.DeleteLocalizedFilesAsync(item.MarkdownFileName, ct);
         if (!allDeleted) {
-            Logger.Warning("Failed to delete localized files for {ContentType} {Id}.", typeof(T).Name, id);
+            logger.Warning("Failed to delete localized files for {ContentType} {Id}.", typeof(T).Name, id);
             return false;
         }
 
         T[] updatedItems = ItemsById.Remove(id).Values.ToArray();
-        Logger.Information("Deleted {ContentType} {Id}, saving updated index.", typeof(T).Name, id);
+        logger.Information("Deleted {ContentType} {Id}, saving updated index.", typeof(T).Name, id);
         return await SaveIndexAsync(updatedItems, ct);
     }
 
@@ -146,7 +144,7 @@ public abstract class ContentRepository<T>(IContentStorage contentStorage, ILogg
     protected async Task EnsureCacheAsync(CancellationToken ct) {
         DateTimeOffset now = DateTimeOffset.UtcNow;
         if (_hasLoaded && !ShouldRefresh(now)) {
-            Logger.Debug("{ContentType} cache is still fresh; skipping refresh.", typeof(T).Name);
+            logger.Debug("{ContentType} cache is still fresh; skipping refresh.", typeof(T).Name);
             return;
         }
 
@@ -154,14 +152,14 @@ public abstract class ContentRepository<T>(IContentStorage contentStorage, ILogg
         try {
             now = DateTimeOffset.UtcNow;
             if (_hasLoaded && !ShouldRefresh(now)) {
-                Logger.Debug("{ContentType} cache was refreshed by another caller.", typeof(T).Name);
+                logger.Debug("{ContentType} cache was refreshed by another caller.", typeof(T).Name);
                 return;
             }
 
             await RefreshCacheAsync(now, ct);
         }
         catch (Exception ex) {
-            Logger.LogError(ex, "Failed to refresh {ContentType} cache; clearing cached data.", typeof(T).Name);
+            logger.LogError(ex, "Failed to refresh {ContentType} cache; clearing cached data.", typeof(T).Name);
             ItemsById = ImmutableDictionary<Guid, T>.Empty;
             _hasLoaded = true;
             _etag = null;
@@ -184,11 +182,11 @@ public abstract class ContentRepository<T>(IContentStorage contentStorage, ILogg
     #endif
 
     private async Task RefreshCacheAsync(DateTimeOffset now, CancellationToken ct) {
-        Logger.Debug("Refreshing {ContentType} cache from {Path}.", typeof(T).Name, Storage.IndexContentPath);
-        ContentReadResult response = await Storage.ReadIndexAsync(_etag, _lastModifiedUtc, ct);
+        logger.Debug("Refreshing {ContentType} cache from {Path}.", typeof(T).Name, contentStorage.IndexContentPath);
+        ContentReadResult response = await contentStorage.ReadIndexAsync(_etag, _lastModifiedUtc, ct);
         switch (response.StatusCode) {
             case HttpStatusCode.NotFound:
-                Logger.Warning("{ContentType} index not found at {Path}; treating as empty dataset.", typeof(T).Name, Storage.IndexContentPath);
+                logger.Warning("{ContentType} index not found at {Path}; treating as empty dataset.", typeof(T).Name, contentStorage.IndexContentPath);
                 ItemsById = ImmutableDictionary<Guid, T>.Empty;
                 _hasLoaded = true;
                 _etag = null;
@@ -200,7 +198,7 @@ public abstract class ContentRepository<T>(IContentStorage contentStorage, ILogg
                 _lastRefreshUtc = now;
                 if (response.ETag is not null) _etag = response.ETag;
                 if (response.LastModifiedUtc is not null) _lastModifiedUtc = response.LastModifiedUtc;
-                Logger.Debug("{ContentType} cache not modified; updated refresh markers.", typeof(T).Name);
+                logger.Debug("{ContentType} cache not modified; updated refresh markers.", typeof(T).Name);
                 return;
             }
 
@@ -279,7 +277,7 @@ public abstract class ContentRepository<T>(IContentStorage contentStorage, ILogg
         _etag = response.ETag;
         _lastModifiedUtc = response.LastModifiedUtc;
         _lastRefreshUtc = now;
-        Logger.Information("Loaded {Count} {ContentType} items into cache.", ItemsById.Count, typeof(T).Name);
+        logger.Information("Loaded {Count} {ContentType} items into cache.", ItemsById.Count, typeof(T).Name);
     }
 
     private static ImmutableDictionary<Guid, T> BuildIndex(IEnumerable<T> items) {
@@ -294,10 +292,10 @@ public abstract class ContentRepository<T>(IContentStorage contentStorage, ILogg
     private async ValueTask<bool> SaveIndexAsync(IEnumerable<T> items, CancellationToken ct) {
         ICollection<T> itemList = items as ICollection<T> ?? items.ToArray();
         NormalizeMissingTimestamps(itemList, DateTime.UtcNow);
-        Logger.Information("Saving {ContentType} index with {Count} items.", typeof(T).Name, itemList.Count);
+        logger.Information("Saving {ContentType} index with {Count} items.", typeof(T).Name, itemList.Count);
         string json = await AsJsonStringAsync(itemList, ct);
-        bool success = await Storage.WriteIndexAsync(json, ct);
-        Logger.Information("Save {ContentType} index {Result}.", typeof(T).Name, success ? "succeeded" : "failed");
+        bool success = await contentStorage.WriteIndexAsync(json, ct);
+        logger.Information("Save {ContentType} index {Result}.", typeof(T).Name, success ? "succeeded" : "failed");
         return success;
     }
 

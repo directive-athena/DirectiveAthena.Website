@@ -52,6 +52,3 @@ public static class Program {
         app.Run();
     }
 }
-
-[UsedImplicitly] internal record ProxyUploadRequest(string Key, string Content, string ContentType);
-[UsedImplicitly] internal record ProxyDeleteRequest(string Key);
