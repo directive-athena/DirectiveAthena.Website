@@ -48,6 +48,9 @@ public static class Program {
         builder.Services.Configure<R2StorageOptions>(builder.Configuration.GetSection("ContentStorage:R2"));
 
         builder.Services.AddWebsiteServices();
+        
+        builder.Services.AddWritingContent();
+        builder.Services.AddFaqContent();
 
         // -------------------------------------------------------------------------------------------------------------
         // App

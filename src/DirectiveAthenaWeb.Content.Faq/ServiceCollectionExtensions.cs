@@ -11,7 +11,7 @@ namespace Microsoft.Extensions.DependencyInjection;
 // ---------------------------------------------------------------------------------------------------------------------
 public static class ServiceCollectionExtensions {
     extension(IServiceCollection services) {
-        [UsedImplicitly] public IServiceCollection AddWritingContent() {
+        [UsedImplicitly] public IServiceCollection AddFaqContent() {
             services.RegisterServicesFromDirectiveAthenaWebContentFaq();
 
             services.AddContentStorage(ContentCategory.Faq);
