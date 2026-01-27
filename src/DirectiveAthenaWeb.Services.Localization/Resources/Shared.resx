@@ -249,6 +249,45 @@
     <data name="ContentManager.CopyIndex" xml:space="preserve">
     <value>Copy index.json to Clipboard</value>
   </data>
+    <data name="ContentManager.Actions" xml:space="preserve">
+    <value>Actions</value>
+  </data>
+    <data name="ContentManager.AutoSave.Label" xml:space="preserve">
+    <value>Auto-save</value>
+  </data>
+    <data name="ContentManager.AutoSave.On" xml:space="preserve">
+    <value>Auto-save on</value>
+  </data>
+    <data name="ContentManager.AutoSave.Off" xml:space="preserve">
+    <value>Auto-save off</value>
+  </data>
+    <data name="ContentManager.AutoSave.Scheduled" xml:space="preserve">
+    <value>Auto-save scheduled</value>
+  </data>
+    <data name="ContentManager.AutoSave.Saving" xml:space="preserve">
+    <value>Saving...</value>
+  </data>
+    <data name="ContentManager.AutoSave.Saved" xml:space="preserve">
+    <value>Saved {0}</value>
+  </data>
+    <data name="ContentManager.AutoSave.Paused" xml:space="preserve">
+    <value>Auto-save paused</value>
+  </data>
+    <data name="ContentManager.AutoSave.Failed" xml:space="preserve">
+    <value>Auto-save failed</value>
+  </data>
+    <data name="ContentManager.AutoSave.DetailOff" xml:space="preserve">
+    <value>Turn on auto-save to save changes after you pause.</value>
+  </data>
+    <data name="ContentManager.AutoSave.DetailReady" xml:space="preserve">
+    <value>Changes save after a short pause.</value>
+  </data>
+    <data name="ContentManager.AutoSave.DetailSaved" xml:space="preserve">
+    <value>Everything is up to date.</value>
+  </data>
+    <data name="ContentManager.AutoSave.DetailPaused" xml:space="preserve">
+    <value>Resolve validation issues to continue saving.</value>
+  </data>
     <data name="ContentManager.IndexSaved" xml:space="preserve">
     <value>index.json saved to R2!</value>
   </data>

@@ -249,6 +249,45 @@
     <data name="ContentManager.CopyIndex" xml:space="preserve">
     <value>index.json kopieren naar klembord</value>
   </data>
+    <data name="ContentManager.Actions" xml:space="preserve">
+    <value>Acties</value>
+  </data>
+    <data name="ContentManager.AutoSave.Label" xml:space="preserve">
+    <value>Automatisch opslaan</value>
+  </data>
+    <data name="ContentManager.AutoSave.On" xml:space="preserve">
+    <value>Automatisch opslaan aan</value>
+  </data>
+    <data name="ContentManager.AutoSave.Off" xml:space="preserve">
+    <value>Automatisch opslaan uit</value>
+  </data>
+    <data name="ContentManager.AutoSave.Scheduled" xml:space="preserve">
+    <value>Automatisch opslaan gepland</value>
+  </data>
+    <data name="ContentManager.AutoSave.Saving" xml:space="preserve">
+    <value>Bezig met opslaan...</value>
+  </data>
+    <data name="ContentManager.AutoSave.Saved" xml:space="preserve">
+    <value>Opgeslagen {0}</value>
+  </data>
+    <data name="ContentManager.AutoSave.Paused" xml:space="preserve">
+    <value>Automatisch opslaan gepauzeerd</value>
+  </data>
+    <data name="ContentManager.AutoSave.Failed" xml:space="preserve">
+    <value>Automatisch opslaan mislukt</value>
+  </data>
+    <data name="ContentManager.AutoSave.DetailOff" xml:space="preserve">
+    <value>Zet automatisch opslaan aan om wijzigingen na een pauze op te slaan.</value>
+  </data>
+    <data name="ContentManager.AutoSave.DetailReady" xml:space="preserve">
+    <value>Wijzigingen worden na een korte pauze opgeslagen.</value>
+  </data>
+    <data name="ContentManager.AutoSave.DetailSaved" xml:space="preserve">
+    <value>Alles is bijgewerkt.</value>
+  </data>
+    <data name="ContentManager.AutoSave.DetailPaused" xml:space="preserve">
+    <value>Los validatiefouten op om verder te kunnen opslaan.</value>
+  </data>
     <data name="ContentManager.IndexSaved" xml:space="preserve">
     <value>index.json opgeslagen in R2!</value>
   </data>

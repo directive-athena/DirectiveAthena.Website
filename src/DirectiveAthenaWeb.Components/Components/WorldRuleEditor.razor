@@ -117,6 +117,7 @@
     [Parameter] public EventCallback OnDeleteRule { get; set; }
     [Parameter] public EventCallback<bool> OnGenerateStubs { get; set; }
     [Parameter] public EventCallback OnTagsChanged { get; set; }
+    [Parameter] public EventCallback OnContentChanged { get; set; }
 
     private string _newTag = "";
     private IContentStorage _storage = null!;
@@ -131,12 +132,12 @@
     private string GetQuestion(string culture)
         => Rule.Question.GetValueOrDefault(culture) ?? "";
     private void SetQuestion(string culture, string value)
-        => Rule.Question[culture] = value;
+        => SetLocalizedValue(Rule.Question, culture, value);
 
     private string GetAnswer(string culture)
         => Rule.Answer.GetValueOrDefault(culture) ?? "";
     private void SetAnswer(string culture, string value)
-        => Rule.Answer[culture] = value;
+        => SetLocalizedValue(Rule.Answer, culture, value);
 
     private void AddTag() {
         if (string.IsNullOrWhiteSpace(_newTag)) return;
@@ -148,13 +149,17 @@
         }
 
         Rule.Tags.Add(trimmedTag);
+        TouchLastModified();
         _newTag = "";
         NotifyTagsChanged();
+        NotifyContentChanged();
     }
 
     private void RemoveTag(string tag) {
         Rule.Tags.Remove(tag);
+        TouchLastModified();
         NotifyTagsChanged();
+        NotifyContentChanged();
     }
 
     private void OnTagKey(KeyboardEventArgs e) {
@@ -167,6 +172,12 @@
         }
     }
 
+    private void NotifyContentChanged() {
+        if (OnContentChanged.HasDelegate) {
+            _ = OnContentChanged.InvokeAsync();
+        }
+    }
+
     private static string FormatDate(DateTime date)
         => date == DateTime.MinValue ? string.Empty : date.ToString("yyyy-MM-dd");
 
@@ -174,5 +185,17 @@
         string question = Rule.Question.GetValueOrDefault(locale) ?? Localizer[Shared.EditorNewRuleTitle];
         string answer = Rule.Answer.GetValueOrDefault(locale) ?? "";
         return $"# {question}\n\n{answer}";
+    }
+
+    private void TouchLastModified() {
+        Rule.LastModifiedAt = DateTime.UtcNow;
+    }
+
+    private void SetLocalizedValue(Dictionary<string, string> values, string culture, string value) {
+        if (values.TryGetValue(culture, out string? existing) && existing == value) return;
+
+        values[culture] = value;
+        TouchLastModified();
+        NotifyContentChanged();
     }
 }
