@@ -1,7 +1,7 @@
 ﻿@* ------------------------------------------------------------------------------------------------------------------ *@
 @* Imports
 @* ------------------------------------------------------------------------------------------------------------------ *@
-@using DirectiveAthenaWeb.Services.Writings
+@using DirectiveAthenaWeb.Content.Writings
 @using DirectiveAthenaWeb.Services.Localization.Resources
 @using Microsoft.Extensions.Localization
 
@@ -11,8 +11,8 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @page "/writings"
 
-@inject IWritingRepository WritingRepository
-@inject IWritingManager WritingManager
+@inject IWritingContentRepository WritingRepository
+@inject IWritingContentManager WritingManager
 @inject NavigationManager NavigationManager
 @inject IStringLocalizer<Shared> LocalizerShared
 @inject IStringLocalizer<Tags> LocalizerTags
@@ -52,7 +52,7 @@
         }
         else {
             <MudGrid Spacing="6">
-                @foreach (Writing post in FilteredPosts) {
+                @foreach (WritingContent post in FilteredPosts) {
                     <MudItem xs="12" md="6">
                         <MudCard Class="card-glass h-100 d-flex flex-column" @onclick="@(() => ViewPost(post.Id))"
                                  Style="cursor: pointer;">
@@ -91,15 +91,15 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 
 @code {
-    private Writing[]? _posts;
+    private WritingContent[]? _posts;
     private string? _selectedTag;
 
     protected override async Task OnInitializedAsync() {
-        IEnumerable<Writing> posts = await WritingRepository.GetAllAsync();
+        IEnumerable<WritingContent> posts = await WritingRepository.GetAllAsync();
         _posts = posts.ToArray();
     }
 
-    private IEnumerable<Writing> FilteredPosts =>
+    private IEnumerable<WritingContent> FilteredPosts =>
         string.IsNullOrEmpty(_selectedTag)
             ? _posts ?? []
             : (_posts ?? []).Where(p => p.Tags.Contains(_selectedTag));

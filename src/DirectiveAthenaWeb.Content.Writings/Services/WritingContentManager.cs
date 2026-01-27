@@ -4,7 +4,6 @@
 using CodeOfChaos.Extensions.DependencyInjection;
 using DirectiveAthenaWeb.Services.ContentStorage;
 using DirectiveAthenaWeb.Services.Localization;
-using DirectiveAthenaWeb.Services.Writings;
 using FluentValidation;
 using FluentValidation.Results;
 using Microsoft.Extensions.Logging;
@@ -13,20 +12,20 @@ namespace DirectiveAthenaWeb.Content.Writings.Services;
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
-[InjectableScoped<IWritingManager>]
-public class WritingManager(
+[InjectableScoped<IWritingContentManager>]
+public class WritingContentManager(
     ILocalizationProvider localizationProvider,
     IContentStorageFactory storageFactory,
     HttpClient http,
-    IValidator<IEnumerable<Writing>> validator,
-    ILogger<WritingManager> logger
-) : IWritingManager {
+    IValidator<IEnumerable<WritingContent>> validator,
+    ILogger<WritingContentManager> logger
+) : IWritingContentManager {
     private readonly IContentStorage _storage = storageFactory.ForCategory(ContentCategory.Writings);
 
-    public string GetLocalizedTitle(Writing article)
+    public string GetLocalizedTitle(WritingContent article)
         => GetLocalizedValue(article.Title);
 
-    public string GetLocalizedSummary(Writing article)
+    public string GetLocalizedSummary(WritingContent article)
         => GetLocalizedValue(article.Summary);
 
     private string GetLocalizedValue(Dictionary<string, string> values) {
@@ -36,12 +35,12 @@ public class WritingManager(
             : value;
     }
 
-    public string GetLocalizedFilePath(Writing article) {
+    public string GetLocalizedFilePath(WritingContent article) {
         LocalizationInfo localization = localizationProvider.GetCurrentLocalization();
         return _storage.GetMarkdownContentPath(localization.Code, article.MarkdownFileName);
     }
 
-    public async Task<string> GetRawMarkdownContentAsync(Writing article, string locale, CancellationToken ct = default) {
+    public async Task<string> GetRawMarkdownContentAsync(WritingContent article, string locale, CancellationToken ct = default) {
         try {
             string path = _storage.GetMarkdownContentPath(locale, article.MarkdownFileName);
             logger.Debug("Fetching markdown for article {Id} at {Path}.", article.Id, path);
@@ -53,14 +52,14 @@ public class WritingManager(
         }
     }
 
-    public Writing NewWriting() {
+    public WritingContent NewWriting() {
         var id = Guid.CreateVersion7();
         DateTime now = DateTime.UtcNow;
         IReadOnlyCollection<LocalizationInfo> locals = localizationProvider.GetSupportedLocalizations();
 
         Dictionary<string, string> titles = locals.ToDictionary(c => c.Code, _ => "New Post");
         Dictionary<string, string> summaries = locals.ToDictionary(c => c.Code, c => $"{c.DisplayName} - Summary here");
-        var article = new Writing {
+        var article = new WritingContent {
             Id = id,
             Title = titles,
             Summary = summaries,
@@ -72,7 +71,7 @@ public class WritingManager(
         return article;
     }
 
-    public bool Validate(IEnumerable<Writing> writings, out string? errorMessage) {
+    public bool Validate(IEnumerable<WritingContent> writings, out string? errorMessage) {
         ValidationResult? result = validator.Validate(writings);
         if (result.IsValid) {
             errorMessage = null;
@@ -84,7 +83,7 @@ public class WritingManager(
         return false;
     }
 
-    public async Task<(Dictionary<string, string> Stubs, bool WroteAll)> GenerateStubsAsync(Writing article, bool writeToDisk = false, CancellationToken ct = default) {
+    public async Task<(Dictionary<string, string> Stubs, bool WroteAll)> GenerateStubsAsync(WritingContent article, bool writeToDisk = false, CancellationToken ct = default) {
         IReadOnlyCollection<LocalizationInfo> locals = localizationProvider.GetSupportedLocalizations();
         Dictionary<string, string> stubs = locals.ToDictionary(
             c => c.Code,

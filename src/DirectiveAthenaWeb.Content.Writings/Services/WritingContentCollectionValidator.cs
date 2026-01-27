@@ -2,23 +2,22 @@
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
 using CodeOfChaos.Extensions.DependencyInjection;
-using DirectiveAthenaWeb.Services.WorldFaq;
 using FluentValidation;
 
-namespace DirectiveAthenaWeb.Content.Faq.Services;
+namespace DirectiveAthenaWeb.Content.Writings.Services;
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
-[InjectableTransient<IValidator<IEnumerable<WorldFaq>>>]
-public class WorldFaqCollectionValidator : AbstractValidator<IEnumerable<WorldFaq>> {
-    public WorldFaqCollectionValidator(IValidator<WorldFaq> ruleValidator) {
-        RuleFor(rules => rules)
+[InjectableTransient<IValidator<IEnumerable<WritingContent>>>]
+public class WritingContentCollectionValidator : AbstractValidator<IEnumerable<WritingContent>> {
+    public WritingContentCollectionValidator(IValidator<WritingContent> articleValidator) {
+        RuleFor(writings => writings)
             .NotNull();
 
-        RuleForEach(rules => rules)
-            .SetValidator(ruleValidator);
+        RuleForEach(writings => writings)
+            .SetValidator(articleValidator);
 
-        RuleFor(rules => rules)
+        RuleFor(writings => writings)
             .Must(HasUniqueIds)
             .WithMessage("Duplicate IDs found!");
     }
@@ -26,9 +25,8 @@ public class WorldFaqCollectionValidator : AbstractValidator<IEnumerable<WorldFa
     // -----------------------------------------------------------------------------------------------------------------
     // Methods
     // -----------------------------------------------------------------------------------------------------------------
-    private static bool HasUniqueIds(IEnumerable<WorldFaq> rules) {
+    private static bool HasUniqueIds(IEnumerable<WritingContent> writings) {
         HashSet<Guid> ids = [];
-        return rules.All(rule => ids.Add(rule.Id));
+        return writings.All(article => ids.Add(article.Id));
     }
-
 }

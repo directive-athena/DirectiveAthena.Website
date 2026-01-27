@@ -1,7 +1,7 @@
 ﻿@* ------------------------------------------------------------------------------------------------------------------ *@
 @* Imports
 @* ------------------------------------------------------------------------------------------------------------------ *@
-@using DirectiveAthenaWeb.Services.Writings
+@using DirectiveAthenaWeb.Content.Writings
 @using DirectiveAthenaWeb.Services.Localization.Resources
 @using InfiniBlazor.Markdown
 @using Microsoft.Extensions.Localization
@@ -13,8 +13,8 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @page "/writings/{Id:guid}"
 
-@inject IWritingRepository WritingRepository
-@inject IWritingManager WritingManager
+@inject IWritingContentRepository WritingRepository
+@inject IWritingContentManager WritingManager
 @inject HttpClient HttpClient
 @inject NavigationManager NavigationManager
 @inject IDirectiveAthenaWebJs WebJs
@@ -111,7 +111,7 @@
 @code {
     [Parameter] public Guid? Id { get; set; }
 
-    private Writing? _currentPost;
+    private WritingContent? _currentPost;
     private string _markdown = "";
     private int _readTimeMinutes = 1;
     private bool _loading;

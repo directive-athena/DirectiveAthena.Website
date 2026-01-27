@@ -1,17 +1,18 @@
 // ---------------------------------------------------------------------------------------------------------------------
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
-using System.Net;
-using System.Net.Http.Json;
-using System.Net.Http.Headers;
-using System.Text.Json;
+using DirectiveAthenaWeb.Services.ContentStorage;
 using DirectiveAthenaWeb.Services.Localization;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 using Minio;
 using Minio.DataModel.Args;
+using System.Net;
+using System.Net.Http.Headers;
+using System.Net.Http.Json;
+using System.Text.Json;
 
-namespace DirectiveAthenaWeb.Services.ContentStorage;
+namespace DirectiveAthenaWeb.Services.Content;
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------

@@ -1,17 +1,17 @@
 ﻿@* ------------------------------------------------------------------------------------------------------------------ *@
 @* Imports
 @* ------------------------------------------------------------------------------------------------------------------ *@
+@using DirectiveAthenaWeb.Content.Faq
 @using DirectiveAthenaWeb.Services.ContentStorage
 @using DirectiveAthenaWeb.Services.Localization
 @using DirectiveAthenaWeb.Services.Localization.Resources
-@using DirectiveAthenaWeb.Services.WorldFaq
 @using Microsoft.Extensions.Localization
 
 @namespace DirectiveAthenaWeb.Components
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Descriptors
 @* ------------------------------------------------------------------------------------------------------------------ *@
-@inject IWorldFaqManager WorldFaqManager
+@inject IFaqContentManager WorldFaqManager
 @inject IContentStorageFactory ContentStorageFactory
 @inject IStringLocalizer<Shared> Localizer
 
@@ -113,7 +113,7 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 
 @code {
-    [Parameter, EditorRequired] public WorldFaq Rule { get; set; } = null!;
+    [Parameter, EditorRequired] public FaqContent Rule { get; set; } = null!;
     [Parameter] public EventCallback OnDeleteRule { get; set; }
     [Parameter] public EventCallback<bool> OnGenerateStubs { get; set; }
     [Parameter] public EventCallback OnTagsChanged { get; set; }

@@ -16,11 +16,11 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Components\" />
       <Folder Include="wwwroot\" />
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\DirectiveAthenaWeb.Components\DirectiveAthenaWeb.Components.csproj" />
       <ProjectReference Include="..\DirectiveAthenaWeb.Services.Content\DirectiveAthenaWeb.Services.Content.csproj" />
       <ProjectReference Include="..\DirectiveAthenaWeb.Services\DirectiveAthenaWeb.Services.csproj" />
       <ProjectReference Include="..\DirectiveAthenaWeb.Shared\DirectiveAthenaWeb.Shared.csproj" />

@@ -1,10 +1,10 @@
 ﻿// ---------------------------------------------------------------------------------------------------------------------
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
+using DirectiveAthenaWeb.Content.Faq;
 using DirectiveAthenaWeb.Content.Faq.Services;
 using DirectiveAthenaWeb.Services.ContentStorage;
 using DirectiveAthenaWeb.Services.Localization;
-using DirectiveAthenaWeb.Services.WorldFaq;
 using DirectiveAthenaWebTests.Helpers;
 using FluentValidation;
 using Microsoft.Extensions.Logging;
@@ -35,21 +35,21 @@ public class WorldFaqManagerTests {
         return factory;
     }
 
-    private static WorldFaqManager CreateManager(
+    private static FaqContentManager CreateManager(
         ILocalizationProvider localizationProvider,
         IContentStorage? storage = null,
         HttpClient? http = null,
-        IValidator<IEnumerable<WorldFaq>>? validator = null
+        IValidator<IEnumerable<FaqContent>>? validator = null
     ) {
         storage ??= Substitute.For<IContentStorage>();
         http ??= new HttpClient();
-        validator ??= new WorldFaqCollectionValidator(new WorldFaqValidator(localizationProvider));
-        var logger = Substitute.For<ILogger<WorldFaqManager>>();
-        return new WorldFaqManager(localizationProvider, CreateStorageFactory(storage), http, validator, logger);
+        validator ??= new FaqContentCollectionValidator(new FaqContentValidator(localizationProvider));
+        var logger = Substitute.For<ILogger<FaqContentManager>>();
+        return new FaqContentManager(localizationProvider, CreateStorageFactory(storage), http, validator, logger);
     }
 
-    private static WorldFaq CreateRule(int seed, bool includeNl = true) {
-        var rule = new WorldFaq {
+    private static FaqContent CreateRule(int seed, bool includeNl = true) {
+        var rule = new FaqContent {
             Id = Guid.NewGuid(),
             Date = $"2026-01-{seed:D2}",
             Question = new Dictionary<string, string> { ["en"] = $"Question {seed}" },
@@ -68,9 +68,9 @@ public class WorldFaqManagerTests {
     [Test]
     public async Task GetLocalizedQuestion_FallsBackToDefaultCulture() {
         // Arrange
-        WorldFaq rule = CreateRule(1, includeNl: false);
+        FaqContent rule = CreateRule(1, includeNl: false);
         ILocalizationProvider localizationProvider = CreateLocalizationProvider("nl");
-        WorldFaqManager manager = CreateManager(localizationProvider);
+        FaqContentManager manager = CreateManager(localizationProvider);
 
         // Act
         string result = manager.GetLocalizedQuestion(rule);
@@ -82,9 +82,9 @@ public class WorldFaqManagerTests {
     [Test]
     public async Task GetLocalizedAnswer_FallsBackToDefaultCulture() {
         // Arrange
-        WorldFaq rule = CreateRule(2, includeNl: false);
+        FaqContent rule = CreateRule(2, includeNl: false);
         ILocalizationProvider localizationProvider = CreateLocalizationProvider("nl");
-        WorldFaqManager manager = CreateManager(localizationProvider);
+        FaqContentManager manager = CreateManager(localizationProvider);
 
         // Act
         string result = manager.GetLocalizedAnswer(rule);
@@ -96,12 +96,12 @@ public class WorldFaqManagerTests {
     [Test]
     public async Task GetLocalizedFilePath_UsesCurrentLocalization() {
         // Arrange
-        WorldFaq rule = CreateRule(3);
+        FaqContent rule = CreateRule(3);
         ILocalizationProvider localizationProvider = CreateLocalizationProvider("nl");
         var storage = Substitute.For<IContentStorage>();
         storage.GetMarkdownContentPath(Arg.Any<string>(), Arg.Any<string>())
             .Returns(call => $"content/worldrules/{call.ArgAt<string>(0)}/{call.ArgAt<string>(1)}");
-        WorldFaqManager manager = CreateManager(localizationProvider, storage);
+        FaqContentManager manager = CreateManager(localizationProvider, storage);
 
         // Act
         string result = manager.GetLocalizedFilePath(rule);
@@ -115,8 +115,8 @@ public class WorldFaqManagerTests {
         // Arrange
         var handler = new TestHttpMessageHandler(_ => new HttpResponseMessage(HttpStatusCode.InternalServerError));
         var http = new HttpClient(handler) { BaseAddress = new Uri("http://localhost/") };
-        WorldFaqManager manager = CreateManager(CreateLocalizationProvider("en"), http: http);
-        WorldFaq rule = CreateRule(4);
+        FaqContentManager manager = CreateManager(CreateLocalizationProvider("en"), http: http);
+        FaqContent rule = CreateRule(4);
 
         // Act
         string result = await manager.GetRawMarkdownContentAsync(rule, "en");
@@ -129,10 +129,10 @@ public class WorldFaqManagerTests {
     public async Task NewRule_PopulatesLocalizedFields() {
         // Arrange
         ILocalizationProvider localizationProvider = CreateLocalizationProvider("en");
-        WorldFaqManager manager = CreateManager(localizationProvider);
+        FaqContentManager manager = CreateManager(localizationProvider);
 
         // Act
-        WorldFaq rule = manager.NewRule();
+        FaqContent rule = manager.NewRule();
         HashSet<string> expected = localizationProvider.GetSupportedLocalizations().Select(c => c.Code).ToHashSet();
 
         // Assert
@@ -147,14 +147,14 @@ public class WorldFaqManagerTests {
     public async Task Validate_RejectsDuplicateIds() {
         // Arrange
         var sharedId = Guid.NewGuid();
-        WorldFaq[] rules = [
+        FaqContent[] rules = [
             CreateRule(10),
             CreateRule(11)
         ];
         rules[0].Id = sharedId;
         rules[1].Id = sharedId;
 
-        WorldFaqManager manager = CreateManager(CreateLocalizationProvider("en"));
+        FaqContentManager manager = CreateManager(CreateLocalizationProvider("en"));
 
         // Act
         bool result = manager.Validate(rules, out string? error);
@@ -167,10 +167,10 @@ public class WorldFaqManagerTests {
     [Test]
     public async Task GenerateStubsAsync_ReturnsStubsForAllCultures() {
         // Arrange
-        WorldFaq rule = CreateRule(20);
+        FaqContent rule = CreateRule(20);
         var storage = Substitute.For<IContentStorage>();
         ILocalizationProvider localizationProvider = CreateLocalizationProvider("en");
-        WorldFaqManager manager = CreateManager(localizationProvider, storage);
+        FaqContentManager manager = CreateManager(localizationProvider, storage);
 
         // Act
         (Dictionary<string, string> Stubs, bool WroteAll) result = await manager.GenerateStubsAsync(rule, writeToDisk: false);
@@ -184,14 +184,14 @@ public class WorldFaqManagerTests {
     [Test]
     public async Task GenerateStubsAsync_WritesWhenRequested() {
         // Arrange
-        WorldFaq rule = CreateRule(21);
+        FaqContent rule = CreateRule(21);
         var storage = Substitute.For<IContentStorage>();
         ILocalizationProvider localizationProvider = CreateLocalizationProvider("en");
         storage.WriteFileAsync(Arg.Any<string>(), Arg.Any<string>()).Returns(new ValueTask<bool>(true));
         storage.GetMarkdownDiskPath(Arg.Any<string>(), Arg.Any<string>())
             .Returns(call => $"{call.ArgAt<string>(0)}/{call.ArgAt<string>(1)}");
 
-        WorldFaqManager manager = CreateManager(localizationProvider, storage);
+        FaqContentManager manager = CreateManager(localizationProvider, storage);
 
         // Act
         (Dictionary<string, string> Stubs, bool WroteAll) result = await manager.GenerateStubsAsync(rule, writeToDisk: true);

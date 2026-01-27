@@ -3,8 +3,8 @@
 // ---------------------------------------------------------------------------------------------------------------------
 using Bunit;
 using DirectiveAthenaWeb.Components;
+using DirectiveAthenaWeb.Content.Faq;
 using DirectiveAthenaWeb.Services.Localization.Resources;
-using DirectiveAthenaWeb.Services.WorldFaq;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using MudBlazor.Services;
@@ -13,7 +13,7 @@ namespace DirectiveAthenaWebTests.Components;
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
-public class WorldFaqListTests {
+public class FaqListTests {
     [Test]
     public async Task WorldFaqList_RendersDeletedChip() {
         // Arrange
@@ -23,7 +23,7 @@ public class WorldFaqListTests {
         ctx.JSInterop.SetupVoid("mudKeyInterceptor.connect", _ => true);
         var localizer = ctx.Services.GetRequiredService<IStringLocalizer<Shared>>();
 
-        var rule = new WorldFaq {
+        var rule = new FaqContent {
             Id = Guid.NewGuid(),
             Question = new Dictionary<string, string> {
                 ["en"] = "Question",
@@ -37,8 +37,8 @@ public class WorldFaqListTests {
         };
 
         // Act
-        IRenderedComponent<WorldFaqList> component = ctx.Render<WorldFaqList>(parameters => parameters
-            .Add(p => p.Rules, new List<WorldFaq> { rule }));
+        IRenderedComponent<FaqList> component = ctx.Render<FaqList>(parameters => parameters
+            .Add(p => p.Rules, new List<FaqContent> { rule }));
 
         // Assert
         await Assert.That(component.Markup).Contains(localizer[Shared.ListDeleted]);

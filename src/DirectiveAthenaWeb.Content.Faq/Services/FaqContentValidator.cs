@@ -3,18 +3,17 @@
 // ---------------------------------------------------------------------------------------------------------------------
 using CodeOfChaos.Extensions.DependencyInjection;
 using DirectiveAthenaWeb.Services.Localization;
-using DirectiveAthenaWeb.Services.WorldFaq;
 using FluentValidation;
 
 namespace DirectiveAthenaWeb.Content.Faq.Services;
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
-[InjectableTransient<IValidator<WorldFaq>>]
-public class WorldFaqValidator : AbstractValidator<WorldFaq> {
+[InjectableTransient<IValidator<FaqContent>>]
+public class FaqContentValidator : AbstractValidator<FaqContent> {
     private readonly IReadOnlyCollection<LocalizationInfo> _localizations;
 
-    public WorldFaqValidator(ILocalizationProvider localizationProvider) {
+    public FaqContentValidator(ILocalizationProvider localizationProvider) {
         _localizations = localizationProvider.GetSupportedLocalizations();
 
         RuleFor(rule => rule.Id)
@@ -37,10 +36,10 @@ public class WorldFaqValidator : AbstractValidator<WorldFaq> {
     // -----------------------------------------------------------------------------------------------------------------
     // Methods
     // -----------------------------------------------------------------------------------------------------------------
-    private bool HasLocalizedQuestions(WorldFaq rule)
+    private bool HasLocalizedQuestions(FaqContent rule)
         => HasLocalizedValues(rule.Question);
 
-    private bool HasLocalizedAnswers(WorldFaq rule)
+    private bool HasLocalizedAnswers(FaqContent rule)
         => HasLocalizedValues(rule.Answer);
 
     private bool HasLocalizedValues(Dictionary<string, string> values) {

@@ -4,7 +4,6 @@
 using CodeOfChaos.Extensions.DependencyInjection;
 using DirectiveAthenaWeb.Services.ContentStorage;
 using DirectiveAthenaWeb.Services.Localization;
-using DirectiveAthenaWeb.Services.WorldFaq;
 using FluentValidation;
 using FluentValidation.Results;
 using Microsoft.Extensions.Logging;
@@ -13,28 +12,28 @@ namespace DirectiveAthenaWeb.Content.Faq.Services;
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
-[InjectableScoped<IWorldFaqManager>]
-public class WorldFaqManager(
+[InjectableScoped<IFaqContentManager>]
+public class FaqContentManager(
     ILocalizationProvider localizationProvider,
     IContentStorageFactory storageFactory,
     HttpClient http,
-    IValidator<IEnumerable<WorldFaq>> validator,
-    ILogger<WorldFaqManager> logger
-) : IWorldFaqManager {
+    IValidator<IEnumerable<FaqContent>> validator,
+    ILogger<FaqContentManager> logger
+) : IFaqContentManager {
     private readonly IContentStorage _storage = storageFactory.ForCategory(ContentCategory.WorldFaq);
 
-    public string GetLocalizedQuestion(WorldFaq rule)
+    public string GetLocalizedQuestion(FaqContent rule)
         => GetLocalizedValue(rule.Question);
 
-    public string GetLocalizedAnswer(WorldFaq rule)
+    public string GetLocalizedAnswer(FaqContent rule)
         => GetLocalizedValue(rule.Answer);
 
-    public string GetLocalizedFilePath(WorldFaq rule) {
+    public string GetLocalizedFilePath(FaqContent rule) {
         LocalizationInfo localization = localizationProvider.GetCurrentLocalization();
         return _storage.GetMarkdownContentPath(localization.Code, rule.MarkdownFileName);
     }
 
-    public async Task<string> GetRawMarkdownContentAsync(WorldFaq rule, string locale, CancellationToken ct = default) {
+    public async Task<string> GetRawMarkdownContentAsync(FaqContent rule, string locale, CancellationToken ct = default) {
         try {
             string path = _storage.GetMarkdownContentPath(locale, rule.MarkdownFileName);
             logger.Debug("Fetching markdown for world rule {Id} at {Path}.", rule.Id, path);
@@ -46,7 +45,7 @@ public class WorldFaqManager(
         }
     }
 
-    public WorldFaq NewRule() {
+    public FaqContent NewRule() {
         var id = Guid.CreateVersion7();
         DateTime now = DateTime.UtcNow;
         IReadOnlyCollection<LocalizationInfo> locals = localizationProvider.GetSupportedLocalizations();
@@ -54,7 +53,7 @@ public class WorldFaqManager(
         Dictionary<string, string> questions = locals.ToDictionary(c => c.Code, _ => "New Rule");
         Dictionary<string, string> answers = locals.ToDictionary(c => c.Code, c => $"{c.DisplayName} - Answer here");
 
-        var rule = new WorldFaq {
+        var rule = new FaqContent {
             Id = id,
             Date = DateTime.UtcNow.ToString("yyyy-MM-dd"),
             Question = questions,
@@ -67,7 +66,7 @@ public class WorldFaqManager(
         return rule;
     }
 
-    public bool Validate(IEnumerable<WorldFaq> rules, out string? errorMessage) {
+    public bool Validate(IEnumerable<FaqContent> rules, out string? errorMessage) {
         ValidationResult? result = validator.Validate(rules);
         if (result.IsValid) {
             errorMessage = null;
@@ -79,7 +78,7 @@ public class WorldFaqManager(
         return false;
     }
 
-    public async Task<(Dictionary<string, string> Stubs, bool WroteAll)> GenerateStubsAsync(WorldFaq rule, bool writeToDisk = false, CancellationToken ct = default) {
+    public async Task<(Dictionary<string, string> Stubs, bool WroteAll)> GenerateStubsAsync(FaqContent rule, bool writeToDisk = false, CancellationToken ct = default) {
         IReadOnlyCollection<LocalizationInfo> locals = localizationProvider.GetSupportedLocalizations();
         Dictionary<string, string> stubs = locals.ToDictionary(
             c => c.Code,

@@ -1,16 +1,16 @@
 ﻿@* ------------------------------------------------------------------------------------------------------------------ *@
 @* Imports
 @* ------------------------------------------------------------------------------------------------------------------ *@
+@using DirectiveAthenaWeb.Content.Faq
 @using DirectiveAthenaWeb.Services.Localization.Resources
-@using DirectiveAthenaWeb.Services.WorldFaq
 @using Microsoft.Extensions.Localization
 
 @namespace DirectiveAthenaWeb.Components
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Descriptors
 @* ------------------------------------------------------------------------------------------------------------------ *@
-@inject IWorldFaqRepository WorldFaqRepository
-@inject IWorldFaqManager WorldFaqManager
+@inject IFaqContentRepository WorldFaqRepository
+@inject IFaqContentManager WorldFaqManager
 @inject IStringLocalizer<Shared> LocalizerShared
 @inject IStringLocalizer<Tags> LocalizerTags
 @inject NavigationManager NavigationManager
@@ -57,7 +57,7 @@
             }
             else {
                 <MudGrid Spacing="6">
-                    @foreach (WorldFaq rule in WorldFaqs) {
+                    @foreach (FaqContent rule in WorldFaqs) {
                         <MudItem xs="12" md="6">
                             <MudCard Class="card-glass h-100 d-flex flex-column" @onclick="@(() => ViewRules())"
                                      Style="cursor: pointer;">
@@ -96,14 +96,14 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 
 @code {
-    private List<WorldFaq>? WorldFaqs { get; set; }
+    private List<FaqContent>? WorldFaqs { get; set; }
     private bool _isLoaded;
 
     // -----------------------------------------------------------------------------------------------------------------
     // Methods
     // -----------------------------------------------------------------------------------------------------------------
     protected override async Task OnInitializedAsync() {
-        IEnumerable<WorldFaq> rules = await WorldFaqRepository.GetAllAsync();
+        IEnumerable<FaqContent> rules = await WorldFaqRepository.GetAllAsync();
         WorldFaqs = rules
             .Where(rule => rule.ShowOnHomepage)
             .OrderByDescending(rule => rule.LastModifiedAt)

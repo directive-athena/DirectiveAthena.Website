@@ -3,8 +3,8 @@
 // ---------------------------------------------------------------------------------------------------------------------
 using DirectiveAthenaWeb.Services.Content;
 
-namespace DirectiveAthenaWeb.Services.Writings;
+namespace DirectiveAthenaWeb.Content.Faq;
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
-public interface IWritingRepository : IContentRepository<Writing>;
+public interface IFaqContentRepository : IContentRepository<FaqContent>;

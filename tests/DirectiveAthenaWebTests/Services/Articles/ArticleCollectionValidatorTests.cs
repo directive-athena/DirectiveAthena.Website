@@ -1,9 +1,9 @@
 ﻿// ---------------------------------------------------------------------------------------------------------------------
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
+using DirectiveAthenaWeb.Content.Writings;
 using DirectiveAthenaWeb.Content.Writings.Services;
 using DirectiveAthenaWeb.Services.Localization;
-using DirectiveAthenaWeb.Services.Writings;
 using DirectiveAthenaWebTests.Helpers;
 using FluentValidation.Results;
 using NSubstitute;
@@ -32,13 +32,13 @@ public class WritingCollectionValidatorTests {
     [Test]
     public async Task Validate_RejectsDuplicateIds() {
         // Arrange
-        Writing[] writings = [
+        WritingContent[] writings = [
             WritingFaker.Create(400),
             WritingFaker.Create(401)
         ];
         writings[1].Id = writings[0].Id;
 
-        var validator = new WritingCollectionValidator(new WritingValidator(CreateLocalizationProvider("en")));
+        var validator = new WritingContentCollectionValidator(new WritingContentValidator(CreateLocalizationProvider("en")));
 
         // Act
         ValidationResult? result = await validator.ValidateAsync(writings);
@@ -51,11 +51,11 @@ public class WritingCollectionValidatorTests {
     [Test]
     public async Task Validate_FailsWhenAnyWritingIsInvalid() {
         // Arrange
-        Writing valid = WritingFaker.Create(420);
-        Writing invalid = WritingFaker.Create(421, includeNl: false);
-        Writing[] writings = [valid, invalid];
+        WritingContent valid = WritingFaker.Create(420);
+        WritingContent invalid = WritingFaker.Create(421, includeNl: false);
+        WritingContent[] writings = [valid, invalid];
 
-        var validator = new WritingCollectionValidator(new WritingValidator(CreateLocalizationProvider("en")));
+        var validator = new WritingContentCollectionValidator(new WritingContentValidator(CreateLocalizationProvider("en")));
 
         // Act
         ValidationResult? result = await validator.ValidateAsync(writings);

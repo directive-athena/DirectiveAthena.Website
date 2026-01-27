@@ -1,8 +1,8 @@
 ﻿@* ------------------------------------------------------------------------------------------------------------------ *@
 @* Imports
 @* ------------------------------------------------------------------------------------------------------------------ *@
+@using DirectiveAthenaWeb.Content.Faq
 @using DirectiveAthenaWeb.Services.Localization.Resources
-@using DirectiveAthenaWeb.Services.WorldFaq
 @using Microsoft.Extensions.Localization
 
 @namespace DirectiveAthenaWeb.Components
@@ -19,10 +19,10 @@
         <MudText Typo="Typo.h6">@Localizer[Shared.ListRules]</MudText>
         <MudIconButton Icon="@Icons.Material.Filled.Add" Color="Color.Primary" OnClick="@OnCreateRule"/>
     </div>
-    <MudList T="WorldFaq" SelectedValue="SelectedRule" SelectedValueChanged="OnRuleSelected"
+    <MudList T="FaqContent" SelectedValue="SelectedRule" SelectedValueChanged="OnRuleSelected"
              Color="Color.Primary">
         @if (Rules is not null) {
-            foreach (WorldFaq rule in Rules) {
+            foreach (FaqContent rule in Rules) {
                 <MudListItem Value="rule">
                     <div class="d-flex flex-column">
                         <MudText
@@ -51,8 +51,8 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 
 @code {
-    [Parameter] public List<WorldFaq>? Rules { get; set; }
-    [Parameter] public WorldFaq? SelectedRule { get; set; }
-    [Parameter] public EventCallback<WorldFaq?> OnRuleSelected { get; set; }
+    [Parameter] public List<FaqContent>? Rules { get; set; }
+    [Parameter] public FaqContent? SelectedRule { get; set; }
+    [Parameter] public EventCallback<FaqContent?> OnRuleSelected { get; set; }
     [Parameter] public EventCallback OnCreateRule { get; set; }
 }

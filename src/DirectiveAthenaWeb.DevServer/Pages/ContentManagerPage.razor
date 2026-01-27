@@ -1,10 +1,10 @@
 ﻿@* ------------------------------------------------------------------------------------------------------------------ *@
 @* Imports
 @* ------------------------------------------------------------------------------------------------------------------ *@
+@using DirectiveAthenaWeb.Content.Faq
+@using DirectiveAthenaWeb.Content.Writings
 @using DirectiveAthenaWeb.Services.Localization.Resources
 @using DirectiveAthenaWeb.Services.Content
-@using DirectiveAthenaWeb.Services.WorldFaq
-@using DirectiveAthenaWeb.Services.Writings
 
 @namespace DirectiveAthenaWeb.DevServer.Pages
 @* ------------------------------------------------------------------------------------------------------------------ *@
@@ -17,10 +17,10 @@
 @page "/world-faq-manager"
 @page "/faq-manager"
 
-@inject IWritingRepository WritingRepository
-@inject IWritingManager WritingManager
-@inject IWorldFaqRepository WorldFaqRepository
-@inject IWorldFaqManager WorldFaqManager
+@inject IWritingContentRepository WritingRepository
+@inject IWritingContentManager WritingManager
+@inject IFaqContentRepository WorldFaqRepository
+@inject IFaqContentManager WorldFaqManager
 @inject IDirectiveAthenaWebJs WebJs
 @inject ISnackbar Snackbar
 @inject IStringLocalizer<Shared> Localizer
@@ -185,10 +185,10 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 
 @code {
-    private List<Writing>? _posts;
-    private Writing? _selectedPost;
-    private List<WorldFaq>? _rules;
-    private WorldFaq? _selectedRule;
+    private List<WritingContent>? _posts;
+    private WritingContent? _selectedPost;
+    private List<FaqContent>? _rules;
+    private FaqContent? _selectedRule;
     private int _activeTab;
 
     private bool ShowRemoteStorageBanner => true;
@@ -216,14 +216,14 @@
         .Distinct();
 
     protected override async Task OnInitializedAsync() {
-        IEnumerable<Writing> posts = await WritingRepository.GetAllAsync(QueryConfig.WithHidden | QueryConfig.WithSoftDeleted);
+        IEnumerable<WritingContent> posts = await WritingRepository.GetAllAsync(QueryConfig.WithHidden | QueryConfig.WithSoftDeleted);
         _posts = posts.ToList();
 
-        IEnumerable<WorldFaq> rules = await WorldFaqRepository.GetAllAsync(QueryConfig.WithHidden | QueryConfig.WithSoftDeleted);
+        IEnumerable<FaqContent> rules = await WorldFaqRepository.GetAllAsync(QueryConfig.WithHidden | QueryConfig.WithSoftDeleted);
         _rules = rules.ToList();
     }
 
-    private void OnPostSelected(Writing? post) {
+    private void OnPostSelected(WritingContent? post) {
         _selectedPost = post;
     }
 
@@ -233,7 +233,7 @@
         OnWritingChanged();
     }
 
-    private void OnRuleSelected(WorldFaq? rule) {
+    private void OnRuleSelected(FaqContent? rule) {
         _selectedRule = rule;
     }
 
@@ -270,7 +270,7 @@
             return;
         }
 
-        Writing postToDelete = _selectedPost;
+        WritingContent postToDelete = _selectedPost;
         _posts.Remove(postToDelete);
         _selectedPost = null;
 
@@ -310,7 +310,7 @@
             return;
         }
 
-        WorldFaq ruleToDelete = _selectedRule;
+        FaqContent ruleToDelete = _selectedRule;
         _rules.Remove(ruleToDelete);
         _selectedRule = null;
 

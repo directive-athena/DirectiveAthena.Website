@@ -1,7 +1,7 @@
 ﻿@* ------------------------------------------------------------------------------------------------------------------ *@
 @* Imports
 @* ------------------------------------------------------------------------------------------------------------------ *@
-@using DirectiveAthenaWeb.Services.Writings
+@using DirectiveAthenaWeb.Content.Writings
 @using DirectiveAthenaWeb.Services.ContentStorage
 @using DirectiveAthenaWeb.Services.Localization
 @using DirectiveAthenaWeb.Services.Localization.Resources
@@ -11,7 +11,7 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Descriptors
 @* ------------------------------------------------------------------------------------------------------------------ *@
-@inject IWritingManager WritingManager
+@inject IWritingContentManager WritingManager
 @inject IContentStorageFactory ContentStorageFactory
 @inject IStringLocalizer<Shared> Localizer
 
@@ -120,7 +120,7 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 
 @code {
-    [Parameter, EditorRequired] public Writing Post { get; set; } = null!;
+    [Parameter, EditorRequired] public WritingContent Post { get; set; } = null!;
     [Parameter] public EventCallback OnDeletePost { get; set; }
     [Parameter] public EventCallback<bool> OnGenerateStubs { get; set; }
     [Parameter] public EventCallback OnTagsChanged { get; set; }

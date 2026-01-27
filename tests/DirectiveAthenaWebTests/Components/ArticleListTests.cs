@@ -3,7 +3,7 @@
 // ---------------------------------------------------------------------------------------------------------------------
 using Bunit;
 using DirectiveAthenaWeb.Components;
-using DirectiveAthenaWeb.Services.Writings;
+using DirectiveAthenaWeb.Content.Writings;
 using DirectiveAthenaWeb.Services.Localization.Resources;
 using DirectiveAthenaWebTests.Helpers;
 using MudBlazor.Services;
@@ -24,9 +24,9 @@ public class WritingListTests {
         ctx.JSInterop.SetupVoid("mudKeyInterceptor.connect", _ => true);
         var localizer = ctx.Services.GetRequiredService<IStringLocalizer<Shared>>();
 
-        Writing post = WritingFaker.Create(200, hidden: true, includeNl: false);
+        WritingContent post = WritingFaker.Create(200, hidden: true, includeNl: false);
         post.SoftDeletedAt = DateTime.UtcNow;
-        List<Writing> posts = [post];
+        List<WritingContent> posts = [post];
 
         // Act
         IRenderedComponent<WritingList> component = ctx.Render<WritingList>(parameters => parameters

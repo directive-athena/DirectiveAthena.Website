@@ -1,7 +1,7 @@
 ﻿@* ------------------------------------------------------------------------------------------------------------------ *@
 @* Imports
 @* ------------------------------------------------------------------------------------------------------------------ *@
-@using DirectiveAthenaWeb.Services.Writings
+@using DirectiveAthenaWeb.Content.Writings
 @using DirectiveAthenaWeb.Services.Localization.Resources
 @using Microsoft.Extensions.Localization
 
@@ -11,8 +11,8 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @inherits DirectiveAthenaWeb.Components.WebsiteComponentBase
 
-@inject IWritingRepository WritingRepository
-@inject IWritingManager WritingManager
+@inject IWritingContentRepository WritingRepository
+@inject IWritingContentManager WritingManager
 @inject NavigationManager Nav
 @inject IStringLocalizer<Shared> Localizer
 @* ------------------------------------------------------------------------------------------------------------------ *@
@@ -107,7 +107,7 @@
                 }
             }
             else if (RemainingPosts is not null && RemainingPosts.Any()) {
-                foreach (Writing post in RemainingPosts) {
+                foreach (WritingContent post in RemainingPosts) {
                     <MudItem xs="12" md="4">
                         <MudCard Class="card-glass h-100 d-flex flex-column"
                                  @onclick="@(() => ViewPost(post.Id))"
@@ -141,15 +141,15 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 
 @code {
-    private IEnumerable<Writing>? RemainingPosts { get; set; }
-    private Writing? HighlightedPost { get; set; }
+    private IEnumerable<WritingContent>? RemainingPosts { get; set; }
+    private WritingContent? HighlightedPost { get; set; }
     private bool _isLoaded;
 
     // -----------------------------------------------------------------------------------------------------------------
     // Methods
     // -----------------------------------------------------------------------------------------------------------------
     protected override async Task OnInitializedAsync() {
-        Writing[] posts = await WritingRepository.GetAllAsync();
+        WritingContent[] posts = await WritingRepository.GetAllAsync();
 
         HighlightedPost = posts.FirstOrDefault();
         RemainingPosts = posts.Skip(1).Take(3);

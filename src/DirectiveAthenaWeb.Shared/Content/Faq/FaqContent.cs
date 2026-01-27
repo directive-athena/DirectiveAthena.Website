@@ -3,11 +3,11 @@
 // ---------------------------------------------------------------------------------------------------------------------
 using DirectiveAthenaWeb.Services.Content;
 
-namespace DirectiveAthenaWeb.Services.WorldFaq;
+namespace DirectiveAthenaWeb.Content.Faq;
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
-public class WorldFaq : ContentBase {
+public class FaqContent : ContentBase {
     public Dictionary<string, string> Question { get; set; } = new();
     public Dictionary<string, string> Answer { get; set; } = new();
     public string Date { get; set; } = "";

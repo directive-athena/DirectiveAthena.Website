@@ -3,18 +3,17 @@
 // ---------------------------------------------------------------------------------------------------------------------
 using CodeOfChaos.Extensions.DependencyInjection;
 using DirectiveAthenaWeb.Services.Localization;
-using DirectiveAthenaWeb.Services.Writings;
 using FluentValidation;
 
 namespace DirectiveAthenaWeb.Content.Writings.Services;
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
-[InjectableTransient<IValidator<Writing>>]
-public class WritingValidator : AbstractValidator<Writing> {
+[InjectableTransient<IValidator<WritingContent>>]
+public class WritingContentValidator : AbstractValidator<WritingContent> {
     private readonly IReadOnlyCollection<LocalizationInfo> _localizations;
 
-    public WritingValidator(ILocalizationProvider localizationProvider) {
+    public WritingContentValidator(ILocalizationProvider localizationProvider) {
         _localizations = localizationProvider.GetSupportedLocalizations();
 
         RuleFor(article => article.Id)
@@ -33,10 +32,10 @@ public class WritingValidator : AbstractValidator<Writing> {
     // -----------------------------------------------------------------------------------------------------------------
     // Methods
     // -----------------------------------------------------------------------------------------------------------------
-    private bool HasLocalizedTitles(Writing article)
+    private bool HasLocalizedTitles(WritingContent article)
         => HasLocalizedValues(article.Title);
 
-    private bool HasLocalizedSummaries(Writing article)
+    private bool HasLocalizedSummaries(WritingContent article)
         => HasLocalizedValues(article.Summary);
 
     private bool HasLocalizedValues(Dictionary<string, string> values) {

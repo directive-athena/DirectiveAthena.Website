@@ -2,23 +2,22 @@
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
 using CodeOfChaos.Extensions.DependencyInjection;
-using DirectiveAthenaWeb.Services.Writings;
 using FluentValidation;
 
-namespace DirectiveAthenaWeb.Content.Writings.Services;
+namespace DirectiveAthenaWeb.Content.Faq.Services;
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
-[InjectableTransient<IValidator<IEnumerable<Writing>>>]
-public class WritingCollectionValidator : AbstractValidator<IEnumerable<Writing>> {
-    public WritingCollectionValidator(IValidator<Writing> articleValidator) {
-        RuleFor(writings => writings)
+[InjectableTransient<IValidator<IEnumerable<FaqContent>>>]
+public class FaqContentCollectionValidator : AbstractValidator<IEnumerable<FaqContent>> {
+    public FaqContentCollectionValidator(IValidator<FaqContent> ruleValidator) {
+        RuleFor(rules => rules)
             .NotNull();
 
-        RuleForEach(writings => writings)
-            .SetValidator(articleValidator);
+        RuleForEach(rules => rules)
+            .SetValidator(ruleValidator);
 
-        RuleFor(writings => writings)
+        RuleFor(rules => rules)
             .Must(HasUniqueIds)
             .WithMessage("Duplicate IDs found!");
     }
@@ -26,8 +25,9 @@ public class WritingCollectionValidator : AbstractValidator<IEnumerable<Writing>
     // -----------------------------------------------------------------------------------------------------------------
     // Methods
     // -----------------------------------------------------------------------------------------------------------------
-    private static bool HasUniqueIds(IEnumerable<Writing> writings) {
+    private static bool HasUniqueIds(IEnumerable<FaqContent> rules) {
         HashSet<Guid> ids = [];
-        return writings.All(article => ids.Add(article.Id));
+        return rules.All(rule => ids.Add(rule.Id));
     }
+
 }
