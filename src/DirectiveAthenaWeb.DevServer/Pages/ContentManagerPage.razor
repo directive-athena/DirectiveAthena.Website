@@ -70,7 +70,7 @@
                                         @GetAutoSaveStatusText(_articleAutoSaveStatus, _articleLastSavedAt)
                                     </MudChip>
                                     <MudText Typo="Typo.caption" Class="opacity-70">
-                                        @GetAutoSaveDetailText(_articleAutoSaveStatus, _articleLastSavedAt)
+                                        @GetAutoSaveDetailText(_articleAutoSaveStatus)
                                     </MudText>
                                 </div>
                                 @if (!string.IsNullOrWhiteSpace(_articleAutoSaveError)) {
@@ -131,7 +131,7 @@
                                         @GetAutoSaveStatusText(_ruleAutoSaveStatus, _ruleLastSavedAt)
                                     </MudChip>
                                     <MudText Typo="Typo.caption" Class="opacity-70">
-                                        @GetAutoSaveDetailText(_ruleAutoSaveStatus, _ruleLastSavedAt)
+                                        @GetAutoSaveDetailText(_ruleAutoSaveStatus)
                                     </MudText>
                                 </div>
                                 @if (!string.IsNullOrWhiteSpace(_ruleAutoSaveError)) {
@@ -600,7 +600,7 @@
         };
     }
 
-    private string GetAutoSaveDetailText(AutoSaveStatus status, DateTimeOffset? lastSavedAt) {
+    private string GetAutoSaveDetailText(AutoSaveStatus status) {
         if (!_autoSaveEnabled) return Localizer[Shared.ContentManagerAutoSaveDetailOff];
 
         return status switch {
