@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsPackable>false</IsPackable>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="NSubstitute" />
+    <PackageReference Include="TUnit" />
+    <PackageReference Include="BUnit" />
+    <PackageReference Include="Bogus" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\DirectiveAthenaWeb.Services\DirectiveAthenaWeb.Services.csproj" />
+    <ProjectReference Include="..\..\src\DirectiveAthenaWeb\DirectiveAthenaWeb.csproj" />
+  </ItemGroup>
+
+</Project>

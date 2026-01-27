@@ -1,0 +1,49 @@
+@using DirectiveAthenaWeb.Components.Layout
+@using DirectiveAthenaWeb.Components.Pages
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Imports
+@* ------------------------------------------------------------------------------------------------------------------ *@
+
+@namespace DirectiveAthenaWeb.DevServer
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Descriptors
+@* ------------------------------------------------------------------------------------------------------------------ *@
+
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Html
+@* ------------------------------------------------------------------------------------------------------------------ *@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Directive Athena - Content Manager</title>
+    <meta name="theme-color" content="#0A0E1C" />
+    <base href="/" />
+    <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
+    <link rel="stylesheet" href="css/app.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="_content/MudBlazor/MudBlazor.min.css" rel="stylesheet" />
+    <link href="DirectiveAthena.Website.styles.css" rel="stylesheet" />
+    <HeadOutlet />
+</head>
+<body>
+    <WebsiteThemeProviders />
+
+    <Router AppAssembly="@typeof(AdminApp).Assembly" NotFoundPage="@typeof(NotFoundPage)">
+        <Found Context="routeData">
+            <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
+        </Found>
+    </Router>
+
+    <script src="_framework/blazor.web.js"></script>
+    <script src="_content/MudBlazor/MudBlazor.min.js"></script>
+    <script src="js/interop.bundle.min.js"></script>
+</body>
+</html>
+
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Code
+@* ------------------------------------------------------------------------------------------------------------------ *@
