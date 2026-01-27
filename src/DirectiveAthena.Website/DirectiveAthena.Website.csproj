@@ -39,8 +39,13 @@
     <_ContentIncludedByDefault Remove="wwwroot\content\world-rules\index.json" />
   </ItemGroup>
 
+  <PropertyGroup>
+    <ClientAssetsDir Condition="'$(SolutionDir)' != ''">$(SolutionDir)src\DirectiveAthena.Website.ClientAssets</ClientAssetsDir>
+    <ClientAssetsDir Condition="'$(ClientAssetsDir)' == ''">$(MSBuildProjectDirectory)\..\DirectiveAthena.Website.ClientAssets</ClientAssetsDir>
+  </PropertyGroup>
+
   <Target Name="BuildWebpackRelease" BeforeTargets="Publish" Condition="'$(Configuration)' == 'Release'">
     <Message Text="Building webpack bundle (Release)..." Importance="high" />
-    <Exec Command="npm run build" WorkingDirectory="$(SolutionDir)src\DirectiveAthena.Website.ClientAssets" />
+    <Exec Command="npm run build" WorkingDirectory="$(ClientAssetsDir)" />
   </Target>
 </Project>
