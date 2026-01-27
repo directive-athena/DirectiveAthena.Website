@@ -38,7 +38,7 @@ public class ArticleRepositoryTests {
         var repo = new ArticleRepository(storage, logger);
 
         // Act
-        List<Article> result = (await repo.GetAllWithoutHiddenAsync()).ToList();
+        List<Article> result = (await repo.GetAllAsync()).ToList();
 
         // Assert
         await Assert.That(result.Count).IsEqualTo(2);
@@ -55,7 +55,7 @@ public class ArticleRepositoryTests {
         var repo = new ArticleRepository(storage, logger);
 
         // Act
-        IEnumerable<Article> result = await repo.GetAllWithoutHiddenAsync();
+        IEnumerable<Article> result = await repo.GetAllAsync();
 
         // Assert
         await Assert.That(result.Any()).IsFalse();
@@ -76,7 +76,7 @@ public class ArticleRepositoryTests {
         var repo = new ArticleRepository(storage, logger);
 
         // Act
-        _ = (await repo.GetAllWithoutHiddenAsync()).ToList();
+        _ = (await repo.GetAllAsync()).ToList();
         _ = (await repo.GetAllAsync()).ToList();
 
         // Assert
@@ -94,7 +94,7 @@ public class ArticleRepositoryTests {
         var repo = new ArticleRepository(storage, logger);
 
         // Act
-        IEnumerable<Article> result = await repo.GetAllWithoutHiddenAsync();
+        IEnumerable<Article> result = await repo.GetAllAsync();
 
         // Assert
         await Assert.That(result).IsEmpty();

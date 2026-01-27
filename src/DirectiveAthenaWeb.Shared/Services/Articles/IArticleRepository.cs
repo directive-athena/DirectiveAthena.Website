@@ -7,6 +7,4 @@ namespace DirectiveAthenaWeb.Services.Articles;
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
-public interface IArticleRepository : IContentRepository<Article> {
-    ValueTask<Article[]> GetAllWithoutHiddenAsync(CancellationToken ct = default);
-}
+public interface IArticleRepository : IContentRepository<Article>;

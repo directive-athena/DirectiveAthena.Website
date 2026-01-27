@@ -134,8 +134,7 @@
         _currentPost = await ArticleRepository.GetByIdAsync(id);
 
         if (_currentPost is null) {
-            _error = true;
-            _loading = false;
+            NavigationManager.NavigateTo("/not-found");
             return;
         }
 

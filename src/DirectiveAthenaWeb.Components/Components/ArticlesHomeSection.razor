@@ -148,7 +148,7 @@
     // Methods
     // -----------------------------------------------------------------------------------------------------------------
     protected override async Task OnInitializedAsync() {
-        Article[] posts = await ArticleRepository.GetAllWithoutHiddenAsync();
+        Article[] posts = await ArticleRepository.GetAllAsync();
 
         HighlightedPost = posts.FirstOrDefault();
         RemainingPosts = posts.Skip(1).Take(3);

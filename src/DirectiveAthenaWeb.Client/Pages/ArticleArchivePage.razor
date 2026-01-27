@@ -95,7 +95,7 @@
     private string? _selectedTag;
 
     protected override async Task OnInitializedAsync() {
-        IEnumerable<Article> posts = await ArticleRepository.GetAllWithoutHiddenAsync();
+        IEnumerable<Article> posts = await ArticleRepository.GetAllAsync();
         _posts = posts.ToArray();
     }
 
