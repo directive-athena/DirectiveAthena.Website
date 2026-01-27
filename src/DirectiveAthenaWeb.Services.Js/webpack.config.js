@@ -8,7 +8,7 @@ module.exports = (_env, argv) => {
         mode: isProd ? "production" : "development",
         entry: "./typescript/interop.ts",
         output: {
-            path: path.resolve(__dirname, "../DirectiveAthena.Website/wwwroot/js"),
+            path: path.resolve(__dirname, "../DirectiveAthenaWeb.Client/wwwroot/js"),
             filename: "interop.bundle.min.js"
         },
         resolve: {
