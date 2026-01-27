@@ -1,6 +1,7 @@
 // ---------------------------------------------------------------------------------------------------------------------
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
+using CodeOfChaos.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.JSInterop;
 
@@ -8,7 +9,8 @@ namespace DirectiveAthenaWeb.Services.Js;
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
-public sealed class DirectiveAthenaWebJs(IJSRuntime jsRuntime, ILogger<DirectiveAthenaWebJs> logger) : IDirectiveAthenaWebJs {
+[InjectableScoped<IDirectiveAthenaWebJs>]
+public class DirectiveAthenaWebJs(IJSRuntime jsRuntime, ILogger<DirectiveAthenaWebJs> logger) : IDirectiveAthenaWebJs {
     public async ValueTask<bool> CopyToClipboardAsync(string text, CancellationToken cancellationToken = default) {
         try {
             return await jsRuntime.InvokeAsync<bool>("copyToClipboard", cancellationToken, text);

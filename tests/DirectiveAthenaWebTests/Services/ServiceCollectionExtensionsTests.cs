@@ -5,6 +5,7 @@ using DirectiveAthenaWeb.Services;
 using DirectiveAthenaWeb.Services.Articles;
 using DirectiveAthenaWeb.Services.Contact;
 using DirectiveAthenaWeb.Services.ContentStorage;
+using DirectiveAthenaWeb.Services.Js;
 using DirectiveAthenaWeb.Services.Localization;
 using DirectiveAthenaWeb.Services.WorldRules;
 using FluentValidation;
@@ -31,8 +32,8 @@ public class ServiceCollectionExtensionsTests {
         await Assert.That(services).Any(s => s.ServiceType == typeof(IValidator<IEnumerable<Article>>));
         
         await Assert.That(services).Any(s => s.ServiceType == typeof(IContactInfoProvider));
-        
         await Assert.That(services).Any(s => s.ServiceType == typeof(IContentStorageFactory));
+        await Assert.That(services).Any(s => s.ServiceType == typeof(IDirectiveAthenaWebJs));
         
         await Assert.That(services).Any(s => s.ServiceType == typeof(ILocalizationInitializer));
         await Assert.That(services).Any(s => s.ServiceType == typeof(ILocalizationProvider));
