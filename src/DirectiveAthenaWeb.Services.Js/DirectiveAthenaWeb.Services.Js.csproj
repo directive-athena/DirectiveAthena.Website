@@ -7,4 +7,19 @@
         <IsPackable>false</IsPackable>
     </PropertyGroup>
 
+    <ItemGroup>
+        <PackageReference Include="CodeOfChaos.Extensions.DependencyInjection"/>
+        <PackageReference Include="CodeOfChaos.Extensions.DependencyInjection.Generators">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="CodeOfChaos.Extensions.MicrosoftLogging" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
+        <PackageReference Include="Microsoft.JSInterop"/>
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\DirectiveAthenaWeb.Shared\DirectiveAthenaWeb.Shared.csproj" />
+    </ItemGroup>
+
 </Project>

@@ -12,7 +12,7 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @inject IStringLocalizer<Tags> Localizer
 @inject IStringLocalizer<Shared> LocalizerShared
-@inject IJSRuntime JsRuntime
+@inject IDirectiveAthenaWebJs WebJs
 @inject ISnackbar Snackbar
 
 @inherits WebsiteComponentBase
@@ -145,7 +145,7 @@
     private async Task DownloadResx(string locale) {
         string content = GenerateResx(locale, "");
         string fileName = LocalizationProvider.IsDefaultCultureCode(locale) ? "Tags.resx" : $"Tags.{locale}.resx";
-        await JsRuntime.InvokeVoidAsync("downloadFile", fileName, content);
+        await WebJs.DownloadFileAsync(fileName, content);
     }
 
     private async Task SaveResx(string locale) {
@@ -155,9 +155,9 @@
         }
 
         string path = GetResxPath(locale);
-        string? existingXml = await JsRuntime.InvokeAsync<string?>("fsApi.readFile", path);
+        string? existingXml = await WebJs.ReadFileAsync(path);
         string content = GenerateResx(locale, existingXml ?? "");
-        bool success = await JsRuntime.InvokeAsync<bool>("fsApi.writeFile", path, content);
+        bool success = await WebJs.WriteFileAsync(path, content);
         if (success) {
             Snackbar.Add(string.Format(LocalizerShared[Shared.TagsManagerSaveSuccess], path), Severity.Success);
         }
@@ -167,13 +167,13 @@
     }
 
     private async Task<bool> EnsureFsAccessAsync() {
-        bool supported = await JsRuntime.InvokeAsync<bool>("fsApi.isSupported");
+        bool supported = await WebJs.IsFileSystemSupportedAsync();
         if (!supported) return false;
 
-        bool hasAccess = await JsRuntime.InvokeAsync<bool>("fsApi.hasAccess");
+        bool hasAccess = await WebJs.HasFileSystemAccessAsync();
         if (hasAccess) return true;
 
-        return await JsRuntime.InvokeAsync<bool>("fsApi.requestAccess");
+        return await WebJs.RequestFileSystemAccessAsync();
     }
 
     private string GetResxPath(string locale) {

@@ -8,7 +8,7 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Descriptors
 @* ------------------------------------------------------------------------------------------------------------------ *@
-@inject IJSRuntime JsRuntime
+@inject IDirectiveAthenaWebJs WebJs
 @inject NavigationManager NavigationManager
 
 @inherits WebsiteComponentBase
@@ -54,7 +54,7 @@
 @code {
     private async Task ChangeCulture(string culture) {
         if (CultureInfo.CurrentUICulture.TwoLetterISOLanguageName != culture) {
-            await JsRuntime.InvokeVoidAsync("localStorage.setItem", "culture", culture);
+            await WebJs.SetLocalStorageItemAsync("culture", culture);
             NavigationManager.NavigateTo(NavigationManager.Uri, forceLoad: true);
         }
     }
