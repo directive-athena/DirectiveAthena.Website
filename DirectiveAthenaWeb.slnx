@@ -16,11 +16,15 @@
   <Folder Name="/src/">
     <Project Path="src/DirectiveAthenaWeb.Client/DirectiveAthenaWeb.Client.csproj" />
     <Project Path="src/DirectiveAthenaWeb.Components/DirectiveAthenaWeb.Components.csproj" />
+    <Project Path="src/DirectiveAthenaWeb.Shared/DirectiveAthenaWeb.Shared.csproj" />
+  </Folder>
+  <Folder Name="/src/dev/">
     <Project Path="src/DirectiveAthenaWeb.DevServer/DirectiveAthenaWeb.DevServer.csproj" />
+  </Folder>
+  <Folder Name="/src/services/">
     <Project Path="src/DirectiveAthenaWeb.Services.Js/DirectiveAthenaWeb.Services.Js.csproj" />
     <Project Path="src/DirectiveAthenaWeb.Services.Localization/DirectiveAthenaWeb.Services.Localization.csproj" />
     <Project Path="src/DirectiveAthenaWeb.Services/DirectiveAthenaWeb.Services.csproj" />
-    <Project Path="src/DirectiveAthenaWeb.Shared/DirectiveAthenaWeb.Shared.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/DirectiveAthenaWebTests/DirectiveAthenaWebTests.csproj" />

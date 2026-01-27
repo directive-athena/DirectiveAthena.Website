@@ -178,7 +178,7 @@
 
     private string GetResxPath(string locale) {
         string fileName = LocalizationProvider.IsDefaultCultureCode(locale) ? "Tags.resx" : $"Tags.{locale}.resx";
-        return $"src/DirectiveAthena.Website.Components/Resources/{fileName}";
+        return $"src/DirectiveAthenaWeb.Services.Localization/Resources/{fileName}";
     }
 
     private string GenerateResx(string locale, string existingXml) {
