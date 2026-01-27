@@ -11,11 +11,11 @@ using Microsoft.Extensions.Logging;
 using NSubstitute;
 using System.Net;
 
-namespace DirectiveAthenaWebTests.Services.WorldRules;
+namespace DirectiveAthenaWebTests.Content.Faq;
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
-public class WorldFaqManagerTests {
+public class FaqContentManagerTests {
     private static ILocalizationProvider CreateLocalizationProvider(string currentCode) {
         LocalizationInfo[] localizations = [
             new("en", "English", "EN", ""),

@@ -23,6 +23,9 @@ public class ServiceCollectionExtensionsTests {
 
         // Act
         services.AddWebsiteServices();
+        
+        services.AddWritingContent();
+        services.AddFaqContent();
 
         // Assert
         await Assert.That(services).Any(s => s.ServiceType == typeof(IWritingContentManager));

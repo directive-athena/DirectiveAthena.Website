@@ -3,19 +3,19 @@
 // ---------------------------------------------------------------------------------------------------------------------
 using Bunit;
 using DirectiveAthenaWeb.Components;
-using DirectiveAthenaWeb.Content.Faq;
+using DirectiveAthenaWeb.Content.Writing;
 using DirectiveAthenaWeb.Services.Localization.Resources;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using MudBlazor.Services;
 
-namespace DirectiveAthenaWebTests.Components;
+namespace DirectiveAthenaWebTests.Content.Writing;
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
-public class FaqListTests {
+public class WritingListTests {
     [Test]
-    public async Task WorldFaqList_RendersDeletedChip() {
+    public async Task WritingList_RendersChipsForHiddenAndMissingNl() {
         // Arrange
         await using var ctx = new BunitContext();
         ctx.Services.AddMudServices();
@@ -23,24 +23,18 @@ public class FaqListTests {
         ctx.JSInterop.SetupVoid("mudKeyInterceptor.connect", _ => true);
         var localizer = ctx.Services.GetRequiredService<IStringLocalizer<Shared>>();
 
-        var rule = new FaqContent {
-            Id = Guid.NewGuid(),
-            Question = new Dictionary<string, string> {
-                ["en"] = "Question",
-                ["nl"] = "Vraag"
-            },
-            Answer = new Dictionary<string, string> {
-                ["en"] = "Answer",
-                ["nl"] = "Antwoord"
-            },
-            SoftDeletedAt = DateTime.UtcNow
-        };
+        WritingContent post = WritingFaker.Create(200, hidden: true, includeNl: false);
+        post.SoftDeletedAt = DateTime.UtcNow;
+        List<WritingContent> posts = [post];
 
         // Act
-        IRenderedComponent<FaqList> component = ctx.Render<FaqList>(parameters => parameters
-            .Add(p => p.Rules, [rule]));
+        IRenderedComponent<WritingList> component = ctx.Render<WritingList>(parameters => parameters
+            .Add(p => p.Posts, posts));
 
         // Assert
+        await Assert.That(component.Markup).Contains(post.Title["en"]);
+        await Assert.That(component.Markup).Contains(localizer[Shared.ListHidden]);
         await Assert.That(component.Markup).Contains(localizer[Shared.ListDeleted]);
+        await Assert.That(component.Markup).Contains(localizer[Shared.ListMissingNl]);
     }
 }

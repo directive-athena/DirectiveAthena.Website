@@ -5,18 +5,17 @@ using DirectiveAthenaWeb.Content.Writing;
 using DirectiveAthenaWeb.Content.Writing.Services;
 using DirectiveAthenaWeb.Services.Content;
 using DirectiveAthenaWeb.Services.ContentStorage;
-using DirectiveAthenaWebTests.Helpers;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
 using System.Net;
 using System.Net.Http.Headers;
 using System.Text.Json;
 
-namespace DirectiveAthenaWebTests.Services.Articles;
+namespace DirectiveAthenaWebTests.Content.Writing;
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
-public class WritingRepositoryTests {
+public class WritingContentRepositoryTests {
     private static IContentStorage CreateStorage() {
         var storage = Substitute.For<IContentStorage>();
         storage.IndexContentPath.Returns("content/writings/index.json");

@@ -5,7 +5,7 @@ using Bogus;
 using DirectiveAthenaWeb.Content.Writing;
 using DirectiveAthenaWeb.Services.Localization;
 
-namespace DirectiveAthenaWebTests.Helpers;
+namespace DirectiveAthenaWebTests.Content.Writing;
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------

@@ -23,13 +23,18 @@ public static class Program {
             .AddInteractiveServerComponents();
         builder.Services.AddHttpClient();
         builder.Services.AddScoped(sp => sp.GetRequiredService<IHttpClientFactory>().CreateClient());
-        builder.Services.AddWebsiteServices();
+        
         builder.Services.AddCors(options => {
             options.AddDefaultPolicy(policy => policy
                 .AllowAnyOrigin()
                 .AllowAnyHeader()
                 .AllowAnyMethod());
         });
+        
+        builder.Services.AddWebsiteServices();
+        
+        builder.Services.AddWritingContent();
+        builder.Services.AddFaqContent();
 
         // -------------------------------------------------------------------------------------------------------------
         // App

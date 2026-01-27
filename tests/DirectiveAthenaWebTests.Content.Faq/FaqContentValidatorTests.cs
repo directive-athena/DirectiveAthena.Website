@@ -8,11 +8,11 @@ using FluentValidation;
 using FluentValidation.Results;
 using NSubstitute;
 
-namespace DirectiveAthenaWebTests.Services.WorldRules;
+namespace DirectiveAthenaWebTests.Content.Faq;
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
-public class WorldFaqValidatorTests {
+public class FaqContentValidatorTests {
     private static ILocalizationProvider CreateLocalizationProvider() {
         LocalizationInfo[] localizations = [
             new("en", "English", "EN", ""),

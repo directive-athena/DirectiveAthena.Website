@@ -10,11 +10,11 @@ using System.Net;
 using System.Net.Http.Headers;
 using System.Text.Json;
 
-namespace DirectiveAthenaWebTests.Services.WorldRules;
+namespace DirectiveAthenaWebTests.Content.Faq;
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
-public class WorldFaqRepositoryTests {
+public class FaqContentRepositoryTests {
     private static IContentStorage CreateStorage() {
         var storage = Substitute.For<IContentStorage>();
         storage.IndexContentPath.Returns("content/worldrules/index.json");

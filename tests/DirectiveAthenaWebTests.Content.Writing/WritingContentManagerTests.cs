@@ -10,11 +10,11 @@ using Microsoft.Extensions.Logging;
 using NSubstitute;
 using System.Net;
 
-namespace DirectiveAthenaWebTests.Services.Articles;
+namespace DirectiveAthenaWebTests.Content.Writing;
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
-public class WritingManagerTests {
+public class WritingContentManagerTests {
 
     private static ILocalizationProvider CreateLocalizationProvider(string currentCode) {
         LocalizationInfo[] localizations = [

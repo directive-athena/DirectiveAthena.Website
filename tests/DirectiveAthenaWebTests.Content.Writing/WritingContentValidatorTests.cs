@@ -4,15 +4,14 @@
 using DirectiveAthenaWeb.Content.Writing;
 using DirectiveAthenaWeb.Content.Writing.Services;
 using DirectiveAthenaWeb.Services.Localization;
-using DirectiveAthenaWebTests.Helpers;
 using FluentValidation.Results;
 using NSubstitute;
 
-namespace DirectiveAthenaWebTests.Services.Articles;
+namespace DirectiveAthenaWebTests.Content.Writing;
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
-public class WritingValidatorTests {
+public class WritingContentValidatorTests {
 
     private static ILocalizationProvider CreateLocalizationProvider(string currentCode) {
         LocalizationInfo[] localizations = [
