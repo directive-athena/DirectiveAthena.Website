@@ -15,28 +15,28 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 <MudSimpleTable Style="overflow-x: auto;" Class="my-4">
     <thead>
-        <tr>
-            @{ ReadOnlySpan<TableCellMdSyntaxNode> span = SyntaxNode.GetHeaderCells(); }
-            @for (int index = 0; index < span.Length; index++) {
-                TableCellMdSyntaxNode headerItem = span[index];
-                <th style="text-align: @GetAlignmentString(index)">
-                    @ComponentConverter.RenderChildComponents(headerItem)
-                </th>
-            }
-        </tr>
+    <tr>
+        @{ ReadOnlySpan<TableCellMdSyntaxNode> span = SyntaxNode.GetHeaderCells(); }
+        @for (int index = 0; index < span.Length; index++) {
+            TableCellMdSyntaxNode headerItem = span[index];
+            <th style="text-align: @GetAlignmentString(index)">
+                @ComponentConverter.RenderChildComponents(headerItem)
+            </th>
+        }
+    </tr>
     </thead>
     <tbody>
-        @foreach (TableRowMdSyntaxNode rowNode in SyntaxNode.GetRows()) {
-            <tr>
-                @{ ReadOnlySpan<IMdSyntaxNode> nodes = rowNode.GetChildrenSpan(); }
-                @for (int index = 0; index < nodes.Length; index++) {
-                    IMdSyntaxNode node = nodes[index];
-                    <td style="text-align: @GetAlignmentString(index)">
-                        @ComponentConverter.RenderChildComponents(node)
-                    </td>
-                }
-            </tr>
-        }
+    @foreach (TableRowMdSyntaxNode rowNode in SyntaxNode.GetRows()) {
+        <tr>
+            @{ ReadOnlySpan<IMdSyntaxNode> nodes = rowNode.GetChildrenSpan(); }
+            @for (int index = 0; index < nodes.Length; index++) {
+                IMdSyntaxNode node = nodes[index];
+                <td style="text-align: @GetAlignmentString(index)">
+                    @ComponentConverter.RenderChildComponents(node)
+                </td>
+            }
+        </tr>
+    }
     </tbody>
 </MudSimpleTable>
 

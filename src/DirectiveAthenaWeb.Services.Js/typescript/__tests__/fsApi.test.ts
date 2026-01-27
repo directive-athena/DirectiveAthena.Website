@@ -1,6 +1,6 @@
 import "fake-indexeddb/auto";
-import { describe, it, expect, beforeEach } from "vitest";
-import { registerFsApi } from "../interop/fsApi";
+import {describe, it, expect, beforeEach} from "vitest";
+import {registerFsApi} from "../interop/fsApi";
 
 describe("fsApi interop", () => {
     beforeEach(() => {

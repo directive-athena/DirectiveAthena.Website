@@ -22,6 +22,7 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Code
 @* ------------------------------------------------------------------------------------------------------------------ *@
+
 @code {
     private Dictionary<string, object> GetAttributes() {
         var attrs = new Dictionary<string, object>();
@@ -33,6 +34,7 @@
     private string? GetTitle() {
         if (SyntaxNode.Title.IsNotNullOrWhiteSpace()) return SyntaxNode.Title;
         if (SyntaxNode.Modifier != null && SyntaxNode.Modifier.TryGetTitle(out string? title)) return title;
-        return null;   
+
+        return null;
     }
 }

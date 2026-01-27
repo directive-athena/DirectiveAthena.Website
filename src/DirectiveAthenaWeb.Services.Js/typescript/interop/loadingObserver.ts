@@ -30,6 +30,6 @@ export const initLoadingObserver = (): void => {
 
     const app = document.getElementById("app");
     if (app) {
-        observer.observe(app, { attributes: true, childList: true, subtree: true });
+        observer.observe(app, {attributes: true, childList: true, subtree: true});
     }
 };

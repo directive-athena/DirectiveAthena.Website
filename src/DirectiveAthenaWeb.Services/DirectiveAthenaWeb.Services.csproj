@@ -7,22 +7,22 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="CodeOfChaos.Extensions.DependencyInjection" />
+        <PackageReference Include="CodeOfChaos.Extensions.DependencyInjection"/>
         <PackageReference Include="CodeOfChaos.Extensions.DependencyInjection.Generators">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="InfiniLore.InfiniBlazor" />
-        <PackageReference Include="JetBrains.Annotations" />
-        <PackageReference Include="FluentValidation" />
-        <PackageReference Include="Minio" />
-        <PackageReference Include="MudBlazor" />
+        <PackageReference Include="InfiniLore.InfiniBlazor"/>
+        <PackageReference Include="JetBrains.Annotations"/>
+        <PackageReference Include="FluentValidation"/>
+        <PackageReference Include="Minio"/>
+        <PackageReference Include="MudBlazor"/>
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\DirectiveAthenaWeb.Services.Js\DirectiveAthenaWeb.Services.Js.csproj" />
-      <ProjectReference Include="..\DirectiveAthenaWeb.Services.Localization\DirectiveAthenaWeb.Services.Localization.csproj" />
-      <ProjectReference Include="..\DirectiveAthenaWeb.Shared\DirectiveAthenaWeb.Shared.csproj" />
+        <ProjectReference Include="..\DirectiveAthenaWeb.Services.Js\DirectiveAthenaWeb.Services.Js.csproj"/>
+        <ProjectReference Include="..\DirectiveAthenaWeb.Services.Localization\DirectiveAthenaWeb.Services.Localization.csproj"/>
+        <ProjectReference Include="..\DirectiveAthenaWeb.Shared\DirectiveAthenaWeb.Shared.csproj"/>
     </ItemGroup>
 
 </Project>

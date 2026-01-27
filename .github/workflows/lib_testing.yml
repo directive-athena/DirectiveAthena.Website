@@ -40,7 +40,7 @@ jobs:
         working-directory: src/DirectiveAthenaWeb.Services.Js
 
       - name: Restore dependencies
-        run: dotnet restore DirectiveAthena.Website.slnx
+        run: dotnet restore DirectiveAthenaWeb.slnx
 
       - name: Run tests
-        run: dotnet test --solution DirectiveAthena.Website.slnx --configuration Release --no-restore
+        run: dotnet test --solution DirectiveAthenaWeb.slnx --configuration Release --no-restore

@@ -49,8 +49,9 @@
 
         if (modifier.TryGetSize(out (int Width, int Height) size)) {
             styles.Add($"width:{size.Width}px;height:{size.Height}px;");
-        } else {
-             styles.Add("max-width: 100%; height: auto;");
+        }
+        else {
+            styles.Add("max-width: 100%; height: auto;");
         }
 
         return string.Join(";", styles);
@@ -59,6 +60,7 @@
     private string? GetTitle() {
         if (SyntaxNode.Title.IsNotNullOrWhiteSpace()) return SyntaxNode.Title;
         if (SyntaxNode.Modifier != null && SyntaxNode.Modifier.TryGetTitle(out string? title)) return title;
-        return null;   
+
+        return null;
     }
 }

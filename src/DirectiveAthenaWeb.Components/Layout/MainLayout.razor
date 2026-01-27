@@ -15,18 +15,18 @@
 @* Html
 @* ------------------------------------------------------------------------------------------------------------------ *@
 <MudLayout Class="min-vh-100 d-flex flex-column">
-    <BackgroundLayer />
+    <BackgroundLayer/>
 
-    <NavBar IsScrolled="_isScrolled" OnMenuClick="@(_ => _drawerOpen = !_drawerOpen)" />
+    <NavBar IsScrolled="_isScrolled" OnMenuClick="@(_ => _drawerOpen = !_drawerOpen)"/>
 
-    <DrawerMenu @bind-Open="_drawerOpen" />
+    <DrawerMenu @bind-Open="_drawerOpen"/>
 
     <MudMainContent Class="relative flex-grow-1 d-flex flex-column">
         <div class="flex-grow-1">
             @Body
         </div>
-        
-        <PageFooter />
+
+        <PageFooter/>
     </MudMainContent>
 </MudLayout>
 
@@ -49,9 +49,9 @@
     [JSInvokable]
     public void OnScroll(double scrollY) {
         bool scrolled = scrollY > 50;
-        
+
         if (scrolled == _isScrolled) return;
-        
+
         _isScrolled = scrolled;
         StateHasChanged();
     }

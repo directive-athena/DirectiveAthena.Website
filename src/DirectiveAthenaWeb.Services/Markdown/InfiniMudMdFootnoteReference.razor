@@ -13,7 +13,7 @@
 @* Html
 @* ------------------------------------------------------------------------------------------------------------------ *@
 <sup style="vertical-align: super; font-size: smaller;">
-    <a 
+    <a
         href="@($"#md-footnote-{SyntaxNode.Identifier}")"
         class="mud-link mud-primary-text mud-link-underline-hover"
         onclick="@($"document.getElementById('md-footnote-{SyntaxNode.Identifier}')?.scrollIntoView({{ behavior: 'smooth' }}); return false;")">
@@ -23,5 +23,6 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Code
 @* ------------------------------------------------------------------------------------------------------------------ *@
+
 @code {
 }

@@ -147,6 +147,7 @@
 
     private async Task DownloadMarkdown() {
         if (string.IsNullOrWhiteSpace(FileName)) return;
+
         string path = $"{_selectedLocale}/{FileName}";
         await JsRuntime.InvokeVoidAsync("downloadFile", path, _content);
     }

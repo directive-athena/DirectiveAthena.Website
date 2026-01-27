@@ -40,7 +40,7 @@
 
     protected override void OnInitialized() {
         base.OnInitialized();
-        
+
         // Extract hostname for Twitch embed parent requirement
         var uri = new Uri(NavigationManager.BaseUri);
         HostName = uri.Host;

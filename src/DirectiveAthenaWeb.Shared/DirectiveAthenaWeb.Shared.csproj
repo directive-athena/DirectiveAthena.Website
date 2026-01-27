@@ -8,8 +8,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="CodeOfChaos.Extensions" />
-      <PackageReference Include="JetBrains.Annotations" />
+        <PackageReference Include="CodeOfChaos.Extensions"/>
+        <PackageReference Include="JetBrains.Annotations"/>
     </ItemGroup>
 
 </Project>

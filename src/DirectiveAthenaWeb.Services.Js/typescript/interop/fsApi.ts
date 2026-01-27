@@ -1,4 +1,4 @@
-import type { FsApi } from "./types";
+import type {FsApi} from "./types";
 
 const DATABASE_NAME = "DirectiveAthenaDB";
 const STORE_NAME = "handles";
@@ -90,7 +90,7 @@ export const registerFsApi = (): void => {
                 return false;
             }
 
-            const permission = await handle.queryPermission?.({ mode: "readwrite" });
+            const permission = await handle.queryPermission?.({mode: "readwrite"});
             if (!permission) {
                 return false;
             }
@@ -111,7 +111,7 @@ export const registerFsApi = (): void => {
                 return false;
             }
 
-            const permission = await handle.requestPermission?.({ mode: "readwrite" });
+            const permission = await handle.requestPermission?.({mode: "readwrite"});
             return permission === "granted";
         },
         resetAccess: async () => {
@@ -135,7 +135,7 @@ export const registerFsApi = (): void => {
 
                 const fileHandle = await currentHandle.getFileHandle(
                     parts[parts.length - 1],
-                    { create: true }
+                    {create: true}
                 );
                 const writable = await fileHandle.createWritable();
                 await writable.write(content);

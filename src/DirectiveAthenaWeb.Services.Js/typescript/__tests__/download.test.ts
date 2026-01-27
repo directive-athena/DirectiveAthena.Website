@@ -1,5 +1,5 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
-import { registerDownload } from "../interop/download";
+import {describe, it, expect, beforeEach, afterEach, vi} from "vitest";
+import {registerDownload} from "../interop/download";
 
 describe("download interop", () => {
     const originalCreateObjectURL = URL.createObjectURL;

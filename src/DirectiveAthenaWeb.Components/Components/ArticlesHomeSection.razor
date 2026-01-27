@@ -23,7 +23,8 @@
         <div class="d-flex justify-space-between align-end mb-12">
             <div>
                 <MudText Typo="Typo.h2" Class="mb-4">@Localizer[Shared.HomeWritingsTitle]</MudText>
-                <MudText Typo="Typo.body1" Class="text-secondary opacity-70">@Localizer[Shared.HomeWritingsSubtitle]</MudText>
+                <MudText Typo="Typo.body1"
+                         Class="text-secondary opacity-70">@Localizer[Shared.HomeWritingsSubtitle]</MudText>
             </div>
             <MudButton Variant="Variant.Text" Color="Color.Secondary" Href="/articles"
                        EndIcon="@Icons.Material.Filled.ArrowForward"
@@ -38,10 +39,14 @@
                         <MudGrid Spacing="0">
                             <MudItem xs="12" md="7" Class="pa-8 d-flex flex-column justify-center">
                                 <MudProgressLinear Color="Color.Secondary" Indeterminate="true" Class="mb-6"/>
-                                <MudProgressLinear Color="Color.Secondary" Indeterminate="true" Class="mb-4" Style="height: 10px;"/>
-                                <MudProgressLinear Color="Color.Secondary" Indeterminate="true" Class="mb-4" Style="height: 10px; width: 80%;"/>
-                                <MudProgressLinear Color="Color.Secondary" Indeterminate="true" Class="mb-4" Style="height: 10px; width: 70%;"/>
-                                <MudProgressLinear Color="Color.Secondary" Indeterminate="true" Style="height: 10px; width: 40%;"/>
+                                <MudProgressLinear Color="Color.Secondary" Indeterminate="true" Class="mb-4"
+                                                   Style="height: 10px;"/>
+                                <MudProgressLinear Color="Color.Secondary" Indeterminate="true" Class="mb-4"
+                                                   Style="height: 10px; width: 80%;"/>
+                                <MudProgressLinear Color="Color.Secondary" Indeterminate="true" Class="mb-4"
+                                                   Style="height: 10px; width: 70%;"/>
+                                <MudProgressLinear Color="Color.Secondary" Indeterminate="true"
+                                                   Style="height: 10px; width: 40%;"/>
                             </MudItem>
                             <MudItem xs="12" md="5" Class="d-none d-md-flex align-center justify-center bg-glow pa-12">
                                 <MudProgressCircular Color="Color.Secondary" Indeterminate="true" Size="Size.Large"/>
@@ -51,7 +56,7 @@
                 }
                 else if (HighlightedPost is not null) {
                     <MudCard Class="card-glass featured-card overflow-hidden"
-                             @onclick="@(_ => ViewPost(HighlightedPost.Id) )" Style="cursor: pointer;">
+                             @onclick="@(_ => ViewPost(HighlightedPost.Id))" Style="cursor: pointer;">
                         <MudGrid Spacing="0">
                             <MudItem xs="12" md="7" Class="pa-8 d-flex flex-column justify-center">
                                 <MudText Typo="Typo.caption" Color="Color.Primary"
@@ -81,7 +86,7 @@
                     <EmptyWritingsState/>
                 }
             </MudItem>
-            
+
             @* Recent Writings *@
             @if (!_isLoaded) {
                 for (int i = 0; i < 3; i++) {
@@ -89,9 +94,12 @@
                         <MudCard Class="card-glass h-100 d-flex flex-column">
                             <MudCardContent Class="flex-grow-1 pa-6">
                                 <MudProgressLinear Color="Color.Secondary" Indeterminate="true" Class="mb-4"/>
-                                <MudProgressLinear Color="Color.Secondary" Indeterminate="true" Class="mb-4" Style="height: 10px;"/>
-                                <MudProgressLinear Color="Color.Secondary" Indeterminate="true" Class="mb-4" Style="height: 10px; width: 75%;"/>
-                                <MudProgressLinear Color="Color.Secondary" Indeterminate="true" Style="height: 10px; width: 50%;"/>
+                                <MudProgressLinear Color="Color.Secondary" Indeterminate="true" Class="mb-4"
+                                                   Style="height: 10px;"/>
+                                <MudProgressLinear Color="Color.Secondary" Indeterminate="true" Class="mb-4"
+                                                   Style="height: 10px; width: 75%;"/>
+                                <MudProgressLinear Color="Color.Secondary" Indeterminate="true"
+                                                   Style="height: 10px; width: 50%;"/>
                             </MudCardContent>
                         </MudCard>
                     </MudItem>
@@ -120,7 +128,7 @@
                 }
             }
         </MudGrid>
-            
+
         <div class="d-flex justify-center mt-12 d-sm-none">
             <MudButton Variant="Variant.Outlined" Color="Color.Secondary"
                        Href="/articles">@Localizer[Shared.HomeWritingsViewAll]</MudButton>
@@ -141,10 +149,10 @@
     // -----------------------------------------------------------------------------------------------------------------
     protected override async Task OnInitializedAsync() {
         Article[] posts = await ArticleRepository.GetAllWithoutHiddenAsync();
-        
+
         HighlightedPost = posts.FirstOrDefault();
         RemainingPosts = posts.Skip(1).Take(3);
-        
+
         _isLoaded = true;
     }
 

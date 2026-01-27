@@ -30,7 +30,9 @@
             <MudItem xs="12" sm="6" Class="d-flex justify-sm-end align-center">
                 @foreach (ContactInfo contactInfo in ContactInfoProvider.GetContactInfos()) {
                     if (!contactInfo.IncludeInFooter) continue;
-                    <MudIconButton Icon="@contactInfo.Icon" Href="@contactInfo.Url" Target="_blank" Color="Color.Inherit"/>
+
+                    <MudIconButton Icon="@contactInfo.Icon" Href="@contactInfo.Url" Target="_blank"
+                                   Color="Color.Inherit"/>
                 }
             </MudItem>
         </MudGrid>
@@ -47,6 +49,7 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Code
 @* ------------------------------------------------------------------------------------------------------------------ *@
+
 @code {
     private string _version = "0";
 
@@ -57,7 +60,8 @@
             if (!string.IsNullOrWhiteSpace(trimmed)) {
                 _version = trimmed;
             }
-        } catch {
+        }
+        catch {
             _version = "unknown";
         }
     }

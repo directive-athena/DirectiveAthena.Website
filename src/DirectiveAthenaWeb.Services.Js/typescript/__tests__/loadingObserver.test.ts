@@ -1,5 +1,5 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
-import { initLoadingObserver } from "../interop/loadingObserver";
+import {describe, it, expect, beforeEach, afterEach, vi} from "vitest";
+import {initLoadingObserver} from "../interop/loadingObserver";
 
 describe("initLoadingObserver", () => {
     beforeEach(() => {

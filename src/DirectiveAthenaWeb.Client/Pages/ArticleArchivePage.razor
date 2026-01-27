@@ -26,7 +26,8 @@
         @* Archive View *@
         <div class="text-center mb-16">
             <MudText Typo="Typo.h2" Class="mb-4">@LocalizerShared[Shared.WritingsArchiveTitle]</MudText>
-            <MudText Typo="Typo.body1" Class="text-secondary opacity-70">@LocalizerShared[Shared.WritingsArchiveSubtitle]
+            <MudText Typo="Typo.body1"
+                     Class="text-secondary opacity-70">@LocalizerShared[Shared.WritingsArchiveSubtitle]
             </MudText>
         </div>
 
@@ -38,7 +39,8 @@
                 foreach (string tag in _posts.SelectMany(p => p.Tags).Distinct()) {
                     <MudChip T="string" Variant="@(_selectedTag == tag ? Variant.Filled : Variant.Outlined)"
                              Color="Color.Secondary"
-                             OnClick="@(() => FilterByTag(tag))">@LocalizerTags[tag])</MudChip>
+                             OnClick="@(() => FilterByTag(tag))">@LocalizerTags[tag])
+                    </MudChip>
                 }
             }
         </div>
@@ -94,7 +96,7 @@
 
     protected override async Task OnInitializedAsync() {
         IEnumerable<Article> posts = await ArticleRepository.GetAllWithoutHiddenAsync();
-        _posts = posts.ToArray() ;
+        _posts = posts.ToArray();
     }
 
     private IEnumerable<Article> FilteredPosts =>

@@ -16,7 +16,8 @@
     <ChildContent>
         <MudStack Row="true" AlignItems="AlignItems.Center">
             @if (SyntaxNode.IsCheckable) {
-                <MudCheckBox T="bool" Value="@SyntaxNode.IsChecked" ValueChanged="@OnCheckChanged" Dense="true" Color="Color.Primary" />
+                <MudCheckBox T="bool" Value="@SyntaxNode.IsChecked" ValueChanged="@OnCheckChanged" Dense="true"
+                             Color="Color.Primary"/>
             }
             <MudText Typo="Typo.body1" UserAttributes="@GetAttributes()">
                 @ComponentConverter.RenderChildComponents(SyntaxNode)
@@ -27,6 +28,7 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Code
 @* ------------------------------------------------------------------------------------------------------------------ *@
+
 @code {
     private Dictionary<string, object> GetAttributes() {
         var attrs = new Dictionary<string, object>();

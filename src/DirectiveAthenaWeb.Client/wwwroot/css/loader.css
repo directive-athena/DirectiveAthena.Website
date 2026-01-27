@@ -25,14 +25,18 @@
     width: 100%;
     height: 100%;
     background: radial-gradient(circle at center, transparent 0%, var(--cosmic-navy) 100%),
-                url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400' viewBox='0 0 800 800'%3E%3Cg fill='none' stroke='%23ffffff' stroke-opacity='0.1'%3E%3Ccircle cx='400' cy='400' r='1'/%3E%3Ccircle cx='100' cy='200' r='1'/%3E%3Ccircle cx='700' cy='600' r='1'/%3E%3Ccircle cx='300' cy='500' r='1'/%3E%3Ccircle cx='500' cy='100' r='1'/%3E%3Ccircle cx='200' cy='700' r='1'/%3E%3Ccircle cx='600' cy='300' r='1'/%3E%3C/g%3E%3C/svg%3E");
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400' viewBox='0 0 800 800'%3E%3Cg fill='none' stroke='%23ffffff' stroke-opacity='0.1'%3E%3Ccircle cx='400' cy='400' r='1'/%3E%3Ccircle cx='100' cy='200' r='1'/%3E%3Ccircle cx='700' cy='600' r='1'/%3E%3Ccircle cx='300' cy='500' r='1'/%3E%3Ccircle cx='500' cy='100' r='1'/%3E%3Ccircle cx='200' cy='700' r='1'/%3E%3Ccircle cx='600' cy='300' r='1'/%3E%3C/g%3E%3C/svg%3E");
     opacity: 0.5;
     animation: shimmer 10s linear infinite;
 }
 
 @keyframes shimmer {
-    from { transform: scale(1); }
-    to { transform: scale(1.1); }
+    from {
+        transform: scale(1);
+    }
+    to {
+        transform: scale(1.1);
+    }
 }
 
 .loader-content {
@@ -61,8 +65,15 @@
 }
 
 @keyframes logo-pulse {
-    0%, 100% { transform: scale(1); opacity: 0.9; }
-    50% { transform: scale(1.05); opacity: 1; filter: drop-shadow(0 0 20px rgba(128, 32, 64, 0.8)); }
+    0%, 100% {
+        transform: scale(1);
+        opacity: 0.9;
+    }
+    50% {
+        transform: scale(1.05);
+        opacity: 1;
+        filter: drop-shadow(0 0 20px rgba(128, 32, 64, 0.8));
+    }
 }
 
 .logo-glow-ring {
@@ -78,8 +89,12 @@
 }
 
 @keyframes ring-rotate {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 .boot-sequence {
@@ -99,7 +114,9 @@
 }
 
 @keyframes blink {
-    50% { opacity: 0; }
+    50% {
+        opacity: 0;
+    }
 }
 
 .scanline-container {
@@ -121,8 +138,12 @@
 }
 
 @keyframes scan {
-    from { left: -40px; }
-    to { left: 100%; }
+    from {
+        left: -40px;
+    }
+    to {
+        left: 100%;
+    }
 }
 
 .loading-bar-container {
@@ -149,21 +170,51 @@
 }
 
 @keyframes logo-activation {
-    0% { transform: scale(1); filter: brightness(1) drop-shadow(0 0 10px rgba(128, 32, 64, 0.5)); }
-    50% { transform: scale(1.1); filter: brightness(2) drop-shadow(0 0 30px var(--magenta-rose)); }
-    100% { transform: scale(1.2); filter: brightness(3) drop-shadow(0 0 50px var(--neon-cyan)); opacity: 0; }
+    0% {
+        transform: scale(1);
+        filter: brightness(1) drop-shadow(0 0 10px rgba(128, 32, 64, 0.5));
+    }
+    50% {
+        transform: scale(1.1);
+        filter: brightness(2) drop-shadow(0 0 30px var(--magenta-rose));
+    }
+    100% {
+        transform: scale(1.2);
+        filter: brightness(3) drop-shadow(0 0 50px var(--neon-cyan));
+        opacity: 0;
+    }
 }
 
 @keyframes ring-expansion {
-    0% { transform: scale(1); opacity: 0.2; border-width: 1px; }
-    50% { transform: scale(1.5); opacity: 0.5; border-width: 2px; border-color: var(--neon-cyan); }
-    100% { transform: scale(2); opacity: 0; border-width: 4px; }
+    0% {
+        transform: scale(1);
+        opacity: 0.2;
+        border-width: 1px;
+    }
+    50% {
+        transform: scale(1.5);
+        opacity: 0.5;
+        border-width: 2px;
+        border-color: var(--neon-cyan);
+    }
+    100% {
+        transform: scale(2);
+        opacity: 0;
+        border-width: 4px;
+    }
 }
 
 @keyframes fade-out {
-    0% { opacity: 1; }
-    70% { opacity: 1; }
-    100% { opacity: 0; visibility: hidden; }
+    0% {
+        opacity: 1;
+    }
+    70% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+        visibility: hidden;
+    }
 }
 
 #blazor-error-ui {

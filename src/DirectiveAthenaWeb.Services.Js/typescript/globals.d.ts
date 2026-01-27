@@ -1,4 +1,4 @@
-import type { DotNetInvoker, FsApi } from "./interop/types";
+import type {DotNetInvoker, FsApi} from "./interop/types";
 
 declare global {
     interface FileSystemHandlePermissionDescriptor {
@@ -23,22 +23,27 @@ declare global {
 
     interface FileSystemWritableFileStream {
         write(data: string): Promise<void>;
+
         close(): Promise<void>;
     }
 
     interface FileSystemFileHandle {
         getFile(): Promise<File>;
+
         createWritable(): Promise<FileSystemWritableFileStream>;
     }
 
     interface FileSystemDirectoryHandle {
         queryPermission?: (descriptor: FileSystemHandlePermissionDescriptor) => Promise<PermissionState>;
         requestPermission?: (descriptor: FileSystemHandlePermissionDescriptor) => Promise<PermissionState>;
+
         getDirectoryHandle(
             name: string,
             options?: FileSystemGetDirectoryOptions
         ): Promise<FileSystemDirectoryHandle>;
+
         getFileHandle(name: string, options?: FileSystemGetFileOptions): Promise<FileSystemFileHandle>;
+
         removeEntry(name: string, options?: FileSystemRemoveOptions): Promise<void>;
     }
 

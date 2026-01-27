@@ -1,11 +1,11 @@
-import { describe, it, expect, afterEach, beforeEach, vi } from "vitest";
-import { registerClipboard } from "../interop/clipboard";
+import {describe, it, expect, afterEach, beforeEach, vi} from "vitest";
+import {registerClipboard} from "../interop/clipboard";
 
 describe("clipboard interop", () => {
     const originalExecCommand = document.execCommand;
 
     beforeEach(() => {
-        Object.defineProperty(window, "isSecureContext", { value: false, configurable: true });
+        Object.defineProperty(window, "isSecureContext", {value: false, configurable: true});
         document.execCommand = vi.fn(() => true);
     });
 

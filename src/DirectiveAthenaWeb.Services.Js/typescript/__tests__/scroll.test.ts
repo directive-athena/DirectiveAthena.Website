@@ -1,5 +1,5 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
-import { registerScrollFunctions } from "../interop/scroll";
+import {describe, it, expect, beforeEach, afterEach, vi} from "vitest";
+import {registerScrollFunctions} from "../interop/scroll";
 
 describe("scroll interop", () => {
     beforeEach(() => {
@@ -20,7 +20,7 @@ describe("scroll interop", () => {
 
         window.scrollToElement("target");
 
-        expect(scrollSpy).toHaveBeenCalledWith({ behavior: "smooth" });
+        expect(scrollSpy).toHaveBeenCalledWith({behavior: "smooth"});
     });
 
     it("invokes the dotnet helper on scroll", () => {
@@ -29,7 +29,7 @@ describe("scroll interop", () => {
             invokeMethodAsync: vi.fn()
         };
 
-        Object.defineProperty(window, "scrollY", { value: 123, configurable: true });
+        Object.defineProperty(window, "scrollY", {value: 123, configurable: true});
         window.registerScrollListener(dotNetHelper);
         window.dispatchEvent(new Event("scroll"));
 

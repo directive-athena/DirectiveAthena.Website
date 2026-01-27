@@ -61,9 +61,9 @@
                 @string.Format(LocalizerShared[Shared.TagsManagerSaveResx], culture.Code)
             </MudButton>
         }
-        
+
         <MudSpacer/>
-        
+
         @foreach (LocalizationInfo culture in LocalizationProvider.GetSupportedLocalizations()) {
             <MudButton Variant="Variant.Filled" Color="Color.Secondary"
                        OnClick="@(() => DownloadResx(culture.Code))" StartIcon="@Icons.Material.Filled.Download">

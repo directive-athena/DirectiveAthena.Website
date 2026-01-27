@@ -16,7 +16,8 @@
     <MudText Typo="Typo.subtitle2" Class="fw-bold">
         @if (SyntaxNode.TryGetTitleNode(out CalloutTitleMdSyntaxNode? titleNode)) {
             @ComponentConverter.RenderChildComponents(titleNode)
-        } else {
+        }
+        else {
             @SyntaxNode.CalloutType
         }
     </MudText>

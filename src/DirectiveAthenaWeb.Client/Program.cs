@@ -31,7 +31,7 @@ public static class Program {
             .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
             .MinimumLevel.Override("System", LogEventLevel.Warning)
             .Enrich.FromLogContext()
-            .Enrich.WithProperty("Application", "DirectiveAthena.Website")
+            .Enrich.WithProperty("Application", "DirectiveAthenaWeb")
             .WriteTo.BrowserConsole()
             .WriteTo.Console()
             .CreateLogger();

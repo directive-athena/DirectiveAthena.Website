@@ -1,10 +1,10 @@
-import type { DotNetInvoker } from "./types";
+import type {DotNetInvoker} from "./types";
 
 export const registerScrollFunctions = (): void => {
     window.scrollToElement = (elementId: string): void => {
         const element = document.getElementById(elementId);
         if (element) {
-            element.scrollIntoView({ behavior: "smooth" });
+            element.scrollIntoView({behavior: "smooth"});
         }
     };
 

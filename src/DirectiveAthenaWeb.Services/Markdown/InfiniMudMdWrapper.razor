@@ -19,6 +19,7 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Code
 @* ------------------------------------------------------------------------------------------------------------------ *@
+
 @code {
     private string GetStyle() {
         var styles = new List<string>();
@@ -26,11 +27,11 @@
 
         if (modifier.TryGetColor(out string? color)) {
             if (color is "accent") color = "var(--mud-palette-primary)";
-            styles.Add($"color:{color}");     
+            styles.Add($"color:{color}");
         }
 
         if (modifier.TryGetStyle(out string? style)) {
-            styles.Add(style);       
+            styles.Add(style);
         }
 
         return string.Join(";", styles);
