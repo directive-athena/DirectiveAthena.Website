@@ -23,7 +23,6 @@ public abstract class ContentRepository<T>(IContentStorage contentStorage, ILogg
     private EntityTagHeaderValue? _etag;
     private DateTimeOffset? _lastModifiedUtc;
     private DateTimeOffset? _lastRefreshUtc;
-    private readonly TimeSpan CacheRefreshWindow = TimeSpan.FromMinutes(5);
     private readonly TimeSpan DevRefreshWindow = TimeSpan.FromSeconds(5);
 
     protected abstract string IndexPath { get; }
@@ -122,31 +121,93 @@ public abstract class ContentRepository<T>(IContentStorage contentStorage, ILogg
         => !_hasLoaded || _lastRefreshUtc is null || now - _lastRefreshUtc.Value > GetRefreshWindow();
 
     private TimeSpan GetRefreshWindow()
-#if DEBUG
+        #if DEBUG
         => DevRefreshWindow;
-#else
+    #else
         => CacheRefreshWindow;
-#endif
+    #endif
 
     private async Task RefreshCacheAsync(DateTimeOffset now, CancellationToken ct) {
         Logger.Debug("Refreshing {ContentType} cache from {Path}.", typeof(T).Name, IndexPath);
         ContentReadResult response = await Storage.ReadIndexAsync(_etag, _lastModifiedUtc, ct);
-        if (response.StatusCode == HttpStatusCode.NotFound) {
-            Logger.Warning("{ContentType} index not found at {Path}; treating as empty dataset.", typeof(T).Name, IndexPath);
-            ItemsById = ImmutableDictionary<Guid, T>.Empty;
-            _hasLoaded = true;
-            _etag = null;
-            _lastModifiedUtc = null;
-            _lastRefreshUtc = now;
-            return;
-        }
+        switch (response.StatusCode) {
+            case HttpStatusCode.NotFound:
+                Logger.Warning("{ContentType} index not found at {Path}; treating as empty dataset.", typeof(T).Name, IndexPath);
+                ItemsById = ImmutableDictionary<Guid, T>.Empty;
+                _hasLoaded = true;
+                _etag = null;
+                _lastModifiedUtc = null;
+                _lastRefreshUtc = now;
+                return;
 
-        if (response.StatusCode == HttpStatusCode.NotModified && _hasLoaded) {
-            _lastRefreshUtc = now;
-            if (response.ETag is not null) _etag = response.ETag;
-            if (response.LastModifiedUtc is not null) _lastModifiedUtc = response.LastModifiedUtc;
-            Logger.Debug("{ContentType} cache not modified; updated refresh markers.", typeof(T).Name);
-            return;
+            case HttpStatusCode.NotModified when _hasLoaded: {
+                _lastRefreshUtc = now;
+                if (response.ETag is not null) _etag = response.ETag;
+                if (response.LastModifiedUtc is not null) _lastModifiedUtc = response.LastModifiedUtc;
+                Logger.Debug("{ContentType} cache not modified; updated refresh markers.", typeof(T).Name);
+                return;
+            }
+
+            case HttpStatusCode.Continue:
+            case HttpStatusCode.SwitchingProtocols:
+            case HttpStatusCode.Processing:
+            case HttpStatusCode.EarlyHints:
+            case HttpStatusCode.OK:
+            case HttpStatusCode.Created:
+            case HttpStatusCode.Accepted:
+            case HttpStatusCode.NonAuthoritativeInformation:
+            case HttpStatusCode.NoContent:
+            case HttpStatusCode.ResetContent:
+            case HttpStatusCode.PartialContent:
+            case HttpStatusCode.MultiStatus:
+            case HttpStatusCode.AlreadyReported:
+            case HttpStatusCode.IMUsed:
+            case HttpStatusCode.Ambiguous:
+            case HttpStatusCode.Moved:
+            case HttpStatusCode.Found:
+            case HttpStatusCode.RedirectMethod:
+            case HttpStatusCode.UseProxy:
+            case HttpStatusCode.Unused:
+            case HttpStatusCode.RedirectKeepVerb:
+            case HttpStatusCode.PermanentRedirect:
+            case HttpStatusCode.BadRequest:
+            case HttpStatusCode.Unauthorized:
+            case HttpStatusCode.PaymentRequired:
+            case HttpStatusCode.Forbidden:
+            case HttpStatusCode.MethodNotAllowed:
+            case HttpStatusCode.NotAcceptable:
+            case HttpStatusCode.ProxyAuthenticationRequired:
+            case HttpStatusCode.RequestTimeout:
+            case HttpStatusCode.Conflict:
+            case HttpStatusCode.Gone:
+            case HttpStatusCode.LengthRequired:
+            case HttpStatusCode.PreconditionFailed:
+            case HttpStatusCode.RequestEntityTooLarge:
+            case HttpStatusCode.RequestUriTooLong:
+            case HttpStatusCode.UnsupportedMediaType:
+            case HttpStatusCode.RequestedRangeNotSatisfiable:
+            case HttpStatusCode.ExpectationFailed:
+            case HttpStatusCode.MisdirectedRequest:
+            case HttpStatusCode.UnprocessableEntity:
+            case HttpStatusCode.Locked:
+            case HttpStatusCode.FailedDependency:
+            case HttpStatusCode.UpgradeRequired:
+            case HttpStatusCode.PreconditionRequired:
+            case HttpStatusCode.TooManyRequests:
+            case HttpStatusCode.RequestHeaderFieldsTooLarge:
+            case HttpStatusCode.UnavailableForLegalReasons:
+            case HttpStatusCode.InternalServerError:
+            case HttpStatusCode.NotImplemented:
+            case HttpStatusCode.BadGateway:
+            case HttpStatusCode.ServiceUnavailable:
+            case HttpStatusCode.GatewayTimeout:
+            case HttpStatusCode.HttpVersionNotSupported:
+            case HttpStatusCode.VariantAlsoNegotiates:
+            case HttpStatusCode.InsufficientStorage:
+            case HttpStatusCode.LoopDetected:
+            case HttpStatusCode.NotExtended:
+            case HttpStatusCode.NetworkAuthenticationRequired: break;
+            default: throw new ArgumentOutOfRangeException();
         }
 
         if (!response.IsSuccessStatusCode) {
