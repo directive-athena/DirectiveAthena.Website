@@ -10,6 +10,9 @@
     <File Path=".github/workflows/onPullRequestTests.yml" />
     <File Path=".github/workflows/rollbackGithubPages.yml" />
   </Folder>
+  <Folder Name="/.dev-tools/slnf/">
+    <File Path="DirectiveAthenaWeb.GithubPages.slnf" />
+  </Folder>
   <Folder Name="/src/">
     <Project Path="src/DirectiveAthenaWeb.Components/DirectiveAthenaWeb.Components.csproj" />
     <Project Path="src/DirectiveAthenaWeb.DevServer/DirectiveAthenaWeb.DevServer.csproj" />
