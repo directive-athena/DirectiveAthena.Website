@@ -161,6 +161,47 @@ public class ArticleRepositoryTests {
     }
 
     [Test]
+    public async Task SaveAsync_SetsTimestampsWhenMissing() {
+        // Arrange
+        IContentStorage storage = CreateStorage();
+        storage.WriteIndexAsync(Arg.Any<string>()).Returns(new ValueTask<bool>(true));
+        var logger = Substitute.For<ILogger<ArticleRepository>>();
+        var repo = new ArticleRepository(storage, logger);
+        Article article = ArticleFaker.Create(25);
+        article.CreatedAt = DateTime.MinValue;
+        article.LastModifiedAt = DateTime.MinValue;
+
+        // Act
+        bool result = await repo.SaveAsync([article]);
+
+        // Assert
+        await Assert.That(result).IsTrue();
+        await Assert.That(article.CreatedAt).IsNotEqualTo(DateTime.MinValue);
+        await Assert.That(article.LastModifiedAt).IsEqualTo(article.CreatedAt);
+    }
+
+    [Test]
+    public async Task SaveAsync_PreservesCreatedAt() {
+        // Arrange
+        IContentStorage storage = CreateStorage();
+        storage.WriteIndexAsync(Arg.Any<string>()).Returns(new ValueTask<bool>(true));
+        var logger = Substitute.For<ILogger<ArticleRepository>>();
+        var repo = new ArticleRepository(storage, logger);
+        Article article = ArticleFaker.Create(26);
+        DateTime createdAt = new(2024, 02, 10, 0, 0, 0, DateTimeKind.Utc);
+        article.CreatedAt = createdAt;
+        article.LastModifiedAt = DateTime.MinValue;
+
+        // Act
+        bool result = await repo.SaveAsync([article]);
+
+        // Assert
+        await Assert.That(result).IsTrue();
+        await Assert.That(article.CreatedAt).IsEqualTo(createdAt);
+        await Assert.That(article.LastModifiedAt).IsNotEqualTo(DateTime.MinValue);
+    }
+
+    [Test]
     public async Task DeleteAsync_DeletesLocalizedFilesAndSaves() {
         // Arrange
         Article article = ArticleFaker.Create(30);

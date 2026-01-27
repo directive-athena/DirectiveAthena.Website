@@ -119,6 +119,47 @@ public class WorldRuleRepositoryTests {
     }
 
     [Test]
+    public async Task SaveAsync_SetsTimestampsWhenMissing() {
+        // Arrange
+        IContentStorage storage = CreateStorage();
+        storage.WriteIndexAsync(Arg.Any<string>()).Returns(new ValueTask<bool>(true));
+        var logger = Substitute.For<ILogger<WorldRuleRepository>>();
+        var repo = new WorldRuleRepository(storage, logger);
+        WorldRule rule = CreateRule(12);
+        rule.CreatedAt = DateTime.MinValue;
+        rule.LastModifiedAt = DateTime.MinValue;
+
+        // Act
+        bool result = await repo.SaveAsync([rule]);
+
+        // Assert
+        await Assert.That(result).IsTrue();
+        await Assert.That(rule.CreatedAt).IsNotEqualTo(DateTime.MinValue);
+        await Assert.That(rule.LastModifiedAt).IsEqualTo(rule.CreatedAt);
+    }
+
+    [Test]
+    public async Task SaveAsync_PreservesCreatedAt() {
+        // Arrange
+        IContentStorage storage = CreateStorage();
+        storage.WriteIndexAsync(Arg.Any<string>()).Returns(new ValueTask<bool>(true));
+        var logger = Substitute.For<ILogger<WorldRuleRepository>>();
+        var repo = new WorldRuleRepository(storage, logger);
+        WorldRule rule = CreateRule(13);
+        DateTime createdAt = new(2024, 02, 10, 0, 0, 0, DateTimeKind.Utc);
+        rule.CreatedAt = createdAt;
+        rule.LastModifiedAt = DateTime.MinValue;
+
+        // Act
+        bool result = await repo.SaveAsync([rule]);
+
+        // Assert
+        await Assert.That(result).IsTrue();
+        await Assert.That(rule.CreatedAt).IsEqualTo(createdAt);
+        await Assert.That(rule.LastModifiedAt).IsNotEqualTo(DateTime.MinValue);
+    }
+
+    [Test]
     public async Task DeleteAsync_DeletesLocalizedFilesAndSaves() {
         // Arrange
         WorldRule rule = CreateRule(20);
