@@ -8,6 +8,7 @@
     <File Path=".github/workflows/publishGithubPages.yml" />
     <File Path=".github/workflows/lib_testing.yml" />
     <File Path=".github/workflows/onPullRequestTests.yml" />
+    <File Path=".github/workflows/rollbackGithubPages.yml" />
   </Folder>
   <Folder Name="/src/">
     <Project Path="src/DirectiveAthena.Website.ClientAssets/DirectiveAthena.Website.ClientAssets.csproj" />

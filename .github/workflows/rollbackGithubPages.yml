@@ -1,0 +1,87 @@
+name: Rollback Github Pages
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Tag to deploy (e.g., v1.2.3)
+        required: true
+        type: string
+      skip_tests:
+        description: Skip tests (true/false)
+        required: false
+        default: "false"
+        type: choice
+        options:
+          - "false"
+          - "true"
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Deploy Tagged Version
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout tag
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          ref: ${{ inputs.tag }}
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: '10.x'
+
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: '20.x'
+
+      - name: Install npm dependencies
+        run: npm ci
+        working-directory: src/DirectiveAthena.Website.ClientAssets
+
+      - name: Build interop bundle
+        run: npm run build
+        working-directory: src/DirectiveAthena.Website.ClientAssets
+
+      - name: Restore dependencies
+        if: ${{ inputs.skip_tests != 'true' }}
+        run: dotnet restore DirectiveAthena.Website.GithubPages.slnf
+
+      - name: Run tests
+        if: ${{ inputs.skip_tests != 'true' }}
+        run: dotnet test --solution DirectiveAthena.Website.GithubPages.slnf --configuration Release --no-restore
+
+      - name: Publish docs site
+        run: |
+          dotnet publish src/DirectiveAthena.Website -c Release -o ./out \
+            -p:PublishTrimmed=true \
+            -p:TrimMode=partial \
+            -p:DebuggerSupport=false \
+            -p:MetadataUpdaterSupport=false
+          cp ./out/wwwroot/index.html ./out/wwwroot/404.html
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: ./out/wwwroot
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
