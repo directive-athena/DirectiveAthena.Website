@@ -34,7 +34,7 @@ public static class ArticleFaker {
             Title = title,
             Summary = summary,
             Tags = faker.Lorem.Words(2).ToList(),
-            IsHidden = hidden
+            HiddenAt = hidden ? DateTime.UtcNow : DateTime.MinValue
         };
     }
 

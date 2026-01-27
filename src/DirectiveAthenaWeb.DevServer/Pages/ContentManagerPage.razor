@@ -2,6 +2,7 @@
 @* Imports
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @using DirectiveAthenaWeb.Services.Localization.Resources
+@using DirectiveAthenaWeb.Services.Content
 @using DirectiveAthenaWeb.Services.WorldRules
 @using DirectiveAthenaWeb.Services.Articles
 
@@ -153,10 +154,10 @@
         .Distinct();
 
     protected override async Task OnInitializedAsync() {
-        IEnumerable<Article> posts = await ArticleRepository.GetAllAsync();
+        IEnumerable<Article> posts = await ArticleRepository.GetAllAsync(QueryConfig.WithHidden | QueryConfig.WithSoftDeleted);
         _posts = posts.ToList();
 
-        IEnumerable<WorldRule> rules = await WorldRuleRepository.GetAllAsync();
+        IEnumerable<WorldRule> rules = await WorldRuleRepository.GetAllAsync(QueryConfig.WithHidden | QueryConfig.WithSoftDeleted);
         _rules = rules.ToList();
     }
 
@@ -181,38 +182,80 @@
     private async Task DeletePost() {
         if (_selectedPost is null || _posts is null) return;
 
-        bool confirm = await WebJs.ConfirmAsync(Localizer[Shared.ContentManagerDeletePostConfirm].Value);
+        bool hardDelete = _selectedPost.IsSoftDeleted;
+        string confirmText = hardDelete
+            ? Localizer[Shared.ContentManagerDeletePostHardConfirm].Value
+            : Localizer[Shared.ContentManagerDeletePostSoftConfirm].Value;
+        bool confirm = await WebJs.ConfirmAsync(confirmText);
         if (!confirm) return;
+
+        if (!hardDelete) {
+            DateTime now = DateTime.UtcNow;
+            _selectedPost.SoftDeletedAt = now;
+            _selectedPost.LastModifiedAt = now;
+
+            bool softDeleted = await ArticleRepository.SoftDeleteByIdAsync(_selectedPost.Id);
+            if (!softDeleted && _posts is not null) {
+                softDeleted = await ArticleRepository.SaveAsync(_posts);
+            }
+            Snackbar.Add(
+                softDeleted
+                    ? Localizer[Shared.ContentManagerDeletePostSoftSuccess]
+                    : Localizer[Shared.ContentManagerDeletePostSoftFailed],
+                softDeleted ? Severity.Success : Severity.Warning);
+            return;
+        }
 
         Article postToDelete = _selectedPost;
         _posts.Remove(postToDelete);
         _selectedPost = null;
 
-        bool success = await ArticleRepository.DeleteByIdAsync(postToDelete.Id);
+        bool success = await ArticleRepository.HardDeleteByIdAsync(postToDelete.Id);
         if (success) {
-            Snackbar.Add(Localizer[Shared.ContentManagerDeletePostSuccess], Severity.Success);
+            Snackbar.Add(Localizer[Shared.ContentManagerDeletePostHardSuccess], Severity.Success);
         }
         else {
-            Snackbar.Add(Localizer[Shared.ContentManagerDeletePostPartial], Severity.Warning);
+            Snackbar.Add(Localizer[Shared.ContentManagerDeletePostHardFailed], Severity.Warning);
         }
     }
 
     private async Task DeleteRule() {
         if (_selectedRule is null || _rules is null) return;
 
-        bool confirm = await WebJs.ConfirmAsync(Localizer[Shared.ContentManagerDeleteRuleConfirm].Value);
+        bool hardDelete = _selectedRule.IsSoftDeleted;
+        string confirmText = hardDelete
+            ? Localizer[Shared.ContentManagerDeleteRuleHardConfirm].Value
+            : Localizer[Shared.ContentManagerDeleteRuleSoftConfirm].Value;
+        bool confirm = await WebJs.ConfirmAsync(confirmText);
         if (!confirm) return;
+
+        if (!hardDelete) {
+            DateTime now = DateTime.UtcNow;
+            _selectedRule.SoftDeletedAt = now;
+            _selectedRule.LastModifiedAt = now;
+
+            bool softDeleted = await WorldRuleRepository.SoftDeleteByIdAsync(_selectedRule.Id);
+            if (!softDeleted && _rules is not null) {
+                softDeleted = await WorldRuleRepository.SaveAsync(_rules);
+            }
+            Snackbar.Add(
+                softDeleted
+                    ? Localizer[Shared.ContentManagerDeleteRuleSoftSuccess]
+                    : Localizer[Shared.ContentManagerDeleteRuleSoftFailed],
+                softDeleted ? Severity.Success : Severity.Warning);
+            return;
+        }
 
         WorldRule ruleToDelete = _selectedRule;
         _rules.Remove(ruleToDelete);
         _selectedRule = null;
 
-        bool success = await WorldRuleRepository.DeleteByIdAsync(ruleToDelete.Id);
+        bool success = await WorldRuleRepository.HardDeleteByIdAsync(ruleToDelete.Id);
         if (success) {
-            Snackbar.Add(Localizer[Shared.ContentManagerDeleteRuleSuccess], Severity.Success);
+            Snackbar.Add(Localizer[Shared.ContentManagerDeleteRuleHardSuccess], Severity.Success);
         }
         else {
-            Snackbar.Add(Localizer[Shared.ContentManagerDeleteRulePartial], Severity.Warning);
+            Snackbar.Add(Localizer[Shared.ContentManagerDeleteRuleHardFailed], Severity.Warning);
         }
     }
 

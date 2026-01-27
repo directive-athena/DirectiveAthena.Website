@@ -64,7 +64,6 @@ public class ArticleManager(
             Title = titles,
             Summary = summaries,
             Tags = [],
-            IsHidden = false,
             CreatedAt = now,
             LastModifiedAt = now
         };

@@ -83,6 +83,24 @@ public class WorldRuleRepositoryTests {
     }
 
     [Test]
+    public async Task GetByIdAsync_ReturnsNullForSoftDeleted() {
+        // Arrange
+        WorldRule rule = CreateRule(3);
+        rule.SoftDeletedAt = DateTime.UtcNow;
+        IContentStorage storage = CreateStorage();
+        storage.ReadIndexAsync(Arg.Any<EntityTagHeaderValue?>(), Arg.Any<DateTimeOffset?>(), Arg.Any<CancellationToken>())
+            .Returns(Task.FromResult(new ContentReadResult(HttpStatusCode.OK, JsonSerializer.Serialize(new[] { rule }), null, null)));
+        var logger = Substitute.For<ILogger<WorldRuleRepository>>();
+        var repo = new WorldRuleRepository(storage, logger);
+
+        // Act
+        WorldRule? result = await repo.GetByIdAsync(rule.Id);
+
+        // Assert
+        await Assert.That(result).IsNull();
+    }
+
+    [Test]
     public async Task SaveAsync_WritesIndex() {
         // Arrange
         IContentStorage storage = CreateStorage();
@@ -157,6 +175,33 @@ public class WorldRuleRepositoryTests {
         await Assert.That(result).IsTrue();
         await Assert.That(rule.CreatedAt).IsEqualTo(createdAt);
         await Assert.That(rule.LastModifiedAt).IsNotEqualTo(DateTime.MinValue);
+    }
+
+    [Test]
+    public async Task SoftDeleteByIdAsync_MarksDeletedAndWritesIndex() {
+        // Arrange
+        WorldRule rule = CreateRule(14);
+        IContentStorage storage = CreateStorage();
+        storage.ReadIndexAsync(Arg.Any<EntityTagHeaderValue?>(), Arg.Any<DateTimeOffset?>(), Arg.Any<CancellationToken>())
+            .Returns(Task.FromResult(new ContentReadResult(HttpStatusCode.OK, JsonSerializer.Serialize(new[] { rule }), null, null)));
+        string? capturedJson = null;
+        storage.WriteIndexAsync(Arg.Do<string>(json => capturedJson = json)).Returns(new ValueTask<bool>(true));
+        var logger = Substitute.For<ILogger<WorldRuleRepository>>();
+        var repo = new WorldRuleRepository(storage, logger);
+
+        // Act
+        bool result = await repo.SoftDeleteByIdAsync(rule.Id);
+
+        // Assert
+        await Assert.That(result).IsTrue();
+        await Assert.That(capturedJson).IsNotNull();
+        WorldRule[]? saved = JsonSerializer.Deserialize<WorldRule[]>(
+            capturedJson!,
+            new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+        await Assert.That(saved).IsNotNull();
+        await Assert.That(saved!.Single().IsSoftDeleted).IsTrue();
+        await Assert.That(saved!.Single().SoftDeletedAt).IsNotEqualTo(DateTime.MinValue);
+        await storage.Received(1).WriteIndexAsync(Arg.Any<string>());
     }
 
     [Test]

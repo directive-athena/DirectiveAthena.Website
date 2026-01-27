@@ -44,7 +44,7 @@
         }
 
         <MudItem xs="12">
-            <MudSwitch @bind-Value="Post.IsHidden" Label="@Localizer[Shared.EditorHiddenLabel]" Color="Color.Primary"/>
+            <MudSwitch @bind-Value="IsHidden" Label="@Localizer[Shared.EditorHiddenLabel]" Color="Color.Primary"/>
         </MudItem>
 
         @foreach (LocalizationInfo culture in LocalizationProvider.GetSupportedLocalizations()) {
@@ -170,6 +170,15 @@
     private void NotifyTagsChanged() {
         if (OnTagsChanged.HasDelegate) {
             _ = OnTagsChanged.InvokeAsync();
+        }
+    }
+
+    private bool IsHidden {
+        get => Post.IsHidden;
+        set {
+            DateTime now = DateTime.UtcNow;
+            Post.HiddenAt = value ? now : DateTime.MinValue;
+            Post.LastModifiedAt = now;
         }
     }
 
