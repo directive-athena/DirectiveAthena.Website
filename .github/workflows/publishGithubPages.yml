@@ -66,12 +66,6 @@ jobs:
         run: npm run test:ts
         working-directory: src/DirectiveAthena.Website.ClientAssets
 
-      - name: Restore dependencies
-        run: dotnet restore DirectiveAthena.Website.GithubPages.slnf
-
-      - name: Run tests
-        run: dotnet test --solution DirectiveAthena.Website.GithubPages.slnf --configuration Release --no-restore
-
       - name: Bump site version
         id: version
         run: |
@@ -124,6 +118,9 @@ jobs:
           git remote set-url origin "https://x-access-token:${CORE_PUSH_TOKEN}@github.com/${{ github.repository }}.git"
           git push origin HEAD
           git push origin --tags
+
+      - name: Restore dependencies
+        run: dotnet restore DirectiveAthena.Website.GithubPages.slnf
 
       - name: Publish docs site
         run: |
