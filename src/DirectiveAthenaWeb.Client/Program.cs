@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using MudBlazor.Services;
 using DirectiveAthenaWeb.Services;
+using DirectiveAthenaWeb.Services.Contact;
 using DirectiveAthenaWeb.Services.ContentStorage;
 using DirectiveAthenaWeb.Services.Localization;
 using Serilog;
@@ -45,9 +46,11 @@ public static class Program {
         builder.Services.AddScoped(_ => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
         builder.Services.AddMudServices();
         builder.Services.AddLocalization();
-        builder.Services.Configure<R2StorageOptions>(builder.Configuration.GetSection("ContentStorage:R2"));
 
         builder.Services.AddWebsiteServices();
+        builder.Services.Configure<R2StorageOptions>(builder.Configuration.GetSection("ContentStorage:R2"));
+        builder.Services.Configure<ContactInfoOptions>(builder.Configuration.GetSection("ContactInfo"));
+
         
         builder.Services.AddWritingContent();
         builder.Services.AddFaqContent();

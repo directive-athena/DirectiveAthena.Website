@@ -26,10 +26,10 @@
         </MudText>
 
         <MudGrid Spacing="4">
-            @foreach (ContactInfo contactInfo in ContactInfoProvider.GetContactInfos()) {
+            @foreach (ContactInfoItem contactInfo in ContactInfoProvider.GetContactInfos()) {
                 <MudItem xs="12">
                     <MudButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="true"
-                               StartIcon="@contactInfo.Icon" Href="@contactInfo.Url" Target="_blank"
+                               StartIcon="@contactInfo.Url" Href="@contactInfo.Url" Target="_blank"
                                Class="py-4 card-glass">
                         @contactInfo.Title
                     </MudButton>

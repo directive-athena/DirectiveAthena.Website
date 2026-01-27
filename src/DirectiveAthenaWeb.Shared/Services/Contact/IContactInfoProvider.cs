@@ -6,5 +6,5 @@ namespace DirectiveAthenaWeb.Services.Contact;
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
 public interface IContactInfoProvider {
-    ContactInfo[] GetContactInfos();
+    IEnumerable<ContactInfoItem> GetContactInfos();
 }

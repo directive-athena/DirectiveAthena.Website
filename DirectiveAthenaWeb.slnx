@@ -24,6 +24,7 @@
         <Project Path="src/DirectiveAthenaWeb.Content.Writing/DirectiveAthenaWeb.Content.Writing.csproj" />
     </Folder>
     <Folder Name="/src/services/">
+        <Project Path="src/DirectiveAthenaWeb.Services.Contact/DirectiveAthenaWeb.Services.Contact.csproj" />
         <Project Path="src/DirectiveAthenaWeb.Services.Content/DirectiveAthenaWeb.Services.Content.csproj" />
         <Project Path="src/DirectiveAthenaWeb.Services.Js/DirectiveAthenaWeb.Services.Js.csproj" />
         <Project Path="src/DirectiveAthenaWeb.Services.Localization/DirectiveAthenaWeb.Services.Localization.csproj" />
