@@ -57,6 +57,7 @@ public class R2ContentStorageTests {
             if (field is not null) {
                 return (T?)field.GetValue(instance);
             }
+
             type = type.BaseType;
         }
 

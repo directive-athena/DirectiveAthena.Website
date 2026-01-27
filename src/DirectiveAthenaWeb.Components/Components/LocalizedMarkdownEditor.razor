@@ -116,6 +116,7 @@
         if (string.IsNullOrEmpty(_content)) {
             _content = BuildDefaultContent(_selectedLocale);
         }
+
         _isLoadingContent = false;
     }
 
@@ -170,10 +171,10 @@
             try {
                 await Task.Delay(TimeSpan.FromSeconds(2), token);
                 if (token.IsCancellationRequested) return;
+
                 await InvokeAsync(() => SaveMarkdownInternal(showFeedback: false));
             }
-            catch (TaskCanceledException) {
-            }
+            catch (TaskCanceledException) {}
         }, token);
     }
 
@@ -186,6 +187,7 @@
             if (!success) {
                 Snackbar.Add(Localizer[Shared.MarkdownEditorSaveFailed], Severity.Error);
             }
+
             return success;
         }
 

@@ -69,7 +69,7 @@ public class ArticleManagerTests {
         Article article = ArticleFaker.Create(101, includeNl: false);
         ILocalizationProvider localizationProvider = CreateLocalizationProvider("nl");
         ArticleManager manager = CreateManager(localizationProvider);
-        
+
         // Act
         string result = manager.GetLocalizedSummary(article);
 
@@ -86,7 +86,7 @@ public class ArticleManagerTests {
         storage.GetMarkdownContentPath(Arg.Any<string>(), Arg.Any<string>())
             .Returns(call => $"content/articles/{call.ArgAt<string>(0)}/{call.ArgAt<string>(1)}");
         ArticleManager manager = CreateManager(localizationProvider, storage);
-        
+
         // Act
         string result = manager.GetLocalizedFilePath(article);
 
@@ -114,7 +114,7 @@ public class ArticleManagerTests {
         // Arrange
         ILocalizationProvider localizationProvider = CreateLocalizationProvider("en");
         ArticleManager manager = CreateManager(localizationProvider);
-        
+
         // Act
         Article article = manager.NewArticle();
         HashSet<string> expected = ArticleFaker.DefaultLocalizations().Select(c => c.Code).ToHashSet();
@@ -134,7 +134,7 @@ public class ArticleManagerTests {
         ];
 
         ArticleManager manager = CreateManager(CreateLocalizationProvider("en"));
-        
+
         // Act
         bool result = manager.Validate(articles, out string? error);
 
@@ -201,7 +201,7 @@ public class ArticleManagerTests {
         Article article = ArticleFaker.Create(120);
         var storage = Substitute.For<IContentStorage>();
         ArticleManager manager = CreateManager(CreateLocalizationProvider("en"), storage);
-        
+
         // Act
         (Dictionary<string, string> Stubs, bool WroteAll) result = await manager.GenerateStubsAsync(article, writeToDisk: false);
 

@@ -28,7 +28,7 @@ public static class ServiceCollectionExtensions {
 
             return services;
         }
-        
+
         private void AddContentStorage(ContentCategory category)
             => services.AddKeyedScoped<IContentStorage>(
                 category,

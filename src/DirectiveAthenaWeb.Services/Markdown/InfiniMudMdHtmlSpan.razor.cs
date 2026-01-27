@@ -10,12 +10,13 @@ namespace DirectiveAthenaWeb.Services.Markdown;
 public partial class InfiniMudMdHtmlSpan {
     [GeneratedRegex("""style\s*=\s*["']([^"']*)["']""", RegexOptions.IgnoreCase)]
     private static partial Regex ExtractStyleAttributeRegex { get; }
-    
+
     // -----------------------------------------------------------------------------------------------------------------
     // Methods
     // -----------------------------------------------------------------------------------------------------------------
     private static string? ExtractStyleAttribute(string? htmlTag) {
         if (htmlTag.IsNullOrEmpty()) return null;
+
         try {
             Match match = ExtractStyleAttributeRegex.Match(htmlTag);
             return match.Success

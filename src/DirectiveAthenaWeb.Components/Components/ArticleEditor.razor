@@ -38,7 +38,8 @@
         </MudItem>
         @if (Post.LastModifiedAt != DateTime.MinValue) {
             <MudItem xs="12" md="6">
-                <MudTextField Value="@FormatDate(Post.LastModifiedAt)" Label="@Localizer[Shared.EditorLastModifiedAtLabel]"
+                <MudTextField Value="@FormatDate(Post.LastModifiedAt)"
+                              Label="@Localizer[Shared.EditorLastModifiedAtLabel]"
                               Required="true" ReadOnly="true"/>
             </MudItem>
         }

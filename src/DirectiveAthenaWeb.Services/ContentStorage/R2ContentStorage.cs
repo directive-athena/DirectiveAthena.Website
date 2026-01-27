@@ -196,6 +196,7 @@ public class R2ContentStorage(
     }
 
     [UsedImplicitly] private record ProxyUploadRequest(string Key, string Content, string ContentType);
+
     [UsedImplicitly] private record ProxyDeleteRequest(string Key);
 
     private static Uri? BuildProxyEndpoint(string? proxyEndpoint, string operation) {

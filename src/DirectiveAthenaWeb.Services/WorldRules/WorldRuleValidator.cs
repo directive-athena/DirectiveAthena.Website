@@ -10,7 +10,7 @@ namespace DirectiveAthenaWeb.Services.WorldRules;
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
 [InjectableTransient<IValidator<WorldRule>>]
-public  class WorldRuleValidator : AbstractValidator<WorldRule> {
+public class WorldRuleValidator : AbstractValidator<WorldRule> {
     private readonly IReadOnlyCollection<LocalizationInfo> _localizations;
 
     public WorldRuleValidator(ILocalizationProvider localizationProvider) {

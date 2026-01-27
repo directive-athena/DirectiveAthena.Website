@@ -25,7 +25,7 @@ public class ContentStorageFactory(
         string folder = GetCategoryFolder(category);
         ILogger r2Logger = loggerFactory.CreateLogger<R2ContentStorage>();
         r2Logger.Debug("Creating R2 content storage for {Category} at {Folder}.", category, folder);
-        
+
         return new R2ContentStorage(localizationProvider,
             r2Options.Value,
             folder,
@@ -42,7 +42,7 @@ public class ContentStorageFactory(
             ContentCategory.WorldRules => $"{ContentRoot}/world-rules",
             _ => throw new ArgumentOutOfRangeException(nameof(category), category, @"Unsupported content category.")
         };
-    
+
     private static Uri BuildPublicBaseUri(R2StorageOptions options, ILogger logger) {
         if (string.IsNullOrWhiteSpace(options.PublicBaseUrl)) {
             logger.Warning("R2 public base URL is missing; content reads may fail.");
@@ -61,6 +61,7 @@ public class ContentStorageFactory(
                 logger.Debug("R2 client is not supported in browser contexts; proxy uploads must be used for writes.");
                 _browserWarningLogged = true;
             }
+
             return null;
         }
 

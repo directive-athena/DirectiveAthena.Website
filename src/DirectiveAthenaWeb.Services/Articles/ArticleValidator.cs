@@ -44,6 +44,7 @@ public class ArticleValidator : AbstractValidator<Article> {
                 return false;
             }
         }
+
         return true;
     }
 }

@@ -28,11 +28,11 @@ public class LocalizationInitializerTests {
             var directiveAthenaWebJs = Substitute.For<IDirectiveAthenaWebJs>();
             directiveAthenaWebJs.GetLocalStorageItemAsync("culture", Arg.Any<CancellationToken>())
                 .Returns(new ValueTask<string?>("nl"));
-            
+
             var logger = Substitute.For<ILogger<LocalizationInitializer>>();
             var providerLogger = Substitute.For<ILogger<LocalizationProvider>>();
             var initializer = new LocalizationInitializer(new LocalizationProvider(providerLogger), directiveAthenaWebJs, logger);
-            
+
             // Act
             await initializer.ApplyPreferredCultureAsync();
 
@@ -63,7 +63,7 @@ public class LocalizationInitializerTests {
 
             // Act
             await initializer.ApplyPreferredCultureAsync();
-            
+
             // Assert
             await Assert.That(CultureInfo.DefaultThreadCurrentUICulture?.TwoLetterISOLanguageName).IsEqualTo("en");
         }

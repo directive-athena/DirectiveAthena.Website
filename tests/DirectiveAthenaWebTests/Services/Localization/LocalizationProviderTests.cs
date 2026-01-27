@@ -25,7 +25,7 @@ public class LocalizationProviderTests {
             CultureInfo.CurrentUICulture = new CultureInfo("nl");
             var logger = Substitute.For<ILogger<LocalizationProvider>>();
             var provider = new LocalizationProvider(logger);
-            
+
             // Act
             LocalizationInfo result = provider.GetCurrentLocalization();
 
@@ -58,7 +58,7 @@ public class LocalizationProviderTests {
     [Test]
     public async Task IsDefaultCultureCode_MatchesDefault() {
         // Arrange
-        
+
         // Act
         var logger = Substitute.For<ILogger<LocalizationProvider>>();
         var provider = new LocalizationProvider(logger);

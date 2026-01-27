@@ -38,7 +38,7 @@ public static class Program {
 
         builder.Logging.ClearProviders();
         builder.Logging.AddSerilog(logger, dispose: true);
-        
+
         builder.RootComponents.Add<App>("#app");
         builder.RootComponents.Add<HeadOutlet>("head::after");
 

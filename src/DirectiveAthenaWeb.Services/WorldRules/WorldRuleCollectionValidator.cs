@@ -9,7 +9,7 @@ namespace DirectiveAthenaWeb.Services.WorldRules;
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
 [InjectableTransient<IValidator<IEnumerable<WorldRule>>>]
-public  class WorldRuleCollectionValidator : AbstractValidator<IEnumerable<WorldRule>> {
+public class WorldRuleCollectionValidator : AbstractValidator<IEnumerable<WorldRule>> {
     public WorldRuleCollectionValidator(IValidator<WorldRule> ruleValidator) {
         RuleFor(rules => rules)
             .NotNull();

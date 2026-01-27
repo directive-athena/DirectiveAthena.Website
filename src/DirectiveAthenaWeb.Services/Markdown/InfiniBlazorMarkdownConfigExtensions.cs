@@ -5,14 +5,13 @@ using InfiniBlazor.Markdown;
 using InfiniBlazor.Markdown.Syntax.Nodes;
 
 namespace DirectiveAthenaWeb.Services.Markdown;
-
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
 public static class InfiniBlazorMarkdownConfigExtensions {
     public static InfiniBlazorMarkdownConfig WithMudBlazorComponents(this InfiniBlazorMarkdownConfig config) {
         config.HtmlRendererFootnoteWrapperType = typeof(InfiniMudMdEditorFootnoteDescriptionWrapper);
-        
+
         config.RegisterMdBlazorComponent<BlockQuoteMdSyntaxNode, InfiniMudMdBlockQuote>();
         config.RegisterMdBlazorComponent<BoldMdSyntaxNode, InfiniMudMdBold>();
         config.RegisterMdBlazorComponent<CalloutMdSyntaxNode, InfiniMudMdCallout>();
@@ -49,7 +48,7 @@ public static class InfiniBlazorMarkdownConfigExtensions {
         config.RegisterMdBlazorComponent<FrontMatterMdSyntaxNode, InfiniMudMdFrontMatter>();
         config.RegisterMdBlazorComponent<BreakMdSyntaxNode, InfiniMudMdBreak>();
         // config.RegisterBlazorComponent<NewLineMdSyntaxNode, InfiniMudMdNewLine>(); // Not implemented well yet, only as an example
-        
+
         return config;
     }
 }

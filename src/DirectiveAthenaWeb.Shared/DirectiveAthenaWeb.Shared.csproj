@@ -10,7 +10,7 @@
     <ItemGroup>
         <PackageReference Include="CodeOfChaos.Extensions"/>
         <PackageReference Include="JetBrains.Annotations"/>
-        <PackageReference Include="Microsoft.JSInterop" />
+        <PackageReference Include="Microsoft.JSInterop"/>
     </ItemGroup>
 
 </Project>

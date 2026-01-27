@@ -12,7 +12,6 @@ using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace DirectiveAthenaWebTests.Services;
-
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
@@ -30,11 +29,11 @@ public class ServiceCollectionExtensionsTests {
         await Assert.That(services).Any(s => s.ServiceType == typeof(IArticleRepository));
         await Assert.That(services).Any(s => s.ServiceType == typeof(IValidator<Article>));
         await Assert.That(services).Any(s => s.ServiceType == typeof(IValidator<IEnumerable<Article>>));
-        
+
         await Assert.That(services).Any(s => s.ServiceType == typeof(IContactInfoProvider));
         await Assert.That(services).Any(s => s.ServiceType == typeof(IContentStorageFactory));
         await Assert.That(services).Any(s => s.ServiceType == typeof(IDirectiveAthenaWebJs));
-        
+
         await Assert.That(services).Any(s => s.ServiceType == typeof(ILocalizationInitializer));
         await Assert.That(services).Any(s => s.ServiceType == typeof(ILocalizationProvider));
 

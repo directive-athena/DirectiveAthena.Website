@@ -307,6 +307,7 @@ public abstract class ContentRepository<T>(IContentStorage contentStorage, ILogg
             if (item.CreatedAt == default) {
                 item.CreatedAt = nowUtc;
             }
+
             item.LastModifiedAt = nowUtc;
         }
     }
@@ -316,9 +317,11 @@ public abstract class ContentRepository<T>(IContentStorage contentStorage, ILogg
             if (item.CreatedAt == default) {
                 item.CreatedAt = nowUtc;
             }
+
             if (item.LastModifiedAt == default) {
                 item.LastModifiedAt = item.CreatedAt;
             }
+
             if (item.IsSoftDeleted && item.SoftDeletedAt == default) {
                 item.SoftDeletedAt = item.LastModifiedAt == default ? nowUtc : item.LastModifiedAt;
             }

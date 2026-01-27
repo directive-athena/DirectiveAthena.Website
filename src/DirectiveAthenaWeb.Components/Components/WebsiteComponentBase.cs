@@ -12,6 +12,6 @@ namespace DirectiveAthenaWeb.Components;
 public class WebsiteComponentBase : ComponentBase {
     [Inject] public ILocalizationProvider LocalizationProvider { get; set; } = null!;
     [Inject] public ILogger<WebsiteComponentBase> Logger { get; set; } = null!;
-    
+
     protected LocalizationInfo CurrentCulture => LocalizationProvider.GetCurrentLocalization();
 }

@@ -4,7 +4,8 @@ Blazor WebAssembly site for Directive Athena. Built as a writing-first, sci-fi t
 
 ## About
 
-Directive Athena is a standalone website, not a library. This repo focuses on content, presentation, and a custom writing workflow with localization.
+Directive Athena is a standalone website, not a library. This repo focuses on content, presentation, and a custom
+writing workflow with localization.
 
 ## Features
 
@@ -34,11 +35,13 @@ Where content lives:
 - Article index and localized markdown files live in the site content directory
 - Tag and UI strings live in the localization resources
 
-Note: direct file writes use the browser File System Access API and are only available on `localhost`. In production, the manager offers download/copy workflows.
+Note: direct file writes use the browser File System Access API and are only available on `localhost`. In production,
+the manager offers download/copy workflows.
 
 ## Content Storage (R2)
 
-The public site reads content from a public R2 bucket. The `wwwroot/appsettings.json` file is generated during the GitHub Pages workflow and is not committed.
+The public site reads content from a public R2 bucket. The `wwwroot/appsettings.json` file is generated during the
+GitHub Pages workflow and is not committed.
 
 Public config shape:
 
