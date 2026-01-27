@@ -28,7 +28,7 @@ public static class ApiEndpoints {
             .WithSSL()
             .Build();
 
-        logger.LogDebug("Created R2 MinIO client with endpoint {Endpoint}.", endpointHost);
+        logger.Debug("Created R2 MinIO client with endpoint {Endpoint}.", endpointHost);
         return client;
     }
 
@@ -49,7 +49,7 @@ public static class ApiEndpoints {
             IMinioClient minioClient = CreateMinioClient(options, logger);
             byte[] contentBytes = System.Text.Encoding.UTF8.GetBytes(payload.Content);
             using var contentStream = new MemoryStream(contentBytes);
-            var putArgs = new PutObjectArgs().WithBucket(options.BucketName!)
+            PutObjectArgs? putArgs = new PutObjectArgs().WithBucket(options.BucketName!)
                 .WithObject(payload.Key)
                 .WithStreamData(contentStream)
                 .WithObjectSize(contentBytes.Length)
@@ -59,7 +59,7 @@ public static class ApiEndpoints {
             return Results.Ok();
         }
         catch (Exception ex) {
-            logger.LogWarning(ex, "Proxy upload failed.");
+            logger.Warning(ex, "Proxy upload failed.");
             return Results.Problem("Upload failed.", statusCode: StatusCodes.Status500InternalServerError);
         }
     }
@@ -79,14 +79,14 @@ public static class ApiEndpoints {
             }
 
             IMinioClient minioClient = CreateMinioClient(options, logger);
-            var deleteArgs = new RemoveObjectArgs().WithBucket(options.BucketName!)
+            RemoveObjectArgs? deleteArgs = new RemoveObjectArgs().WithBucket(options.BucketName!)
                 .WithObject(payload.Key);
 
             await minioClient.RemoveObjectAsync(deleteArgs, request.HttpContext.RequestAborted);
             return Results.Ok();
         }
         catch (Exception ex) {
-            logger.LogWarning(ex, "Proxy delete failed.");
+            logger.Warning(ex, "Proxy delete failed.");
             return Results.Problem("Delete failed.", statusCode: StatusCodes.Status500InternalServerError);
         }
     }
