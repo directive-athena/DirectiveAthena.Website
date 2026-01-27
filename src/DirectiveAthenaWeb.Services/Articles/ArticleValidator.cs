@@ -40,11 +40,10 @@ public class ArticleValidator : AbstractValidator<Article> {
 
     private bool HasLocalizedValues(Dictionary<string, string> values) {
         foreach (LocalizationInfo localization in _localizations) {
-            if (!values.TryGetValue(localization.Code, out string? value) || string.IsNullOrWhiteSpace(value)) {
+            if (!values.TryGetValue(localization.Code, out string? value) || value.IsNullOrWhiteSpace()) {
                 return false;
             }
         }
-
         return true;
     }
 }

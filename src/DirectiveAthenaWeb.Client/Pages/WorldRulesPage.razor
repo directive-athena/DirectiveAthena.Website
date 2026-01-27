@@ -139,12 +139,11 @@
         string Summary,
         string Content
     ) {
-        public DateTime SortDate => RuleSortDate(Rule.Date);
-        public string Date => Rule.Date;
+        public DateTime SortDate => Rule.LastModifiedAt;
+        public string Date => FormatDate(Rule.LastModifiedAt);
         public List<string> Tags => Rule.Tags;
     }
 
-    private static DateTime RuleSortDate(string? value) {
-        return DateTime.TryParse(value, out DateTime parsed) ? parsed : DateTime.MinValue;
-    }
+    private static string FormatDate(DateTime date)
+        => date == default ? string.Empty : date.ToString("yyyy-MM-dd");
 }

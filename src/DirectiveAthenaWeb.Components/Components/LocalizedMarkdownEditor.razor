@@ -39,7 +39,8 @@
             @string.Format(Localizer[Shared.MarkdownEditorEditing], _selectedLocale, FileName)
         </MudText>
 
-        <MudTextField T="string" @bind-Value="_content" Label="@Localizer[Shared.MarkdownEditorContent]"
+        <MudTextField T="string" Value="@_content" ValueChanged="@OnContentChanged" Immediate="true"
+                      Label="@Localizer[Shared.MarkdownEditorContent]"
                       Lines="16" Variant="Variant.Outlined" Class="mb-4"/>
 
         <div class="d-flex gap-4">
@@ -79,6 +80,8 @@
     private string? _lastFile;
     private string _lastLocale = "";
     private readonly Dictionary<string, string> _drafts = new(StringComparer.OrdinalIgnoreCase);
+    private CancellationTokenSource? _autoSaveCts;
+    private bool _isLoadingContent;
     private string TitleText => string.IsNullOrWhiteSpace(Title)
         ? Localizer[Shared.MarkdownEditorTitle]
         : Title;
@@ -108,10 +111,12 @@
             return;
         }
 
+        _isLoadingContent = true;
         _content = await LoadContentAsync(_selectedLocale);
         if (string.IsNullOrEmpty(_content)) {
             _content = BuildDefaultContent(_selectedLocale);
         }
+        _isLoadingContent = false;
     }
 
     private async Task OnLocaleChanged(string newLocale) {
@@ -132,18 +137,8 @@
         _ = await Storage.WriteFileAsync(path, _content);
     }
 
-    private async Task SaveMarkdown() {
-        if (string.IsNullOrWhiteSpace(FileName) || Storage is null) return;
-
-        string path = Storage.GetMarkdownDiskPath(_selectedLocale, FileName);
-        bool success = await Storage.WriteFileAsync(path, _content);
-        if (success) {
-            Snackbar.Add(string.Format(Localizer[Shared.MarkdownEditorSaveSuccess], _selectedLocale, FileName), Severity.Success);
-        }
-        else {
-            Snackbar.Add(Localizer[Shared.MarkdownEditorSaveFailed], Severity.Error);
-        }
-    }
+    private async Task SaveMarkdown()
+        => _ = await SaveMarkdownInternal(showFeedback: true);
 
     private async Task DownloadMarkdown() {
         if (string.IsNullOrWhiteSpace(FileName)) return;
@@ -154,5 +149,53 @@
 
     private async Task CopyToClipboard() {
         await WebJs.CopyToClipboardAsync(_content);
+    }
+
+    private Task OnContentChanged(string value) {
+        _content = value;
+        if (_isLoadingContent) return Task.CompletedTask;
+
+        ScheduleAutoSave();
+        return Task.CompletedTask;
+    }
+
+    private void ScheduleAutoSave() {
+        if (string.IsNullOrWhiteSpace(FileName) || Storage is null) return;
+
+        _autoSaveCts?.Cancel();
+        _autoSaveCts = new CancellationTokenSource();
+        CancellationToken token = _autoSaveCts.Token;
+
+        _ = Task.Run(async () => {
+            try {
+                await Task.Delay(TimeSpan.FromSeconds(2), token);
+                if (token.IsCancellationRequested) return;
+                await InvokeAsync(() => SaveMarkdownInternal(showFeedback: false));
+            }
+            catch (TaskCanceledException) {
+            }
+        }, token);
+    }
+
+    private async Task<bool> SaveMarkdownInternal(bool showFeedback) {
+        if (string.IsNullOrWhiteSpace(FileName) || Storage is null) return false;
+
+        string path = Storage.GetMarkdownDiskPath(_selectedLocale, FileName);
+        bool success = await Storage.WriteFileAsync(path, _content);
+        if (!showFeedback) {
+            if (!success) {
+                Snackbar.Add(Localizer[Shared.MarkdownEditorSaveFailed], Severity.Error);
+            }
+            return success;
+        }
+
+        if (success) {
+            Snackbar.Add(string.Format(Localizer[Shared.MarkdownEditorSaveSuccess], _selectedLocale, FileName), Severity.Success);
+        }
+        else {
+            Snackbar.Add(Localizer[Shared.MarkdownEditorSaveFailed], Severity.Error);
+        }
+
+        return success;
     }
 }

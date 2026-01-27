@@ -249,6 +249,45 @@
     <data name="ContentManager.CopyIndex" xml:space="preserve">
     <value>Copy index.json to Clipboard</value>
   </data>
+    <data name="ContentManager.Actions" xml:space="preserve">
+    <value>Actions</value>
+  </data>
+    <data name="ContentManager.AutoSave.Label" xml:space="preserve">
+    <value>Auto-save</value>
+  </data>
+    <data name="ContentManager.AutoSave.On" xml:space="preserve">
+    <value>Auto-save on</value>
+  </data>
+    <data name="ContentManager.AutoSave.Off" xml:space="preserve">
+    <value>Auto-save off</value>
+  </data>
+    <data name="ContentManager.AutoSave.Scheduled" xml:space="preserve">
+    <value>Auto-save scheduled</value>
+  </data>
+    <data name="ContentManager.AutoSave.Saving" xml:space="preserve">
+    <value>Saving...</value>
+  </data>
+    <data name="ContentManager.AutoSave.Saved" xml:space="preserve">
+    <value>Saved {0}</value>
+  </data>
+    <data name="ContentManager.AutoSave.Paused" xml:space="preserve">
+    <value>Auto-save paused</value>
+  </data>
+    <data name="ContentManager.AutoSave.Failed" xml:space="preserve">
+    <value>Auto-save failed</value>
+  </data>
+    <data name="ContentManager.AutoSave.DetailOff" xml:space="preserve">
+    <value>Turn on auto-save to save changes after you pause.</value>
+  </data>
+    <data name="ContentManager.AutoSave.DetailReady" xml:space="preserve">
+    <value>Changes save after a short pause.</value>
+  </data>
+    <data name="ContentManager.AutoSave.DetailSaved" xml:space="preserve">
+    <value>Everything is up to date.</value>
+  </data>
+    <data name="ContentManager.AutoSave.DetailPaused" xml:space="preserve">
+    <value>Resolve validation issues to continue saving.</value>
+  </data>
     <data name="ContentManager.IndexSaved" xml:space="preserve">
     <value>index.json saved to R2!</value>
   </data>
@@ -258,23 +297,41 @@
     <data name="ContentManager.JsonCopied" xml:space="preserve">
     <value>JSON copied to clipboard</value>
   </data>
-    <data name="ContentManager.DeletePostConfirm" xml:space="preserve">
-    <value>Are you sure you want to delete this post?</value>
+    <data name="ContentManager.DeletePostSoftConfirm" xml:space="preserve">
+    <value>Soft delete this post? It will be hidden from visitors but still visible in the manager.</value>
   </data>
-    <data name="ContentManager.DeletePostSuccess" xml:space="preserve">
-    <value>Post and markdown files deleted.</value>
+    <data name="ContentManager.DeletePostSoftSuccess" xml:space="preserve">
+    <value>Post soft deleted.</value>
   </data>
-    <data name="ContentManager.DeletePostPartial" xml:space="preserve">
-    <value>Post removed from list, but R2 delete failed or was partial.</value>
+    <data name="ContentManager.DeletePostSoftFailed" xml:space="preserve">
+    <value>Failed to soft delete the post.</value>
   </data>
-    <data name="ContentManager.DeleteRuleConfirm" xml:space="preserve">
-    <value>Are you sure you want to delete this rule?</value>
+    <data name="ContentManager.DeletePostHardConfirm" xml:space="preserve">
+    <value>Permanently delete this post and its files?</value>
   </data>
-    <data name="ContentManager.DeleteRuleSuccess" xml:space="preserve">
-    <value>Rule and markdown files deleted.</value>
+    <data name="ContentManager.DeletePostHardSuccess" xml:space="preserve">
+    <value>Post permanently deleted.</value>
   </data>
-    <data name="ContentManager.DeleteRulePartial" xml:space="preserve">
-    <value>Rule removed from list, but R2 delete failed or was partial.</value>
+    <data name="ContentManager.DeletePostHardFailed" xml:space="preserve">
+    <value>Post removed from the list, but the hard delete failed or was partial.</value>
+  </data>
+    <data name="ContentManager.DeleteRuleSoftConfirm" xml:space="preserve">
+    <value>Soft delete this rule? It will be hidden from visitors but still visible in the manager.</value>
+  </data>
+    <data name="ContentManager.DeleteRuleSoftSuccess" xml:space="preserve">
+    <value>Rule soft deleted.</value>
+  </data>
+    <data name="ContentManager.DeleteRuleSoftFailed" xml:space="preserve">
+    <value>Failed to soft delete the rule.</value>
+  </data>
+    <data name="ContentManager.DeleteRuleHardConfirm" xml:space="preserve">
+    <value>Permanently delete this rule and its files?</value>
+  </data>
+    <data name="ContentManager.DeleteRuleHardSuccess" xml:space="preserve">
+    <value>Rule permanently deleted.</value>
+  </data>
+    <data name="ContentManager.DeleteRuleHardFailed" xml:space="preserve">
+    <value>Rule removed from the list, but the hard delete failed or was partial.</value>
   </data>
     <data name="ContentManager.MarkdownStubsSaved" xml:space="preserve">
     <value>Markdown stubs saved to R2!</value>
@@ -300,8 +357,11 @@
     <data name="Editor.IdHelperRule" xml:space="preserve">
     <value>GUID is generated automatically for new rules.</value>
   </data>
-    <data name="Editor.DateLabel" xml:space="preserve">
-    <value>Date (YYYY-MM-DD)</value>
+    <data name="Editor.CreatedAtLabel" xml:space="preserve">
+    <value>Created (UTC)</value>
+  </data>
+    <data name="Editor.LastModifiedAtLabel" xml:space="preserve">
+    <value>Last Modified (UTC)</value>
   </data>
     <data name="Editor.TitleLabel" xml:space="preserve">
     <value>Title</value>
@@ -416,6 +476,9 @@
   </data>
     <data name="List.Hidden" xml:space="preserve">
     <value>Hidden</value>
+  </data>
+    <data name="List.Deleted" xml:space="preserve">
+    <value>Deleted</value>
   </data>
     <data name="List.Untitled" xml:space="preserve">
     <value>Untitled</value>

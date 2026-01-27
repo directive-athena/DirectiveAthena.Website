@@ -3,6 +3,7 @@
 // ---------------------------------------------------------------------------------------------------------------------
 using DirectiveAthenaWeb.Services.ContentStorage;
 using DirectiveAthenaWeb.Services.Markdown;
+using JetBrains.Annotations;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -12,7 +13,7 @@ namespace DirectiveAthenaWeb.Services;
 // ---------------------------------------------------------------------------------------------------------------------
 public static class ServiceCollectionExtensions {
     extension(IServiceCollection services) {
-        public IServiceCollection AddWebsiteServices() {
+        [UsedImplicitly] public IServiceCollection AddWebsiteServices() {
             services.AddInfiniBlazor(static config => {
                 config.Components.SetRenderMode(RenderMode.InteractiveWebAssembly);
                 config.Markdown.WithMudBlazorComponents();
@@ -28,7 +29,7 @@ public static class ServiceCollectionExtensions {
             return services;
         }
         
-        private IServiceCollection AddContentStorage(ContentCategory category)
+        private void AddContentStorage(ContentCategory category)
             => services.AddKeyedScoped<IContentStorage>(
                 category,
                 (provider, key) => provider.GetRequiredService<IContentStorageFactory>().ForCategory((ContentCategory)(key ?? throw new ArgumentNullException(nameof(key))))

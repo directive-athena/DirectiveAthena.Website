@@ -59,7 +59,7 @@
                             <MudCardContent Class="flex-grow-1 pa-8">
                                 <div class="d-flex justify-space-between align-center mb-4">
                                     <MudText Typo="Typo.caption" Color="Color.Secondary"
-                                             Style="letter-spacing: 0.1em; text-transform: uppercase;">@post.Date</MudText>
+                                             Style="letter-spacing: 0.1em; text-transform: uppercase;">@FormatDate(post.CreatedAt)</MudText>
                                     <div class="d-flex gap-1">
                                         @foreach (string tag in post.Tags.Take(2)) {
                                             <span class="px-2 py-0 rounded"
@@ -95,7 +95,7 @@
     private string? _selectedTag;
 
     protected override async Task OnInitializedAsync() {
-        IEnumerable<Article> posts = await ArticleRepository.GetAllWithoutHiddenAsync();
+        IEnumerable<Article> posts = await ArticleRepository.GetAllAsync();
         _posts = posts.ToArray();
     }
 
@@ -106,6 +106,9 @@
 
     private void FilterByTag(string tag) => _selectedTag = tag;
     private void ClearTag() => _selectedTag = null;
+
+    private static string FormatDate(DateTime date)
+        => date == DateTime.MinValue ? string.Empty : date.ToString("yyyy-MM-dd");
 
     private void ViewPost(Guid id) {
         NavigationManager.NavigateTo($"/articles/{id:D}");

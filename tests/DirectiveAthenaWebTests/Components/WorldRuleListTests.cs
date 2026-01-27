@@ -3,20 +3,19 @@
 // ---------------------------------------------------------------------------------------------------------------------
 using Bunit;
 using DirectiveAthenaWeb.Components;
-using DirectiveAthenaWeb.Services.Articles;
 using DirectiveAthenaWeb.Services.Localization.Resources;
-using DirectiveAthenaWebTests.Helpers;
-using MudBlazor.Services;
+using DirectiveAthenaWeb.Services.WorldRules;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
+using MudBlazor.Services;
 
 namespace DirectiveAthenaWebTests.Components;
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
-public class ArticleListTests {
+public class WorldRuleListTests {
     [Test]
-    public async Task ArticleList_RendersChipsForHiddenAndMissingNl() {
+    public async Task WorldRuleList_RendersDeletedChip() {
         // Arrange
         await using var ctx = new BunitContext();
         ctx.Services.AddMudServices();
@@ -24,18 +23,24 @@ public class ArticleListTests {
         ctx.JSInterop.SetupVoid("mudKeyInterceptor.connect", _ => true);
         var localizer = ctx.Services.GetRequiredService<IStringLocalizer<Shared>>();
 
-        Article post = ArticleFaker.Create(200, hidden: true, includeNl: false);
-        post.SoftDeletedAt = DateTime.UtcNow;
-        List<Article> posts = [post];
+        var rule = new WorldRule {
+            Id = Guid.NewGuid(),
+            Question = new Dictionary<string, string> {
+                ["en"] = "Question",
+                ["nl"] = "Vraag"
+            },
+            Answer = new Dictionary<string, string> {
+                ["en"] = "Answer",
+                ["nl"] = "Antwoord"
+            },
+            SoftDeletedAt = DateTime.UtcNow
+        };
 
         // Act
-        IRenderedComponent<ArticleList> component = ctx.Render<ArticleList>(parameters => parameters
-            .Add(p => p.Posts, posts));
+        IRenderedComponent<WorldRuleList> component = ctx.Render<WorldRuleList>(parameters => parameters
+            .Add(p => p.Rules, new List<WorldRule> { rule }));
 
         // Assert
-        await Assert.That(component.Markup).Contains(post.Title["en"]);
-        await Assert.That(component.Markup).Contains(localizer[Shared.ListHidden]);
         await Assert.That(component.Markup).Contains(localizer[Shared.ListDeleted]);
-        await Assert.That(component.Markup).Contains(localizer[Shared.ListMissingNl]);
     }
 }

@@ -46,7 +46,12 @@
             <article class="fade-in mx-auto" style="max-width: 800px;">
                 <div class="d-flex align-center flex-wrap gap-4 mb-2">
                     <MudText Typo="Typo.caption" Color="Color.Secondary"
-                             Style="letter-spacing: 0.2em; text-transform: uppercase;">@_currentPost.Date</MudText>
+                             Style="letter-spacing: 0.2em; text-transform: uppercase;">@FormatDate(_currentPost.CreatedAt)</MudText>
+                    @if (HasDate(_currentPost.LastModifiedAt)) {
+                        <MudText Typo="Typo.caption" Class="opacity-60">
+                            @string.Format(LocalizerShared[Shared.WorldRulesUpdated], FormatDate(_currentPost.LastModifiedAt))
+                        </MudText>
+                    }
                     <MudText Typo="Typo.caption" Class="opacity-60">
                         @string.Format(LocalizerShared[Shared.WritingsDetailReadTime], _readTimeMinutes)
                     </MudText>
@@ -129,8 +134,7 @@
         _currentPost = await ArticleRepository.GetByIdAsync(id);
 
         if (_currentPost is null) {
-            _error = true;
-            _loading = false;
+            NavigationManager.NavigateTo("/not-found");
             return;
         }
 
@@ -185,5 +189,11 @@
 
         _isCopyInProgress = false;
     }
+
+    private static bool HasDate(DateTime date)
+        => date != DateTime.MinValue;
+
+    private static string FormatDate(DateTime date)
+        => HasDate(date) ? date.ToString("yyyy-MM-dd") : string.Empty;
 
 }

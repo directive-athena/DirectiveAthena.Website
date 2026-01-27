@@ -54,17 +54,18 @@ public class ArticleManager(
 
     public Article NewArticle() {
         var id = Guid.CreateVersion7();
+        DateTime now = DateTime.UtcNow;
         IReadOnlyCollection<LocalizationInfo> locals = localizationProvider.GetSupportedLocalizations();
 
         Dictionary<string, string> titles = locals.ToDictionary(c => c.Code, _ => "New Post");
         Dictionary<string, string> summaries = locals.ToDictionary(c => c.Code, c => $"{c.DisplayName} - Summary here");
         var article = new Article {
             Id = id,
-            Date = DateTime.Now.ToString("yyyy-MM-dd"),
             Title = titles,
             Summary = summaries,
             Tags = [],
-            Hidden = false
+            CreatedAt = now,
+            LastModifiedAt = now
         };
         logger.Information("Created new article stub {Id}.", article.Id);
         return article;

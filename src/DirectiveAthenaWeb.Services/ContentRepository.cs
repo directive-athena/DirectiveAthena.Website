@@ -1,6 +1,7 @@
 // ---------------------------------------------------------------------------------------------------------------------
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
+using DirectiveAthenaWeb.Services.Content;
 using DirectiveAthenaWeb.Services.ContentStorage;
 using System.Collections.Immutable;
 using System.Net;
@@ -29,8 +30,6 @@ public abstract class ContentRepository<T>(IContentStorage contentStorage, ILogg
     private readonly TimeSpan CacheRefreshWindow = TimeSpan.FromMinutes(5);
     #endif
 
-    protected abstract string IndexPath { get; }
-
     private readonly JsonSerializerOptions _jsonReadOptions = new(JsonSerializerDefaults.Web);
     private readonly JsonSerializerOptions _jsonWriteOptions = new() {
         WriteIndented = true,
@@ -40,18 +39,48 @@ public abstract class ContentRepository<T>(IContentStorage contentStorage, ILogg
     // -----------------------------------------------------------------------------------------------------------------
     // CRUD Methods
     // -----------------------------------------------------------------------------------------------------------------
-    public async ValueTask<T[]> GetAllAsync(CancellationToken ct = default) {
+    public async ValueTask<T[]> GetAllAsync(QueryConfig config = default, CancellationToken ct = default) {
         await EnsureCacheAsync(ct);
-        return ItemsById.Values.ToArray();
+
+        IEnumerable<T> query = ItemsById.Values;
+
+        if (!config.HasFlagFast(QueryConfig.WithHidden)) {
+            query = query.Where(item => !item.IsHidden);
+        }
+
+        if (!config.HasFlagFast(QueryConfig.WithSoftDeleted)) {
+            query = query.Where(item => !item.IsSoftDeleted);
+        }
+
+        bool sortByCreated = config.HasFlagFast(QueryConfig.SortByCreatedAt);
+        bool sortByModified = config.HasFlagFast(QueryConfig.SortByModifiedAt);
+        if (sortByCreated && sortByModified) {
+            query = query.OrderBy(item => item.LastModifiedAt).ThenBy(item => item.CreatedAt);
+        }
+        else if (sortByModified) {
+            query = query.OrderBy(item => item.LastModifiedAt);
+        }
+        else if (sortByCreated) {
+            query = query.OrderBy(item => item.CreatedAt);
+        }
+
+        T[] results = query.ToArray();
+        if (config.HasFlagFast(QueryConfig.Reversed)) {
+            Array.Reverse(results);
+        }
+
+        return results;
     }
 
     public async ValueTask<T?> GetByIdAsync(Guid id, CancellationToken ct = default) {
         await EnsureCacheAsync(ct);
-        return ItemsById.GetValueOrDefault(id);
+        T? item = ItemsById.GetValueOrDefault(id);
+        return item is null || item.IsSoftDeleted ? null : item;
     }
 
     public async ValueTask<bool> SaveAsync(IEnumerable<T> items, CancellationToken ct = default) {
         ICollection<T> itemList = items as ICollection<T> ?? items.ToArray();
+        ApplyTimestampsForSave(itemList, DateTime.UtcNow);
         Logger.Information("Saving {ContentType} index with {Count} items.", typeof(T).Name, itemList.Count);
         string json = await AsJsonStringAsync(itemList, ct);
         bool success = await Storage.WriteIndexAsync(json, ct);
@@ -59,7 +88,31 @@ public abstract class ContentRepository<T>(IContentStorage contentStorage, ILogg
         return success;
     }
 
+    public async ValueTask<bool> SoftDeleteByIdAsync(Guid id, CancellationToken ct = default) {
+        await EnsureCacheAsync(ct);
+        if (!ItemsById.TryGetValue(id, out T? item)) {
+            Logger.Warning("{ContentType} {Id} not found for soft deletion.", typeof(T).Name, id);
+            return false;
+        }
+
+        if (item.IsSoftDeleted) {
+            Logger.Debug("{ContentType} {Id} already soft deleted.", typeof(T).Name, id);
+            return true;
+        }
+
+        DateTime now = DateTime.UtcNow;
+        item.SoftDeletedAt = now;
+        item.LastModifiedAt = now;
+
+        Logger.Information("Soft deleted {ContentType} {Id}, saving updated index.", typeof(T).Name, id);
+        return await SaveIndexAsync(ItemsById.Values, ct);
+    }
+
     public async ValueTask<bool> DeleteByIdAsync(Guid id, CancellationToken ct = default) {
+        return await HardDeleteByIdAsync(id, ct);
+    }
+
+    public async ValueTask<bool> HardDeleteByIdAsync(Guid id, CancellationToken ct = default) {
         await EnsureCacheAsync(ct);
         if (!ItemsById.TryGetValue(id, out T? item)) {
             Logger.Warning("{ContentType} {Id} not found for deletion.", typeof(T).Name, id);
@@ -74,7 +127,7 @@ public abstract class ContentRepository<T>(IContentStorage contentStorage, ILogg
 
         T[] updatedItems = ItemsById.Remove(id).Values.ToArray();
         Logger.Information("Deleted {ContentType} {Id}, saving updated index.", typeof(T).Name, id);
-        return await SaveAsync(updatedItems, ct);
+        return await SaveIndexAsync(updatedItems, ct);
     }
 
     public async ValueTask<string> GetAsJsonStringAsync(CancellationToken ct = default) {
@@ -132,11 +185,11 @@ public abstract class ContentRepository<T>(IContentStorage contentStorage, ILogg
     #endif
 
     private async Task RefreshCacheAsync(DateTimeOffset now, CancellationToken ct) {
-        Logger.Debug("Refreshing {ContentType} cache from {Path}.", typeof(T).Name, IndexPath);
+        Logger.Debug("Refreshing {ContentType} cache from {Path}.", typeof(T).Name, Storage.IndexContentPath);
         ContentReadResult response = await Storage.ReadIndexAsync(_etag, _lastModifiedUtc, ct);
         switch (response.StatusCode) {
             case HttpStatusCode.NotFound:
-                Logger.Warning("{ContentType} index not found at {Path}; treating as empty dataset.", typeof(T).Name, IndexPath);
+                Logger.Warning("{ContentType} index not found at {Path}; treating as empty dataset.", typeof(T).Name, Storage.IndexContentPath);
                 ItemsById = ImmutableDictionary<Guid, T>.Empty;
                 _hasLoaded = true;
                 _etag = null;
@@ -221,6 +274,7 @@ public abstract class ContentRepository<T>(IContentStorage contentStorage, ILogg
         T[]? items = string.IsNullOrWhiteSpace(response.Content)
             ? []
             : JsonSerializer.Deserialize<T[]>(response.Content, _jsonReadOptions);
+        NormalizeMissingTimestamps(items ?? [], DateTime.UtcNow);
         ItemsById = BuildIndex(items ?? []);
         _hasLoaded = true;
         _etag = response.ETag;
@@ -236,5 +290,38 @@ public abstract class ContentRepository<T>(IContentStorage contentStorage, ILogg
         }
 
         return builder.ToImmutable();
+    }
+
+    private async ValueTask<bool> SaveIndexAsync(IEnumerable<T> items, CancellationToken ct) {
+        ICollection<T> itemList = items as ICollection<T> ?? items.ToArray();
+        NormalizeMissingTimestamps(itemList, DateTime.UtcNow);
+        Logger.Information("Saving {ContentType} index with {Count} items.", typeof(T).Name, itemList.Count);
+        string json = await AsJsonStringAsync(itemList, ct);
+        bool success = await Storage.WriteIndexAsync(json, ct);
+        Logger.Information("Save {ContentType} index {Result}.", typeof(T).Name, success ? "succeeded" : "failed");
+        return success;
+    }
+
+    private static void ApplyTimestampsForSave(IEnumerable<T> items, DateTime nowUtc) {
+        foreach (T item in items) {
+            if (item.CreatedAt == default) {
+                item.CreatedAt = nowUtc;
+            }
+            item.LastModifiedAt = nowUtc;
+        }
+    }
+
+    private static void NormalizeMissingTimestamps(IEnumerable<T> items, DateTime nowUtc) {
+        foreach (T item in items) {
+            if (item.CreatedAt == default) {
+                item.CreatedAt = nowUtc;
+            }
+            if (item.LastModifiedAt == default) {
+                item.LastModifiedAt = item.CreatedAt;
+            }
+            if (item.IsSoftDeleted && item.SoftDeletedAt == default) {
+                item.SoftDeletedAt = item.LastModifiedAt == default ? nowUtc : item.LastModifiedAt;
+            }
+        }
     }
 }

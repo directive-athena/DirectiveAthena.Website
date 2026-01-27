@@ -33,12 +33,18 @@
                           HelperText="@Localizer[Shared.EditorIdHelperPost]"/>
         </MudItem>
         <MudItem xs="12" md="6">
-            <MudTextField @bind-Value="Post.Date" Label="@Localizer[Shared.EditorDateLabel]"
-                          Required="true"/>
+            <MudTextField Value="@FormatDate(Post.CreatedAt)" Label="@Localizer[Shared.EditorCreatedAtLabel]"
+                          Required="true" ReadOnly="true"/>
         </MudItem>
+        @if (Post.LastModifiedAt != DateTime.MinValue) {
+            <MudItem xs="12" md="6">
+                <MudTextField Value="@FormatDate(Post.LastModifiedAt)" Label="@Localizer[Shared.EditorLastModifiedAtLabel]"
+                              Required="true" ReadOnly="true"/>
+            </MudItem>
+        }
 
         <MudItem xs="12">
-            <MudSwitch @bind-Value="Post.Hidden" Label="@Localizer[Shared.EditorHiddenLabel]" Color="Color.Primary"/>
+            <MudSwitch @bind-Value="IsHidden" Label="@Localizer[Shared.EditorHiddenLabel]" Color="Color.Primary"/>
         </MudItem>
 
         @foreach (LocalizationInfo culture in LocalizationProvider.GetSupportedLocalizations()) {
@@ -117,6 +123,7 @@
     [Parameter] public EventCallback OnDeletePost { get; set; }
     [Parameter] public EventCallback<bool> OnGenerateStubs { get; set; }
     [Parameter] public EventCallback OnTagsChanged { get; set; }
+    [Parameter] public EventCallback OnContentChanged { get; set; }
 
     private string _newTag = "";
     private IContentStorage _storage = null!;
@@ -131,12 +138,12 @@
     private string GetTitle(string culture)
         => Post.Title.GetValueOrDefault(culture) ?? "";
     private void SetTitle(string culture, string value)
-        => Post.Title[culture] = value;
+        => SetLocalizedValue(Post.Title, culture, value);
 
     private string GetSummary(string culture)
         => Post.Summary.GetValueOrDefault(culture) ?? "";
     private void SetSummary(string culture, string value)
-        => Post.Summary[culture] = value;
+        => SetLocalizedValue(Post.Summary, culture, value);
 
     private void AddTag() {
         if (string.IsNullOrWhiteSpace(_newTag)) return;
@@ -148,13 +155,17 @@
         }
 
         Post.Tags.Add(trimmedTag);
+        TouchLastModified();
         _newTag = "";
         NotifyTagsChanged();
+        NotifyContentChanged();
     }
 
     private void RemoveTag(string tag) {
         Post.Tags.Remove(tag);
+        TouchLastModified();
         NotifyTagsChanged();
+        NotifyContentChanged();
     }
 
     private void OnTagKey(KeyboardEventArgs e) {
@@ -167,10 +178,40 @@
         }
     }
 
+    private void NotifyContentChanged() {
+        if (OnContentChanged.HasDelegate) {
+            _ = OnContentChanged.InvokeAsync();
+        }
+    }
+
+    private bool IsHidden {
+        get => Post.IsHidden;
+        set {
+            DateTime now = DateTime.UtcNow;
+            Post.HiddenAt = value ? now : DateTime.MinValue;
+            Post.LastModifiedAt = now;
+            NotifyContentChanged();
+        }
+    }
+
+    private static string FormatDate(DateTime date)
+        => date == DateTime.MinValue ? string.Empty : date.ToString("yyyy-MM-dd");
+
     private string BuildDefaultMarkdown(string locale) {
         string title = Post.Title.GetValueOrDefault(locale) ?? Localizer[Shared.EditorNewPostTitle];
         string summary = Post.Summary.GetValueOrDefault(locale) ?? "";
         return $"# {title}\n\n{summary}";
     }
 
+    private void TouchLastModified() {
+        Post.LastModifiedAt = DateTime.UtcNow;
+    }
+
+    private void SetLocalizedValue(Dictionary<string, string> values, string culture, string value) {
+        if (values.TryGetValue(culture, out string? existing) && existing == value) return;
+
+        values[culture] = value;
+        TouchLastModified();
+        NotifyContentChanged();
+    }
 }
