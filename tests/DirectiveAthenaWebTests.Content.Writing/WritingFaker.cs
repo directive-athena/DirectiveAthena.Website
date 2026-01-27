@@ -39,5 +39,8 @@ public static class WritingFaker {
     }
 
     public static IReadOnlyCollection<LocalizationInfo> DefaultLocalizations()
-        => LocalizationProvider.SupportedLocalizations;
+        => [
+            new LocalizationInfo("en", "English", "EN", "https://flagcdn.com/w40/us.png"),
+            new LocalizationInfo("nl", "Nederlands", "NL", "https://flagcdn.com/w40/nl.png")
+        ];
 }

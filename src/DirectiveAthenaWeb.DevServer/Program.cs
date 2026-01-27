@@ -4,7 +4,7 @@
 using DirectiveAthenaWeb.Services;
 using DirectiveAthenaWeb.Services.Contact;
 using DirectiveAthenaWeb.Services.ContentStorage;
-using MudBlazor;
+using DirectiveAthenaWeb.Services.Localization;
 using MudBlazor.Services;
 
 namespace DirectiveAthenaWeb.DevServer;
@@ -17,17 +17,6 @@ public static class Program {
         // Builder
         // -------------------------------------------------------------------------------------------------------------
         WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
-        builder.Services.Configure<R2StorageOptions>(builder.Configuration.GetSection("ContentStorage:R2"));
-        builder.Services.Configure<ContactInfoOptions>(options => {
-            options.Items = [
-                new ContactInfoItem { Title = "BlueSky", Url = "https://bsky.app/profile/annasas.dev", SimpleIconsUrl = CustomIcons.Bluesky },
-                new ContactInfoItem { Title = "Twitter / X", Url = "https://x.com/AnnaSasDev", SimpleIconsUrl = Icons.Custom.Brands.X },
-                new ContactInfoItem { Title = "GitHub - Website", Url = "https://github.com/directive-athena/Website", SimpleIconsUrl = Icons.Custom.Brands.GitHub },
-                new ContactInfoItem { Title = "GitHub - AnnaSasDev", Url = "https://github.com/AnnaSasDev", SimpleIconsUrl = Icons.Custom.Brands.GitHub, IncludeInFooter = false },
-                new ContactInfoItem { Title = "Twitch", Url = "https://twitch.tv/AnnaSasDev", SimpleIconsUrl = CustomIcons.Twitch },
-                new ContactInfoItem { Title = "YouTube", Url = "https://twitch.tv/AnnaSasDev", SimpleIconsUrl = Icons.Custom.Brands.YouTube }
-            ];
-        });
         builder.Services.AddMudServices();
         builder.Services.AddLocalization();
         builder.Services.AddRazorComponents()
@@ -43,6 +32,11 @@ public static class Program {
         });
         
         builder.Services.AddWebsiteServices();
+
+        builder.Services.Configure<R2StorageOptions>(builder.Configuration.GetSection("ContentStorage:R2"));
+        builder.Services.Configure<ContactInfoOptions>(builder.Configuration.GetSection("ContactInfo"));
+        builder.Services.Configure<LocalizationOptions>(builder.Configuration.GetSection("Localization"));
+
         
         builder.Services.AddWritingContent();
         builder.Services.AddFaqContent();

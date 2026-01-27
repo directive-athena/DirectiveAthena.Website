@@ -10,6 +10,7 @@ using DirectiveAthenaWebTests.Helpers;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using MudBlazor;
 using MudBlazor.Services;
 using NSubstitute;
@@ -42,7 +43,7 @@ public class CultureSelectorTests {
             ctx.Services.AddSingleton(webJs);
             ctx.Services.AddSingleton<NavigationManager>(nav);
             var logger = Substitute.For<ILogger<LocalizationProvider>>();
-            ctx.Services.AddSingleton<ILocalizationProvider>(new LocalizationProvider(logger));
+            ctx.Services.AddSingleton<ILocalizationProvider>(new LocalizationProvider(logger, BuildOptions()));
 
             // Act
             _ = ctx.Render<MudPopoverProvider>();
@@ -63,4 +64,9 @@ public class CultureSelectorTests {
             CultureLock.Release();
         }
     }
+
+    private static IOptions<LocalizationOptions> BuildOptions()
+        => Options.Create(new LocalizationOptions()
+            .AddLocalization("en", "English", "EN", "https://flagcdn.com/w40/us.png")
+            .AddLocalization("nl", "Nederlands", "NL", "https://flagcdn.com/w40/nl.png"));
 }

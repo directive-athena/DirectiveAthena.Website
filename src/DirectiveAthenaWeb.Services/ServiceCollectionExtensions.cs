@@ -2,6 +2,7 @@
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
 using DirectiveAthenaWeb.Services.Contact;
+using DirectiveAthenaWeb.Services.Localization;
 using DirectiveAthenaWeb.Services.Markdown;
 using JetBrains.Annotations;
 using Microsoft.AspNetCore.Components.Web;
@@ -27,6 +28,12 @@ public static class ServiceCollectionExtensions {
                     .AddContactInfo("GitHub - AnnaSasDev", "https://github.com/AnnaSasDev", "https://simpleicons.org/icons/github.svg", false)
                     .AddContactInfo("Twitch", "https://twitch.tv/AnnaSasDev", "https://simpleicons.org/icons/twitch.svg")
                     .AddContactInfo("YouTube", "https://twitch.tv/AnnaSasDev", "https://simpleicons.org/icons/youtube.svg");
+            });
+            
+            services.Configure<LocalizationOptions>(options => {
+                options
+                    .AddLocalization("en", "English", "EN", "https://flagcdn.com/w40/us.png")
+                    .AddLocalization("nl", "Nederlands", "NL", "https://flagcdn.com/w40/nl.png");
             });
 
             services.RegisterServicesFromDirectiveAthenaWebServices();
