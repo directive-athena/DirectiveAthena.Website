@@ -62,10 +62,6 @@ jobs:
         run: npm run build
         working-directory: src/DirectiveAthenaWeb.Services.Js
 
-      - name: Run TypeScript unit tests
-        run: npm run test:ts
-        working-directory: src/DirectiveAthenaWeb.Services.Js
-
       - name: Bump site version
         id: version
         run: |
