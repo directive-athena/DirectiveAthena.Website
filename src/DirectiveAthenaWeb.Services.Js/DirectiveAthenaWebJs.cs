@@ -17,7 +17,7 @@ public sealed class DirectiveAthenaWebJs(IJSRuntime jsRuntime, ILogger<Directive
             return false;
         }
         catch (Exception e) {
-            logger.LogError(e, "Failed to copy text to clipboard.");
+            logger.Error(e, "Failed to copy text to clipboard.");
             return false;
         }
     }
@@ -29,7 +29,7 @@ public sealed class DirectiveAthenaWebJs(IJSRuntime jsRuntime, ILogger<Directive
         catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested) {
         }
         catch (Exception e) {
-            logger.LogError(e, "Failed to download file.");
+            logger.Error(e, "Failed to download file.");
         }
     }
 
@@ -41,7 +41,7 @@ public sealed class DirectiveAthenaWebJs(IJSRuntime jsRuntime, ILogger<Directive
             return false;
         }
         catch (Exception e) {
-            logger.LogError(e, "Failed to check if file system is supported.");
+            logger.Error(e, "Failed to check if file system is supported.");
             return false;
         }
     }
@@ -54,7 +54,7 @@ public sealed class DirectiveAthenaWebJs(IJSRuntime jsRuntime, ILogger<Directive
             return false;
         }
         catch (Exception e) {
-            logger.LogError(e, "Failed to request file system access.");
+            logger.Error(e, "Failed to request file system access.");
             return false;
         }
     }
@@ -67,7 +67,7 @@ public sealed class DirectiveAthenaWebJs(IJSRuntime jsRuntime, ILogger<Directive
             return false;
         }
         catch (Exception e) {
-            logger.LogError(e, "Failed to check if file system has access.");
+            logger.Error(e, "Failed to check if file system has access.");
             return false;
         }
     }
@@ -80,7 +80,7 @@ public sealed class DirectiveAthenaWebJs(IJSRuntime jsRuntime, ILogger<Directive
             return false;
         }
         catch (Exception e) {
-            logger.LogError(e, "Failed to verify file system permission.");
+            logger.Error(e, "Failed to verify file system permission.");
             return false;
         }
     }
@@ -93,7 +93,7 @@ public sealed class DirectiveAthenaWebJs(IJSRuntime jsRuntime, ILogger<Directive
             return false;
         }
         catch (Exception e) {
-            logger.LogError(e, "Failed to reset file system access.");
+            logger.Error(e, "Failed to reset file system access.");
             return false;
         }
     }
@@ -106,7 +106,7 @@ public sealed class DirectiveAthenaWebJs(IJSRuntime jsRuntime, ILogger<Directive
             return false;
         }
         catch (Exception e) {
-            logger.LogError(e, "Failed to write file.");
+            logger.Error(e, "Failed to write file.");
             return false;
         }
     }
@@ -119,7 +119,7 @@ public sealed class DirectiveAthenaWebJs(IJSRuntime jsRuntime, ILogger<Directive
             return null;
         }
         catch (Exception e) {
-            logger.LogError(e, "Failed to read file.");
+            logger.Error(e, "Failed to read file.");
             return null;
         }
     }
@@ -132,7 +132,7 @@ public sealed class DirectiveAthenaWebJs(IJSRuntime jsRuntime, ILogger<Directive
             return false;
         }
         catch (Exception e) {
-            logger.LogError(e, "Failed to delete file.");
+            logger.Error(e, "Failed to delete file.");
             return false;
         }
     }
@@ -145,7 +145,7 @@ public sealed class DirectiveAthenaWebJs(IJSRuntime jsRuntime, ILogger<Directive
         catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested) {
         }
         catch (Exception e) {
-            logger.LogError(e, "Failed to register scroll listener.");
+            logger.Error(e, "Failed to register scroll listener.");
         }
     }
 
@@ -156,7 +156,7 @@ public sealed class DirectiveAthenaWebJs(IJSRuntime jsRuntime, ILogger<Directive
         catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested) {
         }
         catch (Exception e) {
-            logger.LogError(e, "Failed to scroll to element.");
+            logger.Error(e, "Failed to scroll to element.");
         }
     }
 
@@ -167,7 +167,7 @@ public sealed class DirectiveAthenaWebJs(IJSRuntime jsRuntime, ILogger<Directive
         catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested) {
         }
         catch (Exception e) {
-            logger.LogError(e, "Failed to set localStorage item.");
+            logger.Error(e, "Failed to set localStorage item.");
         }
     }
 
@@ -179,7 +179,7 @@ public sealed class DirectiveAthenaWebJs(IJSRuntime jsRuntime, ILogger<Directive
             return null;
         }
         catch (Exception e) {
-            logger.LogError(e, "Failed to get localStorage item.");
+            logger.Error(e, "Failed to get localStorage item.");
             return null;
         }
     }
@@ -192,7 +192,7 @@ public sealed class DirectiveAthenaWebJs(IJSRuntime jsRuntime, ILogger<Directive
             return false;
         }
         catch (Exception e) {
-            logger.LogError(e, "Failed to confirm.");
+            logger.Error(e, "Failed to confirm.");
             return false;
         }
     }
