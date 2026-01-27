@@ -20,12 +20,6 @@ public class WorldRuleRepositoryTests {
         return storage;
     }
 
-    private static IContentStorageFactory CreateFactory(IContentStorage storage) {
-        var factory = Substitute.For<IContentStorageFactory>();
-        factory.ForCategory(ContentCategory.WorldRules).Returns(storage);
-        return factory;
-    }
-
     private static WorldRule CreateRule(int seed) => new() {
         Id = Guid.NewGuid(),
         Date = $"2026-01-{seed:D2}",
@@ -40,7 +34,7 @@ public class WorldRuleRepositoryTests {
         storage.ReadIndexAsync(Arg.Any<EntityTagHeaderValue?>(), Arg.Any<DateTimeOffset?>(), Arg.Any<CancellationToken>())
             .Returns(Task.FromException<ContentReadResult>(new HttpRequestException("boom")));
         var logger = Substitute.For<ILogger<WorldRuleRepository>>();
-        var repo = new WorldRuleRepository(CreateFactory(storage), logger);
+        var repo = new WorldRuleRepository(storage, logger);
 
         // Act
         IEnumerable<WorldRule> result = await repo.GetAllAsync();
@@ -61,7 +55,7 @@ public class WorldRuleRepositoryTests {
         storage.ReadIndexAsync(Arg.Any<EntityTagHeaderValue?>(), Arg.Any<DateTimeOffset?>(), Arg.Any<CancellationToken>())
             .Returns(Task.FromResult(new ContentReadResult(HttpStatusCode.OK, JsonSerializer.Serialize(rules), null, null)));
         var logger = Substitute.For<ILogger<WorldRuleRepository>>();
-        var repo = new WorldRuleRepository(CreateFactory(storage), logger);
+        var repo = new WorldRuleRepository(storage, logger);
 
         // Act
         _ = (await repo.GetAllAsync()).ToList();
@@ -79,7 +73,7 @@ public class WorldRuleRepositoryTests {
         storage.ReadIndexAsync(Arg.Any<EntityTagHeaderValue?>(), Arg.Any<DateTimeOffset?>(), Arg.Any<CancellationToken>())
             .Returns(Task.FromResult(new ContentReadResult(HttpStatusCode.OK, "null", null, null)));
         var logger = Substitute.For<ILogger<WorldRuleRepository>>();
-        var repo = new WorldRuleRepository(CreateFactory(storage), logger);
+        var repo = new WorldRuleRepository(storage, logger);
 
         // Act
         IEnumerable<WorldRule> result = await repo.GetAllAsync();
@@ -95,7 +89,7 @@ public class WorldRuleRepositoryTests {
         storage.WriteIndexAsync(Arg.Any<string>()).Returns(new ValueTask<bool>(true));
 
         var logger = Substitute.For<ILogger<WorldRuleRepository>>();
-        var repo = new WorldRuleRepository(CreateFactory(storage), logger);
+        var repo = new WorldRuleRepository(storage, logger);
         WorldRule[] rules = [CreateRule(10)];
 
         // Act
@@ -113,7 +107,7 @@ public class WorldRuleRepositoryTests {
         storage.WriteIndexAsync(Arg.Any<string>()).Returns(new ValueTask<bool>(false));
 
         var logger = Substitute.For<ILogger<WorldRuleRepository>>();
-        var repo = new WorldRuleRepository(CreateFactory(storage), logger);
+        var repo = new WorldRuleRepository(storage, logger);
         WorldRule[] rules = [CreateRule(11)];
 
         // Act
@@ -134,7 +128,7 @@ public class WorldRuleRepositoryTests {
         storage.ReadIndexAsync(Arg.Any<EntityTagHeaderValue?>(), Arg.Any<DateTimeOffset?>(), Arg.Any<CancellationToken>())
             .Returns(Task.FromResult(new ContentReadResult(HttpStatusCode.OK, JsonSerializer.Serialize(new[] { rule }), null, null)));
         var logger = Substitute.For<ILogger<WorldRuleRepository>>();
-        var repo = new WorldRuleRepository(CreateFactory(storage), logger);
+        var repo = new WorldRuleRepository(storage, logger);
 
         // Act
         bool result = await repo.DeleteByIdAsync(rule.Id);
@@ -154,7 +148,7 @@ public class WorldRuleRepositoryTests {
         storage.ReadIndexAsync(Arg.Any<EntityTagHeaderValue?>(), Arg.Any<DateTimeOffset?>(), Arg.Any<CancellationToken>())
             .Returns(Task.FromResult(new ContentReadResult(HttpStatusCode.OK, JsonSerializer.Serialize(new[] { rule }), null, null)));
         var logger = Substitute.For<ILogger<WorldRuleRepository>>();
-        var repo = new WorldRuleRepository(CreateFactory(storage), logger);
+        var repo = new WorldRuleRepository(storage, logger);
 
         // Act
         bool result = await repo.DeleteByIdAsync(rule.Id);

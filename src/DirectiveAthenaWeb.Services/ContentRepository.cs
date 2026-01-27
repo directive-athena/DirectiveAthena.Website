@@ -29,8 +29,6 @@ public abstract class ContentRepository<T>(IContentStorage contentStorage, ILogg
     private readonly TimeSpan CacheRefreshWindow = TimeSpan.FromMinutes(5);
     #endif
 
-    protected abstract string IndexPath { get; }
-
     private readonly JsonSerializerOptions _jsonReadOptions = new(JsonSerializerDefaults.Web);
     private readonly JsonSerializerOptions _jsonWriteOptions = new() {
         WriteIndented = true,
@@ -132,11 +130,11 @@ public abstract class ContentRepository<T>(IContentStorage contentStorage, ILogg
     #endif
 
     private async Task RefreshCacheAsync(DateTimeOffset now, CancellationToken ct) {
-        Logger.Debug("Refreshing {ContentType} cache from {Path}.", typeof(T).Name, IndexPath);
+        Logger.Debug("Refreshing {ContentType} cache from {Path}.", typeof(T).Name, Storage.IndexContentPath);
         ContentReadResult response = await Storage.ReadIndexAsync(_etag, _lastModifiedUtc, ct);
         switch (response.StatusCode) {
             case HttpStatusCode.NotFound:
-                Logger.Warning("{ContentType} index not found at {Path}; treating as empty dataset.", typeof(T).Name, IndexPath);
+                Logger.Warning("{ContentType} index not found at {Path}; treating as empty dataset.", typeof(T).Name, Storage.IndexContentPath);
                 ItemsById = ImmutableDictionary<Guid, T>.Empty;
                 _hasLoaded = true;
                 _etag = null;

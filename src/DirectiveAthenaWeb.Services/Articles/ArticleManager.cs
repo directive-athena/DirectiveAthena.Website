@@ -60,7 +60,7 @@ public class ArticleManager(
         Dictionary<string, string> summaries = locals.ToDictionary(c => c.Code, c => $"{c.DisplayName} - Summary here");
         var article = new Article {
             Id = id,
-            Date = DateTime.Now.ToString("yyyy-MM-dd"),
+            Date = DateTime.UtcNow.ToString("yyyy-MM-dd"),
             Title = titles,
             Summary = summaries,
             Tags = [],

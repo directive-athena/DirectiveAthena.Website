@@ -38,7 +38,7 @@
         </MudGrid>
         <MudDivider Class="my-8 opacity-10"/>
         <MudText Typo="Typo.caption" Class="d-block opacity-60" Align="Align.Center">
-            @string.Format(Localizer[Shared.FooterCopyright], DateTime.Now.Year)
+            @string.Format(Localizer[Shared.FooterCopyright], DateTime.UtcNow.Year)
         </MudText>
         <MudText Typo="Typo.caption" Class="d-block opacity-50" Align="Align.Center">
             @string.Format(Localizer[Shared.FooterVersion], _version)
@@ -57,7 +57,7 @@
         try {
             string versionText = await Http.GetStringAsync("version.txt");
             string trimmed = versionText.Trim();
-            if (!string.IsNullOrWhiteSpace(trimmed)) {
+            if (!trimmed.IsNullOrWhiteSpace()) {
                 _version = trimmed;
             }
         }

@@ -3,6 +3,7 @@
 // ---------------------------------------------------------------------------------------------------------------------
 using CodeOfChaos.Extensions.DependencyInjection;
 using DirectiveAthenaWeb.Services.ContentStorage;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace DirectiveAthenaWeb.Services.WorldRules;
@@ -11,12 +12,6 @@ namespace DirectiveAthenaWeb.Services.WorldRules;
 // ---------------------------------------------------------------------------------------------------------------------
 [InjectableScoped<IWorldRuleRepository>]
 public class WorldRuleRepository(
-    IContentStorageFactory storageFactory,
+    [FromKeyedServices(ContentCategory.WorldRules)] IContentStorage storage,
     ILogger<WorldRuleRepository> logger
-) : ContentRepository<WorldRule>(
-        storageFactory.ForCategory(ContentCategory.WorldRules),
-        logger
-    ),
-    IWorldRuleRepository {
-    protected override string IndexPath => Storage.IndexContentPath;
-}
+) : ContentRepository<WorldRule>(storage, logger), IWorldRuleRepository;

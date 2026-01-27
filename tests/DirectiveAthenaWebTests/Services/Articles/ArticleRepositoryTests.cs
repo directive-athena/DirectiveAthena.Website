@@ -21,12 +21,6 @@ public class ArticleRepositoryTests {
         return storage;
     }
 
-    private static IContentStorageFactory CreateFactory(IContentStorage storage) {
-        var factory = Substitute.For<IContentStorageFactory>();
-        factory.ForCategory(ContentCategory.Articles).Returns(storage);
-        return factory;
-    }
-
     [Test]
     public async Task GetPostsAsync_FiltersOutHiddenPosts() {
         // Arrange
@@ -40,7 +34,7 @@ public class ArticleRepositoryTests {
         storage.ReadIndexAsync(Arg.Any<EntityTagHeaderValue?>(), Arg.Any<DateTimeOffset?>(), Arg.Any<CancellationToken>())
             .Returns(Task.FromResult(new ContentReadResult(HttpStatusCode.OK, JsonSerializer.Serialize(articles), null, null)));
         var logger = Substitute.For<ILogger<ArticleRepository>>();
-        var repo = new ArticleRepository(CreateFactory(storage), logger);
+        var repo = new ArticleRepository(storage, logger);
 
         // Act
         List<Article> result = (await repo.GetAllWithoutHiddenAsync()).ToList();
@@ -57,7 +51,7 @@ public class ArticleRepositoryTests {
         storage.ReadIndexAsync(Arg.Any<EntityTagHeaderValue?>(), Arg.Any<DateTimeOffset?>(), Arg.Any<CancellationToken>())
             .Returns(Task.FromException<ContentReadResult>(new HttpRequestException("boom")));
         var logger = Substitute.For<ILogger<ArticleRepository>>();
-        var repo = new ArticleRepository(CreateFactory(storage), logger);
+        var repo = new ArticleRepository(storage, logger);
 
         // Act
         IEnumerable<Article> result = await repo.GetAllWithoutHiddenAsync();
@@ -78,7 +72,7 @@ public class ArticleRepositoryTests {
         storage.ReadIndexAsync(Arg.Any<EntityTagHeaderValue?>(), Arg.Any<DateTimeOffset?>(), Arg.Any<CancellationToken>())
             .Returns(Task.FromResult(new ContentReadResult(HttpStatusCode.OK, JsonSerializer.Serialize(articles), null, null)));
         var logger = Substitute.For<ILogger<ArticleRepository>>();
-        var repo = new ArticleRepository(CreateFactory(storage), logger);
+        var repo = new ArticleRepository(storage, logger);
 
         // Act
         _ = (await repo.GetAllWithoutHiddenAsync()).ToList();
@@ -96,7 +90,7 @@ public class ArticleRepositoryTests {
         storage.ReadIndexAsync(Arg.Any<EntityTagHeaderValue?>(), Arg.Any<DateTimeOffset?>(), Arg.Any<CancellationToken>())
             .Returns(Task.FromResult(new ContentReadResult(HttpStatusCode.OK, "null", null, null)));
         var logger = Substitute.For<ILogger<ArticleRepository>>();
-        var repo = new ArticleRepository(CreateFactory(storage), logger);
+        var repo = new ArticleRepository(storage, logger);
 
         // Act
         IEnumerable<Article> result = await repo.GetAllWithoutHiddenAsync();
@@ -117,7 +111,7 @@ public class ArticleRepositoryTests {
         storage.ReadIndexAsync(Arg.Any<EntityTagHeaderValue?>(), Arg.Any<DateTimeOffset?>(), Arg.Any<CancellationToken>())
             .Returns(Task.FromResult(new ContentReadResult(HttpStatusCode.OK, JsonSerializer.Serialize(articles), null, null)));
         var logger = Substitute.For<ILogger<ArticleRepository>>();
-        var repo = new ArticleRepository(CreateFactory(storage), logger);
+        var repo = new ArticleRepository(storage, logger);
 
         // Act
         Task[] tasks = Enumerable.Range(0, 5)
@@ -137,7 +131,7 @@ public class ArticleRepositoryTests {
         storage.WriteIndexAsync(Arg.Any<string>()).Returns(new ValueTask<bool>(true));
 
         var logger = Substitute.For<ILogger<ArticleRepository>>();
-        var repo = new ArticleRepository(CreateFactory(storage), logger);
+        var repo = new ArticleRepository(storage, logger);
         Article[] articles = [ArticleFaker.Create(21)];
 
         // Act
@@ -155,7 +149,7 @@ public class ArticleRepositoryTests {
         storage.WriteIndexAsync(Arg.Any<string>()).Returns(new ValueTask<bool>(false));
 
         var logger = Substitute.For<ILogger<ArticleRepository>>();
-        var repo = new ArticleRepository(CreateFactory(storage), logger);
+        var repo = new ArticleRepository(storage, logger);
         Article[] articles = [ArticleFaker.Create(22)];
 
         // Act
@@ -176,7 +170,7 @@ public class ArticleRepositoryTests {
         storage.ReadIndexAsync(Arg.Any<EntityTagHeaderValue?>(), Arg.Any<DateTimeOffset?>(), Arg.Any<CancellationToken>())
             .Returns(Task.FromResult(new ContentReadResult(HttpStatusCode.OK, JsonSerializer.Serialize(new[] { article }), null, null)));
         var logger = Substitute.For<ILogger<ArticleRepository>>();
-        var repo = new ArticleRepository(CreateFactory(storage), logger);
+        var repo = new ArticleRepository(storage, logger);
 
         // Act
         bool result = await repo.DeleteByIdAsync(article.Id);
@@ -196,7 +190,7 @@ public class ArticleRepositoryTests {
         storage.ReadIndexAsync(Arg.Any<EntityTagHeaderValue?>(), Arg.Any<DateTimeOffset?>(), Arg.Any<CancellationToken>())
             .Returns(Task.FromResult(new ContentReadResult(HttpStatusCode.OK, JsonSerializer.Serialize(new[] { article }), null, null)));
         var logger = Substitute.For<ILogger<ArticleRepository>>();
-        var repo = new ArticleRepository(CreateFactory(storage), logger);
+        var repo = new ArticleRepository(storage, logger);
 
         // Act
         bool result = await repo.DeleteByIdAsync(article.Id);

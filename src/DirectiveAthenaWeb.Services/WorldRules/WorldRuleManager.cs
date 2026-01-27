@@ -54,7 +54,7 @@ public class WorldRuleManager(
 
         var rule = new WorldRule {
             Id = id,
-            Date = DateTime.Now.ToString("yyyy-MM-dd"),
+            Date = DateTime.UtcNow.ToString("yyyy-MM-dd"),
             Question = questions,
             Answer = answers,
             Tags = []

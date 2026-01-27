@@ -40,7 +40,7 @@ public class ContentStorageFactory(
         => category switch {
             ContentCategory.Articles => $"{ContentRoot}/articles",
             ContentCategory.WorldRules => $"{ContentRoot}/world-rules",
-            _ => throw new ArgumentOutOfRangeException(nameof(category), category, "Unsupported content category.")
+            _ => throw new ArgumentOutOfRangeException(nameof(category), category, @"Unsupported content category.")
         };
     
     private static Uri BuildPublicBaseUri(R2StorageOptions options, ILogger logger) {

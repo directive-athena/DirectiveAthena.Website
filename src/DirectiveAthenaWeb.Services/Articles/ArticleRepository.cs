@@ -3,6 +3,7 @@
 // ---------------------------------------------------------------------------------------------------------------------
 using CodeOfChaos.Extensions.DependencyInjection;
 using DirectiveAthenaWeb.Services.ContentStorage;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace DirectiveAthenaWeb.Services.Articles;
@@ -11,14 +12,9 @@ namespace DirectiveAthenaWeb.Services.Articles;
 // ---------------------------------------------------------------------------------------------------------------------
 [InjectableScoped<IArticleRepository>]
 public class ArticleRepository(
-    IContentStorageFactory storageFactory,
+    [FromKeyedServices(ContentCategory.Articles)] IContentStorage storage,
     ILogger<ArticleRepository> logger
-) : ContentRepository<Article>(
-        storageFactory.ForCategory(ContentCategory.Articles),
-        logger
-    ),
-    IArticleRepository {
-    protected override string IndexPath => Storage.IndexContentPath;
+) : ContentRepository<Article>(storage, logger), IArticleRepository {
 
     // -----------------------------------------------------------------------------------------------------------------
     // Methods
