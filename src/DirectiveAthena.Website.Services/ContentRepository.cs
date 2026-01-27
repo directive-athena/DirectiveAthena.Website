@@ -23,7 +23,11 @@ public abstract class ContentRepository<T>(IContentStorage contentStorage, ILogg
     private EntityTagHeaderValue? _etag;
     private DateTimeOffset? _lastModifiedUtc;
     private DateTimeOffset? _lastRefreshUtc;
+    #if DEBUG
     private readonly TimeSpan DevRefreshWindow = TimeSpan.FromSeconds(5);
+    #else
+    private readonly TimeSpan CacheRefreshWindow = TimeSpan.FromMinutes(5);
+    #endif
 
     protected abstract string IndexPath { get; }
 
