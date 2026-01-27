@@ -9,7 +9,7 @@
             "src\\DirectiveAthenaWeb.Services.Localization\\DirectiveAthenaWeb.Services.Localization.csproj",
             "src\\DirectiveAthenaWeb.Shared\\DirectiveAthenaWeb.Shared.csproj",
             
-            "tests\\DirectiveAthenaTests.Website\\DirectiveAthenaTests.Website.csproj"
+            "tests\\DirectiveAthenaWebTests\\DirectiveAthenaWebTests.csproj"
         ]
     }
 }

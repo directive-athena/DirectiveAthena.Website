@@ -775,5 +775,5 @@ dist
 .temp/
 
 # Local-only config (WASM)
-/src/DirectiveAthena.Website/wwwroot/appsettings.local.json
-/src/DirectiveAthena.WebsiteDevServer/appsettings.local.json
+/src/DirectiveAthenaWeb.Client/wwwroot/appsettings.local.json
+/src/DirectiveAthenaWeb.DevServer/appsettings.local.json
