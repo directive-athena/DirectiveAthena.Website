@@ -26,9 +26,20 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  run-tests:
+    if: ${{ inputs.skip_tests != 'true' }}
+    name: Run Multi-Platform Tests
+    # noinspection UndefinedAction
+    uses: ./.github/workflows/lib_testing.yml
+    with:
+        # noinspection UndefinedParamsPresent
+        ref: ${{ inputs.tag }}
+    secrets: inherit
+
   deploy:
     name: Deploy Tagged Version
     runs-on: ubuntu-latest
+    needs: run-tests
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -56,14 +67,6 @@ jobs:
       - name: Build interop bundle
         run: npm run build
         working-directory: src/DirectiveAthena.Website.ClientAssets
-
-      - name: Restore dependencies
-        if: ${{ inputs.skip_tests != 'true' }}
-        run: dotnet restore DirectiveAthena.Website.GithubPages.slnf
-
-      - name: Run tests
-        if: ${{ inputs.skip_tests != 'true' }}
-        run: dotnet test --solution DirectiveAthena.Website.GithubPages.slnf --configuration Release --no-restore
 
       - name: Publish docs site
         run: |
