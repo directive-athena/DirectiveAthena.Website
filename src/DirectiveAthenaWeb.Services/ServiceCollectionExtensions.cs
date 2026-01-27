@@ -20,6 +20,7 @@ public static class ServiceCollectionExtensions {
             });
 
             services.RegisterServicesFromDirectiveAthenaWebServices();
+            services.RegisterServicesFromDirectiveAthenaWebServicesContent();
             services.RegisterServicesFromDirectiveAthenaWebServicesJs();
             services.RegisterServicesFromDirectiveAthenaWebServicesLocalization();
 
