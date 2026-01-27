@@ -6,6 +6,7 @@ using DirectiveAthenaWeb.Services.ContentStorage;
 using Microsoft.Extensions.Options;
 using Minio;
 using Minio.DataModel.Args;
+using System.Text;
 
 namespace DirectiveAthenaWeb.DevServer;
 // ---------------------------------------------------------------------------------------------------------------------
@@ -42,13 +43,13 @@ public static class ApiEndpoints {
                 return Results.Problem("R2 credentials are not configured.", statusCode: StatusCodes.Status500InternalServerError);
             }
 
-            ProxyUploadRequest? payload = await request.ReadFromJsonAsync<ProxyUploadRequest>(request.HttpContext.RequestAborted);
+            var payload = await request.ReadFromJsonAsync<ProxyUploadRequest>(request.HttpContext.RequestAborted);
             if (payload is null || payload.Key.IsNullOrWhiteSpace()) {
                 return Results.BadRequest("Key is required.");
             }
 
             IMinioClient minioClient = CreateMinioClient(options, logger);
-            byte[] contentBytes = System.Text.Encoding.UTF8.GetBytes(payload.Content);
+            byte[] contentBytes = Encoding.UTF8.GetBytes(payload.Content);
             using var contentStream = new MemoryStream(contentBytes);
             PutObjectArgs? putArgs = new PutObjectArgs().WithBucket(options.BucketName!)
                 .WithObject(payload.Key)
@@ -74,7 +75,7 @@ public static class ApiEndpoints {
                 return Results.Problem("R2 credentials are not configured.", statusCode: StatusCodes.Status500InternalServerError);
             }
 
-            ProxyDeleteRequest? payload = await request.ReadFromJsonAsync<ProxyDeleteRequest>(request.HttpContext.RequestAborted);
+            var payload = await request.ReadFromJsonAsync<ProxyDeleteRequest>(request.HttpContext.RequestAborted);
             if (payload is null || payload.Key.IsNullOrWhiteSpace()) {
                 return Results.BadRequest("Key is required.");
             }
