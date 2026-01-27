@@ -39,8 +39,8 @@ public class ContentStorageFactory(
 
     private static string GetCategoryFolder(ContentCategory category)
         => category switch {
-            ContentCategory.Writings => $"{ContentRoot}/writings",
-            ContentCategory.WorldFaq => $"{ContentRoot}/world-faq",
+            ContentCategory.Writing => $"{ContentRoot}/writings",
+            ContentCategory.Faq => $"{ContentRoot}/world-faq",
             _ => throw new ArgumentOutOfRangeException(nameof(category), category, @"Unsupported content category.")
         };
 

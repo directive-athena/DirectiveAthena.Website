@@ -6,6 +6,6 @@ namespace DirectiveAthenaWeb.Services.ContentStorage;
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
 public enum ContentCategory {
-    Writings,
-    WorldFaq
+    Writing,
+    Faq
 }

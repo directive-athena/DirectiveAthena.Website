@@ -31,7 +31,7 @@ public class WorldFaqManagerTests {
 
     private static IContentStorageFactory CreateStorageFactory(IContentStorage storage) {
         var factory = Substitute.For<IContentStorageFactory>();
-        factory.ForCategory(ContentCategory.WorldFaq).Returns(storage);
+        factory.ForCategory(ContentCategory.Faq).Returns(storage);
         return factory;
     }
 

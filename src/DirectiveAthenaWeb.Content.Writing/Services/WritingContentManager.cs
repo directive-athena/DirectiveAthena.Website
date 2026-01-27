@@ -8,7 +8,7 @@ using FluentValidation;
 using FluentValidation.Results;
 using Microsoft.Extensions.Logging;
 
-namespace DirectiveAthenaWeb.Content.Writings.Services;
+namespace DirectiveAthenaWeb.Content.Writing.Services;
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
@@ -20,7 +20,7 @@ public class WritingContentManager(
     IValidator<IEnumerable<WritingContent>> validator,
     ILogger<WritingContentManager> logger
 ) : IWritingContentManager {
-    private readonly IContentStorage _storage = storageFactory.ForCategory(ContentCategory.Writings);
+    private readonly IContentStorage _storage = storageFactory.ForCategory(ContentCategory.Writing);
 
     public string GetLocalizedTitle(WritingContent article)
         => GetLocalizedValue(article.Title);

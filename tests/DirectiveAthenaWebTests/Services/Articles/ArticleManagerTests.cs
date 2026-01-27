@@ -1,8 +1,8 @@
 ﻿// ---------------------------------------------------------------------------------------------------------------------
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
-using DirectiveAthenaWeb.Content.Writings;
-using DirectiveAthenaWeb.Content.Writings.Services;
+using DirectiveAthenaWeb.Content.Writing;
+using DirectiveAthenaWeb.Content.Writing.Services;
 using DirectiveAthenaWeb.Services.ContentStorage;
 using DirectiveAthenaWeb.Services.Localization;
 using DirectiveAthenaWebTests.Helpers;
@@ -31,7 +31,7 @@ public class WritingManagerTests {
 
     private static IContentStorageFactory CreateStorageFactory(IContentStorage storage) {
         var factory = Substitute.For<IContentStorageFactory>();
-        factory.ForCategory(ContentCategory.Writings).Returns(storage);
+        factory.ForCategory(ContentCategory.Writing).Returns(storage);
         return factory;
     }
 

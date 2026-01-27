@@ -4,7 +4,7 @@
 using CodeOfChaos.Extensions.DependencyInjection;
 using FluentValidation;
 
-namespace DirectiveAthenaWeb.Content.Writings.Services;
+namespace DirectiveAthenaWeb.Content.Writing.Services;
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------

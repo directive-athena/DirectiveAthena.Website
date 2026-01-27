@@ -3,7 +3,7 @@
 // ---------------------------------------------------------------------------------------------------------------------
 using Bunit;
 using DirectiveAthenaWeb.Components;
-using DirectiveAthenaWeb.Content.Writings;
+using DirectiveAthenaWeb.Content.Writing;
 using DirectiveAthenaWeb.Services.Localization.Resources;
 using DirectiveAthenaWebTests.Helpers;
 using MudBlazor.Services;

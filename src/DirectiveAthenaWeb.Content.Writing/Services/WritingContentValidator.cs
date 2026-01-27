@@ -5,7 +5,7 @@ using CodeOfChaos.Extensions.DependencyInjection;
 using DirectiveAthenaWeb.Services.Localization;
 using FluentValidation;
 
-namespace DirectiveAthenaWeb.Content.Writings.Services;
+namespace DirectiveAthenaWeb.Content.Writing.Services;
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------

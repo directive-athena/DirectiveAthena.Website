@@ -2,7 +2,7 @@
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
 using Bogus;
-using DirectiveAthenaWeb.Content.Writings;
+using DirectiveAthenaWeb.Content.Writing;
 using DirectiveAthenaWeb.Services.Localization;
 
 namespace DirectiveAthenaWebTests.Helpers;

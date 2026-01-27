@@ -38,7 +38,7 @@ public class FaqListTests {
 
         // Act
         IRenderedComponent<FaqList> component = ctx.Render<FaqList>(parameters => parameters
-            .Add(p => p.Rules, new List<FaqContent> { rule }));
+            .Add(p => p.Rules, [rule]));
 
         // Assert
         await Assert.That(component.Markup).Contains(localizer[Shared.ListDeleted]);

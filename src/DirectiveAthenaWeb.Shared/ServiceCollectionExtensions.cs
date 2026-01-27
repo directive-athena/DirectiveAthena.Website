@@ -1,18 +1,20 @@
 ﻿// ---------------------------------------------------------------------------------------------------------------------
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
-using CodeOfChaos.Extensions.DependencyInjection;
-using DirectiveAthenaWeb.Services.Content;
 using DirectiveAthenaWeb.Services.ContentStorage;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 
-namespace DirectiveAthenaWeb.Content.Faq.Services;
+// ReSharper disable once CheckNamespace
+namespace Microsoft.Extensions.DependencyInjection;
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
-[InjectableScoped<IFaqContentRepository>]
-public class FaqContentRepository(
-    [FromKeyedServices(ContentCategory.Faq)] IContentStorage storage,
-    ILogger<FaqContentRepository> logger
-) : ContentRepository<FaqContent>(storage, logger), IFaqContentRepository;
+public static class ServiceCollectionExtensions {
+    extension(IServiceCollection services) {
+        public void AddContentStorage(ContentCategory category)
+            => services.AddKeyedScoped<IContentStorage>(
+                category,
+                (provider, key) => provider.GetRequiredService<IContentStorageFactory>().ForCategory((ContentCategory)(key ?? throw new ArgumentNullException(nameof(key))))
+            );
+    }
+
+}

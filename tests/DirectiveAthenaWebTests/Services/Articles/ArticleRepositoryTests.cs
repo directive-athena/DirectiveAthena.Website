@@ -1,8 +1,8 @@
 ﻿// ---------------------------------------------------------------------------------------------------------------------
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
-using DirectiveAthenaWeb.Content.Writings;
-using DirectiveAthenaWeb.Content.Writings.Services;
+using DirectiveAthenaWeb.Content.Writing;
+using DirectiveAthenaWeb.Content.Writing.Services;
 using DirectiveAthenaWeb.Services.Content;
 using DirectiveAthenaWeb.Services.ContentStorage;
 using DirectiveAthenaWebTests.Helpers;
