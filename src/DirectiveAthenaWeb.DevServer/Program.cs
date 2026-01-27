@@ -16,8 +16,8 @@ public static class Program {
         // Builder
         // -------------------------------------------------------------------------------------------------------------
         WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
-        builder.Configuration.AddJsonFile("appsettings.local.json", optional: true, reloadOnChange: false);
         builder.Services.Configure<R2StorageOptions>(builder.Configuration.GetSection("ContentStorage:R2"));
+        
         builder.Services.AddMudServices();
         builder.Services.AddLocalization();
         builder.Services.AddRazorComponents()
