@@ -1,0 +1,166 @@
+﻿@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Imports
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@using DirectiveAthenaWeb.Services.Writings
+@using DirectiveAthenaWeb.Services.Localization.Resources
+@using Microsoft.Extensions.Localization
+
+@namespace DirectiveAthenaWeb.Components
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Descriptors
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@inherits DirectiveAthenaWeb.Components.WebsiteComponentBase
+
+@inject IWritingRepository WritingRepository
+@inject IWritingManager WritingManager
+@inject NavigationManager Nav
+@inject IStringLocalizer<Shared> Localizer
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Html
+@* ------------------------------------------------------------------------------------------------------------------ *@
+<section id="writings" class="py-32">
+    <MudContainer MaxWidth="MaxWidth.Large">
+        <div class="d-flex justify-space-between align-end mb-12">
+            <div>
+                <MudText Typo="Typo.h2" Class="mb-4">@Localizer[Shared.HomeWritingsTitle]</MudText>
+                <MudText Typo="Typo.body1"
+                         Class="text-secondary opacity-70">@Localizer[Shared.HomeWritingsSubtitle]</MudText>
+            </div>
+            <MudButton Variant="Variant.Text" Color="Color.Secondary" Href="/writings"
+                       EndIcon="@Icons.Material.Filled.ArrowForward"
+                       Class="d-none d-sm-flex">@Localizer[Shared.HomeWritingsViewArchive]</MudButton>
+        </div>
+
+        <MudGrid Spacing="6">
+            @* HighLight *@
+            <MudItem xs="12">
+                @if (!_isLoaded) {
+                    <MudCard Class="card-glass overflow-hidden">
+                        <MudGrid Spacing="0">
+                            <MudItem xs="12" md="7" Class="pa-8 d-flex flex-column justify-center">
+                                <MudProgressLinear Color="Color.Secondary" Indeterminate="true" Class="mb-6"/>
+                                <MudProgressLinear Color="Color.Secondary" Indeterminate="true" Class="mb-4"
+                                                   Style="height: 10px;"/>
+                                <MudProgressLinear Color="Color.Secondary" Indeterminate="true" Class="mb-4"
+                                                   Style="height: 10px; width: 80%;"/>
+                                <MudProgressLinear Color="Color.Secondary" Indeterminate="true" Class="mb-4"
+                                                   Style="height: 10px; width: 70%;"/>
+                                <MudProgressLinear Color="Color.Secondary" Indeterminate="true"
+                                                   Style="height: 10px; width: 40%;"/>
+                            </MudItem>
+                            <MudItem xs="12" md="5" Class="d-none d-md-flex align-center justify-center bg-glow pa-12">
+                                <MudProgressCircular Color="Color.Secondary" Indeterminate="true" Size="Size.Large"/>
+                            </MudItem>
+                        </MudGrid>
+                    </MudCard>
+                }
+                else if (HighlightedPost is not null) {
+                    <MudCard Class="card-glass featured-card overflow-hidden"
+                             @onclick="@(_ => ViewPost(HighlightedPost.Id))" Style="cursor: pointer;">
+                        <MudGrid Spacing="0">
+                            <MudItem xs="12" md="7" Class="pa-8 d-flex flex-column justify-center">
+                                <MudText Typo="Typo.caption" Color="Color.Primary"
+                                         Style="letter-spacing: 0.2em; text-transform: uppercase;"
+                                         Class="mb-4">@Localizer[Shared.HomeWritingsLatestLabel]</MudText>
+                                <MudText Typo="Typo.h3"
+                                         Class="mb-4 SpaceGrotesk">@WritingManager.GetLocalizedTitle(HighlightedPost)</MudText>
+                                <MudText Typo="Typo.body1" Class="text-secondary mb-8"
+                                         Style="font-size: 1.1rem;">
+                                    @WritingManager.GetLocalizedSummary(HighlightedPost)
+                                </MudText>
+                                <div class="d-flex align-center gap-4">
+                                    <MudButton Variant="Variant.Filled" Color="Color.Primary"
+                                               Class="px-6">@Localizer[Shared.HomeWritingsReadFull]</MudButton>
+                                    <MudText Typo="Typo.caption"
+                                             Class="opacity-50">@FormatDate(HighlightedPost.CreatedAt)</MudText>
+                                </div>
+                            </MudItem>
+                            <MudItem xs="12" md="5"
+                                     Class="d-none d-md-flex align-center justify-center bg-glow pa-12">
+                                <MudIcon Icon="@Icons.Material.Filled.AutoStories" Size="Size.Large"
+                                         Style="font-size: 8rem; opacity: 0.2;"/>
+                            </MudItem>
+                        </MudGrid>
+                    </MudCard>
+                }
+                else if (_isLoaded) {
+                    <EmptyWritingsState/>
+                }
+            </MudItem>
+
+            @* Recent Writings *@
+            @if (!_isLoaded) {
+                for (int i = 0; i < 3; i++) {
+                    <MudItem xs="12" md="4">
+                        <MudCard Class="card-glass h-100 d-flex flex-column">
+                            <MudCardContent Class="flex-grow-1 pa-6">
+                                <MudProgressLinear Color="Color.Secondary" Indeterminate="true" Class="mb-4"/>
+                                <MudProgressLinear Color="Color.Secondary" Indeterminate="true" Class="mb-4"
+                                                   Style="height: 10px;"/>
+                                <MudProgressLinear Color="Color.Secondary" Indeterminate="true" Class="mb-4"
+                                                   Style="height: 10px; width: 75%;"/>
+                                <MudProgressLinear Color="Color.Secondary" Indeterminate="true"
+                                                   Style="height: 10px; width: 50%;"/>
+                            </MudCardContent>
+                        </MudCard>
+                    </MudItem>
+                }
+            }
+            else if (RemainingPosts is not null && RemainingPosts.Any()) {
+                foreach (Writing post in RemainingPosts) {
+                    <MudItem xs="12" md="4">
+                        <MudCard Class="card-glass h-100 d-flex flex-column"
+                                 @onclick="@(() => ViewPost(post.Id))"
+                                 Style="cursor: pointer;">
+                            <MudCardContent Class="flex-grow-1 pa-6">
+                                <MudText Typo="Typo.caption" Color="Color.Secondary"
+                                         Class="mb-2 d-block">@FormatDate(post.CreatedAt)</MudText>
+                                <MudText Typo="Typo.h5"
+                                         Class="mb-4 SpaceGrotesk">@WritingManager.GetLocalizedTitle(post)</MudText>
+                                <MudText Typo="Typo.body2" Class="text-secondary opacity-70 mb-4"
+                                         Style="line-height: 1.5;">
+                                    @WritingManager.GetLocalizedSummary(post)
+                                </MudText>
+                                <MudButton Variant="Variant.Text" Color="Color.Secondary"
+                                           Class="pa-0">@Localizer[Shared.HomeWritingsReadMore]</MudButton>
+                            </MudCardContent>
+                        </MudCard>
+                    </MudItem>
+                }
+            }
+        </MudGrid>
+
+        <div class="d-flex justify-center mt-12 d-sm-none">
+            <MudButton Variant="Variant.Outlined" Color="Color.Secondary"
+                       Href="/writings">@Localizer[Shared.HomeWritingsViewAll]</MudButton>
+        </div>
+    </MudContainer>
+</section>
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Code
+@* ------------------------------------------------------------------------------------------------------------------ *@
+
+@code {
+    private IEnumerable<Writing>? RemainingPosts { get; set; }
+    private Writing? HighlightedPost { get; set; }
+    private bool _isLoaded;
+
+    // -----------------------------------------------------------------------------------------------------------------
+    // Methods
+    // -----------------------------------------------------------------------------------------------------------------
+    protected override async Task OnInitializedAsync() {
+        Writing[] posts = await WritingRepository.GetAllAsync();
+
+        HighlightedPost = posts.FirstOrDefault();
+        RemainingPosts = posts.Skip(1).Take(3);
+
+        _isLoaded = true;
+    }
+
+    private void ViewPost(Guid id) {
+        Nav.NavigateTo($"/writings/{id:D}");
+    }
+
+    private static string FormatDate(DateTime date)
+        => date == DateTime.MinValue ? string.Empty : date.ToString("yyyy-MM-dd");
+}

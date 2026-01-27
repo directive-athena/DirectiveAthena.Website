@@ -1,4 +1,4 @@
-# Created by https://www.toptal.com/developers/gitignore/api/csharp,dotnetcore,rider,jetbrains,jetbrains+all,obsidian,node
+﻿# Created by https://www.toptal.com/developers/gitignore/api/csharp,dotnetcore,rider,jetbrains,jetbrains+all,obsidian,node
 # Edit at https://www.toptal.com/developers/gitignore?templates=csharp,dotnetcore,rider,jetbrains,jetbrains+all,obsidian,node
 
 ### Csharp ###
@@ -410,7 +410,7 @@ obj/
 
 ### JetBrains ###
 # Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm, CLion, Android Studio, WebStorm and Rider
-# Reference: https://intellij-support.jetbrains.com/hc/en-us/articles/206544839
+# Reference: https://intellij-support.jetbrains.com/hc/en-us/writings/206544839
 
 # User-specific stuff
 .idea/**/workspace.xml
@@ -523,7 +523,7 @@ fabric.properties
 
 ### JetBrains+all ###
 # Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm, CLion, Android Studio, WebStorm and Rider
-# Reference: https://intellij-support.jetbrains.com/hc/en-us/articles/206544839
+# Reference: https://intellij-support.jetbrains.com/hc/en-us/writings/206544839
 
 # User-specific stuff
 
@@ -723,7 +723,7 @@ dist
 
 ### Rider ###
 # Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm, CLion, Android Studio, WebStorm and Rider
-# Reference: https://intellij-support.jetbrains.com/hc/en-us/articles/206544839
+# Reference: https://intellij-support.jetbrains.com/hc/en-us/writings/206544839
 
 # User-specific stuff
 

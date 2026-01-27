@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------------------------------------------------------
+﻿// ---------------------------------------------------------------------------------------------------------------------
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
 using DirectiveAthenaWeb.Services.ContentStorage;
@@ -13,7 +13,7 @@ namespace DirectiveAthenaWebTests.Services.ContentStorage;
 // ---------------------------------------------------------------------------------------------------------------------
 public class ContentStorageFactoryTests {
     [Test]
-    public async Task ForCategory_BuildsArticleIndexPath() {
+    public async Task ForCategory_BuildsWritingIndexPath() {
         // Arrange
         var localizationProvider = Substitute.For<ILocalizationProvider>();
         IOptions<R2StorageOptions> options = Options.Create(new R2StorageOptions {
@@ -30,14 +30,14 @@ public class ContentStorageFactoryTests {
         var factory = new ContentStorageFactory(localizationProvider, options, httpClient, loggerFactory);
 
         // Act
-        IContentStorage storage = factory.ForCategory(ContentCategory.Articles);
+        IContentStorage storage = factory.ForCategory(ContentCategory.Writings);
 
         // Assert
-        await Assert.That(storage.IndexContentPath).IsEqualTo("https://cdn.example.com/assets/content/articles/index.json");
+        await Assert.That(storage.IndexContentPath).IsEqualTo("https://cdn.example.com/assets/content/writings/index.json");
     }
 
     [Test]
-    public async Task ForCategory_BuildsWorldRulesIndexPath() {
+    public async Task ForCategory_BuildsWorldFaqIndexPath() {
         // Arrange
         var localizationProvider = Substitute.For<ILocalizationProvider>();
         IOptions<R2StorageOptions> options = Options.Create(new R2StorageOptions {
@@ -54,9 +54,9 @@ public class ContentStorageFactoryTests {
         var factory = new ContentStorageFactory(localizationProvider, options, httpClient, loggerFactory);
 
         // Act
-        IContentStorage storage = factory.ForCategory(ContentCategory.WorldRules);
+        IContentStorage storage = factory.ForCategory(ContentCategory.WorldFaq);
 
         // Assert
-        await Assert.That(storage.IndexContentPath).IsEqualTo("https://cdn.example.com/assets/content/world-rules/index.json");
+        await Assert.That(storage.IndexContentPath).IsEqualTo("https://cdn.example.com/assets/content/world-faq/index.json");
     }
 }

@@ -1,9 +1,9 @@
-// ---------------------------------------------------------------------------------------------------------------------
+﻿// ---------------------------------------------------------------------------------------------------------------------
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
 using Bunit;
 using DirectiveAthenaWeb.Components;
-using DirectiveAthenaWeb.Services.Articles;
+using DirectiveAthenaWeb.Services.Writings;
 using DirectiveAthenaWeb.Services.Localization.Resources;
 using DirectiveAthenaWebTests.Helpers;
 using MudBlazor.Services;
@@ -14,9 +14,9 @@ namespace DirectiveAthenaWebTests.Components;
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
-public class ArticleListTests {
+public class WritingListTests {
     [Test]
-    public async Task ArticleList_RendersChipsForHiddenAndMissingNl() {
+    public async Task WritingList_RendersChipsForHiddenAndMissingNl() {
         // Arrange
         await using var ctx = new BunitContext();
         ctx.Services.AddMudServices();
@@ -24,12 +24,12 @@ public class ArticleListTests {
         ctx.JSInterop.SetupVoid("mudKeyInterceptor.connect", _ => true);
         var localizer = ctx.Services.GetRequiredService<IStringLocalizer<Shared>>();
 
-        Article post = ArticleFaker.Create(200, hidden: true, includeNl: false);
+        Writing post = WritingFaker.Create(200, hidden: true, includeNl: false);
         post.SoftDeletedAt = DateTime.UtcNow;
-        List<Article> posts = [post];
+        List<Writing> posts = [post];
 
         // Act
-        IRenderedComponent<ArticleList> component = ctx.Render<ArticleList>(parameters => parameters
+        IRenderedComponent<WritingList> component = ctx.Render<WritingList>(parameters => parameters
             .Add(p => p.Posts, posts));
 
         // Assert

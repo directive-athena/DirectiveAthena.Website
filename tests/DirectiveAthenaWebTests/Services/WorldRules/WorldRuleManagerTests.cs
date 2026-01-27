@@ -1,20 +1,21 @@
-// ---------------------------------------------------------------------------------------------------------------------
+﻿// ---------------------------------------------------------------------------------------------------------------------
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
+using DirectiveAthenaWeb.Content.Faq.Services;
 using DirectiveAthenaWeb.Services.ContentStorage;
-using System.Net;
 using DirectiveAthenaWeb.Services.Localization;
-using DirectiveAthenaWeb.Services.WorldRules;
+using DirectiveAthenaWeb.Services.WorldFaq;
 using DirectiveAthenaWebTests.Helpers;
 using FluentValidation;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
+using System.Net;
 
 namespace DirectiveAthenaWebTests.Services.WorldRules;
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
-public class WorldRuleManagerTests {
+public class WorldFaqManagerTests {
     private static ILocalizationProvider CreateLocalizationProvider(string currentCode) {
         LocalizationInfo[] localizations = [
             new("en", "English", "EN", ""),
@@ -30,25 +31,25 @@ public class WorldRuleManagerTests {
 
     private static IContentStorageFactory CreateStorageFactory(IContentStorage storage) {
         var factory = Substitute.For<IContentStorageFactory>();
-        factory.ForCategory(ContentCategory.WorldRules).Returns(storage);
+        factory.ForCategory(ContentCategory.WorldFaq).Returns(storage);
         return factory;
     }
 
-    private static WorldRuleManager CreateManager(
+    private static WorldFaqManager CreateManager(
         ILocalizationProvider localizationProvider,
         IContentStorage? storage = null,
         HttpClient? http = null,
-        IValidator<IEnumerable<WorldRule>>? validator = null
+        IValidator<IEnumerable<WorldFaq>>? validator = null
     ) {
         storage ??= Substitute.For<IContentStorage>();
         http ??= new HttpClient();
-        validator ??= new WorldRuleCollectionValidator(new WorldRuleValidator(localizationProvider));
-        var logger = Substitute.For<ILogger<WorldRuleManager>>();
-        return new WorldRuleManager(localizationProvider, CreateStorageFactory(storage), http, validator, logger);
+        validator ??= new WorldFaqCollectionValidator(new WorldFaqValidator(localizationProvider));
+        var logger = Substitute.For<ILogger<WorldFaqManager>>();
+        return new WorldFaqManager(localizationProvider, CreateStorageFactory(storage), http, validator, logger);
     }
 
-    private static WorldRule CreateRule(int seed, bool includeNl = true) {
-        var rule = new WorldRule {
+    private static WorldFaq CreateRule(int seed, bool includeNl = true) {
+        var rule = new WorldFaq {
             Id = Guid.NewGuid(),
             Date = $"2026-01-{seed:D2}",
             Question = new Dictionary<string, string> { ["en"] = $"Question {seed}" },
@@ -67,9 +68,9 @@ public class WorldRuleManagerTests {
     [Test]
     public async Task GetLocalizedQuestion_FallsBackToDefaultCulture() {
         // Arrange
-        WorldRule rule = CreateRule(1, includeNl: false);
+        WorldFaq rule = CreateRule(1, includeNl: false);
         ILocalizationProvider localizationProvider = CreateLocalizationProvider("nl");
-        WorldRuleManager manager = CreateManager(localizationProvider);
+        WorldFaqManager manager = CreateManager(localizationProvider);
 
         // Act
         string result = manager.GetLocalizedQuestion(rule);
@@ -81,9 +82,9 @@ public class WorldRuleManagerTests {
     [Test]
     public async Task GetLocalizedAnswer_FallsBackToDefaultCulture() {
         // Arrange
-        WorldRule rule = CreateRule(2, includeNl: false);
+        WorldFaq rule = CreateRule(2, includeNl: false);
         ILocalizationProvider localizationProvider = CreateLocalizationProvider("nl");
-        WorldRuleManager manager = CreateManager(localizationProvider);
+        WorldFaqManager manager = CreateManager(localizationProvider);
 
         // Act
         string result = manager.GetLocalizedAnswer(rule);
@@ -95,12 +96,12 @@ public class WorldRuleManagerTests {
     [Test]
     public async Task GetLocalizedFilePath_UsesCurrentLocalization() {
         // Arrange
-        WorldRule rule = CreateRule(3);
+        WorldFaq rule = CreateRule(3);
         ILocalizationProvider localizationProvider = CreateLocalizationProvider("nl");
         var storage = Substitute.For<IContentStorage>();
         storage.GetMarkdownContentPath(Arg.Any<string>(), Arg.Any<string>())
             .Returns(call => $"content/worldrules/{call.ArgAt<string>(0)}/{call.ArgAt<string>(1)}");
-        WorldRuleManager manager = CreateManager(localizationProvider, storage);
+        WorldFaqManager manager = CreateManager(localizationProvider, storage);
 
         // Act
         string result = manager.GetLocalizedFilePath(rule);
@@ -114,8 +115,8 @@ public class WorldRuleManagerTests {
         // Arrange
         var handler = new TestHttpMessageHandler(_ => new HttpResponseMessage(HttpStatusCode.InternalServerError));
         var http = new HttpClient(handler) { BaseAddress = new Uri("http://localhost/") };
-        WorldRuleManager manager = CreateManager(CreateLocalizationProvider("en"), http: http);
-        WorldRule rule = CreateRule(4);
+        WorldFaqManager manager = CreateManager(CreateLocalizationProvider("en"), http: http);
+        WorldFaq rule = CreateRule(4);
 
         // Act
         string result = await manager.GetRawMarkdownContentAsync(rule, "en");
@@ -128,10 +129,10 @@ public class WorldRuleManagerTests {
     public async Task NewRule_PopulatesLocalizedFields() {
         // Arrange
         ILocalizationProvider localizationProvider = CreateLocalizationProvider("en");
-        WorldRuleManager manager = CreateManager(localizationProvider);
+        WorldFaqManager manager = CreateManager(localizationProvider);
 
         // Act
-        WorldRule rule = manager.NewRule();
+        WorldFaq rule = manager.NewRule();
         HashSet<string> expected = localizationProvider.GetSupportedLocalizations().Select(c => c.Code).ToHashSet();
 
         // Assert
@@ -146,14 +147,14 @@ public class WorldRuleManagerTests {
     public async Task Validate_RejectsDuplicateIds() {
         // Arrange
         var sharedId = Guid.NewGuid();
-        WorldRule[] rules = [
+        WorldFaq[] rules = [
             CreateRule(10),
             CreateRule(11)
         ];
         rules[0].Id = sharedId;
         rules[1].Id = sharedId;
 
-        WorldRuleManager manager = CreateManager(CreateLocalizationProvider("en"));
+        WorldFaqManager manager = CreateManager(CreateLocalizationProvider("en"));
 
         // Act
         bool result = manager.Validate(rules, out string? error);
@@ -166,10 +167,10 @@ public class WorldRuleManagerTests {
     [Test]
     public async Task GenerateStubsAsync_ReturnsStubsForAllCultures() {
         // Arrange
-        WorldRule rule = CreateRule(20);
+        WorldFaq rule = CreateRule(20);
         var storage = Substitute.For<IContentStorage>();
         ILocalizationProvider localizationProvider = CreateLocalizationProvider("en");
-        WorldRuleManager manager = CreateManager(localizationProvider, storage);
+        WorldFaqManager manager = CreateManager(localizationProvider, storage);
 
         // Act
         (Dictionary<string, string> Stubs, bool WroteAll) result = await manager.GenerateStubsAsync(rule, writeToDisk: false);
@@ -183,14 +184,14 @@ public class WorldRuleManagerTests {
     [Test]
     public async Task GenerateStubsAsync_WritesWhenRequested() {
         // Arrange
-        WorldRule rule = CreateRule(21);
+        WorldFaq rule = CreateRule(21);
         var storage = Substitute.For<IContentStorage>();
         ILocalizationProvider localizationProvider = CreateLocalizationProvider("en");
         storage.WriteFileAsync(Arg.Any<string>(), Arg.Any<string>()).Returns(new ValueTask<bool>(true));
         storage.GetMarkdownDiskPath(Arg.Any<string>(), Arg.Any<string>())
             .Returns(call => $"{call.ArgAt<string>(0)}/{call.ArgAt<string>(1)}");
 
-        WorldRuleManager manager = CreateManager(localizationProvider, storage);
+        WorldFaqManager manager = CreateManager(localizationProvider, storage);
 
         // Act
         (Dictionary<string, string> Stubs, bool WroteAll) result = await manager.GenerateStubsAsync(rule, writeToDisk: true);

@@ -1,8 +1,9 @@
-// ---------------------------------------------------------------------------------------------------------------------
+﻿// ---------------------------------------------------------------------------------------------------------------------
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
-using DirectiveAthenaWeb.Services.Articles;
+using DirectiveAthenaWeb.Content.Writings.Services;
 using DirectiveAthenaWeb.Services.Localization;
+using DirectiveAthenaWeb.Services.Writings;
 using DirectiveAthenaWebTests.Helpers;
 using FluentValidation.Results;
 using NSubstitute;
@@ -11,7 +12,7 @@ namespace DirectiveAthenaWebTests.Services.Articles;
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
-public class ArticleCollectionValidatorTests {
+public class WritingCollectionValidatorTests {
 
     private static ILocalizationProvider CreateLocalizationProvider(string currentCode) {
         LocalizationInfo[] localizations = [
@@ -31,16 +32,16 @@ public class ArticleCollectionValidatorTests {
     [Test]
     public async Task Validate_RejectsDuplicateIds() {
         // Arrange
-        Article[] articles = [
-            ArticleFaker.Create(400),
-            ArticleFaker.Create(401)
+        Writing[] writings = [
+            WritingFaker.Create(400),
+            WritingFaker.Create(401)
         ];
-        articles[1].Id = articles[0].Id;
+        writings[1].Id = writings[0].Id;
 
-        var validator = new ArticleCollectionValidator(new ArticleValidator(CreateLocalizationProvider("en")));
+        var validator = new WritingCollectionValidator(new WritingValidator(CreateLocalizationProvider("en")));
 
         // Act
-        ValidationResult? result = await validator.ValidateAsync(articles);
+        ValidationResult? result = await validator.ValidateAsync(writings);
 
         // Assert
         await Assert.That(result.IsValid).IsFalse();
@@ -48,16 +49,16 @@ public class ArticleCollectionValidatorTests {
     }
 
     [Test]
-    public async Task Validate_FailsWhenAnyArticleIsInvalid() {
+    public async Task Validate_FailsWhenAnyWritingIsInvalid() {
         // Arrange
-        Article valid = ArticleFaker.Create(420);
-        Article invalid = ArticleFaker.Create(421, includeNl: false);
-        Article[] articles = [valid, invalid];
+        Writing valid = WritingFaker.Create(420);
+        Writing invalid = WritingFaker.Create(421, includeNl: false);
+        Writing[] writings = [valid, invalid];
 
-        var validator = new ArticleCollectionValidator(new ArticleValidator(CreateLocalizationProvider("en")));
+        var validator = new WritingCollectionValidator(new WritingValidator(CreateLocalizationProvider("en")));
 
         // Act
-        ValidationResult? result = await validator.ValidateAsync(articles);
+        ValidationResult? result = await validator.ValidateAsync(writings);
 
         // Assert
         await Assert.That(result.IsValid).IsFalse();

@@ -72,8 +72,8 @@
     <data name="Nav.Writings" xml:space="preserve">
     <value>Writings</value>
   </data>
-    <data name="Nav.WorldRules" xml:space="preserve">
-    <value>World Rules</value>
+    <data name="Nav.WorldFaq" xml:space="preserve">
+    <value>World FAQ</value>
   </data>
     <data name="Nav.ContentManager" xml:space="preserve">
     <value>Content Manager</value>
@@ -144,17 +144,17 @@
     <data name="Home.Writings.Empty" xml:space="preserve">
     <value>No dispatches currently available. Check back soon for updates from the frontier.</value>
   </data>
-    <data name="Home.WorldRules.Title" xml:space="preserve">
-    <value>World Rules</value>
+    <data name="Home.WorldFaq.Title" xml:space="preserve">
+    <value>World FAQ</value>
   </data>
-    <data name="Home.WorldRules.Subtitle" xml:space="preserve">
-    <value>Constraints and canon anchors at a glance.</value>
+    <data name="Home.WorldFaq.Subtitle" xml:space="preserve">
+    <value>Quick answers and canon anchors at a glance.</value>
   </data>
-    <data name="Home.WorldRules.ViewAll" xml:space="preserve">
-    <value>View All Rules</value>
+    <data name="Home.WorldFaq.ViewAll" xml:space="preserve">
+    <value>View All FAQs</value>
   </data>
-    <data name="Home.WorldRules.Empty" xml:space="preserve">
-    <value>No rules available for the homepage yet.</value>
+    <data name="Home.WorldFaq.Empty" xml:space="preserve">
+    <value>No FAQs available for the homepage yet.</value>
   </data>
     <data name="Writings.Title" xml:space="preserve">
     <value>Writings - Directive Athena</value>
@@ -168,8 +168,8 @@
     <data name="Writings.Archive.AllPosts" xml:space="preserve">
     <value>All Posts</value>
   </data>
-    <data name="Writings.Archive.ReadArticle" xml:space="preserve">
-    <value>Read Article</value>
+    <data name="Writings.Archive.ReadWriting" xml:space="preserve">
+    <value>Read Writing</value>
   </data>
     <data name="Writings.Detail.Back" xml:space="preserve">
     <value>Back to Archive</value>
@@ -201,23 +201,23 @@
     <data name="Writings.Detail.ShareReddit" xml:space="preserve">
     <value>Reddit</value>
   </data>
-    <data name="WorldRules.Title" xml:space="preserve">
-    <value>World Rules - Directive Athena</value>
+    <data name="WorldFaq.Title" xml:space="preserve">
+    <value>World FAQ - Directive Athena</value>
   </data>
-    <data name="WorldRules.Heading" xml:space="preserve">
-    <value>World Rules</value>
+    <data name="WorldFaq.Heading" xml:space="preserve">
+    <value>World FAQ</value>
   </data>
-    <data name="WorldRules.Subtitle" xml:space="preserve">
-    <value>Constraints, boundaries, and canon anchors for the setting.</value>
+    <data name="WorldFaq.Subtitle" xml:space="preserve">
+    <value>Quick answers, boundaries, and canon anchors for the setting.</value>
   </data>
-    <data name="WorldRules.All" xml:space="preserve">
-    <value>All Rules</value>
+    <data name="WorldFaq.All" xml:space="preserve">
+    <value>All FAQs</value>
   </data>
-    <data name="WorldRules.Updated" xml:space="preserve">
+    <data name="WorldFaq.Updated" xml:space="preserve">
     <value>Updated {0}</value>
   </data>
-    <data name="WorldRules.Empty" xml:space="preserve">
-    <value>No rules published yet. Add your first entry to begin shaping the canon.</value>
+    <data name="WorldFaq.Empty" xml:space="preserve">
+    <value>No FAQs published yet. Add your first entry to begin shaping the canon.</value>
   </data>
     <data name="ContentManager.Title" xml:space="preserve">
     <value>Content Manager - Directive Athena</value>
@@ -228,8 +228,8 @@
     <data name="ContentManager.Tab.Writings" xml:space="preserve">
     <value>Writings</value>
   </data>
-    <data name="ContentManager.Tab.WorldRules" xml:space="preserve">
-    <value>World Rules</value>
+    <data name="ContentManager.Tab.WorldFaq" xml:space="preserve">
+    <value>World FAQ</value>
   </data>
     <data name="ContentManager.Tab.Tags" xml:space="preserve">
     <value>Tags</value>
@@ -519,7 +519,7 @@
     <data name="NotFound.GoHome" xml:space="preserve">
     <value>Go home</value>
   </data>
-    <data name="NotFound.BrowseArticles" xml:space="preserve">
-    <value>Browse articles</value>
+    <data name="NotFound.BrowseWritings" xml:space="preserve">
+    <value>Browse writings</value>
   </data>
 </root>

@@ -23,8 +23,8 @@ public static class ServiceCollectionExtensions {
             services.RegisterServicesFromDirectiveAthenaWebServicesJs();
             services.RegisterServicesFromDirectiveAthenaWebServicesLocalization();
 
-            services.AddContentStorage(ContentCategory.Articles);
-            services.AddContentStorage(ContentCategory.WorldRules);
+            services.AddContentStorage(ContentCategory.Writings);
+            services.AddContentStorage(ContentCategory.WorldFaq);
 
             return services;
         }

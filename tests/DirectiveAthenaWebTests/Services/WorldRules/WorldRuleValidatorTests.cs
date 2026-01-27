@@ -1,8 +1,9 @@
-// ---------------------------------------------------------------------------------------------------------------------
+﻿// ---------------------------------------------------------------------------------------------------------------------
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
+using DirectiveAthenaWeb.Content.Faq.Services;
 using DirectiveAthenaWeb.Services.Localization;
-using DirectiveAthenaWeb.Services.WorldRules;
+using DirectiveAthenaWeb.Services.WorldFaq;
 using FluentValidation;
 using FluentValidation.Results;
 using NSubstitute;
@@ -11,7 +12,7 @@ namespace DirectiveAthenaWebTests.Services.WorldRules;
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
-public class WorldRuleValidatorTests {
+public class WorldFaqValidatorTests {
     private static ILocalizationProvider CreateLocalizationProvider() {
         LocalizationInfo[] localizations = [
             new("en", "English", "EN", ""),
@@ -24,7 +25,7 @@ public class WorldRuleValidatorTests {
         return provider;
     }
 
-    private static WorldRule CreateValidRule() => new() {
+    private static WorldFaq CreateValidRule() => new() {
         Id = Guid.NewGuid(),
         Date = "2026-01-01",
         Question = new Dictionary<string, string> {
@@ -38,14 +39,14 @@ public class WorldRuleValidatorTests {
     };
 
     [Test]
-    public async Task WorldRuleValidator_RejectsMissingId() {
+    public async Task WorldFaqValidator_RejectsMissingId() {
         // Arrange
-        WorldRule rule = CreateValidRule();
+        WorldFaq rule = CreateValidRule();
         rule.Id = Guid.Empty;
-        var validator = new WorldRuleValidator(CreateLocalizationProvider());
+        var validator = new WorldFaqValidator(CreateLocalizationProvider());
 
         // Act
-        ValidationResult? result = validator.Validate(rule);
+        ValidationResult? result = await validator.ValidateAsync(rule);
 
         // Assert
         await Assert.That(result.IsValid).IsFalse();
@@ -53,14 +54,14 @@ public class WorldRuleValidatorTests {
     }
 
     [Test]
-    public async Task WorldRuleValidator_RejectsMissingDate() {
+    public async Task WorldFaqValidator_RejectsMissingDate() {
         // Arrange
-        WorldRule rule = CreateValidRule();
+        WorldFaq rule = CreateValidRule();
         rule.Date = "";
-        var validator = new WorldRuleValidator(CreateLocalizationProvider());
+        var validator = new WorldFaqValidator(CreateLocalizationProvider());
 
         // Act
-        ValidationResult? result = validator.Validate(rule);
+        ValidationResult? result = await validator.ValidateAsync(rule);
 
         // Assert
         await Assert.That(result.IsValid).IsFalse();
@@ -68,14 +69,14 @@ public class WorldRuleValidatorTests {
     }
 
     [Test]
-    public async Task WorldRuleValidator_RejectsMissingLocalizedQuestion() {
+    public async Task WorldFaqValidator_RejectsMissingLocalizedQuestion() {
         // Arrange
-        WorldRule rule = CreateValidRule();
+        WorldFaq rule = CreateValidRule();
         rule.Question.Remove("nl");
-        var validator = new WorldRuleValidator(CreateLocalizationProvider());
+        var validator = new WorldFaqValidator(CreateLocalizationProvider());
 
         // Act
-        ValidationResult? result = validator.Validate(rule);
+        ValidationResult? result = await validator.ValidateAsync(rule);
 
         // Assert
         await Assert.That(result.IsValid).IsFalse();
@@ -84,14 +85,14 @@ public class WorldRuleValidatorTests {
     }
 
     [Test]
-    public async Task WorldRuleValidator_RejectsMissingLocalizedAnswer() {
+    public async Task WorldFaqValidator_RejectsMissingLocalizedAnswer() {
         // Arrange
-        WorldRule rule = CreateValidRule();
+        WorldFaq rule = CreateValidRule();
         rule.Answer.Remove("nl");
-        var validator = new WorldRuleValidator(CreateLocalizationProvider());
+        var validator = new WorldFaqValidator(CreateLocalizationProvider());
 
         // Act
-        ValidationResult? result = validator.Validate(rule);
+        ValidationResult? result = await validator.ValidateAsync(rule);
 
         // Assert
         await Assert.That(result.IsValid).IsFalse();
@@ -100,21 +101,21 @@ public class WorldRuleValidatorTests {
     }
 
     [Test]
-    public async Task WorldRuleCollectionValidator_RejectsDuplicateIds() {
+    public async Task WorldFaqCollectionValidator_RejectsDuplicateIds() {
         // Arrange
         var sharedId = Guid.NewGuid();
-        WorldRule[] rules = [
+        WorldFaq[] rules = [
             CreateValidRule(),
             CreateValidRule()
         ];
         rules[0].Id = sharedId;
         rules[1].Id = sharedId;
 
-        IValidator<WorldRule> ruleValidator = new WorldRuleValidator(CreateLocalizationProvider());
-        var collectionValidator = new WorldRuleCollectionValidator(ruleValidator);
+        IValidator<WorldFaq> ruleValidator = new WorldFaqValidator(CreateLocalizationProvider());
+        var collectionValidator = new WorldFaqCollectionValidator(ruleValidator);
 
         // Act
-        ValidationResult? result = collectionValidator.Validate(rules);
+        ValidationResult? result = await collectionValidator.ValidateAsync(rules);
 
         // Assert
         await Assert.That(result.IsValid).IsFalse();

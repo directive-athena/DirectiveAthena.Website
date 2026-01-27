@@ -1,9 +1,10 @@
-// ---------------------------------------------------------------------------------------------------------------------
+﻿// ---------------------------------------------------------------------------------------------------------------------
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
-using DirectiveAthenaWeb.Services.Articles;
+using DirectiveAthenaWeb.Content.Writings.Services;
 using DirectiveAthenaWeb.Services.ContentStorage;
 using DirectiveAthenaWeb.Services.Localization;
+using DirectiveAthenaWeb.Services.Writings;
 using DirectiveAthenaWebTests.Helpers;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
@@ -13,7 +14,7 @@ namespace DirectiveAthenaWebTests.Services.Articles;
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
-public class ArticleManagerTests {
+public class WritingManagerTests {
 
     private static ILocalizationProvider CreateLocalizationProvider(string currentCode) {
         LocalizationInfo[] localizations = [
@@ -30,20 +31,20 @@ public class ArticleManagerTests {
 
     private static IContentStorageFactory CreateStorageFactory(IContentStorage storage) {
         var factory = Substitute.For<IContentStorageFactory>();
-        factory.ForCategory(ContentCategory.Articles).Returns(storage);
+        factory.ForCategory(ContentCategory.Writings).Returns(storage);
         return factory;
     }
 
-    private static ArticleManager CreateManager(
+    private static WritingManager CreateManager(
         ILocalizationProvider localizationProvider,
         IContentStorage? storage = null,
         HttpClient? http = null
     ) {
         storage ??= Substitute.For<IContentStorage>();
         http ??= new HttpClient();
-        var validator = new ArticleCollectionValidator(new ArticleValidator(localizationProvider));
-        var logger = Substitute.For<ILogger<ArticleManager>>();
-        return new ArticleManager(localizationProvider, CreateStorageFactory(storage), http, validator, logger);
+        var validator = new WritingCollectionValidator(new WritingValidator(localizationProvider));
+        var logger = Substitute.For<ILogger<WritingManager>>();
+        return new WritingManager(localizationProvider, CreateStorageFactory(storage), http, validator, logger);
     }
 
     // -----------------------------------------------------------------------------------------------------------------
@@ -52,9 +53,9 @@ public class ArticleManagerTests {
     [Test]
     public async Task GetLocalizedTitle_FallsBackToDefaultCulture() {
         // Arrange
-        Article article = ArticleFaker.Create(100, includeNl: false);
+        Writing article = WritingFaker.Create(100, includeNl: false);
         ILocalizationProvider localizationProvider = CreateLocalizationProvider("nl");
-        ArticleManager manager = CreateManager(localizationProvider);
+        WritingManager manager = CreateManager(localizationProvider);
 
         // Act
         string result = manager.GetLocalizedTitle(article);
@@ -66,9 +67,9 @@ public class ArticleManagerTests {
     [Test]
     public async Task GetLocalizedSummary_FallsBackToDefaultCulture() {
         // Arrange
-        Article article = ArticleFaker.Create(101, includeNl: false);
+        Writing article = WritingFaker.Create(101, includeNl: false);
         ILocalizationProvider localizationProvider = CreateLocalizationProvider("nl");
-        ArticleManager manager = CreateManager(localizationProvider);
+        WritingManager manager = CreateManager(localizationProvider);
 
         // Act
         string result = manager.GetLocalizedSummary(article);
@@ -80,18 +81,18 @@ public class ArticleManagerTests {
     [Test]
     public async Task GetLocalizedFilePath_UsesCurrentLocalization() {
         // Arrange
-        Article article = ArticleFaker.Create(102);
+        Writing article = WritingFaker.Create(102);
         ILocalizationProvider localizationProvider = CreateLocalizationProvider("nl");
         var storage = Substitute.For<IContentStorage>();
         storage.GetMarkdownContentPath(Arg.Any<string>(), Arg.Any<string>())
-            .Returns(call => $"content/articles/{call.ArgAt<string>(0)}/{call.ArgAt<string>(1)}");
-        ArticleManager manager = CreateManager(localizationProvider, storage);
+            .Returns(call => $"content/writings/{call.ArgAt<string>(0)}/{call.ArgAt<string>(1)}");
+        WritingManager manager = CreateManager(localizationProvider, storage);
 
         // Act
         string result = manager.GetLocalizedFilePath(article);
 
         // Assert
-        await Assert.That(result).IsEqualTo($"content/articles/nl/{article.MarkdownFileName}");
+        await Assert.That(result).IsEqualTo($"content/writings/nl/{article.MarkdownFileName}");
     }
 
     [Test]
@@ -99,8 +100,8 @@ public class ArticleManagerTests {
         // Arrange
         var handler = new TestHttpMessageHandler(_ => new HttpResponseMessage(HttpStatusCode.InternalServerError));
         var http = new HttpClient(handler) { BaseAddress = new Uri("http://localhost/") };
-        ArticleManager manager = CreateManager(CreateLocalizationProvider("en"), http: http);
-        Article article = ArticleFaker.Create(103);
+        WritingManager manager = CreateManager(CreateLocalizationProvider("en"), http: http);
+        Writing article = WritingFaker.Create(103);
 
         // Act
         string result = await manager.GetRawMarkdownContentAsync(article, "en");
@@ -110,14 +111,14 @@ public class ArticleManagerTests {
     }
 
     [Test]
-    public async Task NewArticle_PopulatesLocalizedFields() {
+    public async Task NewWriting_PopulatesLocalizedFields() {
         // Arrange
         ILocalizationProvider localizationProvider = CreateLocalizationProvider("en");
-        ArticleManager manager = CreateManager(localizationProvider);
+        WritingManager manager = CreateManager(localizationProvider);
 
         // Act
-        Article article = manager.NewArticle();
-        HashSet<string> expected = ArticleFaker.DefaultLocalizations().Select(c => c.Code).ToHashSet();
+        Writing article = manager.NewWriting();
+        HashSet<string> expected = WritingFaker.DefaultLocalizations().Select(c => c.Code).ToHashSet();
 
         // Assert
         await Assert.That(article.Title.Keys.ToHashSet()).IsEquivalentTo(expected);
@@ -129,14 +130,14 @@ public class ArticleManagerTests {
     [Test]
     public async Task Validate_RejectsMissingId() {
         // Arrange
-        Article[] articles = [
+        Writing[] writings = [
             new() { Id = Guid.Empty }
         ];
 
-        ArticleManager manager = CreateManager(CreateLocalizationProvider("en"));
+        WritingManager manager = CreateManager(CreateLocalizationProvider("en"));
 
         // Act
-        bool result = manager.Validate(articles, out string? error);
+        bool result = manager.Validate(writings, out string? error);
 
         // Assert
         await Assert.That(result).IsFalse();
@@ -146,16 +147,16 @@ public class ArticleManagerTests {
     [Test]
     public async Task Validate_RejectsDuplicateIds() {
         // Arrange
-        Article[] articles = [
-            ArticleFaker.Create(140),
-            ArticleFaker.Create(141)
+        Writing[] writings = [
+            WritingFaker.Create(140),
+            WritingFaker.Create(141)
         ];
-        articles[1].Id = articles[0].Id;
+        writings[1].Id = writings[0].Id;
 
-        ArticleManager manager = CreateManager(CreateLocalizationProvider("en"));
+        WritingManager manager = CreateManager(CreateLocalizationProvider("en"));
 
         // Act
-        bool result = manager.Validate(articles, out string? error);
+        bool result = manager.Validate(writings, out string? error);
 
         // Assert
         await Assert.That(result).IsFalse();
@@ -165,13 +166,13 @@ public class ArticleManagerTests {
     [Test]
     public async Task Validate_RejectsMissingLocalizedTitles() {
         // Arrange
-        Article article = ArticleFaker.Create(200, includeNl: false);
-        Article[] articles = [article];
+        Writing article = WritingFaker.Create(200, includeNl: false);
+        Writing[] writings = [article];
 
-        ArticleManager manager = CreateManager(CreateLocalizationProvider("en"));
+        WritingManager manager = CreateManager(CreateLocalizationProvider("en"));
 
         // Act
-        bool result = manager.Validate(articles, out string? error);
+        bool result = manager.Validate(writings, out string? error);
 
         // Assert
         await Assert.That(result).IsFalse();
@@ -181,14 +182,14 @@ public class ArticleManagerTests {
     [Test]
     public async Task Validate_RejectsMissingLocalizedSummaries() {
         // Arrange
-        Article article = ArticleFaker.Create(201);
+        Writing article = WritingFaker.Create(201);
         article.Summary.Remove("nl");
-        Article[] articles = [article];
+        Writing[] writings = [article];
 
-        ArticleManager manager = CreateManager(CreateLocalizationProvider("en"));
+        WritingManager manager = CreateManager(CreateLocalizationProvider("en"));
 
         // Act
-        bool result = manager.Validate(articles, out string? error);
+        bool result = manager.Validate(writings, out string? error);
 
         // Assert
         await Assert.That(result).IsFalse();
@@ -198,15 +199,15 @@ public class ArticleManagerTests {
     [Test]
     public async Task GenerateStubsAsync_ReturnsStubsForAllCultures() {
         // Arrange
-        Article article = ArticleFaker.Create(120);
+        Writing article = WritingFaker.Create(120);
         var storage = Substitute.For<IContentStorage>();
-        ArticleManager manager = CreateManager(CreateLocalizationProvider("en"), storage);
+        WritingManager manager = CreateManager(CreateLocalizationProvider("en"), storage);
 
         // Act
         (Dictionary<string, string> Stubs, bool WroteAll) result = await manager.GenerateStubsAsync(article, writeToDisk: false);
 
         // Assert
-        await Assert.That(result.Stubs.Count).IsEqualTo(ArticleFaker.DefaultLocalizations().Count);
+        await Assert.That(result.Stubs.Count).IsEqualTo(WritingFaker.DefaultLocalizations().Count);
         await Assert.That(result.WroteAll).IsFalse();
         await storage.DidNotReceiveWithAnyArgs().WriteFileAsync(null!, null!);
     }
@@ -214,21 +215,21 @@ public class ArticleManagerTests {
     [Test]
     public async Task GenerateStubsAsync_WritesWhenRequested() {
         // Arrange
-        Article article = ArticleFaker.Create(121);
+        Writing article = WritingFaker.Create(121);
         var storage = Substitute.For<IContentStorage>();
         storage.WriteFileAsync(Arg.Any<string>(), Arg.Any<string>()).Returns(new ValueTask<bool>(true));
         storage.GetMarkdownDiskPath(Arg.Any<string>(), Arg.Any<string>())
             .Returns(call => $"{call.ArgAt<string>(0)}/{call.ArgAt<string>(1)}");
 
-        ArticleManager manager = CreateManager(CreateLocalizationProvider("en"), storage);
+        WritingManager manager = CreateManager(CreateLocalizationProvider("en"), storage);
 
         // Act
         (Dictionary<string, string> Stubs, bool WroteAll) result = await manager.GenerateStubsAsync(article, writeToDisk: true);
 
         // Assert
-        await Assert.That(result.Stubs.Count).IsEqualTo(ArticleFaker.DefaultLocalizations().Count);
+        await Assert.That(result.Stubs.Count).IsEqualTo(WritingFaker.DefaultLocalizations().Count);
         await Assert.That(result.WroteAll).IsTrue();
-        foreach (LocalizationInfo localization in ArticleFaker.DefaultLocalizations()) {
+        foreach (LocalizationInfo localization in WritingFaker.DefaultLocalizations()) {
             string path = storage.GetMarkdownDiskPath(localization.Code, article.MarkdownFileName);
             await storage.Received(1).WriteFileAsync(path, Arg.Any<string>());
         }

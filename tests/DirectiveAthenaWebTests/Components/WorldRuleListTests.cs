@@ -1,10 +1,10 @@
-// ---------------------------------------------------------------------------------------------------------------------
+﻿// ---------------------------------------------------------------------------------------------------------------------
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
 using Bunit;
 using DirectiveAthenaWeb.Components;
 using DirectiveAthenaWeb.Services.Localization.Resources;
-using DirectiveAthenaWeb.Services.WorldRules;
+using DirectiveAthenaWeb.Services.WorldFaq;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using MudBlazor.Services;
@@ -13,9 +13,9 @@ namespace DirectiveAthenaWebTests.Components;
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
-public class WorldRuleListTests {
+public class WorldFaqListTests {
     [Test]
-    public async Task WorldRuleList_RendersDeletedChip() {
+    public async Task WorldFaqList_RendersDeletedChip() {
         // Arrange
         await using var ctx = new BunitContext();
         ctx.Services.AddMudServices();
@@ -23,7 +23,7 @@ public class WorldRuleListTests {
         ctx.JSInterop.SetupVoid("mudKeyInterceptor.connect", _ => true);
         var localizer = ctx.Services.GetRequiredService<IStringLocalizer<Shared>>();
 
-        var rule = new WorldRule {
+        var rule = new WorldFaq {
             Id = Guid.NewGuid(),
             Question = new Dictionary<string, string> {
                 ["en"] = "Question",
@@ -37,8 +37,8 @@ public class WorldRuleListTests {
         };
 
         // Act
-        IRenderedComponent<WorldRuleList> component = ctx.Render<WorldRuleList>(parameters => parameters
-            .Add(p => p.Rules, new List<WorldRule> { rule }));
+        IRenderedComponent<WorldFaqList> component = ctx.Render<WorldFaqList>(parameters => parameters
+            .Add(p => p.Rules, new List<WorldFaq> { rule }));
 
         // Assert
         await Assert.That(component.Markup).Contains(localizer[Shared.ListDeleted]);

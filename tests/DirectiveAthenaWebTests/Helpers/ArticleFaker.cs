@@ -1,16 +1,16 @@
-// ---------------------------------------------------------------------------------------------------------------------
+﻿// ---------------------------------------------------------------------------------------------------------------------
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
 using Bogus;
-using DirectiveAthenaWeb.Services.Articles;
+using DirectiveAthenaWeb.Services.Writings;
 using DirectiveAthenaWeb.Services.Localization;
 
 namespace DirectiveAthenaWebTests.Helpers;
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
-public static class ArticleFaker {
-    public static Article Create(int seed, bool hidden = false, bool includeNl = true) {
+public static class WritingFaker {
+    public static Writing Create(int seed, bool hidden = false, bool includeNl = true) {
         var faker = new Faker {
             Random = new Randomizer(seed)
         };
@@ -29,7 +29,7 @@ public static class ArticleFaker {
             summary["nl"] = faker.Lorem.Sentence(6);
         }
 
-        return new Article {
+        return new Writing {
             Id = id,
             Title = title,
             Summary = summary,

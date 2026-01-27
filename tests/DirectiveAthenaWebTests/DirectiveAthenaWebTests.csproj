@@ -17,6 +17,9 @@
     </ItemGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\..\src\DirectiveAthenaWeb.Content.Faq\DirectiveAthenaWeb.Content.Faq.csproj" />
+        <ProjectReference Include="..\..\src\DirectiveAthenaWeb.Content.Writings\DirectiveAthenaWeb.Content.Writings.csproj" />
+        <ProjectReference Include="..\..\src\DirectiveAthenaWeb.Services.Content\DirectiveAthenaWeb.Services.Content.csproj" />
         <ProjectReference Include="..\..\src\DirectiveAthenaWeb.Services\DirectiveAthenaWeb.Services.csproj"/>
         <ProjectReference Include="..\..\src\DirectiveAthenaWeb.Client\DirectiveAthenaWeb.Client.csproj"/>
     </ItemGroup>

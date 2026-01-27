@@ -1,10 +1,10 @@
-@* ------------------------------------------------------------------------------------------------------------------ *@
+﻿@* ------------------------------------------------------------------------------------------------------------------ *@
 @* Imports
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @using DirectiveAthenaWeb.Services.Localization.Resources
 @using DirectiveAthenaWeb.Services.Content
-@using DirectiveAthenaWeb.Services.WorldRules
-@using DirectiveAthenaWeb.Services.Articles
+@using DirectiveAthenaWeb.Services.WorldFaq
+@using DirectiveAthenaWeb.Services.Writings
 
 @namespace DirectiveAthenaWeb.DevServer.Pages
 @* ------------------------------------------------------------------------------------------------------------------ *@
@@ -13,14 +13,14 @@
 @page "/manager"
 @page "/content-manager"
 @page "/article-manager"
-@page "/articles-manager"
-@page "/world-rules-manager"
+@page "/writings-manager"
+@page "/world-faq-manager"
 @page "/faq-manager"
 
-@inject IArticleRepository ArticleRepository
-@inject IArticleManager ArticleManager
-@inject IWorldRuleRepository WorldRuleRepository
-@inject IWorldRuleManager WorldRuleManager
+@inject IWritingRepository WritingRepository
+@inject IWritingManager WritingManager
+@inject IWorldFaqRepository WorldFaqRepository
+@inject IWorldFaqManager WorldFaqManager
 @inject IDirectiveAthenaWebJs WebJs
 @inject ISnackbar Snackbar
 @inject IStringLocalizer<Shared> Localizer
@@ -55,7 +55,7 @@
                 <MudGrid>
                     <MudItem xs="12" md="4">
                         <MudStack Spacing="3">
-                            <ArticleList Posts="_posts" SelectedPost="_selectedPost"
+                            <WritingList Posts="_posts" SelectedPost="_selectedPost"
                                          OnPostSelected="OnPostSelected" OnCreatePost="CreateNewPost"/>
 
                             <MudPaper Class="pa-4 card-glass no-hover">
@@ -78,17 +78,17 @@
                                 }
                                 <MudDivider Class="my-3"/>
                                 <MudButton Variant="Variant.Filled" Color="Color.Success" FullWidth="true"
-                                           OnClick="@SaveAllArticles"
+                                           OnClick="@SaveAllWritings"
                                            StartIcon="@Icons.Material.Filled.Save" Class="mb-3">
                                     @Localizer[Shared.ContentManagerSaveIndex]
                                 </MudButton>
                                 <MudButton Variant="Variant.Filled" Color="Color.Secondary" FullWidth="true"
-                                           OnClick="@ExportArticlesJson"
+                                           OnClick="@ExportWritingsJson"
                                            StartIcon="@Icons.Material.Filled.Download" Class="mb-3">
                                     @Localizer[Shared.ContentManagerDownloadIndex]
                                 </MudButton>
                                 <MudButton Variant="Variant.Outlined" Color="Color.Info" FullWidth="true"
-                                           OnClick="@CopyArticlesJson"
+                                           OnClick="@CopyWritingsJson"
                                            StartIcon="@Icons.Material.Filled.ContentCopy">
                                     @Localizer[Shared.ContentManagerCopyIndex]
                                 </MudButton>
@@ -98,10 +98,10 @@
 
                     <MudItem xs="12" md="8">
                         @if (_selectedPost is not null) {
-                            <ArticleEditor Post="_selectedPost" OnDeletePost="DeletePost"
-                                           OnGenerateStubs="GenerateArticleStubs"
+                            <WritingEditor Post="_selectedPost" OnDeletePost="DeletePost"
+                                           OnGenerateStubs="GenerateWritingStubs"
                                            OnTagsChanged="OnTagsChanged"
-                                           OnContentChanged="OnArticleChanged"/>
+                                           OnContentChanged="OnWritingChanged"/>
                         }
                         else {
                             <MudAlert Severity="Severity.Info" Variant="Variant.Outlined">
@@ -112,11 +112,11 @@
                 </MudGrid>
             </MudTabPanel>
 
-            <MudTabPanel Text="@Localizer[Shared.ContentManagerTabWorldRules]" Icon="@Icons.Material.Filled.Rule">
+            <MudTabPanel Text="@Localizer[Shared.ContentManagerTabWorldFaq]" Icon="@Icons.Material.Filled.Rule">
                 <MudGrid>
                     <MudItem xs="12" md="4">
                         <MudStack Spacing="3">
-                            <WorldRuleList Rules="_rules" SelectedRule="_selectedRule"
+                            <WorldFaqList Rules="_rules" SelectedRule="_selectedRule"
                                            OnRuleSelected="OnRuleSelected" OnCreateRule="CreateNewRule"/>
 
                             <MudPaper Class="pa-4 card-glass no-hover">
@@ -159,7 +159,7 @@
 
                     <MudItem xs="12" md="8">
                         @if (_selectedRule is not null) {
-                            <WorldRuleEditor Rule="_selectedRule" OnDeleteRule="DeleteRule"
+                            <WorldFaqEditor Rule="_selectedRule" OnDeleteRule="DeleteRule"
                                              OnGenerateStubs="GenerateRuleStubs"
                                              OnTagsChanged="OnTagsChanged"
                                              OnContentChanged="OnRuleChanged"/>
@@ -185,10 +185,10 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 
 @code {
-    private List<Article>? _posts;
-    private Article? _selectedPost;
-    private List<WorldRule>? _rules;
-    private WorldRule? _selectedRule;
+    private List<Writing>? _posts;
+    private Writing? _selectedPost;
+    private List<WorldFaq>? _rules;
+    private WorldFaq? _selectedRule;
     private int _activeTab;
 
     private bool ShowRemoteStorageBanner => true;
@@ -216,29 +216,29 @@
         .Distinct();
 
     protected override async Task OnInitializedAsync() {
-        IEnumerable<Article> posts = await ArticleRepository.GetAllAsync(QueryConfig.WithHidden | QueryConfig.WithSoftDeleted);
+        IEnumerable<Writing> posts = await WritingRepository.GetAllAsync(QueryConfig.WithHidden | QueryConfig.WithSoftDeleted);
         _posts = posts.ToList();
 
-        IEnumerable<WorldRule> rules = await WorldRuleRepository.GetAllAsync(QueryConfig.WithHidden | QueryConfig.WithSoftDeleted);
+        IEnumerable<WorldFaq> rules = await WorldFaqRepository.GetAllAsync(QueryConfig.WithHidden | QueryConfig.WithSoftDeleted);
         _rules = rules.ToList();
     }
 
-    private void OnPostSelected(Article? post) {
+    private void OnPostSelected(Writing? post) {
         _selectedPost = post;
     }
 
     private void CreateNewPost() {
-        _selectedPost = ArticleManager.NewArticle();
+        _selectedPost = WritingManager.NewWriting();
         _posts?.Insert(0, _selectedPost);
-        OnArticleChanged();
+        OnWritingChanged();
     }
 
-    private void OnRuleSelected(WorldRule? rule) {
+    private void OnRuleSelected(WorldFaq? rule) {
         _selectedRule = rule;
     }
 
     private void CreateNewRule() {
-        _selectedRule = WorldRuleManager.NewRule();
+        _selectedRule = WorldFaqManager.NewRule();
         _rules?.Insert(0, _selectedRule);
         OnRuleChanged();
     }
@@ -258,9 +258,9 @@
             _selectedPost.SoftDeletedAt = now;
             _selectedPost.LastModifiedAt = now;
 
-            bool softDeleted = await ArticleRepository.SoftDeleteByIdAsync(_selectedPost.Id);
+            bool softDeleted = await WritingRepository.SoftDeleteByIdAsync(_selectedPost.Id);
             if (!softDeleted && _posts is not null) {
-                softDeleted = await ArticleRepository.SaveAsync(_posts);
+                softDeleted = await WritingRepository.SaveAsync(_posts);
             }
             Snackbar.Add(
                 softDeleted
@@ -270,11 +270,11 @@
             return;
         }
 
-        Article postToDelete = _selectedPost;
+        Writing postToDelete = _selectedPost;
         _posts.Remove(postToDelete);
         _selectedPost = null;
 
-        bool success = await ArticleRepository.HardDeleteByIdAsync(postToDelete.Id);
+        bool success = await WritingRepository.HardDeleteByIdAsync(postToDelete.Id);
         if (success) {
             Snackbar.Add(Localizer[Shared.ContentManagerDeletePostHardSuccess], Severity.Success);
         }
@@ -298,9 +298,9 @@
             _selectedRule.SoftDeletedAt = now;
             _selectedRule.LastModifiedAt = now;
 
-            bool softDeleted = await WorldRuleRepository.SoftDeleteByIdAsync(_selectedRule.Id);
+            bool softDeleted = await WorldFaqRepository.SoftDeleteByIdAsync(_selectedRule.Id);
             if (!softDeleted && _rules is not null) {
-                softDeleted = await WorldRuleRepository.SaveAsync(_rules);
+                softDeleted = await WorldFaqRepository.SaveAsync(_rules);
             }
             Snackbar.Add(
                 softDeleted
@@ -310,11 +310,11 @@
             return;
         }
 
-        WorldRule ruleToDelete = _selectedRule;
+        WorldFaq ruleToDelete = _selectedRule;
         _rules.Remove(ruleToDelete);
         _selectedRule = null;
 
-        bool success = await WorldRuleRepository.HardDeleteByIdAsync(ruleToDelete.Id);
+        bool success = await WorldFaqRepository.HardDeleteByIdAsync(ruleToDelete.Id);
         if (success) {
             Snackbar.Add(Localizer[Shared.ContentManagerDeleteRuleHardSuccess], Severity.Success);
         }
@@ -323,42 +323,42 @@
         }
     }
 
-    private async Task SaveAllArticles()
-        => _ = await SaveAllArticlesInternal(showFeedback: true);
+    private async Task SaveAllWritings()
+        => _ = await SaveAllWritingsInternal(showFeedback: true);
 
     private async Task SaveAllRules()
         => _ = await SaveAllRulesInternal(showFeedback: true);
 
-    private async Task ExportArticlesJson() {
+    private async Task ExportWritingsJson() {
         if (_posts is null) return;
 
-        if (!ArticleManager.Validate(_posts, out string? errorMessage)) {
+        if (!WritingManager.Validate(_posts, out string? errorMessage)) {
             Snackbar.Add(errorMessage!, Severity.Error);
             return;
         }
 
-        await ArticleRepository.SaveAsync(_posts);
-        string json = await ArticleRepository.GetAsJsonStringAsync();
+        await WritingRepository.SaveAsync(_posts);
+        string json = await WritingRepository.GetAsJsonStringAsync();
         await DownloadFile("index.json", json);
     }
 
     private async Task ExportRulesJson() {
         if (_rules is null) return;
 
-        if (!WorldRuleManager.Validate(_rules, out string? errorMessage)) {
+        if (!WorldFaqManager.Validate(_rules, out string? errorMessage)) {
             Snackbar.Add(errorMessage!, Severity.Error);
             return;
         }
 
-        await WorldRuleRepository.SaveAsync(_rules);
-        string json = await WorldRuleRepository.GetAsJsonStringAsync();
+        await WorldFaqRepository.SaveAsync(_rules);
+        string json = await WorldFaqRepository.GetAsJsonStringAsync();
         await DownloadFile("index.json", json);
     }
 
-    private async Task CopyArticlesJson() {
+    private async Task CopyWritingsJson() {
         if (_posts is null) return;
 
-        string json = await ArticleRepository.GetAsJsonStringAsync();
+        string json = await WritingRepository.GetAsJsonStringAsync();
         await WebJs.CopyToClipboardAsync(json);
         Snackbar.Add(Localizer[Shared.ContentManagerJsonCopied], Severity.Success);
     }
@@ -366,15 +366,15 @@
     private async Task CopyRulesJson() {
         if (_rules is null) return;
 
-        string json = await WorldRuleRepository.GetAsJsonStringAsync();
+        string json = await WorldFaqRepository.GetAsJsonStringAsync();
         await WebJs.CopyToClipboardAsync(json);
         Snackbar.Add(Localizer[Shared.ContentManagerJsonCopied], Severity.Success);
     }
 
-    private async Task GenerateArticleStubs(bool writeToDisk) {
+    private async Task GenerateWritingStubs(bool writeToDisk) {
         if (_selectedPost is null) return;
 
-        (Dictionary<string, string> Stubs, bool WroteAll) result = await ArticleManager.GenerateStubsAsync(_selectedPost, writeToDisk);
+        (Dictionary<string, string> Stubs, bool WroteAll) result = await WritingManager.GenerateStubsAsync(_selectedPost, writeToDisk);
 
         if (writeToDisk) {
             Snackbar.Add(result.WroteAll ? Localizer[Shared.ContentManagerMarkdownStubsSaved] : Localizer[Shared.ContentManagerIndexSaveFailed], result.WroteAll ? Severity.Success : Severity.Error);
@@ -389,7 +389,7 @@
     private async Task GenerateRuleStubs(bool writeToDisk) {
         if (_selectedRule is null) return;
 
-        (Dictionary<string, string> Stubs, bool WroteAll) result = await WorldRuleManager.GenerateStubsAsync(_selectedRule, writeToDisk);
+        (Dictionary<string, string> Stubs, bool WroteAll) result = await WorldFaqManager.GenerateStubsAsync(_selectedRule, writeToDisk);
 
         if (writeToDisk) {
             Snackbar.Add(result.WroteAll ? Localizer[Shared.ContentManagerMarkdownStubsSaved] : Localizer[Shared.ContentManagerIndexSaveFailed], result.WroteAll ? Severity.Success : Severity.Error);
@@ -409,11 +409,11 @@
         StateHasChanged();
     }
 
-    private void OnArticleChanged() {
+    private void OnWritingChanged() {
         _articleHasUnsavedChanges = true;
         _articleAutoSaveStatus = AutoSaveStatus.Pending;
         _articleAutoSaveError = null;
-        ScheduleArticleAutoSave();
+        ScheduleWritingAutoSave();
     }
 
     private void OnRuleChanged() {
@@ -433,7 +433,7 @@
         }
 
         if (_articleHasUnsavedChanges) {
-            ScheduleArticleAutoSave();
+            ScheduleWritingAutoSave();
         }
 
         if (_ruleHasUnsavedChanges) {
@@ -441,7 +441,7 @@
         }
     }
 
-    private void ScheduleArticleAutoSave() {
+    private void ScheduleWritingAutoSave() {
         if (!_autoSaveEnabled || _posts is null) return;
 
         _articleAutoSaveCts?.Cancel();
@@ -452,7 +452,7 @@
             try {
                 await Task.Delay(TimeSpan.FromSeconds(2), token);
                 if (token.IsCancellationRequested) return;
-                await InvokeAsync(AutoSaveArticlesAsync);
+                await InvokeAsync(AutoSaveWritingsAsync);
             }
             catch (TaskCanceledException) {
             }
@@ -477,12 +477,12 @@
         }, token);
     }
 
-    private async Task AutoSaveArticlesAsync() {
+    private async Task AutoSaveWritingsAsync() {
         if (!_autoSaveEnabled || !_articleHasUnsavedChanges) return;
 
         _articleAutoSaveStatus = AutoSaveStatus.Saving;
         StateHasChanged();
-        await SaveAllArticlesInternal(showFeedback: false);
+        await SaveAllWritingsInternal(showFeedback: false);
         StateHasChanged();
     }
 
@@ -495,10 +495,10 @@
         StateHasChanged();
     }
 
-    private async Task<bool> SaveAllArticlesInternal(bool showFeedback) {
+    private async Task<bool> SaveAllWritingsInternal(bool showFeedback) {
         if (_posts is null) return false;
 
-        if (!ArticleManager.Validate(_posts, out string? errorMessage)) {
+        if (!WritingManager.Validate(_posts, out string? errorMessage)) {
             _articleAutoSaveStatus = AutoSaveStatus.Paused;
             _articleAutoSaveError = errorMessage;
             if (showFeedback) {
@@ -507,7 +507,7 @@
             return false;
         }
 
-        bool success = await ArticleRepository.SaveAsync(_posts);
+        bool success = await WritingRepository.SaveAsync(_posts);
         if (success) {
             _articleHasUnsavedChanges = false;
             _articleAutoSaveStatus = AutoSaveStatus.Saved;
@@ -531,7 +531,7 @@
     private async Task<bool> SaveAllRulesInternal(bool showFeedback) {
         if (_rules is null) return false;
 
-        if (!WorldRuleManager.Validate(_rules, out string? errorMessage)) {
+        if (!WorldFaqManager.Validate(_rules, out string? errorMessage)) {
             _ruleAutoSaveStatus = AutoSaveStatus.Paused;
             _ruleAutoSaveError = errorMessage;
             if (showFeedback) {
@@ -540,7 +540,7 @@
             return false;
         }
 
-        bool success = await WorldRuleRepository.SaveAsync(_rules);
+        bool success = await WorldFaqRepository.SaveAsync(_rules);
         if (success) {
             _ruleHasUnsavedChanges = false;
             _ruleAutoSaveStatus = AutoSaveStatus.Saved;
