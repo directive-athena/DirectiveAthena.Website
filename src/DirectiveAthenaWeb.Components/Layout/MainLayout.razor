@@ -8,7 +8,7 @@
 @* Descriptors
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @inherits LayoutComponentBase
-@inject IJSRuntime JsRuntime
+@inject IDirectiveAthenaWebJs WebJs
 
 @implements IDisposable
 @* ------------------------------------------------------------------------------------------------------------------ *@
@@ -42,7 +42,7 @@
     protected override async Task OnAfterRenderAsync(bool firstRender) {
         if (firstRender) {
             _objRef = DotNetObjectReference.Create(this);
-            await JsRuntime.InvokeVoidAsync("registerScrollListener", _objRef);
+            await WebJs.RegisterScrollListenerAsync(_objRef);
         }
     }
 

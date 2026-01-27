@@ -10,7 +10,7 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Descriptors
 @* ------------------------------------------------------------------------------------------------------------------ *@
-@inject IJSRuntime JsRuntime
+@inject IDirectiveAthenaWebJs WebJs
 @inject ISnackbar Snackbar
 @inject IStringLocalizer<Shared> Localizer
 
@@ -149,10 +149,10 @@
         if (string.IsNullOrWhiteSpace(FileName)) return;
 
         string path = $"{_selectedLocale}/{FileName}";
-        await JsRuntime.InvokeVoidAsync("downloadFile", path, _content);
+        await WebJs.DownloadFileAsync(path, _content);
     }
 
     private async Task CopyToClipboard() {
-        await JsRuntime.InvokeVoidAsync("navigator.clipboard.writeText", _content);
+        await WebJs.CopyToClipboardAsync(_content);
     }
 }

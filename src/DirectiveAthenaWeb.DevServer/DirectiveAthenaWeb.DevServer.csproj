@@ -15,6 +15,7 @@
     <ItemGroup>
         <ProjectReference Include="..\DirectiveAthenaWeb.Client\DirectiveAthenaWeb.Client.csproj"/>
         <ProjectReference Include="..\DirectiveAthenaWeb.Components\DirectiveAthenaWeb.Components.csproj"/>
+        <ProjectReference Include="..\DirectiveAthenaWeb.Services.Js\DirectiveAthenaWeb.Services.Js.csproj"/>
         <ProjectReference Include="..\DirectiveAthenaWeb.Services\DirectiveAthenaWeb.Services.csproj"/>
         <ProjectReference Include="..\DirectiveAthenaWeb.Shared\DirectiveAthenaWeb.Shared.csproj"/>
     </ItemGroup>

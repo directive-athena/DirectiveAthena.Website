@@ -19,6 +19,7 @@ public static class ServiceCollectionExtensions {
             });
 
             services.RegisterServicesFromDirectiveAthenaWebServices();
+            services.RegisterServicesFromDirectiveAthenaWebServicesJs();
             services.RegisterServicesFromDirectiveAthenaWebServicesLocalization();
 
             services.AddContentStorage(ContentCategory.Articles);

@@ -20,6 +20,7 @@
     </ItemGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\DirectiveAthenaWeb.Services.Js\DirectiveAthenaWeb.Services.Js.csproj"/>
         <ProjectReference Include="..\DirectiveAthenaWeb.Shared\DirectiveAthenaWeb.Shared.csproj"/>
     </ItemGroup>
 

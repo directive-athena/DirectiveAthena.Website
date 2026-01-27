@@ -25,12 +25,10 @@ public class LocalizationProvider(ILogger<LocalizationProvider> logger) : ILocal
     public LocalizationInfo GetCurrentLocalization() {
         string code = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
         LocalizationInfo? localization = SupportedLocalizations.FirstOrDefault(c => c.Code == code);
-        if (localization is null) {
-            logger.Debug("Falling back to default culture for {Culture}.", code);
-            return DefaultLocalization;
-        }
+        if (localization is not null) return localization;
 
-        return localization;
+        logger.Debug("Falling back to default culture for {Culture}.", code);
+        return DefaultLocalization;
     }
 
     public IReadOnlyCollection<LocalizationInfo> GetSupportedLocalizations()
@@ -38,9 +36,7 @@ public class LocalizationProvider(ILogger<LocalizationProvider> logger) : ILocal
 
     public bool TryGetLocalization(string cultureCode, [NotNullWhen(true)] out LocalizationInfo? config) {
         config = SupportedLocalizations.FirstOrDefault(c => c.Code == cultureCode);
-        if (config is null) {
-            logger.Debug("Unknown culture code requested: {Culture}.", cultureCode);
-        }
+        if (config is null) logger.Debug("Unknown culture code requested: {Culture}.", cultureCode);
 
         return config is not null;
     }

@@ -20,7 +20,7 @@
 @inject IArticleManager ArticleManager
 @inject IWorldRuleRepository WorldRuleRepository
 @inject IWorldRuleManager WorldRuleManager
-@inject IJSRuntime JsRuntime
+@inject IDirectiveAthenaWebJs WebJs
 @inject ISnackbar Snackbar
 @inject IStringLocalizer<Shared> Localizer
 @inherits WebsiteComponentBase
@@ -181,7 +181,7 @@
     private async Task DeletePost() {
         if (_selectedPost is null || _posts is null) return;
 
-        bool confirm = await JsRuntime.InvokeAsync<bool>("confirm", Localizer[Shared.ContentManagerDeletePostConfirm].Value);
+        bool confirm = await WebJs.ConfirmAsync(Localizer[Shared.ContentManagerDeletePostConfirm].Value);
         if (!confirm) return;
 
         Article postToDelete = _selectedPost;
@@ -200,7 +200,7 @@
     private async Task DeleteRule() {
         if (_selectedRule is null || _rules is null) return;
 
-        bool confirm = await JsRuntime.InvokeAsync<bool>("confirm", Localizer[Shared.ContentManagerDeleteRuleConfirm].Value);
+        bool confirm = await WebJs.ConfirmAsync(Localizer[Shared.ContentManagerDeleteRuleConfirm].Value);
         if (!confirm) return;
 
         WorldRule ruleToDelete = _selectedRule;
@@ -280,7 +280,7 @@
         if (_posts is null) return;
 
         string json = await ArticleRepository.GetAsJsonStringAsync();
-        await JsRuntime.InvokeVoidAsync("navigator.clipboard.writeText", json);
+        await WebJs.CopyToClipboardAsync(json);
         Snackbar.Add(Localizer[Shared.ContentManagerJsonCopied], Severity.Success);
     }
 
@@ -288,7 +288,7 @@
         if (_rules is null) return;
 
         string json = await WorldRuleRepository.GetAsJsonStringAsync();
-        await JsRuntime.InvokeVoidAsync("navigator.clipboard.writeText", json);
+        await WebJs.CopyToClipboardAsync(json);
         Snackbar.Add(Localizer[Shared.ContentManagerJsonCopied], Severity.Success);
     }
 
@@ -323,7 +323,7 @@
     }
 
     private async Task DownloadFile(string fileName, string content) {
-        await JsRuntime.InvokeVoidAsync("downloadFile", fileName, content);
+        await WebJs.DownloadFileAsync(fileName, content);
     }
 
     private void OnTagsChanged() {

@@ -17,7 +17,7 @@
 @inject IArticleManager ArticleManager
 @inject HttpClient HttpClient
 @inject NavigationManager NavigationManager
-@inject IJSRuntime JsRuntime
+@inject IDirectiveAthenaWebJs WebJs
 @inject IStringLocalizer<Shared> LocalizerShared
 @inject IStringLocalizer<Tags> LocalizerTags
 @* ------------------------------------------------------------------------------------------------------------------ *@
@@ -174,7 +174,7 @@
         if (_isCopyInProgress) return;
 
         _isCopyInProgress = true;
-        bool copied = await JsRuntime.InvokeAsync<bool>("copyToClipboard", NavigationManager.Uri);
+        bool copied = await WebJs.CopyToClipboardAsync(NavigationManager.Uri);
         _isLinkCopied = copied;
         StateHasChanged();
 
