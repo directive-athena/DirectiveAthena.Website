@@ -4,12 +4,12 @@
 using System.Globalization;
 using Bunit;
 using DirectiveAthenaWeb.Components;
+using DirectiveAthenaWeb.Services.Js;
 using DirectiveAthenaWeb.Services.Localization;
 using DirectiveAthenaWebTests.Helpers;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.JSInterop;
 using MudBlazor;
 using MudBlazor.Services;
 using NSubstitute;
@@ -33,12 +33,13 @@ public class CultureSelectorTests {
             // Arrange
             CultureInfo.CurrentUICulture = new CultureInfo("en");
             await using var ctx = new BunitContext();
+            ctx.JSInterop.Mode = JSRuntimeMode.Loose;
             ctx.Services.AddMudServices();
 
-            var jsRuntime = new RecordingJsRuntime();
+            var webJs = Substitute.For<IDirectiveAthenaWebJs>();
             var nav = new FakeNavigationManager();
 
-            ctx.Services.AddSingleton<IJSRuntime>(jsRuntime);
+            ctx.Services.AddSingleton(webJs);
             ctx.Services.AddSingleton<NavigationManager>(nav);
             var logger = Substitute.For<ILogger<LocalizationProvider>>();
             ctx.Services.AddSingleton<ILocalizationProvider>(new LocalizationProvider(logger));
@@ -54,10 +55,7 @@ public class CultureSelectorTests {
             MethodInfo? changeCulture = typeof(CultureSelector).GetMethod("ChangeCulture", BindingFlags.Instance | BindingFlags.NonPublic);
             await (Task)changeCulture!.Invoke(cut.Instance, ["nl"])!;
 
-            RecordingJsRuntime.Invocation invocation = jsRuntime.Invocations.Single(i => i.Identifier == "localStorage.setItem");
-            await Assert.That(invocation.Args).IsNotNull();
-            await Assert.That((string)invocation.Args![0]!).IsEqualTo("culture");
-            await Assert.That((string)invocation.Args[1]!).IsEqualTo("nl");
+            await webJs.Received(1).SetLocalStorageItemAsync("culture", "nl", Arg.Any<CancellationToken>());
             await Assert.That(nav.LastForceLoad).IsTrue();
         }
         finally {

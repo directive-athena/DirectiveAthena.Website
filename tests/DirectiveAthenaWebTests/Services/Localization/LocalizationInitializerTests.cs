@@ -1,12 +1,12 @@
 // ---------------------------------------------------------------------------------------------------------------------
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
-using DirectiveAthenaWeb.Services.Js;
 using DirectiveAthenaWeb.Services.Localization;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
+using DirectiveAthenaWeb.Services.Js;
 
 namespace DirectiveAthenaWebTests.Services.Localization;
 // ---------------------------------------------------------------------------------------------------------------------
@@ -25,11 +25,9 @@ public class LocalizationInitializerTests {
         CultureInfo previous = CultureInfo.DefaultThreadCurrentUICulture ?? CultureInfo.CurrentUICulture;
         try {
             // Arrange
-            var jsRuntime = Substitute.For<Microsoft.JSInterop.IJSRuntime>();
-            jsRuntime.InvokeAsync<string>("localStorage.getItem", Arg.Any<object?[]>())
-                .Returns(new ValueTask<string>("nl"));
-            
-            var directiveAthenaWebJs = new DirectiveAthenaWebJs(jsRuntime, Substitute.For<ILogger<DirectiveAthenaWebJs>>());
+            var directiveAthenaWebJs = Substitute.For<IDirectiveAthenaWebJs>();
+            directiveAthenaWebJs.GetLocalStorageItemAsync("culture", Arg.Any<CancellationToken>())
+                .Returns(new ValueTask<string?>("nl"));
             
             var logger = Substitute.For<ILogger<LocalizationInitializer>>();
             var providerLogger = Substitute.For<ILogger<LocalizationProvider>>();
@@ -55,11 +53,9 @@ public class LocalizationInitializerTests {
         CultureInfo previous = CultureInfo.DefaultThreadCurrentUICulture ?? CultureInfo.CurrentUICulture;
         try {
             // Arrange
-            var jsRuntime = Substitute.For<Microsoft.JSInterop.IJSRuntime>();
-            jsRuntime.InvokeAsync<string>("localStorage.getItem", Arg.Any<object?[]>())
-                .Returns(new ValueTask<string>("zz"));
-            
-            var directiveAthenaWebJs = new DirectiveAthenaWebJs(jsRuntime, Substitute.For<ILogger<DirectiveAthenaWebJs>>());
+            var directiveAthenaWebJs = Substitute.For<IDirectiveAthenaWebJs>();
+            directiveAthenaWebJs.GetLocalStorageItemAsync("culture", Arg.Any<CancellationToken>())
+                .Returns(new ValueTask<string?>("zz"));
 
             var logger = Substitute.For<ILogger<LocalizationInitializer>>();
             var providerLogger = Substitute.For<ILogger<LocalizationProvider>>();
