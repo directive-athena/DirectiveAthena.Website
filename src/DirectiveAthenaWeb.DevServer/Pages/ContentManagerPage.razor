@@ -116,7 +116,7 @@
                 <MudGrid>
                     <MudItem xs="12" md="4">
                         <MudStack Spacing="3">
-                            <WorldFaqList Rules="_rules" SelectedRule="_selectedRule"
+                            <FaqList Rules="_rules" SelectedRule="_selectedRule"
                                            OnRuleSelected="OnRuleSelected" OnCreateRule="CreateNewRule"/>
 
                             <MudPaper Class="pa-4 card-glass no-hover">
@@ -159,7 +159,7 @@
 
                     <MudItem xs="12" md="8">
                         @if (_selectedRule is not null) {
-                            <WorldFaqEditor Rule="_selectedRule" OnDeleteRule="DeleteRule"
+                            <FaqEditor Rule="_selectedRule" OnDeleteRule="DeleteRule"
                                              OnGenerateStubs="GenerateRuleStubs"
                                              OnTagsChanged="OnTagsChanged"
                                              OnContentChanged="OnRuleChanged"/>
