@@ -1,0 +1,32 @@
+<Solution>
+  <Folder Name="/.dev-tools/">
+    <File Path="Directory.Packages.props" />
+    <File Path="README.md" />
+  </Folder>
+  <Folder Name="/.dev-tools/github/">
+    <File Path=".github/dependabot.yml" />
+    <File Path=".github/workflows/publishGithubPages.yml" />
+    <File Path=".github/workflows/lib_testing.yml" />
+    <File Path=".github/workflows/onPullRequestTests.yml" />
+    <File Path=".github/workflows/rollbackGithubPages.yml" />
+  </Folder>
+  <Folder Name="/.dev-tools/slnf/">
+    <File Path="DirectiveAthenaWeb.GithubPages.slnf" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="src/DirectiveAthenaWeb.Client/DirectiveAthenaWeb.Client.csproj" />
+    <Project Path="src/DirectiveAthenaWeb.Components/DirectiveAthenaWeb.Components.csproj" />
+    <Project Path="src/DirectiveAthenaWeb.Shared/DirectiveAthenaWeb.Shared.csproj" />
+  </Folder>
+  <Folder Name="/src/dev/">
+    <Project Path="src/DirectiveAthenaWeb.DevServer/DirectiveAthenaWeb.DevServer.csproj" />
+  </Folder>
+  <Folder Name="/src/services/">
+    <Project Path="src/DirectiveAthenaWeb.Services.Js/DirectiveAthenaWeb.Services.Js.csproj" />
+    <Project Path="src/DirectiveAthenaWeb.Services.Localization/DirectiveAthenaWeb.Services.Localization.csproj" />
+    <Project Path="src/DirectiveAthenaWeb.Services/DirectiveAthenaWeb.Services.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/DirectiveAthenaWebTests/DirectiveAthenaWebTests.csproj" />
+  </Folder>
+</Solution>

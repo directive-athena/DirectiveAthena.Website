@@ -29,18 +29,18 @@ jobs:
 
       - name: Install npm dependencies
         run: npm ci
-        working-directory: src/DirectiveAthena.Website.ClientAssets
+        working-directory: src/DirectiveAthenaWeb.Services.Js
 
       - name: Build interop bundle
         run: npm run build
-        working-directory: src/DirectiveAthena.Website.ClientAssets
+        working-directory: src/DirectiveAthenaWeb.Services.Js
 
       - name: Run TypeScript unit tests
         run: npm run test:ts
-        working-directory: src/DirectiveAthena.Website.ClientAssets
+        working-directory: src/DirectiveAthenaWeb.Services.Js
 
       - name: Restore dependencies
-        run: dotnet restore DirectiveAthena.Website.slnx
+        run: dotnet restore DirectiveAthenaWeb.slnx
 
       - name: Run tests
-        run: dotnet test --solution DirectiveAthena.Website.slnx --configuration Release --no-restore
+        run: dotnet test --solution DirectiveAthenaWeb.slnx --configuration Release --no-restore

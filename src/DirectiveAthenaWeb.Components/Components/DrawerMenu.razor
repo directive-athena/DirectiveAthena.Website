@@ -1,0 +1,55 @@
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Imports
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@using DirectiveAthenaWeb.Services.Localization.Resources
+@using Microsoft.Extensions.Localization
+
+@namespace DirectiveAthenaWeb.Components
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Descriptors
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@inject IStringLocalizer<Shared> Localizer
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Html
+@* ------------------------------------------------------------------------------------------------------------------ *@
+<MudDrawer Open="Open" OpenChanged="OpenChanged" ClipMode="DrawerClipMode.Always" Elevation="2" Anchor="Anchor.Left"
+           Variant="@DrawerVariant.Temporary" Class="drawer-glass">
+    <div class="pa-4 d-flex flex-column align-center">
+        <MudImage Src="assets/logo.svg" Width="64" Height="64" Alt="Logo" Class="mb-4"/>
+        <MudText Typo="Typo.h6" Class="mb-8">@Localizer[Shared.BrandName]</MudText>
+    </div>
+    <MudNavMenu>
+        <MudStack Spacing="3">
+            <MudNavLink Href="/" Match="NavLinkMatch.All"
+                        Icon="@Icons.Material.Filled.Home">@Localizer[Shared.NavHome]</MudNavLink>
+            <MudNavLink Href="/story" Icon="@Icons.Material.Filled.AutoStories">@Localizer[Shared.NavStory]</MudNavLink>
+            <MudNavLink Href="/articles"
+                        Icon="@Icons.Material.Filled.Article">@Localizer[Shared.NavWritings]</MudNavLink>
+            <MudNavLink Href="/world-rules"
+                        Icon="@Icons.Material.Filled.Rule">@Localizer[Shared.NavWorldRules]</MudNavLink>
+
+            @{
+                #if DEBUG
+                <MudNavLink Href="/manager"
+                            Icon="@Icons.Material.Filled.Settings">@Localizer[Shared.NavContentManager]</MudNavLink>
+                #endif
+            }
+
+            <MudNavLink Href="/contact"
+                        Icon="@Icons.Material.Filled.ContactSupport">@Localizer[Shared.NavContact]</MudNavLink>
+
+            <div class="pa-2 flex justify-center">
+                <CultureSelector/>
+            </div>
+        </MudStack>
+    </MudNavMenu>
+</MudDrawer>
+
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Code
+@* ------------------------------------------------------------------------------------------------------------------ *@
+
+@code {
+    [Parameter] public bool Open { get; set; }
+    [Parameter] public EventCallback<bool> OpenChanged { get; set; }
+}

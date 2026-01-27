@@ -1,0 +1,43 @@
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Imports
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@using DirectiveAthenaWeb.Services.Localization.Resources
+@using Microsoft.Extensions.Localization
+
+@namespace DirectiveAthenaWeb.Pages
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Descriptors
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@page "/story"
+
+@inject IStringLocalizer<Shared> Localizer
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Html
+@* ------------------------------------------------------------------------------------------------------------------ *@
+<PageTitle>@Localizer[Shared.StoryTitle]</PageTitle>
+
+<div class="min-vh-100 py-32">
+    <MudContainer MaxWidth="MaxWidth.Medium" Class="text-center">
+        <MudText Typo="Typo.h2" Class="mb-12">@Localizer[Shared.StoryHeading]</MudText>
+
+        <MudCard Class="card-glass pa-8 mb-8 text-left">
+            <MudText Typo="Typo.body1" Class="text-secondary mb-6" Style="font-size: 1.25rem; line-height: 1.8;">
+                @Localizer[Shared.StorySection1]
+            </MudText>
+
+            <MudText Typo="Typo.body1" Class="text-secondary mb-6" Style="font-size: 1.25rem; line-height: 1.8;">
+                @Localizer[Shared.StorySection2]
+            </MudText>
+        </MudCard>
+
+        <div class="d-flex justify-center mt-12">
+            <MudButton Variant="Variant.Outlined" Color="Color.Secondary" Href="/"
+                       StartIcon="@Icons.Material.Filled.ArrowBack">@Localizer[Shared.StoryBack]
+            </MudButton>
+        </div>
+    </MudContainer>
+</div>
+
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Code
+@* ------------------------------------------------------------------------------------------------------------------ *@

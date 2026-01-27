@@ -1,0 +1,41 @@
+<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
+
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+
+        <BlazorWebAssemblyLoadAllGlobalizationData>true</BlazorWebAssemblyLoadAllGlobalizationData>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <ClientAssetsDir Condition="'$(SolutionDir)' != ''">$(SolutionDir)src\DirectiveAthenaWeb.Services.Js</ClientAssetsDir>
+        <ClientAssetsDir Condition="'$(ClientAssetsDir)' == ''">$(MSBuildProjectDirectory)\..\DirectiveAthenaWeb.Services.Js</ClientAssetsDir>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="InfiniLore.InfiniBlazor"/>
+        <PackageReference Include="JetBrains.Annotations"/>
+        <PackageReference Include="FluentValidation"/>
+        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly"/>
+        <PackageReference Include="MudBlazor"/>
+        <PackageReference Include="Serilog"/>
+        <PackageReference Include="Serilog.Extensions.Logging"/>
+        <PackageReference Include="Serilog.Sinks.BrowserConsole"/>
+        <PackageReference Include="Serilog.Sinks.Console"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\DirectiveAthenaWeb.Components\DirectiveAthenaWeb.Components.csproj"/>
+        <ProjectReference Include="..\DirectiveAthenaWeb.Services\DirectiveAthenaWeb.Services.csproj"/>
+        <ProjectReference Include="..\DirectiveAthenaWeb.Shared\DirectiveAthenaWeb.Shared.csproj"/>
+    </ItemGroup>
+    <ItemGroup Condition="'$(Configuration)' != 'Debug'">
+        <Content Remove="wwwroot\appsettings.local.json"/>
+    </ItemGroup>
+
+    <Target Name="BuildWebpackRelease" BeforeTargets="Publish" Condition="'$(Configuration)' == 'Release'">
+        <Message Text="Building webpack bundle (Release)..." Importance="high"/>
+        <Exec Command="npm run build" WorkingDirectory="$(ClientAssetsDir)"/>
+    </Target>
+</Project>

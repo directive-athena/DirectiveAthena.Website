@@ -1,0 +1,332 @@
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Imports
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@using DirectiveAthenaWeb.Services.Localization.Resources
+@using DirectiveAthenaWeb.Services.WorldRules
+@using DirectiveAthenaWeb.Services.Articles
+
+@namespace DirectiveAthenaWeb.DevServer.Pages
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Descriptors
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@page "/manager"
+@page "/content-manager"
+@page "/article-manager"
+@page "/articles-manager"
+@page "/world-rules-manager"
+@page "/faq-manager"
+
+@inject IArticleRepository ArticleRepository
+@inject IArticleManager ArticleManager
+@inject IWorldRuleRepository WorldRuleRepository
+@inject IWorldRuleManager WorldRuleManager
+@inject IJSRuntime JsRuntime
+@inject ISnackbar Snackbar
+@inject IStringLocalizer<Shared> Localizer
+@inherits WebsiteComponentBase
+@rendermode RenderMode.InteractiveServer
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Html
+@* ------------------------------------------------------------------------------------------------------------------ *@
+<PageTitle>@Localizer[Shared.ContentManagerTitle]</PageTitle>
+
+<MudPopoverProvider/>
+<MudDialogProvider/>
+<MudSnackbarProvider/>
+
+<MudContainer MaxWidth="MaxWidth.Large" Class="py-12">
+    <div class="d-flex justify-space-between align-center mb-8">
+        <MudText Typo="Typo.h3">@Localizer[Shared.ContentManagerHeading]</MudText>
+    </div>
+
+    @if (_posts is null || _rules is null) {
+        <MudProgressCircular Color="Color.Primary" Indeterminate="true"/>
+    }
+    else {
+        @if (ShowRemoteStorageBanner) {
+            <MudAlert Severity="Severity.Info" Variant="Variant.Filled" Class="mb-6">
+                <b>Content storage:</b> Remote (R2).
+            </MudAlert>
+        }
+        <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6"
+                 @bind-ActivePanelIndex="_activeTab">
+            <MudTabPanel Text="@Localizer[Shared.ContentManagerTabWritings]" Icon="@Icons.Material.Filled.Article">
+                <MudGrid>
+                    <MudItem xs="12" md="4">
+                        <ArticleList Posts="_posts" SelectedPost="_selectedPost"
+                                     OnPostSelected="OnPostSelected" OnCreatePost="CreateNewPost"/>
+
+                        <MudButton Variant="Variant.Filled" Color="Color.Success" FullWidth="true"
+                                   OnClick="@SaveAllArticles"
+                                   StartIcon="@Icons.Material.Filled.Save" Class="mb-4">
+                            @Localizer[Shared.ContentManagerSaveIndex]
+                        </MudButton>
+                        <MudButton Variant="Variant.Filled" Color="Color.Secondary" FullWidth="true"
+                                   OnClick="@ExportArticlesJson"
+                                   StartIcon="@Icons.Material.Filled.Download" Class="mb-4">
+                            @Localizer[Shared.ContentManagerDownloadIndex]
+                        </MudButton>
+                        <MudButton Variant="Variant.Outlined" Color="Color.Info" FullWidth="true"
+                                   OnClick="@CopyArticlesJson"
+                                   StartIcon="@Icons.Material.Filled.ContentCopy">
+                            @Localizer[Shared.ContentManagerCopyIndex]
+                        </MudButton>
+                    </MudItem>
+
+                    <MudItem xs="12" md="8">
+                        @if (_selectedPost is not null) {
+                            <ArticleEditor Post="_selectedPost" OnDeletePost="DeletePost"
+                                           OnGenerateStubs="GenerateArticleStubs"
+                                           OnTagsChanged="OnTagsChanged"/>
+                        }
+                        else {
+                            <MudAlert Severity="Severity.Info" Variant="Variant.Outlined">
+                                @Localizer[Shared.ContentManagerSelectPost]
+                            </MudAlert>
+                        }
+                    </MudItem>
+                </MudGrid>
+            </MudTabPanel>
+
+            <MudTabPanel Text="@Localizer[Shared.ContentManagerTabWorldRules]" Icon="@Icons.Material.Filled.Rule">
+                <MudGrid>
+                    <MudItem xs="12" md="4">
+                        <WorldRuleList Rules="_rules" SelectedRule="_selectedRule"
+                                       OnRuleSelected="OnRuleSelected" OnCreateRule="CreateNewRule"/>
+
+                        <MudButton Variant="Variant.Filled" Color="Color.Success" FullWidth="true"
+                                   OnClick="@SaveAllRules"
+                                   StartIcon="@Icons.Material.Filled.Save" Class="mb-4">
+                            @Localizer[Shared.ContentManagerSaveIndex]
+                        </MudButton>
+                        <MudButton Variant="Variant.Filled" Color="Color.Secondary" FullWidth="true"
+                                   OnClick="@ExportRulesJson"
+                                   StartIcon="@Icons.Material.Filled.Download" Class="mb-4">
+                            @Localizer[Shared.ContentManagerDownloadIndex]
+                        </MudButton>
+                        <MudButton Variant="Variant.Outlined" Color="Color.Info" FullWidth="true"
+                                   OnClick="@CopyRulesJson"
+                                   StartIcon="@Icons.Material.Filled.ContentCopy">
+                            @Localizer[Shared.ContentManagerCopyIndex]
+                        </MudButton>
+                    </MudItem>
+
+                    <MudItem xs="12" md="8">
+                        @if (_selectedRule is not null) {
+                            <WorldRuleEditor Rule="_selectedRule" OnDeleteRule="DeleteRule"
+                                             OnGenerateStubs="GenerateRuleStubs"
+                                             OnTagsChanged="OnTagsChanged"/>
+                        }
+                        else {
+                            <MudAlert Severity="Severity.Info" Variant="Variant.Outlined">
+                                @Localizer[Shared.ContentManagerSelectRule]
+                            </MudAlert>
+                        }
+                    </MudItem>
+                </MudGrid>
+            </MudTabPanel>
+
+            <MudTabPanel Text="@Localizer[Shared.ContentManagerTabTags]" Icon="@Icons.Material.Filled.Label">
+                <TagsEditor UsedTags="@AllTags"/>
+            </MudTabPanel>
+        </MudTabs>
+    }
+</MudContainer>
+
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Code
+@* ------------------------------------------------------------------------------------------------------------------ *@
+
+@code {
+    private List<Article>? _posts;
+    private Article? _selectedPost;
+    private List<WorldRule>? _rules;
+    private WorldRule? _selectedRule;
+    private int _activeTab;
+
+    private bool ShowRemoteStorageBanner => true;
+
+    private IEnumerable<string> AllTags =>
+        (_posts ?? [])
+        .SelectMany(post => post.Tags)
+        .Concat((_rules ?? []).SelectMany(rule => rule.Tags))
+        .Distinct();
+
+    protected override async Task OnInitializedAsync() {
+        IEnumerable<Article> posts = await ArticleRepository.GetAllAsync();
+        _posts = posts.ToList();
+
+        IEnumerable<WorldRule> rules = await WorldRuleRepository.GetAllAsync();
+        _rules = rules.ToList();
+    }
+
+    private void OnPostSelected(Article? post) {
+        _selectedPost = post;
+    }
+
+    private void CreateNewPost() {
+        _selectedPost = ArticleManager.NewArticle();
+        _posts?.Insert(0, _selectedPost);
+    }
+
+    private void OnRuleSelected(WorldRule? rule) {
+        _selectedRule = rule;
+    }
+
+    private void CreateNewRule() {
+        _selectedRule = WorldRuleManager.NewRule();
+        _rules?.Insert(0, _selectedRule);
+    }
+
+    private async Task DeletePost() {
+        if (_selectedPost is null || _posts is null) return;
+
+        bool confirm = await JsRuntime.InvokeAsync<bool>("confirm", Localizer[Shared.ContentManagerDeletePostConfirm].Value);
+        if (!confirm) return;
+
+        Article postToDelete = _selectedPost;
+        _posts.Remove(postToDelete);
+        _selectedPost = null;
+
+        bool success = await ArticleRepository.DeleteByIdAsync(postToDelete.Id);
+        if (success) {
+            Snackbar.Add(Localizer[Shared.ContentManagerDeletePostSuccess], Severity.Success);
+        }
+        else {
+            Snackbar.Add(Localizer[Shared.ContentManagerDeletePostPartial], Severity.Warning);
+        }
+    }
+
+    private async Task DeleteRule() {
+        if (_selectedRule is null || _rules is null) return;
+
+        bool confirm = await JsRuntime.InvokeAsync<bool>("confirm", Localizer[Shared.ContentManagerDeleteRuleConfirm].Value);
+        if (!confirm) return;
+
+        WorldRule ruleToDelete = _selectedRule;
+        _rules.Remove(ruleToDelete);
+        _selectedRule = null;
+
+        bool success = await WorldRuleRepository.DeleteByIdAsync(ruleToDelete.Id);
+        if (success) {
+            Snackbar.Add(Localizer[Shared.ContentManagerDeleteRuleSuccess], Severity.Success);
+        }
+        else {
+            Snackbar.Add(Localizer[Shared.ContentManagerDeleteRulePartial], Severity.Warning);
+        }
+    }
+
+    private async Task SaveAllArticles() {
+        if (_posts is null) return;
+
+        if (!ArticleManager.Validate(_posts, out string? errorMessage)) {
+            Snackbar.Add(errorMessage!, Severity.Error);
+            return;
+        }
+
+        bool success = await ArticleRepository.SaveAsync(_posts);
+        if (success) {
+            Snackbar.Add(Localizer[Shared.ContentManagerIndexSaved], Severity.Success);
+        }
+        else {
+            Snackbar.Add(Localizer[Shared.ContentManagerIndexSaveFailed], Severity.Error);
+        }
+    }
+
+    private async Task SaveAllRules() {
+        if (_rules is null) return;
+
+        if (!WorldRuleManager.Validate(_rules, out string? errorMessage)) {
+            Snackbar.Add(errorMessage!, Severity.Error);
+            return;
+        }
+
+        bool success = await WorldRuleRepository.SaveAsync(_rules);
+        if (success) {
+            Snackbar.Add(Localizer[Shared.ContentManagerIndexSaved], Severity.Success);
+        }
+        else {
+            Snackbar.Add(Localizer[Shared.ContentManagerIndexSaveFailed], Severity.Error);
+        }
+    }
+
+    private async Task ExportArticlesJson() {
+        if (_posts is null) return;
+
+        if (!ArticleManager.Validate(_posts, out string? errorMessage)) {
+            Snackbar.Add(errorMessage!, Severity.Error);
+            return;
+        }
+
+        await ArticleRepository.SaveAsync(_posts);
+        string json = await ArticleRepository.GetAsJsonStringAsync();
+        await DownloadFile("index.json", json);
+    }
+
+    private async Task ExportRulesJson() {
+        if (_rules is null) return;
+
+        if (!WorldRuleManager.Validate(_rules, out string? errorMessage)) {
+            Snackbar.Add(errorMessage!, Severity.Error);
+            return;
+        }
+
+        await WorldRuleRepository.SaveAsync(_rules);
+        string json = await WorldRuleRepository.GetAsJsonStringAsync();
+        await DownloadFile("index.json", json);
+    }
+
+    private async Task CopyArticlesJson() {
+        if (_posts is null) return;
+
+        string json = await ArticleRepository.GetAsJsonStringAsync();
+        await JsRuntime.InvokeVoidAsync("navigator.clipboard.writeText", json);
+        Snackbar.Add(Localizer[Shared.ContentManagerJsonCopied], Severity.Success);
+    }
+
+    private async Task CopyRulesJson() {
+        if (_rules is null) return;
+
+        string json = await WorldRuleRepository.GetAsJsonStringAsync();
+        await JsRuntime.InvokeVoidAsync("navigator.clipboard.writeText", json);
+        Snackbar.Add(Localizer[Shared.ContentManagerJsonCopied], Severity.Success);
+    }
+
+    private async Task GenerateArticleStubs(bool writeToDisk) {
+        if (_selectedPost is null) return;
+
+        (Dictionary<string, string> Stubs, bool WroteAll) result = await ArticleManager.GenerateStubsAsync(_selectedPost, writeToDisk);
+
+        if (writeToDisk) {
+            Snackbar.Add(result.WroteAll ? Localizer[Shared.ContentManagerMarkdownStubsSaved] : Localizer[Shared.ContentManagerIndexSaveFailed], result.WroteAll ? Severity.Success : Severity.Error);
+            return;
+        }
+
+        foreach (KeyValuePair<string, string> stub in result.Stubs) {
+            await DownloadFile($"{stub.Key}/{_selectedPost.MarkdownFileName}", stub.Value);
+        }
+    }
+
+    private async Task GenerateRuleStubs(bool writeToDisk) {
+        if (_selectedRule is null) return;
+
+        (Dictionary<string, string> Stubs, bool WroteAll) result = await WorldRuleManager.GenerateStubsAsync(_selectedRule, writeToDisk);
+
+        if (writeToDisk) {
+            Snackbar.Add(result.WroteAll ? Localizer[Shared.ContentManagerMarkdownStubsSaved] : Localizer[Shared.ContentManagerIndexSaveFailed], result.WroteAll ? Severity.Success : Severity.Error);
+            return;
+        }
+
+        foreach (KeyValuePair<string, string> stub in result.Stubs) {
+            await DownloadFile($"{stub.Key}/{_selectedRule.MarkdownFileName}", stub.Value);
+        }
+    }
+
+    private async Task DownloadFile(string fileName, string content) {
+        await JsRuntime.InvokeVoidAsync("downloadFile", fileName, content);
+    }
+
+    private void OnTagsChanged() {
+        StateHasChanged();
+    }
+}

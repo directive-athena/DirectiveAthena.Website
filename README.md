@@ -17,7 +17,7 @@ Directive Athena is a standalone website, not a library. This repo focuses on co
 
 ## Quick Start
 
-1. `cd src/DirectiveAthena.Website`
+1. `cd src/DirectiveAthenaWeb`
 2. `dotnet watch run`
 3. Open `http://localhost:5000` (or the port in the output)
 
@@ -72,7 +72,7 @@ Manager-only config (local file, not committed):
 
 ## Localization
 
-- UI strings and tag labels are stored in `.resx` files under `src/DirectiveAthena.Website/Resources`.
+- UI strings and tag labels are stored in `.resx` files under `src/DirectiveAthenaWeb/Resources`.
 - Localized markdown files are resolved by culture code: `content/articles/{culture}/{file}`.
 - User language selection is stored in `localStorage` and applied at startup.
 
