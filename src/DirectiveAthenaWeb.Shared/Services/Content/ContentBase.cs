@@ -1,15 +1,18 @@
 // ---------------------------------------------------------------------------------------------------------------------
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
-namespace DirectiveAthenaWeb.Services;
+using System.Text.Json.Serialization;
+
+namespace DirectiveAthenaWeb.Services.Content;
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
-public interface IContentRepository<T> where T : ContentBase {
-    ValueTask<T[]> GetAllAsync(CancellationToken ct = default);
-    ValueTask<T?> GetByIdAsync(Guid id, CancellationToken ct = default);
-    ValueTask<bool> DeleteByIdAsync(Guid id, CancellationToken ct = default);
+public abstract class ContentBase {
+    public Guid Id { get; set; }
+    public bool IsHidden { get; set; }
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime LastModifiedAt { get; set; } = DateTime.MinValue;
     
-    ValueTask<bool> SaveAsync(IEnumerable<T> items, CancellationToken ct = default);
-    ValueTask<string> GetAsJsonStringAsync(CancellationToken ct = default);
+    [JsonIgnore]
+    public string MarkdownFileName => $"{Id:D}.md";
 }
