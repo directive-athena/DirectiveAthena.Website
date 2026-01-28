@@ -4,20 +4,20 @@
 using CodeOfChaos.Extensions.DependencyInjection;
 using FluentValidation;
 
-namespace DirectiveAthenaWeb.Content.Writing.Services;
+namespace DirectiveAthenaWeb.Content.Note.Services;
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
-[InjectableTransient<IValidator<IEnumerable<WritingContent>>>]
-public class WritingContentCollectionValidator : AbstractValidator<IEnumerable<WritingContent>> {
-    public WritingContentCollectionValidator(IValidator<WritingContent> articleValidator) {
-        RuleFor(writings => writings)
+[InjectableTransient<IValidator<IEnumerable<NoteContent>>>]
+public class NoteContentCollectionValidator : AbstractValidator<IEnumerable<NoteContent>> {
+    public NoteContentCollectionValidator(IValidator<NoteContent> articleValidator) {
+        RuleFor(notes => notes)
             .NotNull();
 
-        RuleForEach(writings => writings)
+        RuleForEach(notes => notes)
             .SetValidator(articleValidator);
 
-        RuleFor(writings => writings)
+        RuleFor(notes => notes)
             .Must(HasUniqueIds)
             .WithMessage("Duplicate IDs found!");
     }
@@ -25,8 +25,8 @@ public class WritingContentCollectionValidator : AbstractValidator<IEnumerable<W
     // -----------------------------------------------------------------------------------------------------------------
     // Methods
     // -----------------------------------------------------------------------------------------------------------------
-    private static bool HasUniqueIds(IEnumerable<WritingContent> writings) {
+    private static bool HasUniqueIds(IEnumerable<NoteContent> notes) {
         HashSet<Guid> ids = [];
-        return writings.All(article => ids.Add(article.Id));
+        return notes.All(article => ids.Add(article.Id));
     }
 }

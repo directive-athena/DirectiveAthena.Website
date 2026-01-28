@@ -1,7 +1,7 @@
 ﻿@* ------------------------------------------------------------------------------------------------------------------ *@
 @* Imports
 @* ------------------------------------------------------------------------------------------------------------------ *@
-@using DirectiveAthenaWeb.Content.Writing
+@using DirectiveAthenaWeb.Content.Note
 @using DirectiveAthenaWeb.Services.Localization.Resources
 @using Microsoft.Extensions.Localization
 
@@ -19,10 +19,10 @@
         <MudText Typo="Typo.h6">@Localizer[Shared.ListPosts]</MudText>
         <MudIconButton Icon="@Icons.Material.Filled.Add" Color="Color.Primary" OnClick="@OnCreatePost"/>
     </div>
-    <MudList T="WritingContent" SelectedValue="SelectedPost" SelectedValueChanged="OnPostSelected"
+    <MudList T="NoteContent" SelectedValue="SelectedPost" SelectedValueChanged="OnPostSelected"
              Color="Color.Primary">
         @if (Posts is not null) {
-            foreach (WritingContent post in Posts) {
+            foreach (NoteContent post in Posts) {
                 <MudListItem Value="post">
                     <div class="d-flex flex-column">
                         <MudText
@@ -55,8 +55,8 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 
 @code {
-    [Parameter] public List<WritingContent>? Posts { get; set; }
-    [Parameter] public WritingContent? SelectedPost { get; set; }
-    [Parameter] public EventCallback<WritingContent?> OnPostSelected { get; set; }
+    [Parameter] public List<NoteContent>? Posts { get; set; }
+    [Parameter] public NoteContent? SelectedPost { get; set; }
+    [Parameter] public EventCallback<NoteContent?> OnPostSelected { get; set; }
     [Parameter] public EventCallback OnCreatePost { get; set; }
 }

@@ -39,7 +39,7 @@ public class FaqContentValidatorTests {
     };
 
     [Test]
-    public async Task WorldFaqValidator_RejectsMissingId() {
+    public async Task FaqValidator_RejectsMissingId() {
         // Arrange
         FaqContent rule = CreateValidRule();
         rule.Id = Guid.Empty;
@@ -54,7 +54,7 @@ public class FaqContentValidatorTests {
     }
 
     [Test]
-    public async Task WorldFaqValidator_RejectsMissingDate() {
+    public async Task FaqValidator_RejectsMissingDate() {
         // Arrange
         FaqContent rule = CreateValidRule();
         rule.Date = "";
@@ -69,7 +69,7 @@ public class FaqContentValidatorTests {
     }
 
     [Test]
-    public async Task WorldFaqValidator_RejectsMissingLocalizedQuestion() {
+    public async Task FaqValidator_RejectsMissingLocalizedQuestion() {
         // Arrange
         FaqContent rule = CreateValidRule();
         rule.Question.Remove("nl");
@@ -85,7 +85,7 @@ public class FaqContentValidatorTests {
     }
 
     [Test]
-    public async Task WorldFaqValidator_RejectsMissingLocalizedAnswer() {
+    public async Task FaqValidator_RejectsMissingLocalizedAnswer() {
         // Arrange
         FaqContent rule = CreateValidRule();
         rule.Answer.Remove("nl");
@@ -101,7 +101,7 @@ public class FaqContentValidatorTests {
     }
 
     [Test]
-    public async Task WorldFaqCollectionValidator_RejectsDuplicateIds() {
+    public async Task FaqCollectionValidator_RejectsDuplicateIds() {
         // Arrange
         var sharedId = Guid.NewGuid();
         FaqContent[] rules = [

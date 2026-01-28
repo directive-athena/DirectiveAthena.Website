@@ -1,7 +1,7 @@
 ﻿@* ------------------------------------------------------------------------------------------------------------------ *@
 @* Imports
 @* ------------------------------------------------------------------------------------------------------------------ *@
-@using DirectiveAthenaWeb.Content.Writing
+@using DirectiveAthenaWeb.Content.Note
 @using DirectiveAthenaWeb.Services.Localization.Resources
 @using InfiniBlazor.Markdown
 @using Microsoft.Extensions.Localization
@@ -11,10 +11,10 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Descriptors
 @* ------------------------------------------------------------------------------------------------------------------ *@
-@page "/writings/{Id:guid}"
+@page "/notes/{Id:guid}"
 
-@inject IWritingContentRepository WritingRepository
-@inject IWritingContentManager WritingManager
+@inject INoteContentRepository NoteRepository
+@inject INoteContentManager NoteManager
 @inject HttpClient HttpClient
 @inject NavigationManager NavigationManager
 @inject IDirectiveAthenaWebJs WebJs
@@ -49,7 +49,7 @@
                              Style="letter-spacing: 0.2em; text-transform: uppercase;">@FormatDate(_currentPost.CreatedAt)</MudText>
                     @if (HasDate(_currentPost.LastModifiedAt)) {
                         <MudText Typo="Typo.caption" Class="opacity-60">
-                            @string.Format(LocalizerShared[Shared.WorldFaqUpdated], FormatDate(_currentPost.LastModifiedAt))
+                            @string.Format(LocalizerShared[Shared.FaqUpdated], FormatDate(_currentPost.LastModifiedAt))
                         </MudText>
                     }
                     <MudText Typo="Typo.caption" Class="opacity-60">
@@ -82,7 +82,7 @@
                     </div>
                 </div>
                 <MudText Typo="Typo.h2"
-                         Class="mb-8 SpaceGrotesk">@WritingManager.GetLocalizedTitle(_currentPost)</MudText>
+                         Class="mb-8 SpaceGrotesk">@NoteManager.GetLocalizedTitle(_currentPost)</MudText>
                 <div class="d-flex gap-2 mb-8">
                     @foreach (string tag in _currentPost.Tags) {
                         <MudChip T="string" Size="Size.Small" Color="Color.Secondary"
@@ -111,7 +111,7 @@
 @code {
     [Parameter] public Guid? Id { get; set; }
 
-    private WritingContent? _currentPost;
+    private NoteContent? _currentPost;
     private string _markdown = "";
     private int _readTimeMinutes = 1;
     private bool _loading;
@@ -131,7 +131,7 @@
     private async Task LoadPost(Guid id) {
         _loading = true;
         _error = false;
-        _currentPost = await WritingRepository.GetByIdAsync(id);
+        _currentPost = await NoteRepository.GetByIdAsync(id);
 
         if (_currentPost is null) {
             NavigationManager.NavigateTo("/not-found");
@@ -139,7 +139,7 @@
         }
 
         try {
-            string path = WritingManager.GetLocalizedFilePath(_currentPost);
+            string path = NoteManager.GetLocalizedFilePath(_currentPost);
             _markdown = await HttpClient.GetStringAsync(path);
             UpdateReadTime();
             UpdateShareLinks();
@@ -153,7 +153,7 @@
     }
 
     private void BackToList() {
-        NavigationManager.NavigateTo("/writings");
+        NavigationManager.NavigateTo("/notes");
     }
 
     private void UpdateReadTime() {
@@ -164,7 +164,7 @@
     private void UpdateShareLinks() {
         if (_currentPost is null) return;
 
-        string title = WritingManager.GetLocalizedTitle(_currentPost);
+        string title = NoteManager.GetLocalizedTitle(_currentPost);
         string encodedTitle = Uri.EscapeDataString(title);
         string encodedUrl = Uri.EscapeDataString(NavigationManager.Uri);
         string blueskyText = Uri.EscapeDataString($"{title}\n{NavigationManager.Uri}");

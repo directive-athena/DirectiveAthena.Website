@@ -72,7 +72,7 @@
     <data name="Nav.Writings" xml:space="preserve">
     <value>Geschriften</value>
   </data>
-    <data name="Nav.WorldFaq" xml:space="preserve">
+    <data name="Nav.Faq" xml:space="preserve">
     <value>Wereld FAQ</value>
   </data>
     <data name="Nav.ContentManager" xml:space="preserve">
@@ -144,16 +144,16 @@
     <data name="Home.Writings.Empty" xml:space="preserve">
     <value>Momenteel geen berichten beschikbaar. Kom later terug voor updates van het front.</value>
   </data>
-    <data name="Home.WorldFaq.Title" xml:space="preserve">
+    <data name="Home.Faq.Title" xml:space="preserve">
     <value>Wereld FAQ</value>
   </data>
-    <data name="Home.WorldFaq.Subtitle" xml:space="preserve">
+    <data name="Home.Faq.Subtitle" xml:space="preserve">
     <value>Snelle antwoorden en canonische ankers in een oogopslag.</value>
   </data>
-    <data name="Home.WorldFaq.ViewAll" xml:space="preserve">
+    <data name="Home.Faq.ViewAll" xml:space="preserve">
     <value>Bekijk alle FAQs</value>
   </data>
-    <data name="Home.WorldFaq.Empty" xml:space="preserve">
+    <data name="Home.Faq.Empty" xml:space="preserve">
     <value>Nog geen FAQs beschikbaar voor de homepage.</value>
   </data>
     <data name="Writings.Title" xml:space="preserve">
@@ -201,22 +201,22 @@
     <data name="Writings.Detail.ShareReddit" xml:space="preserve">
     <value>Reddit</value>
   </data>
-    <data name="WorldFaq.Title" xml:space="preserve">
+    <data name="Faq.Title" xml:space="preserve">
     <value>Wereld FAQ - Directive Athena</value>
   </data>
-    <data name="WorldFaq.Heading" xml:space="preserve">
+    <data name="Faq.Heading" xml:space="preserve">
     <value>Wereld FAQ</value>
   </data>
-    <data name="WorldFaq.Subtitle" xml:space="preserve">
+    <data name="Faq.Subtitle" xml:space="preserve">
     <value>Snelle antwoorden, grenzen en canonische ankers voor de setting.</value>
   </data>
-    <data name="WorldFaq.All" xml:space="preserve">
+    <data name="Faq.All" xml:space="preserve">
     <value>Alle FAQs</value>
   </data>
-    <data name="WorldFaq.Updated" xml:space="preserve">
+    <data name="Faq.Updated" xml:space="preserve">
     <value>Bijgewerkt {0}</value>
   </data>
-    <data name="WorldFaq.Empty" xml:space="preserve">
+    <data name="Faq.Empty" xml:space="preserve">
     <value>Nog geen FAQs gepubliceerd. Voeg je eerste item toe om de canon te vormen.</value>
   </data>
     <data name="ContentManager.Title" xml:space="preserve">
@@ -228,7 +228,7 @@
     <data name="ContentManager.Tab.Writings" xml:space="preserve">
     <value>Geschriften</value>
   </data>
-    <data name="ContentManager.Tab.WorldFaq" xml:space="preserve">
+    <data name="ContentManager.Tab.Faq" xml:space="preserve">
     <value>Wereld FAQ</value>
   </data>
     <data name="ContentManager.Tab.Tags" xml:space="preserve">

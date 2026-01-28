@@ -2,7 +2,7 @@
 @* Imports
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @using DirectiveAthenaWeb.Content.Faq
-@using DirectiveAthenaWeb.Content.Writing
+@using DirectiveAthenaWeb.Content.Note
 @using DirectiveAthenaWeb.DevServer.Layouts
 @using DirectiveAthenaWeb.Services.Localization.Resources
 @using DirectiveAthenaWeb.Services.Content
@@ -14,10 +14,10 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @page "/manager"
 
-@inject IWritingContentRepository WritingRepository
-@inject IWritingContentManager WritingManager
-@inject IFaqContentRepository WorldFaqRepository
-@inject IFaqContentManager WorldFaqManager
+@inject INoteContentRepository NoteRepository
+@inject INoteContentManager NoteManager
+@inject IFaqContentRepository FaqRepository
+@inject IFaqContentManager FaqManager
 @inject IDirectiveAthenaWebJs WebJs
 @inject ISnackbar Snackbar
 @inject IStringLocalizer<Shared> Localizer
@@ -41,7 +41,7 @@
         <MudText Typo="Typo.h3">@Localizer[Shared.ContentManagerHeading]</MudText>
     </div>
 
-    @if (_writings is null || _faq is null) {
+    @if (_notes is null || _faq is null) {
         <MudProgressCircular Color="Color.Primary" Indeterminate="true"/>
     }
     else {
@@ -51,7 +51,7 @@
                 <MudGrid>
                     <MudItem xs="12" md="4">
                         <MudStack Spacing="3">
-                            <WritingList Posts="_writings" SelectedPost="_selectedWriting"
+                            <NoteList Posts="_notes" SelectedPost="_selectedWriting"
                                          OnPostSelected="OnPostSelected" OnCreatePost="CreateNewPost"/>
 
                             <MudPaper Class="pa-4 card-glass no-hover">
@@ -94,7 +94,7 @@
 
                     <MudItem xs="12" md="8">
                         @if (_selectedWriting is not null) {
-                            <WritingEditor Post="_selectedWriting" OnDeletePost="DeletePost"
+                            <NoteEditor Post="_selectedWriting" OnDeletePost="DeletePost"
                                            OnGenerateStubs="GenerateWritingStubs"
                                            OnTagsChanged="OnTagsChanged"
                                            OnContentChanged="OnWritingChanged"/>
@@ -108,7 +108,7 @@
                 </MudGrid>
             </MudTabPanel>
 
-            <MudTabPanel Text="@Localizer[Shared.ContentManagerTabWorldFaq]" Icon="@Icons.Material.Filled.Rule">
+            <MudTabPanel Text="@Localizer[Shared.ContentManagerTabFaq]" Icon="@Icons.Material.Filled.Rule">
                 <MudGrid>
                     <MudItem xs="12" md="4">
                         <MudStack Spacing="3">
@@ -181,8 +181,8 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 
 @code {
-    private List<WritingContent>? _writings;
-    private WritingContent? _selectedWriting;
+    private List<NoteContent>? _notes;
+    private NoteContent? _selectedWriting;
     private List<FaqContent>? _faq;
     private FaqContent? _selectedFaq;
     private int _activeTab;
@@ -205,26 +205,26 @@
     private CancellationTokenSource? _ruleAutoSaveCts;
 
     private IEnumerable<string> AllTags =>
-        (_writings ?? [])
+        (_notes ?? [])
         .SelectMany(post => post.Tags)
         .Concat((_faq ?? []).SelectMany(rule => rule.Tags))
         .Distinct();
 
     protected override async Task OnInitializedAsync() {
-        IEnumerable<WritingContent> posts = await WritingRepository.GetAllAsync(QueryConfig.WithHidden | QueryConfig.WithSoftDeleted);
-        _writings = posts.ToList();
+        IEnumerable<NoteContent> posts = await NoteRepository.GetAllAsync(QueryConfig.WithHidden | QueryConfig.WithSoftDeleted);
+        _notes = posts.ToList();
 
-        IEnumerable<FaqContent> faq = await WorldFaqRepository.GetAllAsync(QueryConfig.WithHidden | QueryConfig.WithSoftDeleted);
+        IEnumerable<FaqContent> faq = await FaqRepository.GetAllAsync(QueryConfig.WithHidden | QueryConfig.WithSoftDeleted);
         _faq = faq.ToList();
     }
 
-    private void OnPostSelected(WritingContent? post) {
+    private void OnPostSelected(NoteContent? post) {
         _selectedWriting = post;
     }
 
     private void CreateNewPost() {
-        _selectedWriting = WritingManager.NewWriting();
-        _writings?.Insert(0, _selectedWriting);
+        _selectedWriting = NoteManager.NewWriting();
+        _notes?.Insert(0, _selectedWriting);
         OnWritingChanged();
     }
 
@@ -233,13 +233,13 @@
     }
 
     private void CreateNewRule() {
-        _selectedFaq = WorldFaqManager.NewRule();
+        _selectedFaq = FaqManager.NewRule();
         _faq?.Insert(0, _selectedFaq);
         OnRuleChanged();
     }
 
     private async Task DeletePost() {
-        if (_selectedWriting is null || _writings is null) return;
+        if (_selectedWriting is null || _notes is null) return;
 
         bool hardDelete = _selectedWriting.IsSoftDeleted;
         string confirmText = hardDelete
@@ -253,9 +253,9 @@
             _selectedWriting.SoftDeletedAt = now;
             _selectedWriting.LastModifiedAt = now;
 
-            bool softDeleted = await WritingRepository.SoftDeleteByIdAsync(_selectedWriting.Id);
-            if (!softDeleted && _writings is not null) {
-                softDeleted = await WritingRepository.SaveAsync(_writings);
+            bool softDeleted = await NoteRepository.SoftDeleteByIdAsync(_selectedWriting.Id);
+            if (!softDeleted && _notes is not null) {
+                softDeleted = await NoteRepository.SaveAsync(_notes);
             }
             Snackbar.Add(
                 softDeleted
@@ -265,11 +265,11 @@
             return;
         }
 
-        WritingContent postToDelete = _selectedWriting;
-        _writings.Remove(postToDelete);
+        NoteContent postToDelete = _selectedWriting;
+        _notes.Remove(postToDelete);
         _selectedWriting = null;
 
-        bool success = await WritingRepository.HardDeleteByIdAsync(postToDelete.Id);
+        bool success = await NoteRepository.HardDeleteByIdAsync(postToDelete.Id);
         if (success) {
             Snackbar.Add(Localizer[Shared.ContentManagerDeletePostHardSuccess], Severity.Success);
         }
@@ -293,9 +293,9 @@
             _selectedFaq.SoftDeletedAt = now;
             _selectedFaq.LastModifiedAt = now;
 
-            bool softDeleted = await WorldFaqRepository.SoftDeleteByIdAsync(_selectedFaq.Id);
+            bool softDeleted = await FaqRepository.SoftDeleteByIdAsync(_selectedFaq.Id);
             if (!softDeleted && _faq is not null) {
-                softDeleted = await WorldFaqRepository.SaveAsync(_faq);
+                softDeleted = await FaqRepository.SaveAsync(_faq);
             }
             Snackbar.Add(
                 softDeleted
@@ -309,7 +309,7 @@
         _faq.Remove(ruleToDelete);
         _selectedFaq = null;
 
-        bool success = await WorldFaqRepository.HardDeleteByIdAsync(ruleToDelete.Id);
+        bool success = await FaqRepository.HardDeleteByIdAsync(ruleToDelete.Id);
         if (success) {
             Snackbar.Add(Localizer[Shared.ContentManagerDeleteRuleHardSuccess], Severity.Success);
         }
@@ -325,35 +325,35 @@
         => _ = await SaveAllRulesInternal(showFeedback: true);
 
     private async Task ExportWritingsJson() {
-        if (_writings is null) return;
+        if (_notes is null) return;
 
-        if (!WritingManager.Validate(_writings, out string? errorMessage)) {
+        if (!NoteManager.Validate(_notes, out string? errorMessage)) {
             Snackbar.Add(errorMessage!, Severity.Error);
             return;
         }
 
-        await WritingRepository.SaveAsync(_writings);
-        string json = await WritingRepository.GetAsJsonStringAsync();
+        await NoteRepository.SaveAsync(_notes);
+        string json = await NoteRepository.GetAsJsonStringAsync();
         await DownloadFile("index.json", json);
     }
 
     private async Task ExportRulesJson() {
         if (_faq is null) return;
 
-        if (!WorldFaqManager.Validate(_faq, out string? errorMessage)) {
+        if (!FaqManager.Validate(_faq, out string? errorMessage)) {
             Snackbar.Add(errorMessage!, Severity.Error);
             return;
         }
 
-        await WorldFaqRepository.SaveAsync(_faq);
-        string json = await WorldFaqRepository.GetAsJsonStringAsync();
+        await FaqRepository.SaveAsync(_faq);
+        string json = await FaqRepository.GetAsJsonStringAsync();
         await DownloadFile("index.json", json);
     }
 
     private async Task CopyWritingsJson() {
-        if (_writings is null) return;
+        if (_notes is null) return;
 
-        string json = await WritingRepository.GetAsJsonStringAsync();
+        string json = await NoteRepository.GetAsJsonStringAsync();
         await WebJs.CopyToClipboardAsync(json);
         Snackbar.Add(Localizer[Shared.ContentManagerJsonCopied], Severity.Success);
     }
@@ -361,7 +361,7 @@
     private async Task CopyRulesJson() {
         if (_faq is null) return;
 
-        string json = await WorldFaqRepository.GetAsJsonStringAsync();
+        string json = await FaqRepository.GetAsJsonStringAsync();
         await WebJs.CopyToClipboardAsync(json);
         Snackbar.Add(Localizer[Shared.ContentManagerJsonCopied], Severity.Success);
     }
@@ -369,7 +369,7 @@
     private async Task GenerateWritingStubs(bool writeToDisk) {
         if (_selectedWriting is null) return;
 
-        (Dictionary<string, string> Stubs, bool WroteAll) result = await WritingManager.GenerateStubsAsync(_selectedWriting, writeToDisk);
+        (Dictionary<string, string> Stubs, bool WroteAll) result = await NoteManager.GenerateStubsAsync(_selectedWriting, writeToDisk);
 
         if (writeToDisk) {
             Snackbar.Add(result.WroteAll ? Localizer[Shared.ContentManagerMarkdownStubsSaved] : Localizer[Shared.ContentManagerIndexSaveFailed], result.WroteAll ? Severity.Success : Severity.Error);
@@ -384,7 +384,7 @@
     private async Task GenerateRuleStubs(bool writeToDisk) {
         if (_selectedFaq is null) return;
 
-        (Dictionary<string, string> Stubs, bool WroteAll) result = await WorldFaqManager.GenerateStubsAsync(_selectedFaq, writeToDisk);
+        (Dictionary<string, string> Stubs, bool WroteAll) result = await FaqManager.GenerateStubsAsync(_selectedFaq, writeToDisk);
 
         if (writeToDisk) {
             Snackbar.Add(result.WroteAll ? Localizer[Shared.ContentManagerMarkdownStubsSaved] : Localizer[Shared.ContentManagerIndexSaveFailed], result.WroteAll ? Severity.Success : Severity.Error);
@@ -437,7 +437,7 @@
     }
 
     private void ScheduleWritingAutoSave() {
-        if (!_autoSaveEnabled || _writings is null) return;
+        if (!_autoSaveEnabled || _notes is null) return;
 
         _articleAutoSaveCts?.Cancel();
         _articleAutoSaveCts = new CancellationTokenSource();
@@ -491,9 +491,9 @@
     }
 
     private async Task<bool> SaveAllWritingsInternal(bool showFeedback) {
-        if (_writings is null) return false;
+        if (_notes is null) return false;
 
-        if (!WritingManager.Validate(_writings, out string? errorMessage)) {
+        if (!NoteManager.Validate(_notes, out string? errorMessage)) {
             _articleAutoSaveStatus = AutoSaveStatus.Paused;
             _articleAutoSaveError = errorMessage;
             if (showFeedback) {
@@ -502,7 +502,7 @@
             return false;
         }
 
-        bool success = await WritingRepository.SaveAsync(_writings);
+        bool success = await NoteRepository.SaveAsync(_notes);
         if (success) {
             _articleHasUnsavedChanges = false;
             _articleAutoSaveStatus = AutoSaveStatus.Saved;
@@ -526,7 +526,7 @@
     private async Task<bool> SaveAllRulesInternal(bool showFeedback) {
         if (_faq is null) return false;
 
-        if (!WorldFaqManager.Validate(_faq, out string? errorMessage)) {
+        if (!FaqManager.Validate(_faq, out string? errorMessage)) {
             _ruleAutoSaveStatus = AutoSaveStatus.Paused;
             _ruleAutoSaveError = errorMessage;
             if (showFeedback) {
@@ -535,7 +535,7 @@
             return false;
         }
 
-        bool success = await WorldFaqRepository.SaveAsync(_faq);
+        bool success = await FaqRepository.SaveAsync(_faq);
         if (success) {
             _ruleHasUnsavedChanges = false;
             _ruleAutoSaveStatus = AutoSaveStatus.Saved;

@@ -1,7 +1,7 @@
 ﻿@* ------------------------------------------------------------------------------------------------------------------ *@
 @* Imports
 @* ------------------------------------------------------------------------------------------------------------------ *@
-@using DirectiveAthenaWeb.Content.Writing
+@using DirectiveAthenaWeb.Content.Note
 @using DirectiveAthenaWeb.Services.ContentStorage
 @using DirectiveAthenaWeb.Services.Localization
 @using DirectiveAthenaWeb.Services.Localization.Resources
@@ -11,7 +11,7 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Descriptors
 @* ------------------------------------------------------------------------------------------------------------------ *@
-@inject IWritingContentManager WritingManager
+@inject INoteContentManager NoteManager
 @inject IContentStorageFactory ContentStorageFactory
 @inject IStringLocalizer<Shared> Localizer
 
@@ -94,7 +94,7 @@
             <LocalizedMarkdownEditor Title="@Localizer[Shared.MarkdownLabel]"
                                      FileName="@Post.MarkdownFileName"
                                      Storage="_storage"
-                                     LoadContentAsync="@((string locale) => WritingManager.GetRawMarkdownContentAsync(Post, locale))"
+                                     LoadContentAsync="@((string locale) => NoteManager.GetRawMarkdownContentAsync(Post, locale))"
                                      BuildDefaultContent="@((string locale) => BuildDefaultMarkdown(locale))"/>
         </MudItem>
 
@@ -120,7 +120,7 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 
 @code {
-    [Parameter, EditorRequired] public WritingContent Post { get; set; } = null!;
+    [Parameter, EditorRequired] public NoteContent Post { get; set; } = null!;
     [Parameter] public EventCallback OnDeletePost { get; set; }
     [Parameter] public EventCallback<bool> OnGenerateStubs { get; set; }
     [Parameter] public EventCallback OnTagsChanged { get; set; }
@@ -130,7 +130,7 @@
     private IContentStorage _storage = null!;
 
     protected override void OnInitialized() {
-        _storage = ContentStorageFactory.ForCategory("writing");
+        _storage = ContentStorageFactory.ForCategory("note");
     }
 
     // -----------------------------------------------------------------------------------------------------------------

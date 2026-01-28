@@ -1,8 +1,8 @@
 ﻿// ---------------------------------------------------------------------------------------------------------------------
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
-using DirectiveAthenaWeb.Content.Writing;
-using DirectiveAthenaWeb.Content.Writing.Services;
+using DirectiveAthenaWeb.Content.Note;
+using DirectiveAthenaWeb.Content.Note.Services;
 using DirectiveAthenaWeb.Services.Localization;
 using FluentValidation.Results;
 using NSubstitute;
@@ -11,7 +11,7 @@ namespace DirectiveAthenaWebTests.Content.Writing;
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
-public class WritingContentValidatorTests {
+public class NoteContentValidatorTests {
 
     private static ILocalizationProvider CreateLocalizationProvider(string currentCode) {
         LocalizationInfo[] localizations = [
@@ -31,8 +31,8 @@ public class WritingContentValidatorTests {
     [Test]
     public async Task Validate_RejectsMissingId() {
         // Arrange
-        var validator = new WritingContentValidator(CreateLocalizationProvider("en"));
-        WritingContent article = WritingFaker.Create(300);
+        var validator = new NoteContentValidator(CreateLocalizationProvider("en"));
+        NoteContent article = WritingFaker.Create(300);
         article.Id = Guid.Empty;
 
         // Act
@@ -46,8 +46,8 @@ public class WritingContentValidatorTests {
     [Test]
     public async Task Validate_RejectsMissingLocalizedTitle() {
         // Arrange
-        var validator = new WritingContentValidator(CreateLocalizationProvider("en"));
-        WritingContent article = WritingFaker.Create(301, includeNl: false);
+        var validator = new NoteContentValidator(CreateLocalizationProvider("en"));
+        NoteContent article = WritingFaker.Create(301, includeNl: false);
 
         // Act
         ValidationResult? result = await validator.ValidateAsync(article);
@@ -60,8 +60,8 @@ public class WritingContentValidatorTests {
     [Test]
     public async Task Validate_RejectsMissingLocalizedSummary() {
         // Arrange
-        var validator = new WritingContentValidator(CreateLocalizationProvider("en"));
-        WritingContent article = WritingFaker.Create(302);
+        var validator = new NoteContentValidator(CreateLocalizationProvider("en"));
+        NoteContent article = WritingFaker.Create(302);
         article.Summary.Remove("nl");
 
         // Act
@@ -75,8 +75,8 @@ public class WritingContentValidatorTests {
     [Test]
     public async Task Validate_AllowsValidWriting() {
         // Arrange
-        var validator = new WritingContentValidator(CreateLocalizationProvider("en"));
-        WritingContent article = WritingFaker.Create(303);
+        var validator = new NoteContentValidator(CreateLocalizationProvider("en"));
+        NoteContent article = WritingFaker.Create(303);
 
         // Act
         ValidationResult? result = await validator.ValidateAsync(article);

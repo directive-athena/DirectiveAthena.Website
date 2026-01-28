@@ -72,7 +72,7 @@
     <data name="Nav.Writings" xml:space="preserve">
     <value>Writings</value>
   </data>
-    <data name="Nav.WorldFaq" xml:space="preserve">
+    <data name="Nav.Faq" xml:space="preserve">
     <value>World FAQ</value>
   </data>
     <data name="Nav.ContentManager" xml:space="preserve">
@@ -144,16 +144,16 @@
     <data name="Home.Writings.Empty" xml:space="preserve">
     <value>No dispatches currently available. Check back soon for updates from the frontier.</value>
   </data>
-    <data name="Home.WorldFaq.Title" xml:space="preserve">
+    <data name="Home.Faq.Title" xml:space="preserve">
     <value>World FAQ</value>
   </data>
-    <data name="Home.WorldFaq.Subtitle" xml:space="preserve">
+    <data name="Home.Faq.Subtitle" xml:space="preserve">
     <value>Quick answers and canon anchors at a glance.</value>
   </data>
-    <data name="Home.WorldFaq.ViewAll" xml:space="preserve">
+    <data name="Home.Faq.ViewAll" xml:space="preserve">
     <value>View All FAQs</value>
   </data>
-    <data name="Home.WorldFaq.Empty" xml:space="preserve">
+    <data name="Home.Faq.Empty" xml:space="preserve">
     <value>No FAQs available for the homepage yet.</value>
   </data>
     <data name="Writings.Title" xml:space="preserve">
@@ -163,7 +163,7 @@
     <value>Archive</value>
   </data>
     <data name="Writings.Archive.Subtitle" xml:space="preserve">
-    <value>A collection of all the writings and snippets that have so far been published. Stay tuned for more.</value>
+    <value>A collection of all the notes and snippets that have so far been published. Stay tuned for more.</value>
   </data>
     <data name="Writings.Archive.AllPosts" xml:space="preserve">
     <value>All Posts</value>
@@ -178,7 +178,7 @@
     <value>Unable to load the content of this post.</value>
   </data>
     <data name="Writings.Detail.BackBottom" xml:space="preserve">
-    <value>Back to all writings</value>
+    <value>Back to all notes</value>
   </data>
     <data name="Writings.Detail.ReadTime" xml:space="preserve">
     <value>{0} min read</value>
@@ -201,22 +201,22 @@
     <data name="Writings.Detail.ShareReddit" xml:space="preserve">
     <value>Reddit</value>
   </data>
-    <data name="WorldFaq.Title" xml:space="preserve">
+    <data name="Faq.Title" xml:space="preserve">
     <value>World FAQ - Directive Athena</value>
   </data>
-    <data name="WorldFaq.Heading" xml:space="preserve">
+    <data name="Faq.Heading" xml:space="preserve">
     <value>World FAQ</value>
   </data>
-    <data name="WorldFaq.Subtitle" xml:space="preserve">
+    <data name="Faq.Subtitle" xml:space="preserve">
     <value>Quick answers, boundaries, and canon anchors for the setting.</value>
   </data>
-    <data name="WorldFaq.All" xml:space="preserve">
+    <data name="Faq.All" xml:space="preserve">
     <value>All FAQs</value>
   </data>
-    <data name="WorldFaq.Updated" xml:space="preserve">
+    <data name="Faq.Updated" xml:space="preserve">
     <value>Updated {0}</value>
   </data>
-    <data name="WorldFaq.Empty" xml:space="preserve">
+    <data name="Faq.Empty" xml:space="preserve">
     <value>No FAQs published yet. Add your first entry to begin shaping the canon.</value>
   </data>
     <data name="ContentManager.Title" xml:space="preserve">
@@ -228,7 +228,7 @@
     <data name="ContentManager.Tab.Writings" xml:space="preserve">
     <value>Writings</value>
   </data>
-    <data name="ContentManager.Tab.WorldFaq" xml:space="preserve">
+    <data name="ContentManager.Tab.Faq" xml:space="preserve">
     <value>World FAQ</value>
   </data>
     <data name="ContentManager.Tab.Tags" xml:space="preserve">
@@ -520,6 +520,6 @@
     <value>Go home</value>
   </data>
     <data name="NotFound.BrowseWritings" xml:space="preserve">
-    <value>Browse writings</value>
+    <value>Browse notes</value>
   </data>
 </root>

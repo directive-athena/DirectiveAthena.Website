@@ -1,8 +1,8 @@
 ﻿// ---------------------------------------------------------------------------------------------------------------------
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
-using DirectiveAthenaWeb.Content.Writing;
-using DirectiveAthenaWeb.Content.Writing.Services;
+using DirectiveAthenaWeb.Content.Note;
+using DirectiveAthenaWeb.Content.Note.Services;
 using DirectiveAthenaWeb.Services.Localization;
 using FluentValidation.Results;
 using NSubstitute;
@@ -11,7 +11,7 @@ namespace DirectiveAthenaWebTests.Content.Writing;
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
-public class WritingContentCollectionValidatorTests {
+public class NoteContentCollectionValidatorTests {
 
     private static ILocalizationProvider CreateLocalizationProvider(string currentCode) {
         LocalizationInfo[] localizations = [
@@ -31,16 +31,16 @@ public class WritingContentCollectionValidatorTests {
     [Test]
     public async Task Validate_RejectsDuplicateIds() {
         // Arrange
-        WritingContent[] writings = [
+        NoteContent[] notes = [
             WritingFaker.Create(400),
             WritingFaker.Create(401)
         ];
-        writings[1].Id = writings[0].Id;
+        notes[1].Id = notes[0].Id;
 
-        var validator = new WritingContentCollectionValidator(new WritingContentValidator(CreateLocalizationProvider("en")));
+        var validator = new NoteContentCollectionValidator(new NoteContentValidator(CreateLocalizationProvider("en")));
 
         // Act
-        ValidationResult? result = await validator.ValidateAsync(writings);
+        ValidationResult? result = await validator.ValidateAsync(notes);
 
         // Assert
         await Assert.That(result.IsValid).IsFalse();
@@ -50,14 +50,14 @@ public class WritingContentCollectionValidatorTests {
     [Test]
     public async Task Validate_FailsWhenAnyWritingIsInvalid() {
         // Arrange
-        WritingContent valid = WritingFaker.Create(420);
-        WritingContent invalid = WritingFaker.Create(421, includeNl: false);
-        WritingContent[] writings = [valid, invalid];
+        NoteContent valid = WritingFaker.Create(420);
+        NoteContent invalid = WritingFaker.Create(421, includeNl: false);
+        NoteContent[] notes = [valid, invalid];
 
-        var validator = new WritingContentCollectionValidator(new WritingContentValidator(CreateLocalizationProvider("en")));
+        var validator = new NoteContentCollectionValidator(new NoteContentValidator(CreateLocalizationProvider("en")));
 
         // Act
-        ValidationResult? result = await validator.ValidateAsync(writings);
+        ValidationResult? result = await validator.ValidateAsync(notes);
 
         // Assert
         await Assert.That(result.IsValid).IsFalse();

@@ -11,30 +11,29 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Descriptors
 @* ------------------------------------------------------------------------------------------------------------------ *@
-@page "/world-faq"
 @page "/faq"
 
-@inject IFaqContentRepository WorldFaqRepository
-@inject IFaqContentManager WorldFaqManager
+@inject IFaqContentRepository FaqRepository
+@inject IFaqContentManager FaqManager
 @inject ILocalizationProvider LocalizationProvider
 @inject IStringLocalizer<Shared> LocalizerShared
 @inject IStringLocalizer<Tags> LocalizerTags
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Html
 @* ------------------------------------------------------------------------------------------------------------------ *@
-<PageTitle>@LocalizerShared[Shared.WorldFaqTitle]</PageTitle>
+<PageTitle>@LocalizerShared[Shared.FaqTitle]</PageTitle>
 
 <div class="min-vh-100 py-32">
     <MudContainer MaxWidth="MaxWidth.Large">
         <div class="text-center mb-16">
-            <MudText Typo="Typo.h2" Class="mb-4">@LocalizerShared[Shared.WorldFaqHeading]</MudText>
-            <MudText Typo="Typo.body1" Class="text-secondary opacity-70">@LocalizerShared[Shared.WorldFaqSubtitle]
+            <MudText Typo="Typo.h2" Class="mb-4">@LocalizerShared[Shared.FaqHeading]</MudText>
+            <MudText Typo="Typo.body1" Class="text-secondary opacity-70">@LocalizerShared[Shared.FaqSubtitle]
             </MudText>
         </div>
 
         <div class="d-flex flex-wrap justify-center gap-2 mb-12">
             <MudChip T="string" Variant="@(string.IsNullOrEmpty(_selectedTag) ? Variant.Filled : Variant.Outlined)"
-                     Color="Color.Secondary" OnClick="@ClearTag">@LocalizerShared[Shared.WorldFaqAll]
+                     Color="Color.Secondary" OnClick="@ClearTag">@LocalizerShared[Shared.FaqAll]
             </MudChip>
             @if (_rules is not null) {
                 foreach (string tag in _rules.SelectMany(r => r.Tags).Distinct()) {
@@ -52,19 +51,19 @@
         }
         else if (!FilteredRules.Any()) {
             <MudCard Class="card-glass pa-8 text-center border-dashed">
-                <MudText Typo="Typo.h6" Class="opacity-70">@LocalizerShared[Shared.WorldFaqEmpty]</MudText>
+                <MudText Typo="Typo.h6" Class="opacity-70">@LocalizerShared[Shared.FaqEmpty]</MudText>
             </MudCard>
         }
         else {
             <MudExpansionPanels MultiExpansion="true">
-                @foreach (WorldFaqView rule in FilteredRules) {
+                @foreach (FaqView rule in FilteredRules) {
                     <MudExpansionPanel Class="card-glass mb-4">
                         <TitleContent>
                             <div class="d-flex flex-column gap-2">
                                 @if (!string.IsNullOrWhiteSpace(rule.Date)) {
                                     <MudText Typo="Typo.caption" Color="Color.Secondary"
                                              Style="letter-spacing: 0.15em; text-transform: uppercase;">
-                                        @string.Format(LocalizerShared[Shared.WorldFaqUpdated], rule.Date)
+                                        @string.Format(LocalizerShared[Shared.FaqUpdated], rule.Date)
                                     </MudText>
                                 }
                                 <MudText Typo="Typo.h5" Class="SpaceGrotesk">@rule.Title</MudText>
@@ -100,32 +99,32 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 
 @code {
-    private List<WorldFaqView>? _rules;
+    private List<FaqView>? _rules;
     private string? _selectedTag;
 
     protected override async Task OnInitializedAsync() {
-        IEnumerable<FaqContent> rules = await WorldFaqRepository.GetAllAsync();
-        List<WorldFaqView> viewRules = new();
+        IEnumerable<FaqContent> rules = await FaqRepository.GetAllAsync();
+        List<FaqView> viewRules = new();
         string locale = LocalizationProvider.GetCurrentLocalization().Code;
 
         foreach (FaqContent rule in rules) {
-            string content = await WorldFaqManager.GetRawMarkdownContentAsync(rule, locale);
-            viewRules.Add(new WorldFaqView(
+            string content = await FaqManager.GetRawMarkdownContentAsync(rule, locale);
+            viewRules.Add(new FaqView(
                 rule,
-                WorldFaqManager.GetLocalizedQuestion(rule),
-                WorldFaqManager.GetLocalizedAnswer(rule),
+                FaqManager.GetLocalizedQuestion(rule),
+                FaqManager.GetLocalizedAnswer(rule),
                 content));
         }
 
         _rules = viewRules;
     }
 
-    private IEnumerable<WorldFaqView> OrderedRules =>
+    private IEnumerable<FaqView> OrderedRules =>
         (_rules ?? [])
         .OrderByDescending(rule => rule.SortDate)
         .ThenBy(rule => rule.Title);
 
-    private IEnumerable<WorldFaqView> FilteredRules =>
+    private IEnumerable<FaqView> FilteredRules =>
         string.IsNullOrEmpty(_selectedTag)
             ? OrderedRules
             : OrderedRules.Where(rule => rule.Tags.Contains(_selectedTag));
@@ -133,7 +132,7 @@
     private void FilterByTag(string tag) => _selectedTag = tag;
     private void ClearTag() => _selectedTag = null;
 
-    private record WorldFaqView(
+    private record FaqView(
         FaqContent Rule,
         string Title,
         string Summary,

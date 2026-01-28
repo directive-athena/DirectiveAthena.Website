@@ -1,10 +1,18 @@
 ﻿// ---------------------------------------------------------------------------------------------------------------------
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
+using CodeOfChaos.Extensions.DependencyInjection;
 using DirectiveAthenaWeb.Services.Content;
+using DirectiveAthenaWeb.Services.ContentStorage;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
-namespace DirectiveAthenaWeb.Content.Writing;
+namespace DirectiveAthenaWeb.Content.Note.Services;
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
-public interface IWritingContentRepository : IContentRepository<WritingContent>;
+[InjectableScoped<INoteContentRepository>]
+public class NoteContentRepository(
+    [FromKeyedServices("note")] IContentStorage storage,
+    ILogger<NoteContentRepository> logger
+) : ContentRepository<NoteContent>(storage, logger), INoteContentRepository;

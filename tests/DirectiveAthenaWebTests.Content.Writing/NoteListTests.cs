@@ -3,7 +3,7 @@
 // ---------------------------------------------------------------------------------------------------------------------
 using Bunit;
 using DirectiveAthenaWeb.Components;
-using DirectiveAthenaWeb.Content.Writing;
+using DirectiveAthenaWeb.Content.Note;
 using DirectiveAthenaWeb.Services.Localization.Resources;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
@@ -13,7 +13,7 @@ namespace DirectiveAthenaWebTests.Content.Writing;
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
-public class WritingListTests {
+public class NoteListTests {
     [Test]
     public async Task WritingList_RendersChipsForHiddenAndMissingNl() {
         // Arrange
@@ -23,12 +23,12 @@ public class WritingListTests {
         ctx.JSInterop.SetupVoid("mudKeyInterceptor.connect", _ => true);
         var localizer = ctx.Services.GetRequiredService<IStringLocalizer<Shared>>();
 
-        WritingContent post = WritingFaker.Create(200, hidden: true, includeNl: false);
+        NoteContent post = WritingFaker.Create(200, hidden: true, includeNl: false);
         post.SoftDeletedAt = DateTime.UtcNow;
-        List<WritingContent> posts = [post];
+        List<NoteContent> posts = [post];
 
         // Act
-        IRenderedComponent<WritingList> component = ctx.Render<WritingList>(parameters => parameters
+        IRenderedComponent<NoteList> component = ctx.Render<NoteList>(parameters => parameters
             .Add(p => p.Posts, posts));
 
         // Assert

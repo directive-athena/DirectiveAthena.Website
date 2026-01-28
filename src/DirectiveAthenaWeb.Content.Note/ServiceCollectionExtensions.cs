@@ -1,14 +1,22 @@
 ﻿// ---------------------------------------------------------------------------------------------------------------------
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
-using DirectiveAthenaWeb.Services.Content;
+using JetBrains.Annotations;
 
-namespace DirectiveAthenaWeb.Content.Writing;
+// ReSharper disable once CheckNamespace
+namespace Microsoft.Extensions.DependencyInjection;
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
-public class WritingContent : ContentBase {
-    public Dictionary<string, string> Title { get; set; } = new();
-    public Dictionary<string, string> Summary { get; set; } = new();
-    public List<string> Tags { get; set; } = [];
+public static class ServiceCollectionExtensions {
+    extension(IServiceCollection services) {
+        [UsedImplicitly] public IServiceCollection AddNoteContent() {
+            services.RegisterServicesFromDirectiveAthenaWebContentNote();
+
+            services.AddContentStorage("note");
+
+            return services;
+        }
+    }
+
 }

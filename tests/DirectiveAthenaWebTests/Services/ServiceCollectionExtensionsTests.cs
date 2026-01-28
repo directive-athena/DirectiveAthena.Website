@@ -2,7 +2,7 @@
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
 using DirectiveAthenaWeb.Content.Faq;
-using DirectiveAthenaWeb.Content.Writing;
+using DirectiveAthenaWeb.Content.Note;
 using DirectiveAthenaWeb.Services;
 using DirectiveAthenaWeb.Services.Contact;
 using DirectiveAthenaWeb.Services.ContentStorage;
@@ -24,14 +24,14 @@ public class ServiceCollectionExtensionsTests {
         // Act
         services.AddWebsiteServices();
         
-        services.AddWritingContent();
+        services.AddNoteContent();
         services.AddFaqContent();
 
         // Assert
-        await Assert.That(services).Any(s => s.ServiceType == typeof(IWritingContentManager));
-        await Assert.That(services).Any(s => s.ServiceType == typeof(IWritingContentRepository));
-        await Assert.That(services).Any(s => s.ServiceType == typeof(IValidator<WritingContent>));
-        await Assert.That(services).Any(s => s.ServiceType == typeof(IValidator<IEnumerable<WritingContent>>));
+        await Assert.That(services).Any(s => s.ServiceType == typeof(INoteContentManager));
+        await Assert.That(services).Any(s => s.ServiceType == typeof(INoteContentRepository));
+        await Assert.That(services).Any(s => s.ServiceType == typeof(IValidator<NoteContent>));
+        await Assert.That(services).Any(s => s.ServiceType == typeof(IValidator<IEnumerable<NoteContent>>));
 
         await Assert.That(services).Any(s => s.ServiceType == typeof(IContactInfoProvider));
         await Assert.That(services).Any(s => s.ServiceType == typeof(IContentStorageFactory));

@@ -15,7 +15,7 @@ namespace DirectiveAthenaWebTests.Content.Faq;
 // ---------------------------------------------------------------------------------------------------------------------
 public class FaqListTests {
     [Test]
-    public async Task WorldFaqList_RendersDeletedChip() {
+    public async Task FaqList_RendersDeletedChip() {
         // Arrange
         await using var ctx = new BunitContext();
         ctx.Services.AddMudServices();

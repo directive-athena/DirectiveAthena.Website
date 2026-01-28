@@ -11,7 +11,7 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Descriptors
 @* ------------------------------------------------------------------------------------------------------------------ *@
-@inject IFaqContentManager WorldFaqManager
+@inject IFaqContentManager FaqManager
 @inject IContentStorageFactory ContentStorageFactory
 @inject IStringLocalizer<Shared> Localizer
 
@@ -87,7 +87,7 @@
             <LocalizedMarkdownEditor Title="@Localizer[Shared.MarkdownLabel]"
                                      FileName="@Rule.MarkdownFileName"
                                      Storage="_storage"
-                                     LoadContentAsync="@((string locale) => WorldFaqManager.GetRawMarkdownContentAsync(Rule, locale))"
+                                     LoadContentAsync="@((string locale) => FaqManager.GetRawMarkdownContentAsync(Rule, locale))"
                                      BuildDefaultContent="@((string locale) => BuildDefaultMarkdown(locale))"/>
         </MudItem>
 

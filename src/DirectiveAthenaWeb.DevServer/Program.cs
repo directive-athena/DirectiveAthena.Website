@@ -41,7 +41,7 @@ public static class Program {
         builder.Services.Configure<LocalizationOptions>(builder.Configuration.GetSection("Localization"));
 
         
-        builder.Services.AddWritingContent();
+        builder.Services.AddNoteContent();
         builder.Services.AddFaqContent();
 
         // -------------------------------------------------------------------------------------------------------------

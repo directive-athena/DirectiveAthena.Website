@@ -2,7 +2,7 @@
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
 using Bogus;
-using DirectiveAthenaWeb.Content.Writing;
+using DirectiveAthenaWeb.Content.Note;
 using DirectiveAthenaWeb.Services.Localization;
 
 namespace DirectiveAthenaWebTests.Content.Writing;
@@ -10,7 +10,7 @@ namespace DirectiveAthenaWebTests.Content.Writing;
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
 public static class WritingFaker {
-    public static WritingContent Create(int seed, bool hidden = false, bool includeNl = true) {
+    public static NoteContent Create(int seed, bool hidden = false, bool includeNl = true) {
         var faker = new Faker {
             Random = new Randomizer(seed)
         };
@@ -29,7 +29,7 @@ public static class WritingFaker {
             summary["nl"] = faker.Lorem.Sentence(6);
         }
 
-        return new WritingContent {
+        return new NoteContent {
             Id = id,
             Title = title,
             Summary = summary,

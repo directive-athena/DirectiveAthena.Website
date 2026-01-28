@@ -21,7 +21,8 @@
     </Folder>
     <Folder Name="/src/content/">
         <Project Path="src/DirectiveAthenaWeb.Content.Faq/DirectiveAthenaWeb.Content.Faq.csproj" />
-        <Project Path="src/DirectiveAthenaWeb.Content.Writing/DirectiveAthenaWeb.Content.Writing.csproj" />
+        <Project Path="src/DirectiveAthenaWeb.Content.Note/DirectiveAthenaWeb.Content.Note.csproj" />
+        <Project Path="src/DirectiveAthenaWeb.Content.Story/DirectiveAthenaWeb.Content.Story.csproj" />
     </Folder>
     <Folder Name="/src/services/">
         <Project Path="src/DirectiveAthenaWeb.Services.Contact/DirectiveAthenaWeb.Services.Contact.csproj" />
