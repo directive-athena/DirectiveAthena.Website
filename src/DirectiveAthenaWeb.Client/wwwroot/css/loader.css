@@ -58,7 +58,8 @@
 }
 
 .loader-logo {
-    width: 100%;
+    margin-top: -2rem;
+    width: 75%;
     height: auto;
     animation: logo-pulse 3s ease-in-out infinite;
     filter: drop-shadow(0 0 10px rgba(128, 32, 64, 0.5));
