@@ -465,7 +465,7 @@
     <data name="TagsManager.SaveFailed" xml:space="preserve">
     <value>RESX-bestand opslaan mislukt.</value>
   </data>
-    <data name="List.Posts" xml:space="preserve">
+    <data name="List.Notes" xml:space="preserve">
     <value>Berichten</value>
   </data>
     <data name="List.Rules" xml:space="preserve">

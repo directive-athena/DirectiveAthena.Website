@@ -29,7 +29,7 @@ public class NoteListTests {
 
         // Act
         IRenderedComponent<NoteList> component = ctx.Render<NoteList>(parameters => parameters
-            .Add(p => p.Posts, posts));
+            .Add(p => p.Notes, posts));
 
         // Assert
         await Assert.That(component.Markup).Contains(post.Title["en"]);

@@ -16,13 +16,13 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 <MudPaper Class="pa-4 card-glass mb-4">
     <div class="d-flex justify-space-between align-center mb-4">
-        <MudText Typo="Typo.h6">@Localizer[Shared.ListPosts]</MudText>
-        <MudIconButton Icon="@Icons.Material.Filled.Add" Color="Color.Primary" OnClick="@OnCreatePost"/>
+        <MudText Typo="Typo.h6">@Localizer[Shared.ListNotes]</MudText>
+        <MudIconButton Icon="@Icons.Material.Filled.Add" Color="Color.Primary" OnClick="@OnCreateNote"/>
     </div>
-    <MudList T="NoteContent" SelectedValue="SelectedPost" SelectedValueChanged="OnPostSelected"
+    <MudList T="NoteContent" SelectedValue="SelectedNote" SelectedValueChanged="OnNoteSelected"
              Color="Color.Primary">
-        @if (Posts is not null) {
-            foreach (NoteContent post in Posts) {
+        @if (Notes is not null) {
+            foreach (NoteContent post in Notes) {
                 <MudListItem Value="post">
                     <div class="d-flex flex-column">
                         <MudText
@@ -55,8 +55,8 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 
 @code {
-    [Parameter] public List<NoteContent>? Posts { get; set; }
-    [Parameter] public NoteContent? SelectedPost { get; set; }
-    [Parameter] public EventCallback<NoteContent?> OnPostSelected { get; set; }
-    [Parameter] public EventCallback OnCreatePost { get; set; }
+    [Parameter] public List<NoteContent>? Notes { get; set; }
+    [Parameter] public NoteContent? SelectedNote { get; set; }
+    [Parameter] public EventCallback<NoteContent?> OnNoteSelected { get; set; }
+    [Parameter] public EventCallback OnCreateNote { get; set; }
 }

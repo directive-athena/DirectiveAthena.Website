@@ -101,7 +101,7 @@ public class Shared {
     public const string ListHidden = "List.Hidden";
     public const string ListDeleted = "List.Deleted";
     public const string ListMissingNl = "List.MissingNl";
-    public const string ListPosts = "List.Posts";
+    public const string ListNotes = "List.Notes";
     public const string ListRules = "List.Rules";
     public const string ListUntitled = "List.Untitled";
     public const string MarkdownEditorContent = "MarkdownEditor.Content";

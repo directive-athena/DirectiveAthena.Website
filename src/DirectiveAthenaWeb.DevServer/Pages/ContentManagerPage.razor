@@ -51,8 +51,8 @@
                 <MudGrid>
                     <MudItem xs="12" md="4">
                         <MudStack Spacing="3">
-                            <NoteList Posts="_notes" SelectedPost="_selectedWriting"
-                                         OnPostSelected="OnPostSelected" OnCreatePost="CreateNewPost"/>
+                            <NoteList Notes="_notes" SelectedNote="_selectedWriting"
+                                         OnNoteSelected="OnNoteSelected" OnCreateNote="CreateNewNote"/>
 
                             <MudPaper Class="pa-4 card-glass no-hover">
                                 <div class="d-flex justify-space-between align-center mb-2">
@@ -94,7 +94,7 @@
 
                     <MudItem xs="12" md="8">
                         @if (_selectedWriting is not null) {
-                            <NoteEditor Post="_selectedWriting" OnDeletePost="DeletePost"
+                            <NoteEditor Note="_selectedWriting" OnDeleteNote="DeleteNote"
                                            OnGenerateStubs="GenerateWritingStubs"
                                            OnTagsChanged="OnTagsChanged"
                                            OnContentChanged="OnWritingChanged"/>
@@ -218,11 +218,11 @@
         _faq = faq.ToList();
     }
 
-    private void OnPostSelected(NoteContent? post) {
+    private void OnNoteSelected(NoteContent? post) {
         _selectedWriting = post;
     }
 
-    private void CreateNewPost() {
+    private void CreateNewNote() {
         _selectedWriting = NoteManager.NewWriting();
         _notes?.Insert(0, _selectedWriting);
         OnWritingChanged();
@@ -238,7 +238,7 @@
         OnRuleChanged();
     }
 
-    private async Task DeletePost() {
+    private async Task DeleteNote() {
         if (_selectedWriting is null || _notes is null) return;
 
         bool hardDelete = _selectedWriting.IsSoftDeleted;

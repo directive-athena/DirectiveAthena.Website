@@ -465,7 +465,7 @@
     <data name="TagsManager.SaveFailed" xml:space="preserve">
     <value>Failed to save RESX file.</value>
   </data>
-    <data name="List.Posts" xml:space="preserve">
+    <data name="List.Notes" xml:space="preserve">
     <value>Posts</value>
   </data>
     <data name="List.Rules" xml:space="preserve">
