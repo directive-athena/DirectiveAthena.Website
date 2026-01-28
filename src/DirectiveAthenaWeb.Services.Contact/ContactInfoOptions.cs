@@ -5,7 +5,7 @@ namespace DirectiveAthenaWeb.Services.Contact;
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
-public sealed class ContactInfoOptions {
+public class ContactInfoOptions {
     public List<ContactInfoItem> Items { get; set; } = [];
 
     public ContactInfoOptions AddContactInfo(

@@ -5,7 +5,7 @@ namespace DirectiveAthenaWeb.Services.Localization;
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
-public sealed class LocalizationOptions {
+public class LocalizationOptions {
     public List<LocalizationItem> Items { get; set; } = [];
 
     public LocalizationOptions AddLocalization(

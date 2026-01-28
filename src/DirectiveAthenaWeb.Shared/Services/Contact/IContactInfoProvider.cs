@@ -7,4 +7,5 @@ namespace DirectiveAthenaWeb.Services.Contact;
 // ---------------------------------------------------------------------------------------------------------------------
 public interface IContactInfoProvider {
     IEnumerable<ContactInfoItem> GetContactInfos();
+    ValueTask<string> GetSvgData(ContactInfoItem item, CancellationToken ct = default);
 }

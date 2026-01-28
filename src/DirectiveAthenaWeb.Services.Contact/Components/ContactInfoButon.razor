@@ -1,0 +1,32 @@
+﻿@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Imports
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@using DirectiveAthenaWeb.Services.Contact
+
+@namespace DirectiveAthenaWeb.Components
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Descriptors
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@inject IContactInfoProvider ContactInfoProvider
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Html
+@* ------------------------------------------------------------------------------------------------------------------ *@
+<MudButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="@FullWidth"
+           StartIcon="@_svg" Href="@ContactInfo.Url" Target="_blank"
+           Class="@Class">
+    @ContactInfo.Title
+</MudButton>
+
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Code
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@code {
+    [Parameter, EditorRequired] public ContactInfoItem ContactInfo { get; set; }
+    [Parameter] public string? Class { get; set; }
+    [Parameter] public bool FullWidth { get; set; }
+    private string _svg = string.Empty;
+
+    protected override async Task OnInitializedAsync() {
+        _svg = await ContactInfoProvider.GetSvgData(ContactInfo);
+    }
+}

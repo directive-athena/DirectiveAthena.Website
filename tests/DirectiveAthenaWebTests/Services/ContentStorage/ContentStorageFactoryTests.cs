@@ -13,9 +13,7 @@ namespace DirectiveAthenaWebTests.Services.ContentStorage;
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
 public class ContentStorageFactoryTests {
-    [Test]
-    public async Task ForCategory_BuildsWritingIndexPath() {
-        // Arrange
+    private static ContentStorageFactory GetFakeFactory() {
         var localizationProvider = Substitute.For<ILocalizationProvider>();
         IOptions<R2StorageOptions> options = Options.Create(new R2StorageOptions {
             PublicBaseUrl = "https://cdn.example.com/assets",
@@ -28,36 +26,23 @@ public class ContentStorageFactoryTests {
         var loggerFactory = Substitute.For<ILoggerFactory>();
         loggerFactory.CreateLogger(Arg.Any<string>()).Returns(logger);
 
-        var factory = new ContentStorageFactory(localizationProvider, options, httpClient, loggerFactory);
-
-        // Act
-        IContentStorage storage = factory.ForCategory("writing");
-
-        // Assert
-        await Assert.That(storage.IndexContentPath).IsEqualTo("https://cdn.example.com/assets/content/writing/index.json");
+        return new ContentStorageFactory(localizationProvider, options, httpClient, loggerFactory);
     }
 
+    // -----------------------------------------------------------------------------------------------------------------
+    // Test Methods
+    // -----------------------------------------------------------------------------------------------------------------
     [Test]
-    public async Task ForCategory_BuildsWorldFaqIndexPath() {
+    [Arguments("writing", "https://cdn.example.com/assets/content/writing/index.json")]
+    [Arguments("faq", "https://cdn.example.com/assets/content/faq/index.json")]
+    public async Task ForCategory_BuildsIndexPath(string category, string expectedUrl) {
         // Arrange
-        var localizationProvider = Substitute.For<ILocalizationProvider>();
-        IOptions<R2StorageOptions> options = Options.Create(new R2StorageOptions {
-            PublicBaseUrl = "https://cdn.example.com/assets/",
-            AccountId = "account",
-            BucketName = "bucket"
-        });
-
-        var httpClient = new HttpClient();
-        var logger = Substitute.For<ILogger>();
-        var loggerFactory = Substitute.For<ILoggerFactory>();
-        loggerFactory.CreateLogger(Arg.Any<string>()).Returns(logger);
-
-        var factory = new ContentStorageFactory(localizationProvider, options, httpClient, loggerFactory);
-
+        ContentStorageFactory factory = GetFakeFactory();
+        
         // Act
-        IContentStorage storage = factory.ForCategory("faq");
+        IContentStorage storage = factory.ForCategory(category);
 
         // Assert
-        await Assert.That(storage.IndexContentPath).IsEqualTo("https://cdn.example.com/assets/content/faq/index.json");
+        await Assert.That(storage.IndexContentPath).IsEqualTo(expectedUrl);
     }
 }

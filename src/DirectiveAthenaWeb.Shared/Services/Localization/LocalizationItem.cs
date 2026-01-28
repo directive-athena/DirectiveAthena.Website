@@ -5,7 +5,7 @@ namespace DirectiveAthenaWeb.Services.Localization;
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
-public sealed class LocalizationItem {
+public class LocalizationItem {
     public string Code { get; init; } = string.Empty;
     public string DisplayName { get; init; } = string.Empty;
     public string Abbreviation { get; init; } = string.Empty;

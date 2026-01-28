@@ -25,7 +25,9 @@
 @inject IDirectiveAthenaWebJs WebJs
 @inject ISnackbar Snackbar
 @inject IStringLocalizer<Shared> Localizer
+
 @inherits WebsiteComponentBase
+
 @rendermode RenderMode.InteractiveServer
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Html
@@ -41,22 +43,17 @@
         <MudText Typo="Typo.h3">@Localizer[Shared.ContentManagerHeading]</MudText>
     </div>
 
-    @if (_posts is null || _rules is null) {
+    @if (_writings is null || _faq is null) {
         <MudProgressCircular Color="Color.Primary" Indeterminate="true"/>
     }
     else {
-        @if (ShowRemoteStorageBanner) {
-            <MudAlert Severity="Severity.Info" Variant="Variant.Filled" Class="mb-6">
-                <b>Content storage:</b> Remote (R2).
-            </MudAlert>
-        }
         <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6"
                  @bind-ActivePanelIndex="_activeTab">
             <MudTabPanel Text="@Localizer[Shared.ContentManagerTabWritings]" Icon="@Icons.Material.Filled.Article">
                 <MudGrid>
                     <MudItem xs="12" md="4">
                         <MudStack Spacing="3">
-                            <WritingList Posts="_posts" SelectedPost="_selectedPost"
+                            <WritingList Posts="_writings" SelectedPost="_selectedWriting"
                                          OnPostSelected="OnPostSelected" OnCreatePost="CreateNewPost"/>
 
                             <MudPaper Class="pa-4 card-glass no-hover">
@@ -98,8 +95,8 @@
                     </MudItem>
 
                     <MudItem xs="12" md="8">
-                        @if (_selectedPost is not null) {
-                            <WritingEditor Post="_selectedPost" OnDeletePost="DeletePost"
+                        @if (_selectedWriting is not null) {
+                            <WritingEditor Post="_selectedWriting" OnDeletePost="DeletePost"
                                            OnGenerateStubs="GenerateWritingStubs"
                                            OnTagsChanged="OnTagsChanged"
                                            OnContentChanged="OnWritingChanged"/>
@@ -117,7 +114,7 @@
                 <MudGrid>
                     <MudItem xs="12" md="4">
                         <MudStack Spacing="3">
-                            <FaqList Rules="_rules" SelectedRule="_selectedRule"
+                            <FaqList Rules="_faq" SelectedRule="_selectedFaq"
                                            OnRuleSelected="OnRuleSelected" OnCreateRule="CreateNewRule"/>
 
                             <MudPaper Class="pa-4 card-glass no-hover">
@@ -159,8 +156,8 @@
                     </MudItem>
 
                     <MudItem xs="12" md="8">
-                        @if (_selectedRule is not null) {
-                            <FaqEditor Rule="_selectedRule" OnDeleteRule="DeleteRule"
+                        @if (_selectedFaq is not null) {
+                            <FaqEditor Rule="_selectedFaq" OnDeleteRule="DeleteRule"
                                              OnGenerateStubs="GenerateRuleStubs"
                                              OnTagsChanged="OnTagsChanged"
                                              OnContentChanged="OnRuleChanged"/>
@@ -186,13 +183,12 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 
 @code {
-    private List<WritingContent>? _posts;
-    private WritingContent? _selectedPost;
-    private List<FaqContent>? _rules;
-    private FaqContent? _selectedRule;
+    private List<WritingContent>? _writings;
+    private WritingContent? _selectedWriting;
+    private List<FaqContent>? _faq;
+    private FaqContent? _selectedFaq;
     private int _activeTab;
 
-    private bool ShowRemoteStorageBanner => true;
     private bool _autoSaveEnabled = true;
     private bool AutoSaveEnabled {
         get => _autoSaveEnabled;
@@ -211,43 +207,43 @@
     private CancellationTokenSource? _ruleAutoSaveCts;
 
     private IEnumerable<string> AllTags =>
-        (_posts ?? [])
+        (_writings ?? [])
         .SelectMany(post => post.Tags)
-        .Concat((_rules ?? []).SelectMany(rule => rule.Tags))
+        .Concat((_faq ?? []).SelectMany(rule => rule.Tags))
         .Distinct();
 
     protected override async Task OnInitializedAsync() {
         IEnumerable<WritingContent> posts = await WritingRepository.GetAllAsync(QueryConfig.WithHidden | QueryConfig.WithSoftDeleted);
-        _posts = posts.ToList();
+        _writings = posts.ToList();
 
-        IEnumerable<FaqContent> rules = await WorldFaqRepository.GetAllAsync(QueryConfig.WithHidden | QueryConfig.WithSoftDeleted);
-        _rules = rules.ToList();
+        IEnumerable<FaqContent> faq = await WorldFaqRepository.GetAllAsync(QueryConfig.WithHidden | QueryConfig.WithSoftDeleted);
+        _faq = faq.ToList();
     }
 
     private void OnPostSelected(WritingContent? post) {
-        _selectedPost = post;
+        _selectedWriting = post;
     }
 
     private void CreateNewPost() {
-        _selectedPost = WritingManager.NewWriting();
-        _posts?.Insert(0, _selectedPost);
+        _selectedWriting = WritingManager.NewWriting();
+        _writings?.Insert(0, _selectedWriting);
         OnWritingChanged();
     }
 
     private void OnRuleSelected(FaqContent? rule) {
-        _selectedRule = rule;
+        _selectedFaq = rule;
     }
 
     private void CreateNewRule() {
-        _selectedRule = WorldFaqManager.NewRule();
-        _rules?.Insert(0, _selectedRule);
+        _selectedFaq = WorldFaqManager.NewRule();
+        _faq?.Insert(0, _selectedFaq);
         OnRuleChanged();
     }
 
     private async Task DeletePost() {
-        if (_selectedPost is null || _posts is null) return;
+        if (_selectedWriting is null || _writings is null) return;
 
-        bool hardDelete = _selectedPost.IsSoftDeleted;
+        bool hardDelete = _selectedWriting.IsSoftDeleted;
         string confirmText = hardDelete
             ? Localizer[Shared.ContentManagerDeletePostHardConfirm].Value
             : Localizer[Shared.ContentManagerDeletePostSoftConfirm].Value;
@@ -256,12 +252,12 @@
 
         if (!hardDelete) {
             DateTime now = DateTime.UtcNow;
-            _selectedPost.SoftDeletedAt = now;
-            _selectedPost.LastModifiedAt = now;
+            _selectedWriting.SoftDeletedAt = now;
+            _selectedWriting.LastModifiedAt = now;
 
-            bool softDeleted = await WritingRepository.SoftDeleteByIdAsync(_selectedPost.Id);
-            if (!softDeleted && _posts is not null) {
-                softDeleted = await WritingRepository.SaveAsync(_posts);
+            bool softDeleted = await WritingRepository.SoftDeleteByIdAsync(_selectedWriting.Id);
+            if (!softDeleted && _writings is not null) {
+                softDeleted = await WritingRepository.SaveAsync(_writings);
             }
             Snackbar.Add(
                 softDeleted
@@ -271,9 +267,9 @@
             return;
         }
 
-        WritingContent postToDelete = _selectedPost;
-        _posts.Remove(postToDelete);
-        _selectedPost = null;
+        WritingContent postToDelete = _selectedWriting;
+        _writings.Remove(postToDelete);
+        _selectedWriting = null;
 
         bool success = await WritingRepository.HardDeleteByIdAsync(postToDelete.Id);
         if (success) {
@@ -285,9 +281,9 @@
     }
 
     private async Task DeleteRule() {
-        if (_selectedRule is null || _rules is null) return;
+        if (_selectedFaq is null || _faq is null) return;
 
-        bool hardDelete = _selectedRule.IsSoftDeleted;
+        bool hardDelete = _selectedFaq.IsSoftDeleted;
         string confirmText = hardDelete
             ? Localizer[Shared.ContentManagerDeleteRuleHardConfirm].Value
             : Localizer[Shared.ContentManagerDeleteRuleSoftConfirm].Value;
@@ -296,12 +292,12 @@
 
         if (!hardDelete) {
             DateTime now = DateTime.UtcNow;
-            _selectedRule.SoftDeletedAt = now;
-            _selectedRule.LastModifiedAt = now;
+            _selectedFaq.SoftDeletedAt = now;
+            _selectedFaq.LastModifiedAt = now;
 
-            bool softDeleted = await WorldFaqRepository.SoftDeleteByIdAsync(_selectedRule.Id);
-            if (!softDeleted && _rules is not null) {
-                softDeleted = await WorldFaqRepository.SaveAsync(_rules);
+            bool softDeleted = await WorldFaqRepository.SoftDeleteByIdAsync(_selectedFaq.Id);
+            if (!softDeleted && _faq is not null) {
+                softDeleted = await WorldFaqRepository.SaveAsync(_faq);
             }
             Snackbar.Add(
                 softDeleted
@@ -311,9 +307,9 @@
             return;
         }
 
-        FaqContent ruleToDelete = _selectedRule;
-        _rules.Remove(ruleToDelete);
-        _selectedRule = null;
+        FaqContent ruleToDelete = _selectedFaq;
+        _faq.Remove(ruleToDelete);
+        _selectedFaq = null;
 
         bool success = await WorldFaqRepository.HardDeleteByIdAsync(ruleToDelete.Id);
         if (success) {
@@ -331,33 +327,33 @@
         => _ = await SaveAllRulesInternal(showFeedback: true);
 
     private async Task ExportWritingsJson() {
-        if (_posts is null) return;
+        if (_writings is null) return;
 
-        if (!WritingManager.Validate(_posts, out string? errorMessage)) {
+        if (!WritingManager.Validate(_writings, out string? errorMessage)) {
             Snackbar.Add(errorMessage!, Severity.Error);
             return;
         }
 
-        await WritingRepository.SaveAsync(_posts);
+        await WritingRepository.SaveAsync(_writings);
         string json = await WritingRepository.GetAsJsonStringAsync();
         await DownloadFile("index.json", json);
     }
 
     private async Task ExportRulesJson() {
-        if (_rules is null) return;
+        if (_faq is null) return;
 
-        if (!WorldFaqManager.Validate(_rules, out string? errorMessage)) {
+        if (!WorldFaqManager.Validate(_faq, out string? errorMessage)) {
             Snackbar.Add(errorMessage!, Severity.Error);
             return;
         }
 
-        await WorldFaqRepository.SaveAsync(_rules);
+        await WorldFaqRepository.SaveAsync(_faq);
         string json = await WorldFaqRepository.GetAsJsonStringAsync();
         await DownloadFile("index.json", json);
     }
 
     private async Task CopyWritingsJson() {
-        if (_posts is null) return;
+        if (_writings is null) return;
 
         string json = await WritingRepository.GetAsJsonStringAsync();
         await WebJs.CopyToClipboardAsync(json);
@@ -365,7 +361,7 @@
     }
 
     private async Task CopyRulesJson() {
-        if (_rules is null) return;
+        if (_faq is null) return;
 
         string json = await WorldFaqRepository.GetAsJsonStringAsync();
         await WebJs.CopyToClipboardAsync(json);
@@ -373,9 +369,9 @@
     }
 
     private async Task GenerateWritingStubs(bool writeToDisk) {
-        if (_selectedPost is null) return;
+        if (_selectedWriting is null) return;
 
-        (Dictionary<string, string> Stubs, bool WroteAll) result = await WritingManager.GenerateStubsAsync(_selectedPost, writeToDisk);
+        (Dictionary<string, string> Stubs, bool WroteAll) result = await WritingManager.GenerateStubsAsync(_selectedWriting, writeToDisk);
 
         if (writeToDisk) {
             Snackbar.Add(result.WroteAll ? Localizer[Shared.ContentManagerMarkdownStubsSaved] : Localizer[Shared.ContentManagerIndexSaveFailed], result.WroteAll ? Severity.Success : Severity.Error);
@@ -383,14 +379,14 @@
         }
 
         foreach (KeyValuePair<string, string> stub in result.Stubs) {
-            await DownloadFile($"{stub.Key}/{_selectedPost.MarkdownFileName}", stub.Value);
+            await DownloadFile($"{stub.Key}/{_selectedWriting.MarkdownFileName}", stub.Value);
         }
     }
 
     private async Task GenerateRuleStubs(bool writeToDisk) {
-        if (_selectedRule is null) return;
+        if (_selectedFaq is null) return;
 
-        (Dictionary<string, string> Stubs, bool WroteAll) result = await WorldFaqManager.GenerateStubsAsync(_selectedRule, writeToDisk);
+        (Dictionary<string, string> Stubs, bool WroteAll) result = await WorldFaqManager.GenerateStubsAsync(_selectedFaq, writeToDisk);
 
         if (writeToDisk) {
             Snackbar.Add(result.WroteAll ? Localizer[Shared.ContentManagerMarkdownStubsSaved] : Localizer[Shared.ContentManagerIndexSaveFailed], result.WroteAll ? Severity.Success : Severity.Error);
@@ -398,7 +394,7 @@
         }
 
         foreach (KeyValuePair<string, string> stub in result.Stubs) {
-            await DownloadFile($"{stub.Key}/{_selectedRule.MarkdownFileName}", stub.Value);
+            await DownloadFile($"{stub.Key}/{_selectedFaq.MarkdownFileName}", stub.Value);
         }
     }
 
@@ -443,7 +439,7 @@
     }
 
     private void ScheduleWritingAutoSave() {
-        if (!_autoSaveEnabled || _posts is null) return;
+        if (!_autoSaveEnabled || _writings is null) return;
 
         _articleAutoSaveCts?.Cancel();
         _articleAutoSaveCts = new CancellationTokenSource();
@@ -461,7 +457,7 @@
     }
 
     private void ScheduleRuleAutoSave() {
-        if (!_autoSaveEnabled || _rules is null) return;
+        if (!_autoSaveEnabled || _faq is null) return;
 
         _ruleAutoSaveCts?.Cancel();
         _ruleAutoSaveCts = new CancellationTokenSource();
@@ -497,9 +493,9 @@
     }
 
     private async Task<bool> SaveAllWritingsInternal(bool showFeedback) {
-        if (_posts is null) return false;
+        if (_writings is null) return false;
 
-        if (!WritingManager.Validate(_posts, out string? errorMessage)) {
+        if (!WritingManager.Validate(_writings, out string? errorMessage)) {
             _articleAutoSaveStatus = AutoSaveStatus.Paused;
             _articleAutoSaveError = errorMessage;
             if (showFeedback) {
@@ -508,7 +504,7 @@
             return false;
         }
 
-        bool success = await WritingRepository.SaveAsync(_posts);
+        bool success = await WritingRepository.SaveAsync(_writings);
         if (success) {
             _articleHasUnsavedChanges = false;
             _articleAutoSaveStatus = AutoSaveStatus.Saved;
@@ -530,9 +526,9 @@
     }
 
     private async Task<bool> SaveAllRulesInternal(bool showFeedback) {
-        if (_rules is null) return false;
+        if (_faq is null) return false;
 
-        if (!WorldFaqManager.Validate(_rules, out string? errorMessage)) {
+        if (!WorldFaqManager.Validate(_faq, out string? errorMessage)) {
             _ruleAutoSaveStatus = AutoSaveStatus.Paused;
             _ruleAutoSaveError = errorMessage;
             if (showFeedback) {
@@ -541,7 +537,7 @@
             return false;
         }
 
-        bool success = await WorldFaqRepository.SaveAsync(_rules);
+        bool success = await WorldFaqRepository.SaveAsync(_faq);
         if (success) {
             _ruleHasUnsavedChanges = false;
             _ruleAutoSaveStatus = AutoSaveStatus.Saved;

@@ -28,11 +28,7 @@
         <MudGrid Spacing="4">
             @foreach (ContactInfoItem contactInfo in ContactInfoProvider.GetContactInfos()) {
                 <MudItem xs="12">
-                    <MudButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="true"
-                               StartIcon="@contactInfo.Url" Href="@contactInfo.Url" Target="_blank"
-                               Class="py-4 card-glass">
-                        @contactInfo.Title
-                    </MudButton>
+                    <ContactInfoButon ContactInfo="@contactInfo" Class="py-4 card-glass" FullWidth/>
                 </MudItem>
             }
         </MudGrid>
