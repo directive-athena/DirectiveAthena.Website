@@ -2,6 +2,7 @@
 @* Imports
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @using DirectiveAthenaWeb.Components.Pages
+@using DirectiveAthenaWeb.DevServer.Layouts
 
 @namespace DirectiveAthenaWeb.DevServer
 @* ------------------------------------------------------------------------------------------------------------------ *@
@@ -62,11 +63,10 @@
     <HeadOutlet/>
 </head>
 <body>
-<WebsiteThemeProviders/>
 
 <Router AppAssembly="@typeof(AdminApp).Assembly" NotFoundPage="@typeof(NotFoundPage)">
     <Found Context="routeData">
-        <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)"/>
+        <RouteView RouteData="@routeData" DefaultLayout="@typeof(DevServerLayout)"/>
     </Found>
 </Router>
 
