@@ -9,7 +9,7 @@ namespace DirectiveAthenaWeb.Services.Localization;
 // ---------------------------------------------------------------------------------------------------------------------
 public interface ILocalizationProvider {
     LocalizationInfo DefaultLocalization { get; }
-    
+
     LocalizationInfo GetCurrentLocalization();
     IReadOnlyCollection<LocalizationInfo> GetSupportedLocalizations();
     bool TryGetLocalization(string cultureCode, [NotNullWhen(true)] out LocalizationInfo? config);

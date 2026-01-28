@@ -3,6 +3,7 @@
 // ---------------------------------------------------------------------------------------------------------------------
 using DirectiveAthenaWeb.Services.Localization;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using NSubstitute;
 using System.Globalization;
 
@@ -24,8 +25,8 @@ public class LocalizationProviderTests {
             // Arrange
             CultureInfo.CurrentUICulture = new CultureInfo("nl");
             var logger = Substitute.For<ILogger<LocalizationProvider>>();
-            var provider = new LocalizationProvider(logger);
-            
+            var provider = new LocalizationProvider(logger, BuildOptions());
+
             // Act
             LocalizationInfo result = provider.GetCurrentLocalization();
 
@@ -42,7 +43,7 @@ public class LocalizationProviderTests {
     public async Task TryGetLocalization_ReturnsExpectedResults() {
         // Arrange
         var logger = Substitute.For<ILogger<LocalizationProvider>>();
-        var provider = new LocalizationProvider(logger);
+        var provider = new LocalizationProvider(logger, BuildOptions());
 
         // Act
         bool found = provider.TryGetLocalization("en", out LocalizationInfo? en);
@@ -58,13 +59,18 @@ public class LocalizationProviderTests {
     [Test]
     public async Task IsDefaultCultureCode_MatchesDefault() {
         // Arrange
-        
+
         // Act
         var logger = Substitute.For<ILogger<LocalizationProvider>>();
-        var provider = new LocalizationProvider(logger);
+        var provider = new LocalizationProvider(logger, BuildOptions());
 
         // Assert
         await Assert.That(provider.IsDefaultCultureCode("en")).IsTrue();
         await Assert.That(provider.IsDefaultCultureCode("nl")).IsFalse();
     }
+
+    private static IOptions<LocalizationOptions> BuildOptions()
+        => Options.Create(new LocalizationOptions()
+            .AddLocalization("en", "English", "EN", "https://flagcdn.com/w40/us.png")
+            .AddLocalization("nl", "Nederlands", "NL", "https://flagcdn.com/w40/nl.png"));
 }

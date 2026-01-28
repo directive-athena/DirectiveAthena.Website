@@ -72,8 +72,8 @@
     <data name="Nav.Writings" xml:space="preserve">
     <value>Geschriften</value>
   </data>
-    <data name="Nav.WorldRules" xml:space="preserve">
-    <value>Wereldregels</value>
+    <data name="Nav.WorldFaq" xml:space="preserve">
+    <value>Wereld FAQ</value>
   </data>
     <data name="Nav.ContentManager" xml:space="preserve">
     <value>Contentbeheer</value>
@@ -144,17 +144,17 @@
     <data name="Home.Writings.Empty" xml:space="preserve">
     <value>Momenteel geen berichten beschikbaar. Kom later terug voor updates van het front.</value>
   </data>
-    <data name="Home.WorldRules.Title" xml:space="preserve">
-    <value>Wereldregels</value>
+    <data name="Home.WorldFaq.Title" xml:space="preserve">
+    <value>Wereld FAQ</value>
   </data>
-    <data name="Home.WorldRules.Subtitle" xml:space="preserve">
-    <value>Beperkingen en canonische ankers in een oogopslag.</value>
+    <data name="Home.WorldFaq.Subtitle" xml:space="preserve">
+    <value>Snelle antwoorden en canonische ankers in een oogopslag.</value>
   </data>
-    <data name="Home.WorldRules.ViewAll" xml:space="preserve">
-    <value>Bekijk alle regels</value>
+    <data name="Home.WorldFaq.ViewAll" xml:space="preserve">
+    <value>Bekijk alle FAQs</value>
   </data>
-    <data name="Home.WorldRules.Empty" xml:space="preserve">
-    <value>Nog geen regels beschikbaar voor de homepage.</value>
+    <data name="Home.WorldFaq.Empty" xml:space="preserve">
+    <value>Nog geen FAQs beschikbaar voor de homepage.</value>
   </data>
     <data name="Writings.Title" xml:space="preserve">
     <value>Geschriften - Directive Athena</value>
@@ -168,7 +168,7 @@
     <data name="Writings.Archive.AllPosts" xml:space="preserve">
     <value>Alle Berichten</value>
   </data>
-    <data name="Writings.Archive.ReadArticle" xml:space="preserve">
+    <data name="Writings.Archive.ReadWriting" xml:space="preserve">
     <value>Lees Artikel</value>
   </data>
     <data name="Writings.Detail.Back" xml:space="preserve">
@@ -201,23 +201,23 @@
     <data name="Writings.Detail.ShareReddit" xml:space="preserve">
     <value>Reddit</value>
   </data>
-    <data name="WorldRules.Title" xml:space="preserve">
-    <value>Wereldregels - Directive Athena</value>
+    <data name="WorldFaq.Title" xml:space="preserve">
+    <value>Wereld FAQ - Directive Athena</value>
   </data>
-    <data name="WorldRules.Heading" xml:space="preserve">
-    <value>Wereldregels</value>
+    <data name="WorldFaq.Heading" xml:space="preserve">
+    <value>Wereld FAQ</value>
   </data>
-    <data name="WorldRules.Subtitle" xml:space="preserve">
-    <value>Beperkingen, grenzen en canonische ankers voor de setting.</value>
+    <data name="WorldFaq.Subtitle" xml:space="preserve">
+    <value>Snelle antwoorden, grenzen en canonische ankers voor de setting.</value>
   </data>
-    <data name="WorldRules.All" xml:space="preserve">
-    <value>Alle regels</value>
+    <data name="WorldFaq.All" xml:space="preserve">
+    <value>Alle FAQs</value>
   </data>
-    <data name="WorldRules.Updated" xml:space="preserve">
+    <data name="WorldFaq.Updated" xml:space="preserve">
     <value>Bijgewerkt {0}</value>
   </data>
-    <data name="WorldRules.Empty" xml:space="preserve">
-    <value>Nog geen regels gepubliceerd. Voeg je eerste item toe om de canon te vormen.</value>
+    <data name="WorldFaq.Empty" xml:space="preserve">
+    <value>Nog geen FAQs gepubliceerd. Voeg je eerste item toe om de canon te vormen.</value>
   </data>
     <data name="ContentManager.Title" xml:space="preserve">
     <value>Contentbeheer - Directive Athena</value>
@@ -228,8 +228,8 @@
     <data name="ContentManager.Tab.Writings" xml:space="preserve">
     <value>Geschriften</value>
   </data>
-    <data name="ContentManager.Tab.WorldRules" xml:space="preserve">
-    <value>Wereldregels</value>
+    <data name="ContentManager.Tab.WorldFaq" xml:space="preserve">
+    <value>Wereld FAQ</value>
   </data>
     <data name="ContentManager.Tab.Tags" xml:space="preserve">
     <value>Tags</value>
@@ -516,7 +516,7 @@
     <data name="NotFound.GoHome" xml:space="preserve">
     <value>Ga naar home</value>
   </data>
-    <data name="NotFound.BrowseArticles" xml:space="preserve">
+    <data name="NotFound.BrowseWritings" xml:space="preserve">
     <value>Bekijk artikelen</value>
   </data>
     <data name="Story.Section2" xml:space="preserve">

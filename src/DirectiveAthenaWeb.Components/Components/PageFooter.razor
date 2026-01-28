@@ -28,11 +28,9 @@
                 </MudText>
             </MudItem>
             <MudItem xs="12" sm="6" Class="d-flex justify-sm-end align-center">
-                @foreach (ContactInfo contactInfo in ContactInfoProvider.GetContactInfos()) {
+                @foreach (ContactInfoItem contactInfo in ContactInfoProvider.GetContactInfos()) {
                     if (!contactInfo.IncludeInFooter) continue;
-
-                    <MudIconButton Icon="@contactInfo.Icon" Href="@contactInfo.Url" Target="_blank"
-                                   Color="Color.Inherit"/>
+                    <ContactInfoIconButon ContactInfo="@contactInfo"/>
                 }
             </MudItem>
         </MudGrid>

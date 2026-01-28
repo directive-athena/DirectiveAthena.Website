@@ -1,6 +1,7 @@
-// ---------------------------------------------------------------------------------------------------------------------
+﻿// ---------------------------------------------------------------------------------------------------------------------
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
+using DirectiveAthenaWeb.Services.Content;
 using System.Net;
 using System.Text;
 using DirectiveAthenaWeb.Services.ContentStorage;
@@ -41,7 +42,7 @@ public class R2ContentStorageTests {
         IMinioClient? minioClient,
         ILocalizationProvider? localizationProvider = null,
         HttpClient? httpClient = null,
-        string categoryFolder = "content/articles",
+        string categoryFolder = "content/writings",
         string publicBaseUrl = "https://cdn.example.com/"
     ) {
         localizationProvider ??= CreateLocalizationProvider("en");
@@ -57,6 +58,7 @@ public class R2ContentStorageTests {
             if (field is not null) {
                 return (T?)field.GetValue(instance);
             }
+
             type = type.BaseType;
         }
 
@@ -82,7 +84,7 @@ public class R2ContentStorageTests {
         R2ContentStorage storage = CreateStorage(options, minioClient);
 
         // Act
-        bool result = await storage.WriteFileAsync("content/articles/index.json", "{}");
+        bool result = await storage.WriteFileAsync("content/writings/index.json", "{}");
 
         // Assert
         await Assert.That(result).IsFalse();
@@ -95,7 +97,7 @@ public class R2ContentStorageTests {
         R2ContentStorage storage = CreateStorage(WriteEnabledOptions(), null);
 
         // Act
-        bool result = await storage.WriteFileAsync("content/articles/index.json", "{}");
+        bool result = await storage.WriteFileAsync("content/writings/index.json", "{}");
 
         // Assert
         await Assert.That(result).IsFalse();
@@ -112,12 +114,12 @@ public class R2ContentStorageTests {
         R2ContentStorage storage = CreateStorage(WriteEnabledOptions(), minioClient);
 
         // Act
-        bool result = await storage.WriteFileAsync("/content/articles/index.json", "{ \"ok\": true }");
+        bool result = await storage.WriteFileAsync("/content/writings/index.json", "{ \"ok\": true }");
 
         // Assert
         await Assert.That(result).IsTrue();
         await Assert.That(captured is not null).IsTrue();
-        await Assert.That(GetPrivateFieldValue<string>(captured!, "<ObjectName>k__BackingField")).IsEqualTo("content/articles/index.json");
+        await Assert.That(GetPrivateFieldValue<string>(captured!, "<ObjectName>k__BackingField")).IsEqualTo("content/writings/index.json");
         await Assert.That(GetPrivateFieldValue<string>(captured!, "<ContentType>k__BackingField")).IsEqualTo("application/json");
         await Assert.That(GetPrivateFieldValue<long>(captured!, "<ObjectSize>k__BackingField")).IsEqualTo(Encoding.UTF8.GetByteCount("{ \"ok\": true }"));
     }
@@ -133,7 +135,7 @@ public class R2ContentStorageTests {
         R2ContentStorage storage = CreateStorage(WriteEnabledOptions(), minioClient);
 
         // Act
-        bool result = await storage.WriteFileAsync("content/articles/en/post.md", "# Title");
+        bool result = await storage.WriteFileAsync("content/writings/en/post.md", "# Title");
 
         // Assert
         await Assert.That(result).IsTrue();
@@ -163,8 +165,8 @@ public class R2ContentStorageTests {
         // Assert
         await Assert.That(result).IsTrue();
         await Assert.That(keys.Count).IsEqualTo(2);
-        await Assert.That(keys.Any(key => key == "content/articles/en/post.md")).IsTrue();
-        await Assert.That(keys.Any(key => key == "content/articles/nl/post.md")).IsTrue();
+        await Assert.That(keys.Any(key => key == "content/writings/en/post.md")).IsTrue();
+        await Assert.That(keys.Any(key => key == "content/writings/nl/post.md")).IsTrue();
     }
 
     [Test]
@@ -214,7 +216,7 @@ public class R2ContentStorageTests {
         var storage = CreateStorage(options, null, httpClient: httpClient);
 
         // Act
-        bool result = await storage.WriteFileAsync("content/articles/en/post.md", "# Title");
+        bool result = await storage.WriteFileAsync("content/writings/en/post.md", "# Title");
 
         // Assert
         await Assert.That(result).IsTrue();

@@ -2,9 +2,13 @@
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
 using DirectiveAthenaWeb.Services;
+using DirectiveAthenaWeb.Services.Contact;
 using DirectiveAthenaWeb.Services.ContentStorage;
-using JetBrains.Annotations;
+using DirectiveAthenaWeb.Services.Localization;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.DependencyInjection;
 using MudBlazor.Services;
+using System.Net.Http;
 
 namespace DirectiveAthenaWeb.DevServer;
 // ---------------------------------------------------------------------------------------------------------------------
@@ -16,21 +20,29 @@ public static class Program {
         // Builder
         // -------------------------------------------------------------------------------------------------------------
         WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
-        builder.Services.Configure<R2StorageOptions>(builder.Configuration.GetSection("ContentStorage:R2"));
-        
         builder.Services.AddMudServices();
         builder.Services.AddLocalization();
         builder.Services.AddRazorComponents()
             .AddInteractiveServerComponents();
         builder.Services.AddHttpClient();
         builder.Services.AddScoped(sp => sp.GetRequiredService<IHttpClientFactory>().CreateClient());
-        builder.Services.AddWebsiteServices();
+        
         builder.Services.AddCors(options => {
             options.AddDefaultPolicy(policy => policy
                 .AllowAnyOrigin()
                 .AllowAnyHeader()
                 .AllowAnyMethod());
         });
+        
+        builder.Services.AddWebsiteServices();
+
+        builder.Services.Configure<R2StorageOptions>(builder.Configuration.GetSection("ContentStorage:R2"));
+        builder.Services.Configure<ContactInfoOptions>(builder.Configuration.GetSection("ContactInfo"));
+        builder.Services.Configure<LocalizationOptions>(builder.Configuration.GetSection("Localization"));
+
+        
+        builder.Services.AddWritingContent();
+        builder.Services.AddFaqContent();
 
         // -------------------------------------------------------------------------------------------------------------
         // App
@@ -52,6 +64,3 @@ public static class Program {
         app.Run();
     }
 }
-
-[UsedImplicitly] internal record ProxyUploadRequest(string Key, string Content, string ContentType);
-[UsedImplicitly] internal record ProxyDeleteRequest(string Key);

@@ -1,13 +1,13 @@
 name: Pull Request Tests
 
 on:
-  pull_request:
-    branches:
-      - '**'
+    pull_request:
+        branches:
+            - '**'
 
 jobs:
-  run-tests:
-    name: Run Multi-Platform Tests  
     # noinspection UndefinedAction
-    uses: ./.github/workflows/lib_testing.yml
-    secrets: inherit
+    run-tests:
+        name: Run Multi-Platform Tests
+        uses: ./.github/workflows/lib_testing.yml
+        secrets: inherit

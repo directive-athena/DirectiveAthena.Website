@@ -1,18 +1,17 @@
-// ---------------------------------------------------------------------------------------------------------------------
+﻿// ---------------------------------------------------------------------------------------------------------------------
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
+using DirectiveAthenaWeb.Content.Faq;
+using DirectiveAthenaWeb.Content.Writing;
 using DirectiveAthenaWeb.Services;
-using DirectiveAthenaWeb.Services.Articles;
 using DirectiveAthenaWeb.Services.Contact;
 using DirectiveAthenaWeb.Services.ContentStorage;
 using DirectiveAthenaWeb.Services.Js;
 using DirectiveAthenaWeb.Services.Localization;
-using DirectiveAthenaWeb.Services.WorldRules;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace DirectiveAthenaWebTests.Services;
-
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
@@ -24,23 +23,26 @@ public class ServiceCollectionExtensionsTests {
 
         // Act
         services.AddWebsiteServices();
+        
+        services.AddWritingContent();
+        services.AddFaqContent();
 
         // Assert
-        await Assert.That(services).Any(s => s.ServiceType == typeof(IArticleManager));
-        await Assert.That(services).Any(s => s.ServiceType == typeof(IArticleRepository));
-        await Assert.That(services).Any(s => s.ServiceType == typeof(IValidator<Article>));
-        await Assert.That(services).Any(s => s.ServiceType == typeof(IValidator<IEnumerable<Article>>));
-        
+        await Assert.That(services).Any(s => s.ServiceType == typeof(IWritingContentManager));
+        await Assert.That(services).Any(s => s.ServiceType == typeof(IWritingContentRepository));
+        await Assert.That(services).Any(s => s.ServiceType == typeof(IValidator<WritingContent>));
+        await Assert.That(services).Any(s => s.ServiceType == typeof(IValidator<IEnumerable<WritingContent>>));
+
         await Assert.That(services).Any(s => s.ServiceType == typeof(IContactInfoProvider));
         await Assert.That(services).Any(s => s.ServiceType == typeof(IContentStorageFactory));
         await Assert.That(services).Any(s => s.ServiceType == typeof(IDirectiveAthenaWebJs));
-        
+
         await Assert.That(services).Any(s => s.ServiceType == typeof(ILocalizationInitializer));
         await Assert.That(services).Any(s => s.ServiceType == typeof(ILocalizationProvider));
 
-        await Assert.That(services).Any(s => s.ServiceType == typeof(IWorldRuleManager));
-        await Assert.That(services).Any(s => s.ServiceType == typeof(IWorldRuleRepository));
-        await Assert.That(services).Any(s => s.ServiceType == typeof(IValidator<WorldRule>));
-        await Assert.That(services).Any(s => s.ServiceType == typeof(IValidator<IEnumerable<WorldRule>>));
+        await Assert.That(services).Any(s => s.ServiceType == typeof(IFaqContentManager));
+        await Assert.That(services).Any(s => s.ServiceType == typeof(IFaqContentRepository));
+        await Assert.That(services).Any(s => s.ServiceType == typeof(IValidator<FaqContent>));
+        await Assert.That(services).Any(s => s.ServiceType == typeof(IValidator<IEnumerable<FaqContent>>));
     }
 }

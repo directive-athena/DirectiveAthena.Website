@@ -1,12 +1,12 @@
 name: Run tests
 
 on:
-  workflow_call:
-    inputs:
-      ref:
-        description: Git ref to test
-        required: false
-        type: string
+    workflow_call:
+        inputs:
+            ref:
+                description: Git ref to test
+                required: false
+                type: string
 
 jobs:
   test:

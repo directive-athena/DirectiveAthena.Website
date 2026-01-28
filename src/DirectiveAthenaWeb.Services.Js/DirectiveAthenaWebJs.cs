@@ -28,8 +28,7 @@ public class DirectiveAthenaWebJs(IJSRuntime jsRuntime, ILogger<DirectiveAthenaW
         try {
             await jsRuntime.InvokeVoidAsync("downloadFile", cancellationToken, fileName, content);
         }
-        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested) {
-        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested) {}
         catch (Exception e) {
             logger.Error(e, "Failed to download file.");
         }
@@ -144,8 +143,7 @@ public class DirectiveAthenaWebJs(IJSRuntime jsRuntime, ILogger<DirectiveAthenaW
         try {
             await jsRuntime.InvokeVoidAsync("registerScrollListener", cancellationToken, dotNetHelper);
         }
-        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested) {
-        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested) {}
         catch (Exception e) {
             logger.Error(e, "Failed to register scroll listener.");
         }
@@ -155,8 +153,7 @@ public class DirectiveAthenaWebJs(IJSRuntime jsRuntime, ILogger<DirectiveAthenaW
         try {
             await jsRuntime.InvokeVoidAsync("scrollToElement", cancellationToken, elementId);
         }
-        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested) {
-        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested) {}
         catch (Exception e) {
             logger.Error(e, "Failed to scroll to element.");
         }
@@ -166,8 +163,7 @@ public class DirectiveAthenaWebJs(IJSRuntime jsRuntime, ILogger<DirectiveAthenaW
         try {
             await jsRuntime.InvokeVoidAsync("localStorage.setItem", cancellationToken, key, value);
         }
-        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested) {
-        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested) {}
         catch (Exception e) {
             logger.Error(e, "Failed to set localStorage item.");
         }

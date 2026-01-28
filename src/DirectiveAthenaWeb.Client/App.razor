@@ -3,7 +3,7 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @using DirectiveAthenaWeb.Components.Pages
 
-@namespace DirectiveAthenaWeb
+@namespace DirectiveAthenaWeb.Client
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Descriptors
 @* ------------------------------------------------------------------------------------------------------------------ *@
@@ -11,10 +11,10 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Html
 @* ------------------------------------------------------------------------------------------------------------------ *@
-<WebsiteThemeProviders />
-<MudPopoverProvider />
-<MudDialogProvider />
-<MudSnackbarProvider />
+<WebsiteThemeProviders/>
+<MudPopoverProvider/>
+<MudDialogProvider/>
+<MudSnackbarProvider/>
 
 <Router AppAssembly="@typeof(App).Assembly" NotFoundPage="typeof(NotFoundPage)">
     <Found Context="routeData">

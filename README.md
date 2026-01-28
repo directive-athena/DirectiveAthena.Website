@@ -1,10 +1,11 @@
-# Directive Athena Website
+﻿# Directive Athena Website
 
 Blazor WebAssembly site for Directive Athena. Built as a writing-first, sci-fi themed experience.
 
 ## About
 
-Directive Athena is a standalone website, not a library. This repo focuses on content, presentation, and a custom writing workflow with localization.
+Directive Athena is a standalone website, not a library. This repo focuses on content, presentation, and a custom
+writing workflow with localization.
 
 ## Features
 
@@ -26,19 +27,21 @@ Directive Athena is a standalone website, not a library. This repo focuses on co
 Use the Writings Manager locally:
 
 1. Run the site locally: `dotnet watch run`
-2. Open `http://localhost:5000/articles-manager`
+2. Open `http://localhost:5000/writings-manager`
 3. Create/edit posts, tags, and translations
 
 Where content lives:
 
-- Article index and localized markdown files live in the site content directory
+- Writing index and localized markdown files live in the site content directory
 - Tag and UI strings live in the localization resources
 
-Note: direct file writes use the browser File System Access API and are only available on `localhost`. In production, the manager offers download/copy workflows.
+Note: direct file writes use the browser File System Access API and are only available on `localhost`. In production,
+the manager offers download/copy workflows.
 
 ## Content Storage (R2)
 
-The public site reads content from a public R2 bucket. The `wwwroot/appsettings.json` file is generated during the GitHub Pages workflow and is not committed.
+The public site reads content from a public R2 bucket. The `wwwroot/appsettings.json` file is generated during the
+GitHub Pages workflow and is not committed.
 
 Public config shape:
 
@@ -73,13 +76,13 @@ Manager-only config (local file, not committed):
 ## Localization
 
 - UI strings and tag labels are stored in `.resx` files under `src/DirectiveAthenaWeb/Resources`.
-- Localized markdown files are resolved by culture code: `content/articles/{culture}/{file}`.
+- Localized markdown files are resolved by culture code: `content/writings/{culture}/{file}`.
 - User language selection is stored in `localStorage` and applied at startup.
 
 Adding a new culture:
 
 1. Add the culture to the supported localization list in the code
-2. Run locally and open `/articles-manager`
+2. Run locally and open `/writings-manager`
 3. The manager can generate missing localization files and stubs for new cultures
 
 ## Deployment

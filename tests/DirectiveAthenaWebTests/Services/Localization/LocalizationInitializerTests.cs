@@ -3,6 +3,7 @@
 // ---------------------------------------------------------------------------------------------------------------------
 using DirectiveAthenaWeb.Services.Localization;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using NSubstitute;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
@@ -28,11 +29,11 @@ public class LocalizationInitializerTests {
             var directiveAthenaWebJs = Substitute.For<IDirectiveAthenaWebJs>();
             directiveAthenaWebJs.GetLocalStorageItemAsync("culture", Arg.Any<CancellationToken>())
                 .Returns(new ValueTask<string?>("nl"));
-            
+
             var logger = Substitute.For<ILogger<LocalizationInitializer>>();
             var providerLogger = Substitute.For<ILogger<LocalizationProvider>>();
-            var initializer = new LocalizationInitializer(new LocalizationProvider(providerLogger), directiveAthenaWebJs, logger);
-            
+            var initializer = new LocalizationInitializer(new LocalizationProvider(providerLogger, BuildOptions()), directiveAthenaWebJs, logger);
+
             // Act
             await initializer.ApplyPreferredCultureAsync();
 
@@ -59,11 +60,11 @@ public class LocalizationInitializerTests {
 
             var logger = Substitute.For<ILogger<LocalizationInitializer>>();
             var providerLogger = Substitute.For<ILogger<LocalizationProvider>>();
-            var initializer = new LocalizationInitializer(new LocalizationProvider(providerLogger), directiveAthenaWebJs, logger);
+            var initializer = new LocalizationInitializer(new LocalizationProvider(providerLogger, BuildOptions()), directiveAthenaWebJs, logger);
 
             // Act
             await initializer.ApplyPreferredCultureAsync();
-            
+
             // Assert
             await Assert.That(CultureInfo.DefaultThreadCurrentUICulture?.TwoLetterISOLanguageName).IsEqualTo("en");
         }
@@ -73,4 +74,9 @@ public class LocalizationInitializerTests {
             CultureLock.Release();
         }
     }
+
+    private static IOptions<LocalizationOptions> BuildOptions()
+        => Options.Create(new LocalizationOptions()
+            .AddLocalization("en", "English", "EN", "https://flagcdn.com/w40/us.png")
+            .AddLocalization("nl", "Nederlands", "NL", "https://flagcdn.com/w40/nl.png"));
 }

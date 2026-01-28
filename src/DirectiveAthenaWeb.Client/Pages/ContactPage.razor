@@ -5,7 +5,7 @@
 @using DirectiveAthenaWeb.Services.Localization.Resources
 @using Microsoft.Extensions.Localization
 
-@namespace DirectiveAthenaWeb.Pages
+@namespace DirectiveAthenaWeb.Client.Pages
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Descriptors
 @* ------------------------------------------------------------------------------------------------------------------ *@
@@ -26,13 +26,9 @@
         </MudText>
 
         <MudGrid Spacing="4">
-            @foreach (ContactInfo contactInfo in ContactInfoProvider.GetContactInfos()) {
+            @foreach (ContactInfoItem contactInfo in ContactInfoProvider.GetContactInfos()) {
                 <MudItem xs="12">
-                    <MudButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="true"
-                               StartIcon="@contactInfo.Icon" Href="@contactInfo.Url" Target="_blank"
-                               Class="py-4 card-glass">
-                        @contactInfo.Title
-                    </MudButton>
+                    <ContactInfoButon ContactInfo="@contactInfo" Class="py-4 card-glass" FullWidth/>
                 </MudItem>
             }
         </MudGrid>
