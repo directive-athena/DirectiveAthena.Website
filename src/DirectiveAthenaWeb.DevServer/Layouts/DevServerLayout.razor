@@ -1,30 +1,18 @@
 ﻿@* ------------------------------------------------------------------------------------------------------------------ *@
 @* Imports
 @* ------------------------------------------------------------------------------------------------------------------ *@
-@using DirectiveAthenaWeb.Services.Localization.Resources
-
 @namespace DirectiveAthenaWeb.DevServer.Layouts
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Descriptors
 @* ------------------------------------------------------------------------------------------------------------------ *@
-@inject IStringLocalizer<Shared> Localizer
-
 @inherits LayoutComponentBase
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Html
 @* ------------------------------------------------------------------------------------------------------------------ *@
 <MudLayout Class="min-vh-100 d-flex flex-column">
     <BackgroundLayer/>
-
-    <MudAppBar Elevation="0" Class="appbar-glass scrolled" Fixed="true">
-        <MudSpacer/>
-        
-        <MudButton Variant="Variant.Text" Href="/" Class="brand-text">
-            @Localizer[Shared.BrandName]
-        </MudButton>
-
-        <MudSpacer/>
-    </MudAppBar>
+    
+    <NavBar IsStatic/>
     
     <MudMainContent Class="relative flex-grow-1 d-flex flex-column">
         <div class="flex-grow-1">
