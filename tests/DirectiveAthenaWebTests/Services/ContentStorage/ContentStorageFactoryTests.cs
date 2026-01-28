@@ -31,10 +31,10 @@ public class ContentStorageFactoryTests {
         var factory = new ContentStorageFactory(localizationProvider, options, httpClient, loggerFactory);
 
         // Act
-        IContentStorage storage = factory.ForCategory(ContentCategory.Writing);
+        IContentStorage storage = factory.ForCategory("writing");
 
         // Assert
-        await Assert.That(storage.IndexContentPath).IsEqualTo("https://cdn.example.com/assets/content/writings/index.json");
+        await Assert.That(storage.IndexContentPath).IsEqualTo("https://cdn.example.com/assets/content/writing/index.json");
     }
 
     [Test]
@@ -55,9 +55,9 @@ public class ContentStorageFactoryTests {
         var factory = new ContentStorageFactory(localizationProvider, options, httpClient, loggerFactory);
 
         // Act
-        IContentStorage storage = factory.ForCategory(ContentCategory.Faq);
+        IContentStorage storage = factory.ForCategory("faq");
 
         // Assert
-        await Assert.That(storage.IndexContentPath).IsEqualTo("https://cdn.example.com/assets/content/world-faq/index.json");
+        await Assert.That(storage.IndexContentPath).IsEqualTo("https://cdn.example.com/assets/content/faq/index.json");
     }
 }

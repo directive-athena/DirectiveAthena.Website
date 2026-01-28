@@ -31,7 +31,7 @@ public class WritingContentManagerTests {
 
     private static IContentStorageFactory CreateStorageFactory(IContentStorage storage) {
         var factory = Substitute.For<IContentStorageFactory>();
-        factory.ForCategory(ContentCategory.Writing).Returns(storage);
+        factory.ForCategory("writing").Returns(storage);
         return factory;
     }
 

@@ -1,7 +1,6 @@
 ﻿// ---------------------------------------------------------------------------------------------------------------------
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
-using DirectiveAthenaWeb.Services.ContentStorage;
 using JetBrains.Annotations;
 
 // ReSharper disable once CheckNamespace
@@ -14,7 +13,7 @@ public static class ServiceCollectionExtensions {
         [UsedImplicitly] public IServiceCollection AddWritingContent() {
             services.RegisterServicesFromDirectiveAthenaWebContentWriting();
 
-            services.AddContentStorage(ContentCategory.Writing);
+            services.AddContentStorage("writing");
 
             return services;
         }

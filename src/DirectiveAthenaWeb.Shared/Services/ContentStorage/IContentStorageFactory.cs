@@ -6,5 +6,5 @@ namespace DirectiveAthenaWeb.Services.ContentStorage;
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
 public interface IContentStorageFactory {
-    IContentStorage ForCategory(ContentCategory category);
+    IContentStorage ForCategory(string category);
 }

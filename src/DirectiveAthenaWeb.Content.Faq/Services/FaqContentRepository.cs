@@ -13,6 +13,6 @@ namespace DirectiveAthenaWeb.Content.Faq.Services;
 // ---------------------------------------------------------------------------------------------------------------------
 [InjectableScoped<IFaqContentRepository>]
 public class FaqContentRepository(
-    [FromKeyedServices(ContentCategory.Faq)] IContentStorage storage,
+    [FromKeyedServices("faq")] IContentStorage storage,
     ILogger<FaqContentRepository> logger
 ) : ContentRepository<FaqContent>(storage, logger), IFaqContentRepository;

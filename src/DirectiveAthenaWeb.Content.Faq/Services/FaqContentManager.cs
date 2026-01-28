@@ -20,7 +20,7 @@ public class FaqContentManager(
     IValidator<IEnumerable<FaqContent>> validator,
     ILogger<FaqContentManager> logger
 ) : IFaqContentManager {
-    private readonly IContentStorage _storage = storageFactory.ForCategory(ContentCategory.Faq);
+    private readonly IContentStorage _storage = storageFactory.ForCategory("faq");
 
     public string GetLocalizedQuestion(FaqContent rule)
         => GetLocalizedValue(rule.Question);

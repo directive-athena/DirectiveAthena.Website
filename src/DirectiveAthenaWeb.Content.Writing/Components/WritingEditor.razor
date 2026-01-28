@@ -130,7 +130,7 @@
     private IContentStorage _storage = null!;
 
     protected override void OnInitialized() {
-        _storage = ContentStorageFactory.ForCategory(ContentCategory.Writing);
+        _storage = ContentStorageFactory.ForCategory("writing");
     }
 
     // -----------------------------------------------------------------------------------------------------------------

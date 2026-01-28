@@ -10,10 +10,17 @@ namespace Microsoft.Extensions.DependencyInjection;
 // ---------------------------------------------------------------------------------------------------------------------
 public static class ServiceCollectionExtensions {
     extension(IServiceCollection services) {
-        public void AddContentStorage(ContentCategory category)
+        public void AddContentStorage(string category)
             => services.AddKeyedScoped<IContentStorage>(
                 category,
-                (provider, key) => provider.GetRequiredService<IContentStorageFactory>().ForCategory((ContentCategory)(key ?? throw new ArgumentNullException(nameof(key))))
+                static (provider, key) => {
+                    string? category = key as string;
+                    ArgumentNullException.ThrowIfNull(category);
+                    
+                    var factory = provider.GetRequiredService<IContentStorageFactory>();
+                    return factory.ForCategory(category.ToLowerInvariant());
+                }
+                    
             );
     }
 

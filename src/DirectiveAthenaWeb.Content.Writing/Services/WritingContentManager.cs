@@ -20,7 +20,7 @@ public class WritingContentManager(
     IValidator<IEnumerable<WritingContent>> validator,
     ILogger<WritingContentManager> logger
 ) : IWritingContentManager {
-    private readonly IContentStorage _storage = storageFactory.ForCategory(ContentCategory.Writing);
+    private readonly IContentStorage _storage = storageFactory.ForCategory("writing");
 
     public string GetLocalizedTitle(WritingContent article)
         => GetLocalizedValue(article.Title);

@@ -13,6 +13,6 @@ namespace DirectiveAthenaWeb.Content.Writing.Services;
 // ---------------------------------------------------------------------------------------------------------------------
 [InjectableScoped<IWritingContentRepository>]
 public class WritingContentRepository(
-    [FromKeyedServices(ContentCategory.Writing)] IContentStorage storage,
+    [FromKeyedServices("writing")] IContentStorage storage,
     ILogger<WritingContentRepository> logger
 ) : ContentRepository<WritingContent>(storage, logger), IWritingContentRepository;

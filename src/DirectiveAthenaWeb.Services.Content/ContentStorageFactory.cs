@@ -22,8 +22,8 @@ public class ContentStorageFactory(
     private const string ContentRoot = "content";
     private static bool _browserWarningLogged;
 
-    public IContentStorage ForCategory(ContentCategory category) {
-        string folder = GetCategoryFolder(category);
+    public IContentStorage ForCategory(string category) {
+        string folder = Path.Combine(ContentRoot, category).Replace('\\', '/');
         ILogger r2Logger = loggerFactory.CreateLogger<R2ContentStorage>();
         r2Logger.Debug("Creating R2 content storage for {Category} at {Folder}.", category, folder);
 
@@ -36,14 +36,7 @@ public class ContentStorageFactory(
             r2Logger
         );
     }
-
-    private static string GetCategoryFolder(ContentCategory category)
-        => category switch {
-            ContentCategory.Writing => $"{ContentRoot}/writings",
-            ContentCategory.Faq => $"{ContentRoot}/world-faq",
-            _ => throw new ArgumentOutOfRangeException(nameof(category), category, @"Unsupported content category.")
-        };
-
+    
     private static Uri BuildPublicBaseUri(R2StorageOptions options, ILogger logger) {
         if (string.IsNullOrWhiteSpace(options.PublicBaseUrl)) {
             logger.Warning("R2 public base URL is missing; content reads may fail.");
