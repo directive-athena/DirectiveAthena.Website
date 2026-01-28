@@ -43,7 +43,7 @@
             <feGaussianBlur stdDeviation="40"/>
         </filter>
 
-        <!-- Logo Gradients (Extracted from logo.svg) -->
+        <!-- Logo Gradients (Extracted from logo-color.svg) -->
         <linearGradient id="logo-silver" x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0" stop-color="#fff"/>
             <stop offset="1" stop-color="#d9d9d9"/>
