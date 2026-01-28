@@ -16,32 +16,43 @@
            Variant="@DrawerVariant.Temporary" Class="drawer-glass">
     <div class="pa-4 d-flex flex-column align-center">
         <MudImage Src="assets/logo-color.svg" Width="64" Height="64" Alt="Logo" Class="mb-4"/>
-        <MudText Typo="Typo.h6" Class="mb-8">@Localizer[Shared.BrandName]</MudText>
+        <MudText Typo="Typo.h6" Class="mb-4">@Localizer[Shared.BrandName]</MudText>
     </div>
-    <MudNavMenu>
-        <MudStack Spacing="3">
-            <MudNavLink Href="/" Match="NavLinkMatch.All"
-                        Icon="@Icons.Material.Filled.Home">@Localizer[Shared.NavHome]</MudNavLink>
-            <MudNavLink Href="/story" Icon="@Icons.Material.Filled.AutoStories">@Localizer[Shared.NavStory]</MudNavLink>
-            <MudNavLink Href="/writings"
-                        Icon="@Icons.Material.Filled.Article">@Localizer[Shared.NavWritings]</MudNavLink>
-            <MudNavLink Href="/world-faq"
-                        Icon="@Icons.Material.Filled.Rule">@Localizer[Shared.NavWorldFaq]</MudNavLink>
+    <MudNavMenu Style="height: 100%; display: flex; flex-direction: column;">
+        <MudNavLink Href="/" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">
+            @Localizer[Shared.NavHome]
+        </MudNavLink>
+        
+        <MudNavLink Href="/story" Icon="@Icons.Material.Filled.AutoStories">
+            @Localizer[Shared.NavStory]
+        </MudNavLink>
+        
+        <MudNavLink Href="/writings" Icon="@Icons.Material.Filled.Article">
+            @Localizer[Shared.NavWritings]
+        </MudNavLink>
+        
+        <MudNavLink Href="/world-faq" Icon="@Icons.Material.Filled.Rule">
+            @Localizer[Shared.NavWorldFaq]
+        </MudNavLink>
 
-            @{
-                #if DEBUG
-                <MudNavLink Href="/manager"
-                            Icon="@Icons.Material.Filled.Settings">@Localizer[Shared.NavContentManager]</MudNavLink>
-                #endif
-            }
+        <MudNavLink Href="/contact" Icon="@Icons.Material.Filled.ContactSupport">
+            @Localizer[Shared.NavContact]
+        </MudNavLink>
 
-            <MudNavLink Href="/contact"
-                        Icon="@Icons.Material.Filled.ContactSupport">@Localizer[Shared.NavContact]</MudNavLink>
+        <div class="flex-grow-1"></div>
 
-            <div class="pa-2 flex justify-center">
-                <CultureSelector/>
-            </div>
-        </MudStack>
+        @{
+            #if DEBUG
+            <!--suppress CssUnresolvedCustomProperty -->
+            <MudNavLink Href="/manager" Icon="@Icons.Material.Filled.Settings" Style="color: var(--mud-palette-secondary);" IconColor="Color.Secondary" >
+                @Localizer[Shared.NavContentManager]
+            </MudNavLink>
+            #endif
+        }
+
+        <div class="pa-2 flex justify-center">
+            <CultureSelector/>
+        </div>
     </MudNavMenu>
 </MudDrawer>
 
