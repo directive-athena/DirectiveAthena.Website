@@ -46,6 +46,14 @@ public class WritingContentManager(
             logger.Debug("Fetching markdown for article {Id} at {Path}.", article.Id, path);
             return await http.GetStringAsync(path, ct);
         }
+        catch (OperationCanceledException) when (ct.IsCancellationRequested) {
+            logger.Debug("Markdown fetch canceled for article {Id} ({Locale}).", article.Id, locale);
+            return string.Empty;
+        }
+        catch (TaskCanceledException) {
+            logger.Warning("Markdown fetch timed out for article {Id} ({Locale}).", article.Id, locale);
+            return string.Empty;
+        }
         catch (Exception ex) {
             logger.Warning(ex, "Failed to fetch markdown for article {Id} ({Locale}).", article.Id, locale);
             return string.Empty;

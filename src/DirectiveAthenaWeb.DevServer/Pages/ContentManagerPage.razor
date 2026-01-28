@@ -3,6 +3,7 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @using DirectiveAthenaWeb.Content.Faq
 @using DirectiveAthenaWeb.Content.Writing
+@using DirectiveAthenaWeb.DevServer.Layouts
 @using DirectiveAthenaWeb.Services.Localization.Resources
 @using DirectiveAthenaWeb.Services.Content
 @using System.Threading
@@ -24,11 +25,13 @@
 @inherits WebsiteComponentBase
 
 @rendermode RenderMode.InteractiveServer
+@layout DevServerLayout
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Html
 @* ------------------------------------------------------------------------------------------------------------------ *@
 <PageTitle>@Localizer[Shared.ContentManagerTitle]</PageTitle>
 
+<WebsiteThemeProviders/>
 <MudPopoverProvider/>
 <MudDialogProvider/>
 <MudSnackbarProvider/>

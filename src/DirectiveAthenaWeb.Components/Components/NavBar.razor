@@ -12,16 +12,18 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Html
 @* ------------------------------------------------------------------------------------------------------------------ *@
-<MudAppBar Elevation="@(IsScrolled ? 1 : 0)"
-           Class="@(IsScrolled ? "appbar-glass scrolled" : "appbar-glass")"
+<MudAppBar Elevation="@(IsScrolled || IsStatic ? 1 : 0)"
+           Class="@(IsScrolled || IsStatic ? "appbar-glass scrolled" : "appbar-glass")"
            Fixed="true">
 
-    <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start"
-                   OnClick="@OnMenuClick" Class="mr-2"/>
-
+    @if (OnMenuClick.HasDelegate) {
+        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start"
+                       OnClick="@OnMenuClick" Class="mr-2"/>
+    }
+    
     <MudImage Src="assets/logo-whiteShaded.svg" Width="32" Height="32" Alt="Logo" Class="mr-3"/>
 
-    <MudButton Variant="Variant.Text" Href="/" Class="@(IsScrolled ? "brand-text d-none d-sm-flex" : "brand-text")">
+    <MudButton Variant="Variant.Text" Href="/" Class="@(IsScrolled || IsStatic ? "brand-text d-none d-sm-flex" : "brand-text")">
         @Localizer[Shared.BrandName]
     </MudButton>
 
@@ -35,6 +37,7 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 
 @code {
+    [Parameter] public bool IsStatic { get; set; }
     [Parameter] public bool IsScrolled { get; set; }
     [Parameter] public EventCallback OnMenuClick { get; set; }
 }

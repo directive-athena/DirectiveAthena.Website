@@ -1,23 +1,36 @@
 ﻿@* ------------------------------------------------------------------------------------------------------------------ *@
 @* Imports
 @* ------------------------------------------------------------------------------------------------------------------ *@
-@using DirectiveAthenaWeb.Components.Pages
+@using DirectiveAthenaWeb.Components
 
-@namespace DirectiveAthenaWeb.Client
+@namespace DirectiveAthenaWeb.Components.Layouts
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Descriptors
 @* ------------------------------------------------------------------------------------------------------------------ *@
-
+@inherits LayoutComponentBase
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Html
 @* ------------------------------------------------------------------------------------------------------------------ *@
-<Router AppAssembly="@typeof(App).Assembly" NotFoundPage="typeof(NotFoundPage)">
-    <Found Context="routeData">
-        <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)"/>
-    </Found>
-</Router>
+<WebsiteThemeProviders/>
+<MudPopoverProvider/>
+<MudDialogProvider/>
+<MudSnackbarProvider/>
+
+<MudLayout Class="min-vh-100 d-flex flex-column">
+    <BackgroundLayer/>
+    
+    <NavBar IsStatic/>
+
+    <MudMainContent Class="relative flex-grow-1 d-flex flex-column">
+        <div class="flex-grow-1">
+            @Body
+        </div>
+    </MudMainContent>
+</MudLayout>
 
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Code
 @* ------------------------------------------------------------------------------------------------------------------ *@
+@code {
 
+}
