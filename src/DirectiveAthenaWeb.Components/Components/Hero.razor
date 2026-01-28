@@ -15,26 +15,44 @@
 <section id="hero" class="d-flex flex-column align-center justify-center min-vh-100 relative overflow-hidden">
     <MudContainer MaxWidth="MaxWidth.Large" Class="d-flex flex-column align-center justify-center py-16 z-10">
         <div class="logo-glow mb-12">
-            <MudImage Src="assets/logo.svg" Alt="Directive Athena Logo" Elevation="0"
-                      Style="max-width: 640px; width: 100%;"/>
+            <MudImage Src="assets/logo-color.svg" Alt="Directive Athena Logo" Elevation="0" Style="max-width: 360px; width: 100%;"/>
         </div>
-        <MudText Typo="Typo.h1" Align="Align.Center" Class="fade-in mb-4">@Localizer[Shared.HomeHeroTitle]</MudText>
-        <MudText Typo="Typo.h4" Align="Align.Center" Class="fade-in text-secondary mb-2"
-                 Style="animation-delay: 0.2s">@Localizer[Shared.HomeHeroSubtitle]</MudText>
+
+        <MudText Typo="Typo.h1" Align="Align.Center" Class="fade-in mb-4">
+            @Localizer[Shared.HomeHeroTitle]
+        </MudText>
+
+        <MudText Typo="Typo.h4" Align="Align.Center" Class="fade-in text-secondary mb-2" Style="animation-delay: 0.2s">
+            @Localizer[Shared.HomeHeroSubtitle]
+        </MudText>
+
         <MudText Typo="Typo.body1" Align="Align.Center" Class="fade-in text-secondary mb-10 opacity-70"
                  Style="animation-delay: 0.3s; max-width: 600px;">
             @Localizer[Shared.HomeHeroBody]
         </MudText>
+
         <div class="d-flex flex-wrap justify-center gap-6 fade-in" style="animation-delay: 0.4s">
-            <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Large" Href="/story"
-                       Class="px-8 py-3">@Localizer[Shared.HomeHeroExplore]</MudButton>
-            <MudButton Variant="Variant.Outlined" Color="Color.Secondary" Size="Size.Large" Href="/writings"
-                       Class="px-8 py-3">@Localizer[Shared.HomeHeroRead]</MudButton>
+            <MudButton Variant="Variant.Filled"
+                       Color="Color.Primary"
+                       Size="Size.Large"
+                       Href="/story"
+                       Class="px-8 py-3">
+                @Localizer[Shared.HomeHeroExplore]
+            </MudButton>
+            <MudButton Variant="Variant.Outlined"
+                       Color="Color.Secondary"
+                       Size="Size.Large"
+                       Href="/writings"
+                       Class="px-8 py-3">
+                @Localizer[Shared.HomeHeroRead]
+            </MudButton>
         </div>
     </MudContainer>
+    
     <div class="hero-scroll-indicator">
         <MudIcon Icon="@Icons.Material.Filled.KeyboardArrowDown" Size="Size.Large"/>
     </div>
+
 </section>
 
 @* ------------------------------------------------------------------------------------------------------------------ *@
