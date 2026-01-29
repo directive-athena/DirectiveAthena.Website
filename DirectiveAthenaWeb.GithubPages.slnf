@@ -1,20 +1,24 @@
 ﻿{
-  "solution": {
-    "path": "DirectiveAthenaWeb.slnx",
-    "projects": [
-      "src\\DirectiveAthenaWeb.Client\\DirectiveAthenaWeb.Client.csproj",
-      "src\\DirectiveAthenaWeb.Components\\DirectiveAthenaWeb.Components.csproj",
-      "src\\DirectiveAthenaWeb.Content.Faq\\DirectiveAthenaWeb.Content.Faq.csproj",
-      "src\\DirectiveAthenaWeb.Content.Writings\\DirectiveAthenaWeb.Content.Writings.csproj",
-      "src\\DirectiveAthenaWeb.Services.Content\\DirectiveAthenaWeb.Services.Content.csproj",
-      "src\\DirectiveAthenaWeb.Services.Js\\DirectiveAthenaWeb.Services.Js.csproj",
-      "src\\DirectiveAthenaWeb.Services.Localization\\DirectiveAthenaWeb.Services.Localization.csproj",
-      "src\\DirectiveAthenaWeb.Services\\DirectiveAthenaWeb.Services.csproj",
-      "src\\DirectiveAthenaWeb.Shared\\DirectiveAthenaWeb.Shared.csproj",
-        
-      "tests\\DirectiveAthenaWebTests\\DirectiveAthenaWebTests.csproj",
-      "tests\\DirectiveAthenaWebTests.Content.Faq\\DirectiveAthenaWebTests.Content.Faq.csproj",
-      "tests\\DirectiveAthenaWebTests.Content.Writing\\DirectiveAthenaWebTests.Content.Writing.csproj"
-    ]
-  }
+    "solution": {
+        "path": "DirectiveAthenaWeb.slnx",
+        "projects": [
+            "src\\DirectiveAthenaWeb.Content.Faq\\DirectiveAthenaWeb.Content.Faq.csproj",
+            "src\\DirectiveAthenaWeb.Content.Note\\DirectiveAthenaWeb.Content.Note.csproj",
+            "src\\DirectiveAthenaWeb.Content.Story\\DirectiveAthenaWeb.Content.Story.csproj",
+            
+            "src\\DirectiveAthenaWeb.Services.Content\\DirectiveAthenaWeb.Services.Content.csproj",
+            "src\\DirectiveAthenaWeb.Services.Js\\DirectiveAthenaWeb.Services.Js.csproj",
+            "src\\DirectiveAthenaWeb.Services.Localization\\DirectiveAthenaWeb.Services.Localization.csproj",
+            "src\\DirectiveAthenaWeb.Services\\DirectiveAthenaWeb.Services.csproj",
+
+            "src\\DirectiveAthenaWeb.Client\\DirectiveAthenaWeb.Client.csproj",
+            "src\\DirectiveAthenaWeb.Components\\DirectiveAthenaWeb.Components.csproj",
+            "src\\DirectiveAthenaWeb.Shared\\DirectiveAthenaWeb.Shared.csproj",
+            
+            "tests\\DirectiveAthenaWebTests\\DirectiveAthenaWebTests.csproj",
+            "tests\\DirectiveAthenaWebTests.Content.Faq\\DirectiveAthenaWebTests.Content.Faq.csproj",
+            "tests\\DirectiveAthenaWebTests.Content.Note\\DirectiveAthenaWebTests.Content.Note.csproj",
+            "tests\\DirectiveAthenaWebTests.Content.Story\\DirectiveAthenaWebTests.Content.Story.csproj"
+        ]
+    }
 }

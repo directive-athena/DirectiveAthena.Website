@@ -5,10 +5,7 @@ using DirectiveAthenaWeb.Services;
 using DirectiveAthenaWeb.Services.Contact;
 using DirectiveAthenaWeb.Services.ContentStorage;
 using DirectiveAthenaWeb.Services.Localization;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.DependencyInjection;
 using MudBlazor.Services;
-using System.Net.Http;
 
 namespace DirectiveAthenaWeb.DevServer;
 // ---------------------------------------------------------------------------------------------------------------------
