@@ -1,0 +1,166 @@
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Imports
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@using DirectiveAthenaWeb.Services.ContentStorage
+@using DirectiveAthenaWeb.Services.Localization
+@using DirectiveAthenaWeb.Services.Localization.Resources
+@using Microsoft.Extensions.Localization
+
+@namespace DirectiveAthenaWeb.Components
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Descriptors
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@inject IStringLocalizer<Shared> Localizer
+
+@inherits WebsiteComponentBase
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Html
+@* ------------------------------------------------------------------------------------------------------------------ *@
+<MudPaper Class="pa-6 card-glass no-hover">
+    <div class="d-flex justify-space-between align-center mb-6">
+        <MudText Typo="Typo.h5">@Title</MudText>
+        <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error"
+                       OnClick="@OnDelete"/>
+    </div>
+
+    <MudGrid>
+        @if (HeaderFields is not null) {
+            @HeaderFields
+        }
+
+        @if (LocalizedFields is not null) {
+            foreach (LocalizationInfo culture in LocalizationProvider.GetSupportedLocalizations()) {
+                LocalizedFields(culture);
+            }
+        }
+
+        <MudItem xs="12">
+            <MudDivider Class="my-4"/>
+            <MudTextField Value="@MarkdownFileName"
+                          Label="@string.Format(Localizer[Shared.EditorMarkdownFileLabel], MarkdownFileLabelExample)"
+                          Required="true" ReadOnly="true"
+                          HelperText="@Localizer[Shared.EditorMarkdownFileHelper]"/>
+        </MudItem>
+
+        <MudItem xs="12">
+            <MudDivider Class="my-4"/>
+    <MudText Typo="Typo.subtitle1" Color="Color.Primary">@Localizer[Shared.EditorTagsTitle]</MudText>
+    <div class="d-flex flex-wrap gap-2 mb-2">
+        @foreach (string tag in Tags) {
+            <MudChip T="string" OnClose="@(() => RemoveTag(tag))" Color="Color.Secondary"
+                     Variant="Variant.Filled">@tag</MudChip>
+        }
+    </div>
+    <div class="d-flex gap-2">
+        <MudAutocomplete T="string" @bind-Value="_newTag" Label="@Localizer[Shared.EditorAddTag]"
+                         SearchFunc="@SearchTags" MinCharacters="0" OpenOnFocus="true"
+                         Clearable="true" CoerceText="true" OnKeyDown="@OnTagKey"/>
+        <MudIconButton Icon="@Icons.Material.Filled.Add" OnClick="@AddTag"/>
+    </div>
+    <MudText Typo="Typo.caption" Class="mt-1 d-block">
+        @Localizer[Shared.EditorTagsHint]
+    </MudText>
+        </MudItem>
+
+        <MudItem xs="12">
+            <MudDivider Class="my-4"/>
+            <LocalizedMarkdownEditor Title="@Localizer[Shared.MarkdownLabel]"
+                                     FileName="@MarkdownFileName"
+                                     Storage="@Storage"
+                                     LoadContentAsync="@LoadContentAsync"
+                                     BuildDefaultContent="@BuildDefaultContent"/>
+        </MudItem>
+
+        <MudItem xs="12" Class="mt-4">
+            <div class="d-flex gap-2">
+                <MudButton Variant="Variant.Filled" Color="Color.Info"
+                           OnClick="@(() => OnGenerateStubs.InvokeAsync(true))"
+                           StartIcon="@Icons.Material.Filled.NoteAdd">
+                    @Localizer[Shared.ContentManagerMarkdownStubsSaveDisk]
+                </MudButton>
+                <MudButton Variant="Variant.Filled" Color="Color.Info"
+                           OnClick="@(() => OnGenerateStubs.InvokeAsync(false))"
+                           StartIcon="@Icons.Material.Filled.Download">
+                    @Localizer[Shared.ContentManagerMarkdownStubsDownload]
+                </MudButton>
+            </div>
+        </MudItem>
+    </MudGrid>
+</MudPaper>
+
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Code
+@* ------------------------------------------------------------------------------------------------------------------ *@
+
+@code {
+    [Parameter] public string Title { get; set; } = "";
+    [Parameter] public EventCallback OnDelete { get; set; }
+    [Parameter] public RenderFragment? HeaderFields { get; set; }
+    [Parameter] public RenderFragment<LocalizationInfo>? LocalizedFields { get; set; }
+    [Parameter, EditorRequired] public string MarkdownFileName { get; set; } = "";
+    [Parameter, EditorRequired] public string MarkdownFileLabelExample { get; set; } = "";
+    [Parameter, EditorRequired] public IContentStorage Storage { get; set; } = null!;
+    [Parameter, EditorRequired] public Func<string, Task<string>> LoadContentAsync { get; set; } = null!;
+    [Parameter, EditorRequired] public Func<string, string> BuildDefaultContent { get; set; } = null!;
+    [Parameter, EditorRequired] public ICollection<string> Tags { get; set; } = null!;
+    [Parameter] public IEnumerable<string> TagSuggestions { get; set; } = [];
+    [Parameter] public EventCallback<bool> OnGenerateStubs { get; set; }
+    [Parameter] public EventCallback OnTagsChanged { get; set; }
+    [Parameter] public EventCallback OnContentChanged { get; set; }
+    [Parameter] public Action? TouchLastModified { get; set; }
+
+    private string _newTag = "";
+
+    private void AddTag() {
+        if (string.IsNullOrWhiteSpace(_newTag)) return;
+
+        string trimmedTag = _newTag.Trim();
+        if (Tags.Contains(trimmedTag)) {
+            _newTag = "";
+            return;
+        }
+
+        Tags.Add(trimmedTag);
+        TouchLastModified?.Invoke();
+        _newTag = "";
+        NotifyTagsChanged();
+        NotifyContentChanged();
+    }
+
+    private void RemoveTag(string tag) {
+        Tags.Remove(tag);
+        TouchLastModified?.Invoke();
+        NotifyTagsChanged();
+        NotifyContentChanged();
+    }
+
+    private void OnTagKey(KeyboardEventArgs e) {
+        if (e.Key == "Enter") AddTag();
+    }
+
+    private Task<IEnumerable<string>> SearchTags(string value, CancellationToken token) {
+        IEnumerable<string> suggestions = TagSuggestions;
+        if (!string.IsNullOrWhiteSpace(value)) {
+            suggestions = suggestions.Where(tag => tag.Contains(value, StringComparison.OrdinalIgnoreCase));
+        }
+
+        IEnumerable<string> results = suggestions
+            .Where(tag => !Tags.Contains(tag, StringComparer.OrdinalIgnoreCase))
+            .OrderBy(tag => tag)
+            .ToList();
+
+        return Task.FromResult(results);
+    }
+
+    private void NotifyTagsChanged() {
+        if (OnTagsChanged.HasDelegate) {
+            _ = OnTagsChanged.InvokeAsync();
+        }
+    }
+
+    private void NotifyContentChanged() {
+        if (OnContentChanged.HasDelegate) {
+            _ = OnContentChanged.InvokeAsync();
+        }
+    }
+}
