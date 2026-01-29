@@ -1,6 +1,6 @@
 .hero-scroll-indicator {
-    margin-top: 3rem;
-    padding-bottom: 1rem;
+    position: absolute;
+    bottom: 2rem;
     left: 50%;
     transform: translateX(-50%);
     animation: bounce 2s infinite;
