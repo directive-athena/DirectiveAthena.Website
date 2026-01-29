@@ -13,41 +13,15 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Html
 @* ------------------------------------------------------------------------------------------------------------------ *@
-<MudPaper Class="pa-4 card-glass mb-4">
-    <div class="d-flex justify-space-between align-center mb-4">
-        <MudText Typo="Typo.h6">@Localizer[Shared.ListStories]</MudText>
-        <MudIconButton Icon="@Icons.Material.Filled.Add" Color="Color.Primary" OnClick="@OnCreateStory"/>
-    </div>
-    <MudList T="StoryContent" SelectedValue="SelectedStory" SelectedValueChanged="OnStorySelected"
-             Color="Color.Primary">
-        @if (Stories is not null) {
-            foreach (StoryContent story in Stories) {
-                <MudListItem Value="story">
-                    <div class="d-flex flex-column">
-                        <MudText
-                            Typo="Typo.body1">@(story.Title.GetValueOrDefault("en") ?? Localizer[Shared.ListUntitled])</MudText>
-                        <MudText Typo="Typo.caption" Class="opacity-50">@story.Id.ToString("D")</MudText>
-                        <div class="d-flex align-center gap-1">
-                            @if (story.IsSoftDeleted) {
-                                <MudChip T="string" Size="Size.Small" Color="Color.Error" Variant="Variant.Text"
-                                         Icon="@Icons.Material.Filled.Delete">@Localizer[Shared.ListDeleted]</MudChip>
-                            }
-                            @if (story.IsHidden) {
-                                <MudChip T="string" Size="Size.Small" Color="Color.Default" Variant="Variant.Text"
-                                         Icon="@Icons.Material.Filled.VisibilityOff">@Localizer[Shared.ListHidden]</MudChip>
-                            }
-                            @if (string.IsNullOrEmpty(story.Title.GetValueOrDefault("nl")) || string.IsNullOrEmpty(story.Summary.GetValueOrDefault("nl"))) {
-                                <MudChip T="string" Size="Size.Small" Color="Color.Warning"
-                                         Variant="Variant.Text">@Localizer[Shared.ListMissingNl]
-                                </MudChip>
-                            }
-                        </div>
-                    </div>
-                </MudListItem>
-            }
-        }
-    </MudList>
-</MudPaper>
+<ContentList TContent="StoryContent"
+             Items="Stories"
+             SelectedItem="SelectedStory"
+             OnSelected="OnStorySelected"
+             OnCreate="OnCreateStory"
+             HeaderText="@Localizer[Shared.ListStories]"
+             GetTitle="GetTitle"
+             LocalizationMaps="GetLocalizationMaps"
+             ShowHiddenChip="true"/>
 
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Code
@@ -58,4 +32,10 @@
     [Parameter] public StoryContent? SelectedStory { get; set; }
     [Parameter] public EventCallback<StoryContent?> OnStorySelected { get; set; }
     [Parameter] public EventCallback OnCreateStory { get; set; }
+
+    private string GetTitle(StoryContent story)
+        => story.Title.GetValueOrDefault("en") ?? Localizer[Shared.ListUntitled];
+
+    private IEnumerable<Dictionary<string, string>> GetLocalizationMaps(StoryContent story)
+        => [story.Title, story.Summary];
 }
