@@ -1,131 +1,65 @@
-﻿@* ------------------------------------------------------------------------------------------------------------------ *@
-@* Imports
 @* ------------------------------------------------------------------------------------------------------------------ *@
+@* Imports *@
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@using DirectiveAthenaWeb.Services.Content
 @using DirectiveAthenaWeb.Services.ContentStorage
-@using DirectiveAthenaWeb.Services.Localization
 @using DirectiveAthenaWeb.Services.Localization.Resources
 @using Microsoft.Extensions.Localization
 
 @namespace DirectiveAthenaWeb.Content.Note
 @* ------------------------------------------------------------------------------------------------------------------ *@
-@* Descriptors
+@* Descriptors *@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @inject INoteContentManager NoteManager
 @inject IContentStorageFactory ContentStorageFactory
 @inject IStringLocalizer<Shared> Localizer
 
-@inherits WebsiteComponentBase
+@inherits ContentEditorComponentBase<NoteContent>
 @* ------------------------------------------------------------------------------------------------------------------ *@
-@* Html
+@* Html *@
 @* ------------------------------------------------------------------------------------------------------------------ *@
-<MudPaper Class="pa-6 card-glass no-hover">
-    <div class="d-flex justify-space-between align-center mb-6">
-        <MudText Typo="Typo.h5">@string.Format(Localizer[Shared.EditorEditPost], Note.Id.ToString("D"))</MudText>
-        <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error"
-                       OnClick="@OnDeleteNote"/>
-    </div>
-
-    <MudGrid>
-        <MudItem xs="12" md="6">
-            <MudTextField Value="@Note.Id.ToString("D")" Label="@Localizer[Shared.EditorUniqueId]"
-                          Required="true" ReadOnly="true"
-                          HelperText="@Localizer[Shared.EditorIdHelperPost]"/>
-        </MudItem>
-        <MudItem xs="12" md="6">
-            <MudTextField Value="@FormatDate(Note.CreatedAt)" Label="@Localizer[Shared.EditorCreatedAtLabel]"
-                          Required="true" ReadOnly="true"/>
-        </MudItem>
-        @if (Note.LastModifiedAt != DateTime.MinValue) {
-            <MudItem xs="12" md="6">
-                <MudTextField Value="@FormatDate(Note.LastModifiedAt)"
-                              Label="@Localizer[Shared.EditorLastModifiedAtLabel]"
-                              Required="true" ReadOnly="true"/>
-            </MudItem>
-        }
-
-        <MudItem xs="12">
-            <MudSwitch @bind-Value="IsHidden" Label="@Localizer[Shared.EditorHiddenLabel]" Color="Color.Primary"/>
-        </MudItem>
-
-        @foreach (LocalizationInfo culture in LocalizationProvider.GetSupportedLocalizations()) {
-            <MudItem xs="12">
-                <MudDivider Class="my-4"/>
-                <MudText Typo="Typo.subtitle1" Color="Color.Primary">@culture.DisplayName (@culture.Code)</MudText>
-                <MudTextField Value="@GetTitle(culture.Code)"
-                              ValueChanged="@((string s) => SetTitle(culture.Code, s))"
-                              Label="@($"{Localizer[Shared.EditorTitleLabel]} ({culture.Code})")"
-                              Required="@(LocalizationProvider.IsDefaultCultureCode(culture.Code))"/>
-                <MudTextField Value="@GetSummary(culture.Code)"
-                              ValueChanged="@((string s) => SetSummary(culture.Code, s))"
-                              Label="@($"{Localizer[Shared.EditorSummaryLabel]} ({culture.Code})")"
-                              Required="@(LocalizationProvider.IsDefaultCultureCode(culture.Code))" Lines="3"/>
-            </MudItem>
-        }
-
-        <MudItem xs="12">
-            <MudDivider Class="my-4"/>
-            <MudTextField Value="@Note.MarkdownFileName"
-                          Label="@string.Format(Localizer[Shared.EditorMarkdownFileLabel], "post.md")"
-                          Required="true" ReadOnly="true"
-                          HelperText="@Localizer[Shared.EditorMarkdownFileHelper]"/>
-        </MudItem>
-
-        <MudItem xs="12">
-            <MudDivider Class="my-4"/>
-            <MudText Typo="Typo.subtitle1" Color="Color.Primary">@Localizer[Shared.EditorTagsTitle]</MudText>
-            <div class="d-flex flex-wrap gap-2 mb-2">
-                @foreach (string tag in Note.Tags) {
-                    <MudChip T="string" OnClose="@(() => RemoveTag(tag))" Color="Color.Secondary"
-                             Variant="Variant.Filled">@tag</MudChip>
-                }
-            </div>
-            <div class="d-flex gap-2">
-                <MudTextField @bind-Value="_newTag" Label="@Localizer[Shared.EditorAddTag]" OnKeyDown="@OnTagKey"/>
-                <MudIconButton Icon="@Icons.Material.Filled.Add" OnClick="@AddTag"/>
-            </div>
-            <MudText Typo="Typo.caption" Class="mt-1 d-block">
-                @Localizer[Shared.EditorTagsHint]
-            </MudText>
-        </MudItem>
-
-        <MudItem xs="12">
-            <MudDivider Class="my-4"/>
-            <LocalizedMarkdownEditor Title="@Localizer[Shared.MarkdownLabel]"
-                                     FileName="@Note.MarkdownFileName"
-                                     Storage="_storage"
-                                     LoadContentAsync="@((string locale) => NoteManager.GetRawMarkdownContentAsync(Note, locale))"
-                                     BuildDefaultContent="@((string locale) => BuildDefaultMarkdown(locale))"/>
-        </MudItem>
-
-        <MudItem xs="12" Class="mt-4">
-            <div class="d-flex gap-2">
-                <MudButton Variant="Variant.Filled" Color="Color.Info"
-                           OnClick="@(() => OnGenerateStubs.InvokeAsync(true))"
-                           StartIcon="@Icons.Material.Filled.NoteAdd">
-                    @Localizer[Shared.ContentManagerMarkdownStubsSaveDisk]
-                </MudButton>
-                <MudButton Variant="Variant.Filled" Color="Color.Info"
-                           OnClick="@(() => OnGenerateStubs.InvokeAsync(false))"
-                           StartIcon="@Icons.Material.Filled.Download">
-                    @Localizer[Shared.ContentManagerMarkdownStubsDownload]
-                </MudButton>
-            </div>
-        </MudItem>
-    </MudGrid>
-</MudPaper>
+<ContentEditor TContent="NoteContent" Content="@Note"
+               Tags="@Note.Tags"
+               HeaderText="@string.Format(Localizer[Shared.EditorEditPost], Note.Id.ToString("D"))"
+               IdHelperText="@Localizer[Shared.EditorIdHelperPost]"
+               MarkdownFileLabel="@string.Format(Localizer[Shared.EditorMarkdownFileLabel], "post.md")"
+               MarkdownFileHelper="@Localizer[Shared.EditorMarkdownFileHelper]"
+               MarkdownTitle="@Localizer[Shared.MarkdownLabel]"
+               SoftDeleteConfirmText="@Localizer[Shared.ContentManagerDeletePostSoftConfirm]"
+               SoftDeleteSuccessText="@Localizer[Shared.ContentManagerDeletePostSoftSuccess]"
+               SoftDeleteFailedText="@Localizer[Shared.ContentManagerDeletePostSoftFailed]"
+               HardDeleteConfirmText="@Localizer[Shared.ContentManagerDeletePostHardConfirm]"
+               HardDeleteSuccessText="@Localizer[Shared.ContentManagerDeletePostHardSuccess]"
+               HardDeleteFailedText="@Localizer[Shared.ContentManagerDeletePostHardFailed]"
+               Storage="@_storage"
+               LoadContentAsync="@((string locale) => NoteManager.GetRawMarkdownContentAsync(Note, locale))"
+               BuildDefaultContent="@BuildDefaultMarkdown"
+               OnGenerateStubs="OnGenerateStubs"
+               OnTagsChanged="OnTagsChanged"
+               OnContentChanged="OnContentChanged"
+               OnDeleted="OnDeleted"
+               ShowHiddenToggle="true">
+    <LocalizedFields Context="culture">
+        <MudTextField Value="@GetTitle(culture.Code)"
+                      ValueChanged="@((string s) => SetTitle(culture.Code, s))"
+                      Label="@($"{Localizer[Shared.EditorTitleLabel]} ({culture.Code})")"
+                      Required="@(LocalizationProvider.IsDefaultCultureCode(culture.Code))"/>
+        <MudTextField Value="@GetSummary(culture.Code)"
+                      ValueChanged="@((string s) => SetSummary(culture.Code, s))"
+                      Label="@($"{Localizer[Shared.EditorSummaryLabel]} ({culture.Code})")"
+                      Required="@(LocalizationProvider.IsDefaultCultureCode(culture.Code))" Lines="3"/>
+    </LocalizedFields>
+</ContentEditor>
 
 @* ------------------------------------------------------------------------------------------------------------------ *@
-@* Code
+@* Code *@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 
 @code {
-    [Parameter, EditorRequired] public NoteContent Note { get; set; } = null!;
-    [Parameter] public EventCallback OnDeleteNote { get; set; }
+    [Parameter, EditorRequired] public NoteContent Note { get => Content; set => Content = value; }
     [Parameter] public EventCallback<bool> OnGenerateStubs { get; set; }
-    [Parameter] public EventCallback OnTagsChanged { get; set; }
-    [Parameter] public EventCallback OnContentChanged { get; set; }
+    [Parameter] public EventCallback<ContentDeleteResult<NoteContent>> OnDeleted { get; set; }
 
-    private string _newTag = "";
     private IContentStorage _storage = null!;
 
     protected override void OnInitialized() {
@@ -145,73 +79,10 @@
     private void SetSummary(string culture, string value)
         => SetLocalizedValue(Note.Summary, culture, value);
 
-    private void AddTag() {
-        if (string.IsNullOrWhiteSpace(_newTag)) return;
-
-        string trimmedTag = _newTag.Trim();
-        if (Note.Tags.Contains(trimmedTag)) {
-            _newTag = "";
-            return;
-        }
-
-        Note.Tags.Add(trimmedTag);
-        TouchLastModified();
-        _newTag = "";
-        NotifyTagsChanged();
-        NotifyContentChanged();
-    }
-
-    private void RemoveTag(string tag) {
-        Note.Tags.Remove(tag);
-        TouchLastModified();
-        NotifyTagsChanged();
-        NotifyContentChanged();
-    }
-
-    private void OnTagKey(KeyboardEventArgs e) {
-        if (e.Key == "Enter") AddTag();
-    }
-
-    private void NotifyTagsChanged() {
-        if (OnTagsChanged.HasDelegate) {
-            _ = OnTagsChanged.InvokeAsync();
-        }
-    }
-
-    private void NotifyContentChanged() {
-        if (OnContentChanged.HasDelegate) {
-            _ = OnContentChanged.InvokeAsync();
-        }
-    }
-
-    private bool IsHidden {
-        get => Note.IsHidden;
-        set {
-            DateTime now = DateTime.UtcNow;
-            Note.HiddenAt = value ? now : DateTime.MinValue;
-            Note.LastModifiedAt = now;
-            NotifyContentChanged();
-        }
-    }
-
-    private static string FormatDate(DateTime date)
-        => date == DateTime.MinValue ? string.Empty : date.ToString("yyyy-MM-dd");
-
     private string BuildDefaultMarkdown(string locale) {
         string title = Note.Title.GetValueOrDefault(locale) ?? Localizer[Shared.EditorNewPostTitle];
         string summary = Note.Summary.GetValueOrDefault(locale) ?? "";
         return $"# {title}\n\n{summary}";
     }
 
-    private void TouchLastModified() {
-        Note.LastModifiedAt = DateTime.UtcNow;
-    }
-
-    private void SetLocalizedValue(Dictionary<string, string> values, string culture, string value) {
-        if (values.TryGetValue(culture, out string? existing) && existing == value) return;
-
-        values[culture] = value;
-        TouchLastModified();
-        NotifyContentChanged();
-    }
 }

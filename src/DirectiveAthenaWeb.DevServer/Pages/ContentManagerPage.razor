@@ -95,10 +95,11 @@
 
                     <MudItem xs="12" md="8">
                         @if (_selectedWriting is not null) {
-                            <NoteEditor Note="_selectedWriting" OnDeleteNote="DeleteNote"
+                            <NoteEditor Note="_selectedWriting"
                                            OnGenerateStubs="GenerateWritingStubs"
                                            OnTagsChanged="OnTagsChanged"
-                                           OnContentChanged="OnWritingChanged"/>
+                                           OnContentChanged="OnWritingChanged"
+                                           OnDeleted="OnNoteDeleted"/>
                         }
                         else {
                             <MudAlert Severity="Severity.Info" Variant="Variant.Outlined">
@@ -156,10 +157,11 @@
 
                     <MudItem xs="12" md="8">
                         @if (_selectedFaq is not null) {
-                            <FaqEditor Rule="_selectedFaq" OnDeleteRule="DeleteRule"
+                            <FaqEditor Rule="_selectedFaq"
                                              OnGenerateStubs="GenerateRuleStubs"
                                              OnTagsChanged="OnTagsChanged"
-                                             OnContentChanged="OnRuleChanged"/>
+                                             OnContentChanged="OnRuleChanged"
+                                             OnDeleted="OnRuleDeleted"/>
                         }
                         else {
                             <MudAlert Severity="Severity.Info" Variant="Variant.Outlined">
@@ -239,83 +241,21 @@
         OnRuleChanged();
     }
 
-    private async Task DeleteNote() {
-        if (_selectedWriting is null || _notes is null) return;
+    private void OnNoteDeleted(ContentDeleteResult<NoteContent> result) {
+        if (!result.HardDelete || !result.Success || _notes is null) return;
 
-        bool hardDelete = _selectedWriting.IsSoftDeleted;
-        string confirmText = hardDelete
-            ? Localizer[Shared.ContentManagerDeletePostHardConfirm].Value
-            : Localizer[Shared.ContentManagerDeletePostSoftConfirm].Value;
-        bool confirm = await WebJs.ConfirmAsync(confirmText);
-        if (!confirm) return;
-
-        if (!hardDelete) {
-            DateTime now = DateTime.UtcNow;
-            _selectedWriting.SoftDeletedAt = now;
-            _selectedWriting.LastModifiedAt = now;
-
-            bool softDeleted = await NoteRepository.SoftDeleteByIdAsync(_selectedWriting.Id);
-            if (!softDeleted && _notes is not null) {
-                softDeleted = await NoteRepository.SaveAsync(_notes);
-            }
-            Snackbar.Add(
-                softDeleted
-                    ? Localizer[Shared.ContentManagerDeletePostSoftSuccess]
-                    : Localizer[Shared.ContentManagerDeletePostSoftFailed],
-                softDeleted ? Severity.Success : Severity.Warning);
-            return;
-        }
-
-        NoteContent postToDelete = _selectedWriting;
-        _notes.Remove(postToDelete);
-        _selectedWriting = null;
-
-        bool success = await NoteRepository.HardDeleteByIdAsync(postToDelete.Id);
-        if (success) {
-            Snackbar.Add(Localizer[Shared.ContentManagerDeletePostHardSuccess], Severity.Success);
-        }
-        else {
-            Snackbar.Add(Localizer[Shared.ContentManagerDeletePostHardFailed], Severity.Warning);
+        _notes.Remove(result.Content);
+        if (_selectedWriting == result.Content) {
+            _selectedWriting = null;
         }
     }
 
-    private async Task DeleteRule() {
-        if (_selectedFaq is null || _faq is null) return;
+    private void OnRuleDeleted(ContentDeleteResult<FaqContent> result) {
+        if (!result.HardDelete || !result.Success || _faq is null) return;
 
-        bool hardDelete = _selectedFaq.IsSoftDeleted;
-        string confirmText = hardDelete
-            ? Localizer[Shared.ContentManagerDeleteRuleHardConfirm].Value
-            : Localizer[Shared.ContentManagerDeleteRuleSoftConfirm].Value;
-        bool confirm = await WebJs.ConfirmAsync(confirmText);
-        if (!confirm) return;
-
-        if (!hardDelete) {
-            DateTime now = DateTime.UtcNow;
-            _selectedFaq.SoftDeletedAt = now;
-            _selectedFaq.LastModifiedAt = now;
-
-            bool softDeleted = await FaqRepository.SoftDeleteByIdAsync(_selectedFaq.Id);
-            if (!softDeleted && _faq is not null) {
-                softDeleted = await FaqRepository.SaveAsync(_faq);
-            }
-            Snackbar.Add(
-                softDeleted
-                    ? Localizer[Shared.ContentManagerDeleteRuleSoftSuccess]
-                    : Localizer[Shared.ContentManagerDeleteRuleSoftFailed],
-                softDeleted ? Severity.Success : Severity.Warning);
-            return;
-        }
-
-        FaqContent ruleToDelete = _selectedFaq;
-        _faq.Remove(ruleToDelete);
-        _selectedFaq = null;
-
-        bool success = await FaqRepository.HardDeleteByIdAsync(ruleToDelete.Id);
-        if (success) {
-            Snackbar.Add(Localizer[Shared.ContentManagerDeleteRuleHardSuccess], Severity.Success);
-        }
-        else {
-            Snackbar.Add(Localizer[Shared.ContentManagerDeleteRuleHardFailed], Severity.Warning);
+        _faq.Remove(result.Content);
+        if (_selectedFaq == result.Content) {
+            _selectedFaq = null;
         }
     }
 
