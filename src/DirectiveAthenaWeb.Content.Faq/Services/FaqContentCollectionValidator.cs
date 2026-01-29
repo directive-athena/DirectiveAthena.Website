@@ -9,7 +9,7 @@ namespace DirectiveAthenaWeb.Content.Faq.Services;
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
 [InjectableTransient<IValidator<IEnumerable<FaqContent>>>]
-public class FaqContentCollectionValidator : AbstractValidator<IEnumerable<FaqContent>> {
+internal class FaqContentCollectionValidator : AbstractValidator<IEnumerable<FaqContent>> {
     public FaqContentCollectionValidator(IValidator<FaqContent> ruleValidator) {
         RuleFor(rules => rules)
             .NotNull();

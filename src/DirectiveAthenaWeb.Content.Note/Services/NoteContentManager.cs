@@ -13,7 +13,7 @@ namespace DirectiveAthenaWeb.Content.Note.Services;
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
 [InjectableScoped<INoteContentManager>]
-public class NoteContentManager(
+internal class NoteContentManager(
     ILocalizationProvider localizationProvider,
     IContentStorageFactory storageFactory,
     HttpClient http,

@@ -12,7 +12,7 @@ namespace DirectiveAthenaWeb.Content.Note.Services;
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
 [InjectableScoped<INoteContentRepository>]
-public class NoteContentRepository(
+internal class NoteContentRepository(
     [FromKeyedServices("note")] IContentStorage storage,
     ILogger<NoteContentRepository> logger
 ) : ContentRepository<NoteContent>(storage, logger), INoteContentRepository;

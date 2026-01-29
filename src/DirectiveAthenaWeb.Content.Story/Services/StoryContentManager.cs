@@ -13,7 +13,7 @@ namespace DirectiveAthenaWeb.Content.Story.Services;
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
 [InjectableScoped<IStoryContentManager>]
-public class StoryContentManager(
+internal class StoryContentManager(
     ILocalizationProvider localizationProvider,
     IContentStorageFactory storageFactory,
     HttpClient http,

@@ -35,5 +35,6 @@
         <Project Path="tests/DirectiveAthenaWebTests.Content.Faq/DirectiveAthenaWebTests.Content.Faq.csproj" />
         <Project Path="tests/DirectiveAthenaWebTests.Content.Note/DirectiveAthenaWebTests.Content.Note.csproj" />
         <Project Path="tests/DirectiveAthenaWebTests/DirectiveAthenaWebTests.csproj" />
+        <Project Path="tests/DirectiveAthenaWevTests.Content.Story/DirectiveAthenaWevTests.Content.Story.csproj" />
     </Folder>
 </Solution>

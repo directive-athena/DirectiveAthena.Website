@@ -5,6 +5,10 @@
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
     </PropertyGroup>
+    
+    <ItemGroup>
+        <InternalsVisibleTo Include="DirectiveAthenaWebTests.Content.Faq" />
+    </ItemGroup>
 
     <ItemGroup>
         <PackageReference Include="CodeOfChaos.Extensions.DependencyInjection"/>

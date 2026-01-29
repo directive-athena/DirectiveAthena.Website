@@ -12,7 +12,7 @@ namespace DirectiveAthenaWeb.Content.Story.Services;
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
 [InjectableScoped<IStoryContentRepository>]
-public class StoryContentRepository(
+internal class StoryContentRepository(
     [FromKeyedServices("story")] IContentStorage storage,
     ILogger<StoryContentRepository> logger
 ) : ContentRepository<StoryContent>(storage, logger), IStoryContentRepository;

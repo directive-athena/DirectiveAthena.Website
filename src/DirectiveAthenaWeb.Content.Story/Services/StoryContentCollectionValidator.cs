@@ -9,7 +9,7 @@ namespace DirectiveAthenaWeb.Content.Story.Services;
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
 [InjectableTransient<IValidator<IEnumerable<StoryContent>>>]
-public class StoryContentCollectionValidator : AbstractValidator<IEnumerable<StoryContent>> {
+internal class StoryContentCollectionValidator : AbstractValidator<IEnumerable<StoryContent>> {
     public StoryContentCollectionValidator(IValidator<StoryContent> articleValidator) {
         RuleFor(stories => stories)
             .NotNull();

@@ -7,6 +7,10 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <InternalsVisibleTo Include="DirectiveAthenaWebTests.Content.Note" />
+    </ItemGroup>
+
+    <ItemGroup>
         <PackageReference Include="CodeOfChaos.Extensions.DependencyInjection"/>
         <PackageReference Include="CodeOfChaos.Extensions.DependencyInjection.Generators">
             <PrivateAssets>all</PrivateAssets>

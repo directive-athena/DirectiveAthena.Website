@@ -13,7 +13,7 @@ namespace DirectiveAthenaWeb.Content.Faq.Services;
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
 [InjectableScoped<IFaqContentManager>]
-public class FaqContentManager(
+internal class FaqContentManager(
     ILocalizationProvider localizationProvider,
     IContentStorageFactory storageFactory,
     HttpClient http,

@@ -9,7 +9,7 @@ namespace DirectiveAthenaWeb.Content.Note.Services;
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
 [InjectableTransient<IValidator<IEnumerable<NoteContent>>>]
-public class NoteContentCollectionValidator : AbstractValidator<IEnumerable<NoteContent>> {
+internal class NoteContentCollectionValidator : AbstractValidator<IEnumerable<NoteContent>> {
     public NoteContentCollectionValidator(IValidator<NoteContent> articleValidator) {
         RuleFor(notes => notes)
             .NotNull();

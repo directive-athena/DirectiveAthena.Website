@@ -10,7 +10,7 @@ namespace DirectiveAthenaWeb.Content.Note.Services;
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
 [InjectableTransient<IValidator<NoteContent>>]
-public class NoteContentValidator : AbstractValidator<NoteContent> {
+internal class NoteContentValidator : AbstractValidator<NoteContent> {
     private readonly IReadOnlyCollection<LocalizationInfo> _localizations;
 
     public NoteContentValidator(ILocalizationProvider localizationProvider) {

@@ -10,7 +10,7 @@ namespace DirectiveAthenaWeb.Content.Faq.Services;
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
 [InjectableTransient<IValidator<FaqContent>>]
-public class FaqContentValidator : AbstractValidator<FaqContent> {
+internal class FaqContentValidator : AbstractValidator<FaqContent> {
     private readonly IReadOnlyCollection<LocalizationInfo> _localizations;
 
     public FaqContentValidator(ILocalizationProvider localizationProvider) {

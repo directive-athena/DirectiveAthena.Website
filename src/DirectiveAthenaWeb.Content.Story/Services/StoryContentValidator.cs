@@ -10,7 +10,7 @@ namespace DirectiveAthenaWeb.Content.Story.Services;
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
 [InjectableTransient<IValidator<StoryContent>>]
-public class StoryContentValidator : AbstractValidator<StoryContent> {
+internal class StoryContentValidator : AbstractValidator<StoryContent> {
     private readonly IReadOnlyCollection<LocalizationInfo> _localizations;
 
     public StoryContentValidator(ILocalizationProvider localizationProvider) {
