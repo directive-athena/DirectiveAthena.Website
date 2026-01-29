@@ -8,6 +8,7 @@
     
     <ItemGroup>
         <InternalsVisibleTo Include="DirectiveAthenaWebTests.Content.Faq" />
+        <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
     </ItemGroup>
 
     <ItemGroup>
