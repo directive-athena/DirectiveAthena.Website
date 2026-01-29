@@ -2,8 +2,8 @@
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
 using Bunit;
-using DirectiveAthenaWeb.Components;
 using DirectiveAthenaWeb.Content.Faq;
+using DirectiveAthenaWeb.Content.Faq.Components;
 using DirectiveAthenaWeb.Services.Localization.Resources;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;

@@ -10,7 +10,7 @@ using Microsoft.Extensions.Logging;
 using NSubstitute;
 using System.Net;
 
-namespace DirectiveAthenaWebTests.Content.Writing;
+namespace DirectiveAthenaWebTests.Content.Note;
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
@@ -53,7 +53,7 @@ public class NoteContentManagerTests {
     [Test]
     public async Task GetLocalizedTitle_FallsBackToDefaultCulture() {
         // Arrange
-        NoteContent article = WritingFaker.Create(100, includeNl: false);
+        NoteContent article = NoteFaker.Create(100, includeNl: false);
         ILocalizationProvider localizationProvider = CreateLocalizationProvider("nl");
         NoteContentManager manager = CreateManager(localizationProvider);
 
@@ -67,7 +67,7 @@ public class NoteContentManagerTests {
     [Test]
     public async Task GetLocalizedSummary_FallsBackToDefaultCulture() {
         // Arrange
-        NoteContent article = WritingFaker.Create(101, includeNl: false);
+        NoteContent article = NoteFaker.Create(101, includeNl: false);
         ILocalizationProvider localizationProvider = CreateLocalizationProvider("nl");
         NoteContentManager manager = CreateManager(localizationProvider);
 
@@ -81,7 +81,7 @@ public class NoteContentManagerTests {
     [Test]
     public async Task GetLocalizedFilePath_UsesCurrentLocalization() {
         // Arrange
-        NoteContent article = WritingFaker.Create(102);
+        NoteContent article = NoteFaker.Create(102);
         ILocalizationProvider localizationProvider = CreateLocalizationProvider("nl");
         var storage = Substitute.For<IContentStorage>();
         storage.GetMarkdownContentPath(Arg.Any<string>(), Arg.Any<string>())
@@ -101,7 +101,7 @@ public class NoteContentManagerTests {
         var handler = new TestHttpMessageHandler(_ => new HttpResponseMessage(HttpStatusCode.InternalServerError));
         var http = new HttpClient(handler) { BaseAddress = new Uri("http://localhost/") };
         NoteContentManager manager = CreateManager(CreateLocalizationProvider("en"), http: http);
-        NoteContent article = WritingFaker.Create(103);
+        NoteContent article = NoteFaker.Create(103);
 
         // Act
         string result = await manager.GetRawMarkdownContentAsync(article, "en");
@@ -118,7 +118,7 @@ public class NoteContentManagerTests {
 
         // Act
         NoteContent article = manager.NewWriting();
-        HashSet<string> expected = WritingFaker.DefaultLocalizations().Select(c => c.Code).ToHashSet();
+        HashSet<string> expected = NoteFaker.DefaultLocalizations().Select(c => c.Code).ToHashSet();
 
         // Assert
         await Assert.That(article.Title.Keys.ToHashSet()).IsEquivalentTo(expected);
@@ -148,8 +148,8 @@ public class NoteContentManagerTests {
     public async Task Validate_RejectsDuplicateIds() {
         // Arrange
         NoteContent[] notes = [
-            WritingFaker.Create(140),
-            WritingFaker.Create(141)
+            NoteFaker.Create(140),
+            NoteFaker.Create(141)
         ];
         notes[1].Id = notes[0].Id;
 
@@ -166,7 +166,7 @@ public class NoteContentManagerTests {
     [Test]
     public async Task Validate_RejectsMissingLocalizedTitles() {
         // Arrange
-        NoteContent article = WritingFaker.Create(200, includeNl: false);
+        NoteContent article = NoteFaker.Create(200, includeNl: false);
         NoteContent[] notes = [article];
 
         NoteContentManager manager = CreateManager(CreateLocalizationProvider("en"));
@@ -182,7 +182,7 @@ public class NoteContentManagerTests {
     [Test]
     public async Task Validate_RejectsMissingLocalizedSummaries() {
         // Arrange
-        NoteContent article = WritingFaker.Create(201);
+        NoteContent article = NoteFaker.Create(201);
         article.Summary.Remove("nl");
         NoteContent[] notes = [article];
 
@@ -199,7 +199,7 @@ public class NoteContentManagerTests {
     [Test]
     public async Task GenerateStubsAsync_ReturnsStubsForAllCultures() {
         // Arrange
-        NoteContent article = WritingFaker.Create(120);
+        NoteContent article = NoteFaker.Create(120);
         var storage = Substitute.For<IContentStorage>();
         NoteContentManager manager = CreateManager(CreateLocalizationProvider("en"), storage);
 
@@ -207,7 +207,7 @@ public class NoteContentManagerTests {
         (Dictionary<string, string> Stubs, bool WroteAll) result = await manager.GenerateStubsAsync(article, writeToDisk: false);
 
         // Assert
-        await Assert.That(result.Stubs.Count).IsEqualTo(WritingFaker.DefaultLocalizations().Count);
+        await Assert.That(result.Stubs.Count).IsEqualTo(NoteFaker.DefaultLocalizations().Count);
         await Assert.That(result.WroteAll).IsFalse();
         await storage.DidNotReceiveWithAnyArgs().WriteFileAsync(null!, null!);
     }
@@ -215,7 +215,7 @@ public class NoteContentManagerTests {
     [Test]
     public async Task GenerateStubsAsync_WritesWhenRequested() {
         // Arrange
-        NoteContent article = WritingFaker.Create(121);
+        NoteContent article = NoteFaker.Create(121);
         var storage = Substitute.For<IContentStorage>();
         storage.WriteFileAsync(Arg.Any<string>(), Arg.Any<string>()).Returns(new ValueTask<bool>(true));
         storage.GetMarkdownDiskPath(Arg.Any<string>(), Arg.Any<string>())
@@ -227,9 +227,9 @@ public class NoteContentManagerTests {
         (Dictionary<string, string> Stubs, bool WroteAll) result = await manager.GenerateStubsAsync(article, writeToDisk: true);
 
         // Assert
-        await Assert.That(result.Stubs.Count).IsEqualTo(WritingFaker.DefaultLocalizations().Count);
+        await Assert.That(result.Stubs.Count).IsEqualTo(NoteFaker.DefaultLocalizations().Count);
         await Assert.That(result.WroteAll).IsTrue();
-        foreach (LocalizationInfo localization in WritingFaker.DefaultLocalizations()) {
+        foreach (LocalizationInfo localization in NoteFaker.DefaultLocalizations()) {
             string path = storage.GetMarkdownDiskPath(localization.Code, article.MarkdownFileName);
             await storage.Received(1).WriteFileAsync(path, Arg.Any<string>());
         }

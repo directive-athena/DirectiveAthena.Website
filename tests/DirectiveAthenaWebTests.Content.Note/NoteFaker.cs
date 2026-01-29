@@ -5,11 +5,11 @@ using Bogus;
 using DirectiveAthenaWeb.Content.Note;
 using DirectiveAthenaWeb.Services.Localization;
 
-namespace DirectiveAthenaWebTests.Content.Writing;
+namespace DirectiveAthenaWebTests.Content.Note;
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
-public static class WritingFaker {
+public static class NoteFaker {
     public static NoteContent Create(int seed, bool hidden = false, bool includeNl = true) {
         var faker = new Faker {
             Random = new Randomizer(seed)

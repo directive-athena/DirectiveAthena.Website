@@ -7,7 +7,7 @@ using DirectiveAthenaWeb.Services.Localization;
 using FluentValidation.Results;
 using NSubstitute;
 
-namespace DirectiveAthenaWebTests.Content.Writing;
+namespace DirectiveAthenaWebTests.Content.Note;
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
@@ -32,8 +32,8 @@ public class NoteContentCollectionValidatorTests {
     public async Task Validate_RejectsDuplicateIds() {
         // Arrange
         NoteContent[] notes = [
-            WritingFaker.Create(400),
-            WritingFaker.Create(401)
+            NoteFaker.Create(400),
+            NoteFaker.Create(401)
         ];
         notes[1].Id = notes[0].Id;
 
@@ -50,8 +50,8 @@ public class NoteContentCollectionValidatorTests {
     [Test]
     public async Task Validate_FailsWhenAnyWritingIsInvalid() {
         // Arrange
-        NoteContent valid = WritingFaker.Create(420);
-        NoteContent invalid = WritingFaker.Create(421, includeNl: false);
+        NoteContent valid = NoteFaker.Create(420);
+        NoteContent invalid = NoteFaker.Create(421, includeNl: false);
         NoteContent[] notes = [valid, invalid];
 
         var validator = new NoteContentCollectionValidator(new NoteContentValidator(CreateLocalizationProvider("en")));

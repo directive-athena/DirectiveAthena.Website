@@ -5,11 +5,12 @@
             "src\\DirectiveAthenaWeb.Content.Faq\\DirectiveAthenaWeb.Content.Faq.csproj",
             "src\\DirectiveAthenaWeb.Content.Note\\DirectiveAthenaWeb.Content.Note.csproj",
             "src\\DirectiveAthenaWeb.Content.Story\\DirectiveAthenaWeb.Content.Story.csproj",
-            
+
+            "src\\DirectiveAthenaWeb.Services\\DirectiveAthenaWeb.Services.csproj",
+            "src\\DirectiveAthenaWeb.Services.Contact\\DirectiveAthenaWeb.Services.Contact.csproj",
             "src\\DirectiveAthenaWeb.Services.Content\\DirectiveAthenaWeb.Services.Content.csproj",
             "src\\DirectiveAthenaWeb.Services.Js\\DirectiveAthenaWeb.Services.Js.csproj",
             "src\\DirectiveAthenaWeb.Services.Localization\\DirectiveAthenaWeb.Services.Localization.csproj",
-            "src\\DirectiveAthenaWeb.Services\\DirectiveAthenaWeb.Services.csproj",
 
             "src\\DirectiveAthenaWeb.Client\\DirectiveAthenaWeb.Client.csproj",
             "src\\DirectiveAthenaWeb.Components\\DirectiveAthenaWeb.Components.csproj",

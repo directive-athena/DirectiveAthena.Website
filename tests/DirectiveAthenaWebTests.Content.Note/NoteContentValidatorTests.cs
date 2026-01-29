@@ -7,7 +7,7 @@ using DirectiveAthenaWeb.Services.Localization;
 using FluentValidation.Results;
 using NSubstitute;
 
-namespace DirectiveAthenaWebTests.Content.Writing;
+namespace DirectiveAthenaWebTests.Content.Note;
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
@@ -32,7 +32,7 @@ public class NoteContentValidatorTests {
     public async Task Validate_RejectsMissingId() {
         // Arrange
         var validator = new NoteContentValidator(CreateLocalizationProvider("en"));
-        NoteContent article = WritingFaker.Create(300);
+        NoteContent article = NoteFaker.Create(300);
         article.Id = Guid.Empty;
 
         // Act
@@ -47,7 +47,7 @@ public class NoteContentValidatorTests {
     public async Task Validate_RejectsMissingLocalizedTitle() {
         // Arrange
         var validator = new NoteContentValidator(CreateLocalizationProvider("en"));
-        NoteContent article = WritingFaker.Create(301, includeNl: false);
+        NoteContent article = NoteFaker.Create(301, includeNl: false);
 
         // Act
         ValidationResult? result = await validator.ValidateAsync(article);
@@ -61,7 +61,7 @@ public class NoteContentValidatorTests {
     public async Task Validate_RejectsMissingLocalizedSummary() {
         // Arrange
         var validator = new NoteContentValidator(CreateLocalizationProvider("en"));
-        NoteContent article = WritingFaker.Create(302);
+        NoteContent article = NoteFaker.Create(302);
         article.Summary.Remove("nl");
 
         // Act
@@ -76,7 +76,7 @@ public class NoteContentValidatorTests {
     public async Task Validate_AllowsValidWriting() {
         // Arrange
         var validator = new NoteContentValidator(CreateLocalizationProvider("en"));
-        NoteContent article = WritingFaker.Create(303);
+        NoteContent article = NoteFaker.Create(303);
 
         // Act
         ValidationResult? result = await validator.ValidateAsync(article);

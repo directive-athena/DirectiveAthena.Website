@@ -2,14 +2,13 @@
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
 using Bunit;
-using DirectiveAthenaWeb.Components;
 using DirectiveAthenaWeb.Content.Note;
 using DirectiveAthenaWeb.Services.Localization.Resources;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using MudBlazor.Services;
 
-namespace DirectiveAthenaWebTests.Content.Writing;
+namespace DirectiveAthenaWebTests.Content.Note;
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
@@ -23,7 +22,7 @@ public class NoteListTests {
         ctx.JSInterop.SetupVoid("mudKeyInterceptor.connect", _ => true);
         var localizer = ctx.Services.GetRequiredService<IStringLocalizer<Shared>>();
 
-        NoteContent post = WritingFaker.Create(200, hidden: true, includeNl: false);
+        NoteContent post = NoteFaker.Create(200, hidden: true, includeNl: false);
         post.SoftDeletedAt = DateTime.UtcNow;
         List<NoteContent> posts = [post];
 

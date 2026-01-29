@@ -33,7 +33,7 @@
     </Folder>
     <Folder Name="/tests/">
         <Project Path="tests/DirectiveAthenaWebTests.Content.Faq/DirectiveAthenaWebTests.Content.Faq.csproj" />
-        <Project Path="tests/DirectiveAthenaWebTests.Content.Writing/DirectiveAthenaWebTests.Content.Writing.csproj" />
+        <Project Path="tests/DirectiveAthenaWebTests.Content.Note/DirectiveAthenaWebTests.Content.Note.csproj" />
         <Project Path="tests/DirectiveAthenaWebTests/DirectiveAthenaWebTests.csproj" />
     </Folder>
 </Solution>
