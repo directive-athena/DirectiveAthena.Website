@@ -18,15 +18,15 @@ internal class StoryContentValidator : AbstractValidator<StoryContent> {
 
         RuleFor(article => article.Id)
             .NotEqual(Guid.Empty)
-            .WithMessage("Some posts have missing Id!");
+            .WithMessage("Some stories have missing Id!");
 
         RuleFor(article => article)
             .Must(HasLocalizedTitles)
-            .WithMessage("Some posts have missing titles for one or more cultures!");
+            .WithMessage("Some stories have missing titles for one or more cultures!");
 
         RuleFor(article => article)
             .Must(HasLocalizedSummaries)
-            .WithMessage("Some posts have missing summaries for one or more cultures!");
+            .WithMessage("Some stories have missing summaries for one or more cultures!");
     }
 
     // -----------------------------------------------------------------------------------------------------------------

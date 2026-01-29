@@ -1,0 +1,137 @@
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Imports
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@using DirectiveAthenaWeb.Content.Story
+@using DirectiveAthenaWeb.Services.Localization.Resources
+@using InfiniBlazor.Markdown
+@using Microsoft.Extensions.Localization
+
+@namespace DirectiveAthenaWeb.Client.Pages
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Descriptors
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@page "/story/{Id:guid}"
+
+@inject IStoryContentRepository StoryRepository
+@inject IStoryContentManager StoryManager
+@inject HttpClient HttpClient
+@inject NavigationManager NavigationManager
+@inject IStringLocalizer<Shared> LocalizerShared
+@inject IStringLocalizer<Tags> LocalizerTags
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Html
+@* ------------------------------------------------------------------------------------------------------------------ *@
+<PageTitle>@LocalizerShared[Shared.StoryTitle]</PageTitle>
+
+<div class="min-vh-100 py-32">
+    <MudContainer MaxWidth="MaxWidth.Large">
+        <MudButton StartIcon="@Icons.Material.Filled.ArrowBack" Color="Color.Secondary" OnClick="@BackToList"
+                   Class="mb-12">@LocalizerShared[Shared.StoryDetailBack]
+        </MudButton>
+
+        @if (_loading) {
+            <div class="d-flex justify-center py-12">
+                <MudProgressCircular Color="Color.Secondary" Indeterminate="true" Size="Size.Large"/>
+            </div>
+        }
+        else if (_error || _currentStory is null) {
+            <MudAlert Severity="Severity.Error" Variant="Variant.Filled"
+                      Class="card-glass">@LocalizerShared[Shared.StoryDetailError]
+            </MudAlert>
+        }
+        else {
+            <article class="fade-in mx-auto" style="max-width: 800px;">
+                <div class="d-flex align-center flex-wrap gap-4 mb-2">
+                    <MudText Typo="Typo.caption" Color="Color.Secondary"
+                             Style="letter-spacing: 0.2em; text-transform: uppercase;">@FormatDate(_currentStory.CreatedAt)</MudText>
+                    @if (HasDate(_currentStory.LastModifiedAt)) {
+                        <MudText Typo="Typo.caption" Class="opacity-60">
+                            @string.Format(LocalizerShared[Shared.FaqUpdated], FormatDate(_currentStory.LastModifiedAt))
+                        </MudText>
+                    }
+                </div>
+                <MudText Typo="Typo.h2"
+                         Class="mb-6 SpaceGrotesk">@StoryManager.GetLocalizedTitle(_currentStory)</MudText>
+                <MudText Typo="Typo.body1" Class="text-secondary mb-6" Style="line-height: 1.7;">
+                    @StoryManager.GetLocalizedSummary(_currentStory)
+                </MudText>
+                <div class="d-flex gap-2 mb-6">
+                    @foreach (string tag in _currentStory.Tags) {
+                        <MudChip T="string" Size="Size.Small" Color="Color.Secondary"
+                                 Variant="Variant.Outlined">@LocalizerTags[tag]</MudChip>
+                    }
+                </div>
+                @if (_currentStory.Chapters.Count > 0) {
+                    <MudText Typo="Typo.subtitle2" Class="mb-2">@LocalizerShared[Shared.StoryDetailChapters]</MudText>
+                    <div class="d-flex flex-wrap gap-2 mb-6">
+                        @foreach (string chapter in _currentStory.Chapters) {
+                            <MudChip T="string" Size="Size.Small" Color="Color.Primary"
+                                     Variant="Variant.Text">@chapter</MudChip>
+                        }
+                    </div>
+                }
+                <div class="markdown-content">
+                    <InfiniMarkdownPreview Content="@_markdown"/>
+                </div>
+            </article>
+
+            <MudDivider Class="my-16 opacity-10"/>
+            <div class="d-flex justify-center">
+                <MudButton Variant="Variant.Outlined" Color="Color.Secondary"
+                           OnClick="@BackToList">@LocalizerShared[Shared.StoryDetailBackBottom]
+                </MudButton>
+            </div>
+        }
+    </MudContainer>
+</div>
+
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Code
+@* ------------------------------------------------------------------------------------------------------------------ *@
+
+@code {
+    [Parameter] public Guid? Id { get; set; }
+
+    private StoryContent? _currentStory;
+    private string _markdown = "";
+    private bool _loading;
+    private bool _error;
+
+    protected override async Task OnParametersSetAsync() {
+        if (Id.HasValue) {
+            await LoadStory(Id.Value);
+        }
+    }
+
+    private async Task LoadStory(Guid id) {
+        _loading = true;
+        _error = false;
+        _currentStory = await StoryRepository.GetByIdAsync(id);
+
+        if (_currentStory is null) {
+            NavigationManager.NavigateTo("/not-found");
+            return;
+        }
+
+        try {
+            string path = StoryManager.GetLocalizedFilePath(_currentStory);
+            _markdown = await HttpClient.GetStringAsync(path);
+        }
+        catch (Exception) {
+            _error = true;
+        }
+        finally {
+            _loading = false;
+        }
+    }
+
+    private void BackToList() {
+        NavigationManager.NavigateTo("/story");
+    }
+
+    private static bool HasDate(DateTime date)
+        => date != DateTime.MinValue;
+
+    private static string FormatDate(DateTime date)
+        => HasDate(date) ? date.ToString("yyyy-MM-dd") : string.Empty;
+}

@@ -64,7 +64,7 @@ internal class StoryContentManager(
         DateTime now = DateTime.UtcNow;
         IReadOnlyCollection<LocalizationInfo> locals = localizationProvider.GetSupportedLocalizations();
 
-        Dictionary<string, string> titles = locals.ToDictionary(c => c.Code, _ => "New Post");
+        Dictionary<string, string> titles = locals.ToDictionary(c => c.Code, _ => "New Story");
         Dictionary<string, string> summaries = locals.ToDictionary(c => c.Code, c => $"{c.DisplayName} - Summary here");
         var article = new StoryContent {
             Id = id,

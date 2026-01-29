@@ -4,6 +4,7 @@
 @using DirectiveAthenaWeb.Content.Faq
 @using DirectiveAthenaWeb.Content.Faq.Components
 @using DirectiveAthenaWeb.Content.Note
+@using DirectiveAthenaWeb.Content.Story
 @using DirectiveAthenaWeb.DevServer.Layouts
 @using DirectiveAthenaWeb.Services.Localization.Resources
 @using DirectiveAthenaWeb.Services.Content
@@ -19,6 +20,8 @@
 @inject INoteContentManager NoteManager
 @inject IFaqContentRepository FaqRepository
 @inject IFaqContentManager FaqManager
+@inject IStoryContentRepository StoryRepository
+@inject IStoryContentManager StoryManager
 @inject IDirectiveAthenaWebJs WebJs
 @inject ISnackbar Snackbar
 @inject IStringLocalizer<Shared> Localizer
@@ -42,7 +45,7 @@
         <MudText Typo="Typo.h3">@Localizer[Shared.ContentManagerHeading]</MudText>
     </div>
 
-    @if (_notes is null || _faq is null) {
+    @if (_notes is null || _faq is null || _stories is null) {
         <MudProgressCircular Color="Color.Primary" Indeterminate="true"/>
     }
     else {
@@ -172,6 +175,68 @@
                 </MudGrid>
             </MudTabPanel>
 
+            <MudTabPanel Text="@Localizer[Shared.ContentManagerTabStory]" Icon="@Icons.Material.Filled.AutoStories">
+                <MudGrid>
+                    <MudItem xs="12" md="4">
+                        <MudStack Spacing="3">
+                            <StoryList Stories="_stories" SelectedStory="_selectedStory"
+                                       OnStorySelected="OnStorySelected" OnCreateStory="CreateNewStory"/>
+
+                            <MudPaper Class="pa-4 card-glass no-hover">
+                                <div class="d-flex justify-space-between align-center mb-2">
+                                    <MudText Typo="Typo.subtitle1">@Localizer[Shared.ContentManagerActions]</MudText>
+                                    <MudSwitch T="bool" @bind-Value="AutoSaveEnabled" Color="Color.Success"
+                                               Label="@Localizer[Shared.ContentManagerAutoSaveLabel]"/>
+                                </div>
+                                <div class="d-flex align-center gap-2 mb-2">
+                                    <MudChip T="string" Color="@GetAutoSaveColor(_storyAutoSaveStatus)"
+                                             Variant="Variant.Filled" Icon="@GetAutoSaveIcon(_storyAutoSaveStatus)">
+                                        @GetAutoSaveStatusText(_storyAutoSaveStatus, _storyLastSavedAt)
+                                    </MudChip>
+                                    <MudText Typo="Typo.caption" Class="opacity-70">
+                                        @GetAutoSaveDetailText(_storyAutoSaveStatus)
+                                    </MudText>
+                                </div>
+                                @if (!string.IsNullOrWhiteSpace(_storyAutoSaveError)) {
+                                    <MudText Typo="Typo.caption" Color="Color.Warning">@_storyAutoSaveError</MudText>
+                                }
+                                <MudDivider Class="my-3"/>
+                                <MudButton Variant="Variant.Filled" Color="Color.Success" FullWidth="true"
+                                           OnClick="@SaveAllStories"
+                                           StartIcon="@Icons.Material.Filled.Save" Class="mb-3">
+                                    @Localizer[Shared.ContentManagerSaveIndex]
+                                </MudButton>
+                                <MudButton Variant="Variant.Filled" Color="Color.Secondary" FullWidth="true"
+                                           OnClick="@ExportStoriesJson"
+                                           StartIcon="@Icons.Material.Filled.Download" Class="mb-3">
+                                    @Localizer[Shared.ContentManagerDownloadIndex]
+                                </MudButton>
+                                <MudButton Variant="Variant.Outlined" Color="Color.Info" FullWidth="true"
+                                           OnClick="@CopyStoriesJson"
+                                           StartIcon="@Icons.Material.Filled.ContentCopy">
+                                    @Localizer[Shared.ContentManagerCopyIndex]
+                                </MudButton>
+                            </MudPaper>
+                        </MudStack>
+                    </MudItem>
+
+                    <MudItem xs="12" md="8">
+                        @if (_selectedStory is not null) {
+                            <StoryEditor Story="_selectedStory"
+                                         OnGenerateStubs="GenerateStoryStubs"
+                                         OnTagsChanged="OnTagsChanged"
+                                         OnContentChanged="OnStoryChanged"
+                                         OnDeleted="OnStoryDeleted"/>
+                        }
+                        else {
+                            <MudAlert Severity="Severity.Info" Variant="Variant.Outlined">
+                                @Localizer[Shared.ContentManagerSelectStory]
+                            </MudAlert>
+                        }
+                    </MudItem>
+                </MudGrid>
+            </MudTabPanel>
+
             <MudTabPanel Text="@Localizer[Shared.ContentManagerTabTags]" Icon="@Icons.Material.Filled.Label">
                 <TagsEditor UsedTags="@AllTags"/>
             </MudTabPanel>
@@ -188,6 +253,8 @@
     private NoteContent? _selectedWriting;
     private List<FaqContent>? _faq;
     private FaqContent? _selectedFaq;
+    private List<StoryContent>? _stories;
+    private StoryContent? _selectedStory;
     private int _activeTab;
 
     private bool _autoSaveEnabled = true;
@@ -198,19 +265,25 @@
 
     private AutoSaveStatus _articleAutoSaveStatus = AutoSaveStatus.Idle;
     private AutoSaveStatus _ruleAutoSaveStatus = AutoSaveStatus.Idle;
+    private AutoSaveStatus _storyAutoSaveStatus = AutoSaveStatus.Idle;
     private DateTimeOffset? _articleLastSavedAt;
     private DateTimeOffset? _ruleLastSavedAt;
+    private DateTimeOffset? _storyLastSavedAt;
     private string? _articleAutoSaveError;
     private string? _ruleAutoSaveError;
+    private string? _storyAutoSaveError;
     private bool _articleHasUnsavedChanges;
     private bool _ruleHasUnsavedChanges;
+    private bool _storyHasUnsavedChanges;
     private CancellationTokenSource? _articleAutoSaveCts;
     private CancellationTokenSource? _ruleAutoSaveCts;
+    private CancellationTokenSource? _storyAutoSaveCts;
 
     private IEnumerable<string> AllTags =>
         (_notes ?? [])
         .SelectMany(post => post.Tags)
         .Concat((_faq ?? []).SelectMany(rule => rule.Tags))
+        .Concat((_stories ?? []).SelectMany(story => story.Tags))
         .Distinct();
 
     protected override async Task OnInitializedAsync() {
@@ -219,6 +292,9 @@
 
         IEnumerable<FaqContent> faq = await FaqRepository.GetAllAsync(QueryConfig.WithHidden | QueryConfig.WithSoftDeleted);
         _faq = faq.ToList();
+
+        IEnumerable<StoryContent> stories = await StoryRepository.GetAllAsync(QueryConfig.WithHidden | QueryConfig.WithSoftDeleted);
+        _stories = stories.ToList();
     }
 
     private void OnNoteSelected(NoteContent? post) {
@@ -241,6 +317,16 @@
         OnRuleChanged();
     }
 
+    private void OnStorySelected(StoryContent? story) {
+        _selectedStory = story;
+    }
+
+    private void CreateNewStory() {
+        _selectedStory = StoryManager.NewWriting();
+        _stories?.Insert(0, _selectedStory);
+        OnStoryChanged();
+    }
+
     private void OnNoteDeleted(ContentDeleteResult<NoteContent> result) {
         if (!result.HardDelete || !result.Success || _notes is null) return;
 
@@ -259,11 +345,23 @@
         }
     }
 
+    private void OnStoryDeleted(ContentDeleteResult<StoryContent> result) {
+        if (!result.HardDelete || !result.Success || _stories is null) return;
+
+        _stories.Remove(result.Content);
+        if (_selectedStory == result.Content) {
+            _selectedStory = null;
+        }
+    }
+
     private async Task SaveAllWritings()
         => _ = await SaveAllWritingsInternal(showFeedback: true);
 
     private async Task SaveAllRules()
         => _ = await SaveAllRulesInternal(showFeedback: true);
+
+    private async Task SaveAllStories()
+        => _ = await SaveAllStoriesInternal(showFeedback: true);
 
     private async Task ExportWritingsJson() {
         if (_notes is null) return;
@@ -291,6 +389,19 @@
         await DownloadFile("index.json", json);
     }
 
+    private async Task ExportStoriesJson() {
+        if (_stories is null) return;
+
+        if (!StoryManager.Validate(_stories, out string? errorMessage)) {
+            Snackbar.Add(errorMessage!, Severity.Error);
+            return;
+        }
+
+        await StoryRepository.SaveAsync(_stories);
+        string json = await StoryRepository.GetAsJsonStringAsync();
+        await DownloadFile("index.json", json);
+    }
+
     private async Task CopyWritingsJson() {
         if (_notes is null) return;
 
@@ -303,6 +414,14 @@
         if (_faq is null) return;
 
         string json = await FaqRepository.GetAsJsonStringAsync();
+        await WebJs.CopyToClipboardAsync(json);
+        Snackbar.Add(Localizer[Shared.ContentManagerJsonCopied], Severity.Success);
+    }
+
+    private async Task CopyStoriesJson() {
+        if (_stories is null) return;
+
+        string json = await StoryRepository.GetAsJsonStringAsync();
         await WebJs.CopyToClipboardAsync(json);
         Snackbar.Add(Localizer[Shared.ContentManagerJsonCopied], Severity.Success);
     }
@@ -337,6 +456,21 @@
         }
     }
 
+    private async Task GenerateStoryStubs(bool writeToDisk) {
+        if (_selectedStory is null) return;
+
+        (Dictionary<string, string> Stubs, bool WroteAll) result = await StoryManager.GenerateStubsAsync(_selectedStory, writeToDisk);
+
+        if (writeToDisk) {
+            Snackbar.Add(result.WroteAll ? Localizer[Shared.ContentManagerMarkdownStubsSaved] : Localizer[Shared.ContentManagerIndexSaveFailed], result.WroteAll ? Severity.Success : Severity.Error);
+            return;
+        }
+
+        foreach (KeyValuePair<string, string> stub in result.Stubs) {
+            await DownloadFile($"{stub.Key}/{_selectedStory.MarkdownFileName}", stub.Value);
+        }
+    }
+
     private async Task DownloadFile(string fileName, string content) {
         await WebJs.DownloadFileAsync(fileName, content);
     }
@@ -359,11 +493,19 @@
         ScheduleRuleAutoSave();
     }
 
+    private void OnStoryChanged() {
+        _storyHasUnsavedChanges = true;
+        _storyAutoSaveStatus = AutoSaveStatus.Pending;
+        _storyAutoSaveError = null;
+        ScheduleStoryAutoSave();
+    }
+
     private void OnAutoSaveToggled(bool enabled) {
         _autoSaveEnabled = enabled;
         if (!enabled) {
             _articleAutoSaveCts?.Cancel();
             _ruleAutoSaveCts?.Cancel();
+            _storyAutoSaveCts?.Cancel();
             StateHasChanged();
             return;
         }
@@ -374,6 +516,10 @@
 
         if (_ruleHasUnsavedChanges) {
             ScheduleRuleAutoSave();
+        }
+
+        if (_storyHasUnsavedChanges) {
+            ScheduleStoryAutoSave();
         }
     }
 
@@ -413,6 +559,24 @@
         }, token);
     }
 
+    private void ScheduleStoryAutoSave() {
+        if (!_autoSaveEnabled || _stories is null) return;
+
+        _storyAutoSaveCts?.Cancel();
+        _storyAutoSaveCts = new CancellationTokenSource();
+        CancellationToken token = _storyAutoSaveCts.Token;
+
+        _ = Task.Run(async () => {
+            try {
+                await Task.Delay(TimeSpan.FromSeconds(2), token);
+                if (token.IsCancellationRequested) return;
+                await InvokeAsync(AutoSaveStoriesAsync);
+            }
+            catch (TaskCanceledException) {
+            }
+        }, token);
+    }
+
     private async Task AutoSaveWritingsAsync() {
         if (!_autoSaveEnabled || !_articleHasUnsavedChanges) return;
 
@@ -428,6 +592,15 @@
         _ruleAutoSaveStatus = AutoSaveStatus.Saving;
         StateHasChanged();
         await SaveAllRulesInternal(showFeedback: false);
+        StateHasChanged();
+    }
+
+    private async Task AutoSaveStoriesAsync() {
+        if (!_autoSaveEnabled || !_storyHasUnsavedChanges) return;
+
+        _storyAutoSaveStatus = AutoSaveStatus.Saving;
+        StateHasChanged();
+        await SaveAllStoriesInternal(showFeedback: false);
         StateHasChanged();
     }
 
@@ -489,6 +662,39 @@
         else {
             _ruleAutoSaveStatus = AutoSaveStatus.Error;
             _ruleAutoSaveError = Localizer[Shared.ContentManagerAutoSaveFailed].Value;
+            if (showFeedback) {
+                Snackbar.Add(Localizer[Shared.ContentManagerIndexSaveFailed], Severity.Error);
+            }
+        }
+
+        return success;
+    }
+
+    private async Task<bool> SaveAllStoriesInternal(bool showFeedback) {
+        if (_stories is null) return false;
+
+        if (!StoryManager.Validate(_stories, out string? errorMessage)) {
+            _storyAutoSaveStatus = AutoSaveStatus.Paused;
+            _storyAutoSaveError = errorMessage;
+            if (showFeedback) {
+                Snackbar.Add(errorMessage!, Severity.Error);
+            }
+            return false;
+        }
+
+        bool success = await StoryRepository.SaveAsync(_stories);
+        if (success) {
+            _storyHasUnsavedChanges = false;
+            _storyAutoSaveStatus = AutoSaveStatus.Saved;
+            _storyLastSavedAt = DateTimeOffset.Now;
+            _storyAutoSaveError = null;
+            if (showFeedback) {
+                Snackbar.Add(Localizer[Shared.ContentManagerIndexSaved], Severity.Success);
+            }
+        }
+        else {
+            _storyAutoSaveStatus = AutoSaveStatus.Error;
+            _storyAutoSaveError = Localizer[Shared.ContentManagerAutoSaveFailed].Value;
             if (showFeedback) {
                 Snackbar.Add(Localizer[Shared.ContentManagerIndexSaveFailed], Severity.Error);
             }

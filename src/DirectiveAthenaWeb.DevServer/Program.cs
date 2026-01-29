@@ -41,6 +41,7 @@ public static class Program {
         
         builder.Services.AddNoteContent();
         builder.Services.AddFaqContent();
+        builder.Services.AddStoryContent();
 
         // -------------------------------------------------------------------------------------------------------------
         // App
