@@ -2,12 +2,14 @@
 @* Imports
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @using DirectiveAthenaWeb.Components
+@using DirectiveAthenaWeb.Services.ContentStorage
 
 @namespace DirectiveAthenaWeb.Components.Layouts
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Descriptors
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @inject IDirectiveAthenaWebJs WebJs
+@inject IR2StatusTracker R2Status
 
 @inherits LayoutComponentBase
 @implements IDisposable
@@ -27,6 +29,11 @@
     <DrawerMenu @bind-Open="_drawerOpen"/>
 
     <MudMainContent Class="relative flex-grow-1 d-flex flex-column">
+        @if (R2Status.IsFallbackActive) {
+            <MudAlert Severity="Severity.Warning" Variant="Variant.Filled" Class="mx-6 mt-6 mb-2">
+                R2 is unreachable in development; using in-memory content until it reconnects.
+            </MudAlert>
+        }
         <div class="flex-grow-1">
             @Body
         </div>
@@ -43,6 +50,10 @@
     private bool _drawerOpen;
     private bool _isScrolled;
     private DotNetObjectReference<MainLayout>? _objRef;
+
+    protected override void OnInitialized() {
+        R2Status.StatusChanged += OnStatusChanged;
+    }
 
     protected override async Task OnAfterRenderAsync(bool firstRender) {
         if (firstRender) {
@@ -61,8 +72,13 @@
         StateHasChanged();
     }
 
+    private void OnStatusChanged() {
+        _ = InvokeAsync(StateHasChanged);
+    }
+
     public void Dispose() {
         _objRef?.Dispose();
+        R2Status.StatusChanged -= OnStatusChanged;
     }
 
 }

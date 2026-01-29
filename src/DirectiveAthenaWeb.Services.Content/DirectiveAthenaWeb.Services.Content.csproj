@@ -18,6 +18,7 @@
         </PackageReference>
         <PackageReference Include="CodeOfChaos.Extensions.MicrosoftLogging"/>
         <PackageReference Include="CodeOfChaos.Extensions"/>
+        <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" />
       <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
       <PackageReference Include="Microsoft.Extensions.Options" />
       <PackageReference Include="Minio" />

@@ -16,7 +16,6 @@ namespace DirectiveAthenaWeb.Content.Story.Services;
 internal class StoryContentManager(
     ILocalizationProvider localizationProvider,
     IContentStorageFactory storageFactory,
-    HttpClient http,
     IValidator<IEnumerable<StoryContent>> validator,
     ILogger<StoryContentManager> logger
 ) : IStoryContentManager {
@@ -42,9 +41,9 @@ internal class StoryContentManager(
 
     public async Task<string> GetRawMarkdownContentAsync(StoryContent article, string locale, CancellationToken ct = default) {
         try {
-            string path = _storage.GetMarkdownContentPath(locale, article.MarkdownFileName);
+            string path = _storage.GetMarkdownDiskPath(locale, article.MarkdownFileName);
             logger.Debug("Fetching markdown for article {Id} at {Path}.", article.Id, path);
-            return await http.GetStringAsync(path, ct);
+            return await _storage.ReadFileAsync(path, ct) ?? string.Empty;
         }
         catch (OperationCanceledException) when (ct.IsCancellationRequested) {
             logger.Debug("Markdown fetch canceled for article {Id} ({Locale}).", article.Id, locale);

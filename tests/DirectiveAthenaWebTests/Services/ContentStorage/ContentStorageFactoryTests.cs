@@ -4,6 +4,7 @@
 using DirectiveAthenaWeb.Services.Content;
 using DirectiveAthenaWeb.Services.ContentStorage;
 using DirectiveAthenaWeb.Services.Localization;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using NSubstitute;
@@ -25,8 +26,10 @@ public class ContentStorageFactoryTests {
         var logger = Substitute.For<ILogger>();
         var loggerFactory = Substitute.For<ILoggerFactory>();
         loggerFactory.CreateLogger(Arg.Any<string>()).Returns(logger);
+        var environment = Substitute.For<IHostEnvironment>();
+        environment.EnvironmentName.Returns(Environments.Development);
 
-        return new ContentStorageFactory(localizationProvider, options, httpClient, loggerFactory);
+        return new ContentStorageFactory(localizationProvider, options, httpClient, environment, loggerFactory);
     }
 
     // -----------------------------------------------------------------------------------------------------------------

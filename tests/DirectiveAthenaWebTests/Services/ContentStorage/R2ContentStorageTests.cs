@@ -43,12 +43,13 @@ public class R2ContentStorageTests {
         ILocalizationProvider? localizationProvider = null,
         HttpClient? httpClient = null,
         string categoryFolder = "content/notes",
-        string publicBaseUrl = "https://cdn.example.com/"
+        string publicBaseUrl = "https://cdn.example.com/",
+        bool allowInMemoryFallback = false
     ) {
         localizationProvider ??= CreateLocalizationProvider("en");
         var logger = Substitute.For<ILogger>();
         httpClient ??= new HttpClient(new TestHttpMessageHandler(_ => new HttpResponseMessage(HttpStatusCode.OK)));
-        return new R2ContentStorage(localizationProvider, options, categoryFolder, new Uri(publicBaseUrl), httpClient, minioClient, logger);
+        return new R2ContentStorage(localizationProvider, options, categoryFolder, new Uri(publicBaseUrl), httpClient, minioClient, logger, allowInMemoryFallback);
     }
 
     private static T? GetPrivateFieldValue<T>(object instance, string fieldName) {

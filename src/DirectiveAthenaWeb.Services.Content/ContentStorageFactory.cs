@@ -4,6 +4,7 @@
 using CodeOfChaos.Extensions.DependencyInjection;
 using DirectiveAthenaWeb.Services.ContentStorage;
 using DirectiveAthenaWeb.Services.Localization;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Minio;
@@ -17,7 +18,9 @@ public class ContentStorageFactory(
     ILocalizationProvider localizationProvider,
     IOptions<R2StorageOptions> r2Options,
     HttpClient httpClient,
-    ILoggerFactory loggerFactory
+    IHostEnvironment environment,
+    ILoggerFactory loggerFactory,
+    IR2StatusTracker? statusTracker = null
 ) : IContentStorageFactory {
     private const string ContentRoot = "content";
     private static bool _browserWarningLogged;
@@ -33,7 +36,9 @@ public class ContentStorageFactory(
             BuildPublicBaseUri(r2Options.Value, r2Logger),
             httpClient,
             CreateMinioClient(r2Options.Value, r2Logger),
-            r2Logger
+            r2Logger,
+            environment.IsDevelopment(),
+            statusTracker
         );
     }
     

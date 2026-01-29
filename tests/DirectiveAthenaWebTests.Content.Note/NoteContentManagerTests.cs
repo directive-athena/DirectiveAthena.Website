@@ -5,10 +5,8 @@ using DirectiveAthenaWeb.Content.Note;
 using DirectiveAthenaWeb.Content.Note.Services;
 using DirectiveAthenaWeb.Services.ContentStorage;
 using DirectiveAthenaWeb.Services.Localization;
-using DirectiveAthenaWebTests.Helpers;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
-using System.Net;
 
 namespace DirectiveAthenaWebTests.Content.Note;
 // ---------------------------------------------------------------------------------------------------------------------
@@ -37,14 +35,12 @@ public class NoteContentManagerTests {
 
     private static NoteContentManager CreateManager(
         ILocalizationProvider localizationProvider,
-        IContentStorage? storage = null,
-        HttpClient? http = null
+        IContentStorage? storage = null
     ) {
         storage ??= Substitute.For<IContentStorage>();
-        http ??= new HttpClient();
         var validator = new NoteContentCollectionValidator(new NoteContentValidator(localizationProvider));
         var logger = Substitute.For<ILogger<NoteContentManager>>();
-        return new NoteContentManager(localizationProvider, CreateStorageFactory(storage), http, validator, logger);
+        return new NoteContentManager(localizationProvider, CreateStorageFactory(storage), validator, logger);
     }
 
     // -----------------------------------------------------------------------------------------------------------------
@@ -98,9 +94,10 @@ public class NoteContentManagerTests {
     [Test]
     public async Task GetRawMarkdownContentAsync_ReturnsEmptyOnFailure() {
         // Arrange
-        var handler = new TestHttpMessageHandler(_ => new HttpResponseMessage(HttpStatusCode.InternalServerError));
-        var http = new HttpClient(handler) { BaseAddress = new Uri("http://localhost/") };
-        NoteContentManager manager = CreateManager(CreateLocalizationProvider("en"), http: http);
+        var storage = Substitute.For<IContentStorage>();
+        storage.ReadFileAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns(new ValueTask<string?>((string?)null));
+        NoteContentManager manager = CreateManager(CreateLocalizationProvider("en"), storage);
         NoteContent article = NoteFaker.Create(103);
 
         // Act

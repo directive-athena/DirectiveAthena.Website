@@ -16,7 +16,6 @@ namespace DirectiveAthenaWeb.Content.Faq.Services;
 internal class FaqContentManager(
     ILocalizationProvider localizationProvider,
     IContentStorageFactory storageFactory,
-    HttpClient http,
     IValidator<IEnumerable<FaqContent>> validator,
     ILogger<FaqContentManager> logger
 ) : IFaqContentManager {
@@ -35,9 +34,9 @@ internal class FaqContentManager(
 
     public async Task<string> GetRawMarkdownContentAsync(FaqContent rule, string locale, CancellationToken ct = default) {
         try {
-            string path = _storage.GetMarkdownContentPath(locale, rule.MarkdownFileName);
+            string path = _storage.GetMarkdownDiskPath(locale, rule.MarkdownFileName);
             logger.Debug("Fetching markdown for world rule {Id} at {Path}.", rule.Id, path);
-            return await http.GetStringAsync(path, ct);
+            return await _storage.ReadFileAsync(path, ct) ?? string.Empty;
         }
         catch (Exception ex) {
             logger.Warning(ex, "Failed to fetch markdown for world rule {Id} ({Locale}).", rule.Id, locale);

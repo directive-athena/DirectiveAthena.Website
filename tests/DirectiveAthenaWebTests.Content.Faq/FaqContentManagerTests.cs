@@ -5,11 +5,9 @@ using DirectiveAthenaWeb.Content.Faq;
 using DirectiveAthenaWeb.Content.Faq.Services;
 using DirectiveAthenaWeb.Services.ContentStorage;
 using DirectiveAthenaWeb.Services.Localization;
-using DirectiveAthenaWebTests.Helpers;
 using FluentValidation;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
-using System.Net;
 
 namespace DirectiveAthenaWebTests.Content.Faq;
 // ---------------------------------------------------------------------------------------------------------------------
@@ -38,14 +36,12 @@ public class FaqContentManagerTests {
     private static FaqContentManager CreateManager(
         ILocalizationProvider localizationProvider,
         IContentStorage? storage = null,
-        HttpClient? http = null,
         IValidator<IEnumerable<FaqContent>>? validator = null
     ) {
         storage ??= Substitute.For<IContentStorage>();
-        http ??= new HttpClient();
         validator ??= new FaqContentCollectionValidator(new FaqContentValidator(localizationProvider));
         var logger = Substitute.For<ILogger<FaqContentManager>>();
-        return new FaqContentManager(localizationProvider, CreateStorageFactory(storage), http, validator, logger);
+        return new FaqContentManager(localizationProvider, CreateStorageFactory(storage), validator, logger);
     }
 
     private static FaqContent CreateRule(int seed, bool includeNl = true) {
@@ -57,10 +53,10 @@ public class FaqContentManagerTests {
             Tags = ["tag-one"]
         };
 
-        if (includeNl) {
-            rule.Question["nl"] = $"Vraag {seed}";
-            rule.Answer["nl"] = $"Antwoord {seed}";
-        }
+        if (!includeNl) return rule;
+
+        rule.Question["nl"] = $"Vraag {seed}";
+        rule.Answer["nl"] = $"Antwoord {seed}";
 
         return rule;
     }
@@ -113,9 +109,10 @@ public class FaqContentManagerTests {
     [Test]
     public async Task GetRawMarkdownContentAsync_ReturnsEmptyOnFailure() {
         // Arrange
-        var handler = new TestHttpMessageHandler(_ => new HttpResponseMessage(HttpStatusCode.InternalServerError));
-        var http = new HttpClient(handler) { BaseAddress = new Uri("http://localhost/") };
-        FaqContentManager manager = CreateManager(CreateLocalizationProvider("en"), http: http);
+        var storage = Substitute.For<IContentStorage>();
+        storage.ReadFileAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns(new ValueTask<string?>((string?)null));
+        FaqContentManager manager = CreateManager(CreateLocalizationProvider("en"), storage);
         FaqContent rule = CreateRule(4);
 
         // Act
