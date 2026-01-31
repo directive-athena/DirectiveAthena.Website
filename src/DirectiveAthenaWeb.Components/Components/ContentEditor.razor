@@ -23,7 +23,7 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 <MudPaper Class="pa-6 card-glass no-hover">
     <div class="d-flex justify-space-between align-center mb-6">
-        <MudText Typo="Typo.h5">@string.Format(Localizer[Shared.EditorEditRule], Content.Id.ToString("D"))</MudText>
+        <MudText Typo="Typo.h5">@string.Format(Localizer[Shared.EditorEditItem], Content.Id.ToString("D"))</MudText>
         <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error"
                        OnClick="@DeleteContentAsync"/>
     </div>
@@ -32,7 +32,7 @@
         <MudItem xs="12" md="6">
             <MudTextField Value="@Content.Id.ToString("D")" Label="@Localizer[Shared.EditorUniqueId]"
                           Required="true" ReadOnly="true"
-                          HelperText="@Localizer[Shared.EditorIdHelperRule]"/>
+                          HelperText="@Localizer[Shared.EditorIdHelperItem]"/>
         </MudItem>
         <MudItem xs="12" md="6">
             <MudTextField Value="@FormatDate(Content.CreatedAt)" Label="@Localizer[Shared.EditorCreatedAtLabel]"
@@ -195,7 +195,7 @@
 
     private async Task DeleteContentAsync() {
         bool hardDelete = Content.IsSoftDeleted;
-        string confirmText = hardDelete ? Localizer[Shared.ContentManagerDeleteRuleHardConfirm] : Localizer[Shared.ContentManagerDeleteRuleSoftConfirm];
+        string confirmText = hardDelete ? Localizer[Shared.ContentManagerDeleteItemHardConfirm] : Localizer[Shared.ContentManagerDeleteItemSoftConfirm];
         bool confirm = await WebJs.ConfirmAsync(confirmText);
         if (!confirm) return;
 
@@ -206,7 +206,7 @@
 
             bool softDeleted = await Repository.SoftDeleteByIdAsync(Content.Id);
             Snackbar.Add(
-                softDeleted ? Localizer[Shared.ContentManagerDeleteRuleSoftSuccess] : Localizer[Shared.ContentManagerDeleteRuleSoftFailed],
+                softDeleted ? Localizer[Shared.ContentManagerDeleteItemSoftSuccess] : Localizer[Shared.ContentManagerDeleteItemSoftFailed],
                 softDeleted ? Severity.Success : Severity.Warning);
             NotifyContentChanged();
             return;
@@ -214,7 +214,7 @@
 
         bool success = await Repository.HardDeleteByIdAsync(Content.Id);
         Snackbar.Add(
-            success ? Localizer[Shared.ContentManagerDeleteRuleHardSuccess] : Localizer[Shared.ContentManagerDeleteRuleHardFailed],
+            success ? Localizer[Shared.ContentManagerDeleteItemHardSuccess] : Localizer[Shared.ContentManagerDeleteItemHardFailed],
             success ? Severity.Success : Severity.Warning);
         await OnDeleted.InvokeAsync(new ContentDeleteResult<TContent>(Content, true, success));
     }

@@ -303,59 +303,23 @@
     <data name="ContentManager.JsonCopied" xml:space="preserve">
     <value>JSON gekopieerd naar klembord</value>
   </data>
-    <data name="ContentManager.DeletePostSoftConfirm" xml:space="preserve">
-    <value>Dit bericht soft verwijderen? Het is niet zichtbaar voor bezoekers maar blijft zichtbaar in de manager.</value>
-  </data>
-    <data name="ContentManager.DeletePostSoftSuccess" xml:space="preserve">
-    <value>Bericht soft verwijderd.</value>
-  </data>
-    <data name="ContentManager.DeletePostSoftFailed" xml:space="preserve">
-    <value>Soft verwijderen van het bericht is mislukt.</value>
-  </data>
-    <data name="ContentManager.DeletePostHardConfirm" xml:space="preserve">
-    <value>Dit bericht en de bestanden permanent verwijderen?</value>
-  </data>
-    <data name="ContentManager.DeletePostHardSuccess" xml:space="preserve">
-    <value>Bericht permanent verwijderd.</value>
-  </data>
-    <data name="ContentManager.DeletePostHardFailed" xml:space="preserve">
-    <value>Bericht uit de lijst verwijderd, maar hard verwijderen is mislukt of was gedeeltelijk.</value>
-  </data>
-    <data name="ContentManager.DeleteRuleSoftConfirm" xml:space="preserve">
+    <data name="ContentManager.DeleteItemSoftConfirm" xml:space="preserve">
     <value>Deze regel soft verwijderen? Het is niet zichtbaar voor bezoekers maar blijft zichtbaar in de manager.</value>
   </data>
-    <data name="ContentManager.DeleteRuleSoftSuccess" xml:space="preserve">
+    <data name="ContentManager.DeleteItemSoftSuccess" xml:space="preserve">
     <value>Regel soft verwijderd.</value>
   </data>
-    <data name="ContentManager.DeleteRuleSoftFailed" xml:space="preserve">
+    <data name="ContentManager.DeleteItemSoftFailed" xml:space="preserve">
     <value>Soft verwijderen van de regel is mislukt.</value>
   </data>
-    <data name="ContentManager.DeleteRuleHardConfirm" xml:space="preserve">
+    <data name="ContentManager.DeleteItemHardConfirm" xml:space="preserve">
     <value>Deze regel en de bestanden permanent verwijderen?</value>
   </data>
-    <data name="ContentManager.DeleteRuleHardSuccess" xml:space="preserve">
+    <data name="ContentManager.DeleteItemHardSuccess" xml:space="preserve">
     <value>Regel permanent verwijderd.</value>
   </data>
-    <data name="ContentManager.DeleteRuleHardFailed" xml:space="preserve">
+    <data name="ContentManager.DeleteItemHardFailed" xml:space="preserve">
     <value>Regel uit de lijst verwijderd, maar hard verwijderen is mislukt of was gedeeltelijk.</value>
-  </data>
-    <data name="ContentManager.DeleteStorySoftConfirm" xml:space="preserve">
-    <value>Dit verhaal soft verwijderen? Het is niet zichtbaar voor bezoekers maar blijft zichtbaar in de manager.</value>
-  </data>
-    <data name="ContentManager.DeleteStorySoftSuccess" xml:space="preserve">
-    <value>Verhaal soft verwijderd.</value>
-  </data>
-    <data name="ContentManager.DeleteStorySoftFailed" xml:space="preserve">
-    <value>Soft verwijderen van het verhaal is mislukt.</value>
-  </data>
-    <data name="ContentManager.DeleteStoryHardConfirm" xml:space="preserve">
-    <value>Dit verhaal en de bestanden permanent verwijderen?</value>
-  </data>
-    <data name="ContentManager.DeleteStoryHardSuccess" xml:space="preserve">
-    <value>Verhaal permanent verwijderd.</value>
-  </data>
-    <data name="ContentManager.DeleteStoryHardFailed" xml:space="preserve">
-    <value>Verhaal uit de lijst verwijderd, maar hard verwijderen is mislukt of was gedeeltelijk.</value>
   </data>
     <data name="ContentManager.MarkdownStubsSaved" xml:space="preserve">
     <value>Markdown-stubs opgeslagen in R2!</value>
@@ -366,14 +330,8 @@
     <data name="ContentManager.MarkdownStubsDownload" xml:space="preserve">
     <value>Markdown-stubs downloaden</value>
   </data>
-    <data name="Editor.EditPost" xml:space="preserve">
-    <value>Bericht bewerken: {0}</value>
-  </data>
-    <data name="Editor.EditRule" xml:space="preserve">
+    <data name="Editor.EditItem" xml:space="preserve">
     <value>Regel bewerken: {0}</value>
-  </data>
-    <data name="Editor.EditStory" xml:space="preserve">
-    <value>Verhaal bewerken: {0}</value>
   </data>
     <data name="Editor.UniqueId" xml:space="preserve">
     <value>Unieke ID</value>
@@ -381,7 +339,7 @@
     <data name="Editor.IdHelperPost" xml:space="preserve">
     <value>GUID wordt automatisch gegenereerd voor nieuwe berichten.</value>
   </data>
-    <data name="Editor.IdHelperRule" xml:space="preserve">
+    <data name="Editor.IdHelperItem" xml:space="preserve">
     <value>GUID wordt automatisch gegenereerd voor nieuwe regels.</value>
   </data>
     <data name="Editor.IdHelperStory" xml:space="preserve">

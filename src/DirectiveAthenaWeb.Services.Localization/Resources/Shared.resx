@@ -303,59 +303,23 @@
     <data name="ContentManager.JsonCopied" xml:space="preserve">
     <value>JSON copied to clipboard</value>
   </data>
-    <data name="ContentManager.DeletePostSoftConfirm" xml:space="preserve">
-    <value>Soft delete this post? It will be hidden from visitors but still visible in the manager.</value>
-  </data>
-    <data name="ContentManager.DeletePostSoftSuccess" xml:space="preserve">
-    <value>Post soft deleted.</value>
-  </data>
-    <data name="ContentManager.DeletePostSoftFailed" xml:space="preserve">
-    <value>Failed to soft delete the post.</value>
-  </data>
-    <data name="ContentManager.DeletePostHardConfirm" xml:space="preserve">
-    <value>Permanently delete this post and its files?</value>
-  </data>
-    <data name="ContentManager.DeletePostHardSuccess" xml:space="preserve">
-    <value>Post permanently deleted.</value>
-  </data>
-    <data name="ContentManager.DeletePostHardFailed" xml:space="preserve">
-    <value>Post removed from the list, but the hard delete failed or was partial.</value>
-  </data>
-    <data name="ContentManager.DeleteRuleSoftConfirm" xml:space="preserve">
+    <data name="ContentManager.DeleteItemSoftConfirm" xml:space="preserve">
     <value>Soft delete this rule? It will be hidden from visitors but still visible in the manager.</value>
   </data>
-    <data name="ContentManager.DeleteRuleSoftSuccess" xml:space="preserve">
+    <data name="ContentManager.DeleteItemSoftSuccess" xml:space="preserve">
     <value>Rule soft deleted.</value>
   </data>
-    <data name="ContentManager.DeleteRuleSoftFailed" xml:space="preserve">
+    <data name="ContentManager.DeleteItemSoftFailed" xml:space="preserve">
     <value>Failed to soft delete the rule.</value>
   </data>
-    <data name="ContentManager.DeleteRuleHardConfirm" xml:space="preserve">
+    <data name="ContentManager.DeleteItemHardConfirm" xml:space="preserve">
     <value>Permanently delete this rule and its files?</value>
   </data>
-    <data name="ContentManager.DeleteRuleHardSuccess" xml:space="preserve">
-    <value>Rule permanently deleted.</value>
+    <data name="ContentManager.DeleteItemHardSuccess" xml:space="preserve">
+    <value>Item permanently deleted.</value>
   </data>
-    <data name="ContentManager.DeleteRuleHardFailed" xml:space="preserve">
-    <value>Rule removed from the list, but the hard delete failed or was partial.</value>
-  </data>
-    <data name="ContentManager.DeleteStorySoftConfirm" xml:space="preserve">
-    <value>Soft delete this story? It will be hidden from visitors but still visible in the manager.</value>
-  </data>
-    <data name="ContentManager.DeleteStorySoftSuccess" xml:space="preserve">
-    <value>Story soft deleted.</value>
-  </data>
-    <data name="ContentManager.DeleteStorySoftFailed" xml:space="preserve">
-    <value>Failed to soft delete the story.</value>
-  </data>
-    <data name="ContentManager.DeleteStoryHardConfirm" xml:space="preserve">
-    <value>Permanently delete this story and its files?</value>
-  </data>
-    <data name="ContentManager.DeleteStoryHardSuccess" xml:space="preserve">
-    <value>Story permanently deleted.</value>
-  </data>
-    <data name="ContentManager.DeleteStoryHardFailed" xml:space="preserve">
-    <value>Story removed from the list, but the hard delete failed or was partial.</value>
+    <data name="ContentManager.DeleteItemHardFailed" xml:space="preserve">
+    <value>Item removed from the list, but the hard delete failed or was partial.</value>
   </data>
     <data name="ContentManager.MarkdownStubsSaved" xml:space="preserve">
     <value>Markdown stubs saved to R2!</value>
@@ -366,26 +330,14 @@
     <data name="ContentManager.MarkdownStubsDownload" xml:space="preserve">
     <value>Download Markdown Stubs</value>
   </data>
-    <data name="Editor.EditPost" xml:space="preserve">
-    <value>Edit Post: {0}</value>
-  </data>
-    <data name="Editor.EditRule" xml:space="preserve">
+    <data name="Editor.EditItem" xml:space="preserve">
     <value>Edit Rule: {0}</value>
-  </data>
-    <data name="Editor.EditStory" xml:space="preserve">
-    <value>Edit Story: {0}</value>
   </data>
     <data name="Editor.UniqueId" xml:space="preserve">
     <value>Unique ID</value>
   </data>
-    <data name="Editor.IdHelperPost" xml:space="preserve">
-    <value>GUID is generated automatically for new posts.</value>
-  </data>
-    <data name="Editor.IdHelperRule" xml:space="preserve">
+    <data name="Editor.IdHelperItem" xml:space="preserve">
     <value>GUID is generated automatically for new rules.</value>
-  </data>
-    <data name="Editor.IdHelperStory" xml:space="preserve">
-    <value>GUID is generated automatically for new stories.</value>
   </data>
     <data name="Editor.CreatedAtLabel" xml:space="preserve">
     <value>Created (UTC)</value>
