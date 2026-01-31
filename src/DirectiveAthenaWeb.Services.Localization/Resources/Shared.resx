@@ -513,15 +513,6 @@
     <data name="Story.Detail.Chapters" xml:space="preserve">
     <value>Chapters</value>
   </data>
-    <data name="Story.Section1" xml:space="preserve">
-    <value>The main story follows the couple of Gray and Ruby as they navigate the UAC army. Their relationship struggles as Ruby joins the resistance and Gray has to deal with being a member of one of the most powerful families on Earth. All while the machinations on the Moon start to slowly engage more and more with the Earth and interfere with the everlasting war that has been going on on Earth. </value>
-  </data>
-    <data name="Story.Section2" xml:space="preserve">
-    <value>Follow along to continue the story</value>
-  </data>
-    <data name="Story.Back" xml:space="preserve">
-    <value>Back to Home</value>
-  </data>
     <data name="Contact.Title" xml:space="preserve">
     <value>Contact - Directive Athena</value>
   </data>
