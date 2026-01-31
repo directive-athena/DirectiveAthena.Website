@@ -31,16 +31,18 @@
                         <MudText Typo="Typo.caption" Class="opacity-50">@item.Id.ToString("D")</MudText>
                         <div class="d-flex align-center gap-1">
                             @if (ShowDeletedChip && item.IsSoftDeleted) {
-                                <MudChip T="string" Size="Size.Small" Color="Color.Error" Variant="Variant.Text"
-                                         Icon="@Icons.Material.Filled.Delete">@Localizer[Shared.ListDeleted]</MudChip>
+                                <MudChip T="string" Size="Size.Small" Color="Color.Error" Variant="Variant.Text" Icon="@Icons.Material.Filled.Delete">
+                                    @Localizer[Shared.ListDeleted]
+                                </MudChip>
                             }
                             @if (ShowHiddenChip && item.IsHidden) {
-                                <MudChip T="string" Size="Size.Small" Color="Color.Default" Variant="Variant.Text"
-                                         Icon="@Icons.Material.Filled.VisibilityOff">@Localizer[Shared.ListHidden]</MudChip>
+                                <MudChip T="string" Size="Size.Small" Color="Color.Default" Variant="Variant.Text" Icon="@Icons.Material.Filled.VisibilityOff">
+                                    @Localizer[Shared.ListHidden]
+                                </MudChip>
                             }
                             @if (HasMissingLocalizations(item)) {
-                                <MudChip T="string" Size="Size.Small" Color="Color.Warning"
-                                         Variant="Variant.Text">@Localizer[Shared.ListMissingNl]
+                                <MudChip T="string" Size="Size.Small" Color="Color.Warning" Variant="Variant.Text">
+                                         @Localizer[Shared.ListMissingNl]
                                 </MudChip>
                             }
                         </div>

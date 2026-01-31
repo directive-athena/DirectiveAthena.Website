@@ -23,7 +23,7 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 <MudPaper Class="pa-6 card-glass no-hover">
     <div class="d-flex justify-space-between align-center mb-6">
-        <MudText Typo="Typo.h5">@HeaderText</MudText>
+        <MudText Typo="Typo.h5">@string.Format(Localizer[Shared.EditorEditRule], Content.Id.ToString("D"))</MudText>
         <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error"
                        OnClick="@DeleteContentAsync"/>
     </div>
@@ -32,7 +32,7 @@
         <MudItem xs="12" md="6">
             <MudTextField Value="@Content.Id.ToString("D")" Label="@Localizer[Shared.EditorUniqueId]"
                           Required="true" ReadOnly="true"
-                          HelperText="@IdHelperText"/>
+                          HelperText="@Localizer[Shared.EditorIdHelperRule]"/>
         </MudItem>
         <MudItem xs="12" md="6">
             <MudTextField Value="@FormatDate(Content.CreatedAt)" Label="@Localizer[Shared.EditorCreatedAtLabel]"
@@ -68,9 +68,9 @@
         <MudItem xs="12">
             <MudDivider Class="my-4"/>
             <MudTextField Value="@Content.MarkdownFileName"
-                          Label="@MarkdownFileLabel"
+                          Label="@(string.Format(Localizer[Shared.EditorMarkdownFileLabel]))"
                           Required="true" ReadOnly="true"
-                          HelperText="@MarkdownFileHelper"/>
+                          HelperText="@Localizer[Shared.EditorMarkdownFileHelper]"/>
         </MudItem>
 
         @if (ShowTags) {
@@ -96,7 +96,7 @@
 
         <MudItem xs="12">
             <MudDivider Class="my-4"/>
-            <LocalizedMarkdownEditor Title="@MarkdownTitleText"
+            <LocalizedMarkdownEditor Title="@Localizer[Shared.MarkdownLabel]"
                                      FileName="@Content.MarkdownFileName"
                                      Storage="@Storage"
                                      LoadContentAsync="@LoadContentAsync"
@@ -129,32 +129,18 @@
     [Parameter, EditorRequired] public IList<string> Tags { get; set; } = null!;
     [Parameter, EditorRequired] public RenderFragment<LocalizationInfo> LocalizedFields { get; set; } = null!;
     [Parameter] public RenderFragment? AdditionalFields { get; set; }
-    [Parameter] public string HeaderText { get; set; } = "";
-    [Parameter] public string IdHelperText { get; set; } = "";
-    [Parameter] public string MarkdownFileLabel { get; set; } = "";
-    [Parameter] public string MarkdownFileHelper { get; set; } = "";
-    [Parameter] public string MarkdownTitle { get; set; } = "";
     [Parameter] public bool AlwaysShowLastModified { get; set; }
     [Parameter] public bool ShowHiddenToggle { get; set; }
     [Parameter] public bool ShowTags { get; set; } = true;
     [Parameter] public IContentStorage? Storage { get; set; }
     [Parameter] public Func<string, Task<string>>? LoadContentAsync { get; set; }
     [Parameter] public Func<string, string>? BuildDefaultContent { get; set; }
-    [Parameter, EditorRequired] public string SoftDeleteConfirmText { get; set; } = "";
-    [Parameter, EditorRequired] public string SoftDeleteSuccessText { get; set; } = "";
-    [Parameter, EditorRequired] public string SoftDeleteFailedText { get; set; } = "";
-    [Parameter, EditorRequired] public string HardDeleteConfirmText { get; set; } = "";
-    [Parameter, EditorRequired] public string HardDeleteSuccessText { get; set; } = "";
-    [Parameter, EditorRequired] public string HardDeleteFailedText { get; set; } = "";
     [Parameter] public EventCallback<bool> OnGenerateStubs { get; set; }
     [Parameter] public EventCallback OnTagsChanged { get; set; }
     [Parameter] public EventCallback OnContentChanged { get; set; }
     [Parameter] public EventCallback<ContentDeleteResult<TContent>> OnDeleted { get; set; }
 
     private string _newTag = "";
-    private string MarkdownTitleText => string.IsNullOrWhiteSpace(MarkdownTitle)
-        ? Localizer[Shared.MarkdownLabel]
-        : MarkdownTitle;
     private bool ShowLastModified => AlwaysShowLastModified || Content.LastModifiedAt != DateTime.MinValue;
 
     private void AddTag() {
@@ -209,7 +195,7 @@
 
     private async Task DeleteContentAsync() {
         bool hardDelete = Content.IsSoftDeleted;
-        string confirmText = hardDelete ? HardDeleteConfirmText : SoftDeleteConfirmText;
+        string confirmText = hardDelete ? Localizer[Shared.ContentManagerDeleteRuleHardConfirm] : Localizer[Shared.ContentManagerDeleteRuleSoftConfirm];
         bool confirm = await WebJs.ConfirmAsync(confirmText);
         if (!confirm) return;
 
@@ -220,7 +206,7 @@
 
             bool softDeleted = await Repository.SoftDeleteByIdAsync(Content.Id);
             Snackbar.Add(
-                softDeleted ? SoftDeleteSuccessText : SoftDeleteFailedText,
+                softDeleted ? Localizer[Shared.ContentManagerDeleteRuleSoftSuccess] : Localizer[Shared.ContentManagerDeleteRuleSoftFailed],
                 softDeleted ? Severity.Success : Severity.Warning);
             NotifyContentChanged();
             return;
@@ -228,7 +214,7 @@
 
         bool success = await Repository.HardDeleteByIdAsync(Content.Id);
         Snackbar.Add(
-            success ? HardDeleteSuccessText : HardDeleteFailedText,
+            success ? Localizer[Shared.ContentManagerDeleteRuleHardSuccess] : Localizer[Shared.ContentManagerDeleteRuleHardFailed],
             success ? Severity.Success : Severity.Warning);
         await OnDeleted.InvokeAsync(new ContentDeleteResult<TContent>(Content, true, success));
     }
