@@ -112,7 +112,8 @@ public class FaqContentRepositoryTests {
         FaqContent[] rules = [CreateRule(10)];
 
         // Act
-        bool result = await repo.SaveAsync(rules);
+        await repo.AddOrUpdateRangeAsync(rules);
+        bool result = await repo.SaveAsync();
 
         // Assert
         await Assert.That(result).IsTrue();
@@ -130,7 +131,8 @@ public class FaqContentRepositoryTests {
         FaqContent[] rules = [CreateRule(11)];
 
         // Act
-        bool result = await repo.SaveAsync(rules);
+        await repo.AddOrUpdateRangeAsync(rules);
+        bool result = await repo.SaveAsync();
 
         // Assert
         await Assert.That(result).IsFalse();
@@ -149,7 +151,8 @@ public class FaqContentRepositoryTests {
         rule.LastModifiedAt = DateTime.MinValue;
 
         // Act
-        bool result = await repo.SaveAsync([rule]);
+        await repo.AddOrUpdateAsync(rule);
+        bool result = await repo.SaveAsync();
 
         // Assert
         await Assert.That(result).IsTrue();
@@ -170,7 +173,8 @@ public class FaqContentRepositoryTests {
         rule.LastModifiedAt = DateTime.MinValue;
 
         // Act
-        bool result = await repo.SaveAsync([rule]);
+        await repo.AddOrUpdateAsync(rule);
+        bool result = await repo.SaveAsync();
 
         // Assert
         await Assert.That(result).IsTrue();
@@ -218,7 +222,7 @@ public class FaqContentRepositoryTests {
         var repo = new FaqContentRepository(storage, logger);
 
         // Act
-        bool result = await repo.DeleteByIdAsync(rule.Id);
+        bool result = await repo.SoftDeleteByIdAsync(rule.Id);
 
         // Assert
         await Assert.That(result).IsTrue();
@@ -238,7 +242,7 @@ public class FaqContentRepositoryTests {
         var repo = new FaqContentRepository(storage, logger);
 
         // Act
-        bool result = await repo.DeleteByIdAsync(rule.Id);
+        bool result = await repo.SoftDeleteByIdAsync(rule.Id);
 
         // Assert
         await Assert.That(result).IsFalse();

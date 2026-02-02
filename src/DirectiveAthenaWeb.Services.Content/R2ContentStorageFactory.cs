@@ -14,7 +14,7 @@ namespace DirectiveAthenaWeb.Services.Content;
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
 [InjectableScoped<IContentStorageFactory>]
-public class ContentStorageFactory(
+public class R2ContentStorageFactory(
     ILocalizationProvider localizationProvider,
     IOptions<R2StorageOptions> r2Options,
     HttpClient httpClient,

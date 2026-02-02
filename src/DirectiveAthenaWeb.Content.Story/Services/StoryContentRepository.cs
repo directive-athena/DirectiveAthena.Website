@@ -16,4 +16,4 @@ namespace DirectiveAthenaWeb.Content.Story.Services;
 internal class StoryContentRepository(
     [FromKeyedServices("story")] IContentStorage storage,
     ILogger<StoryContentRepository> logger
-) : ContentRepository<StoryContent>(storage, logger), IStoryContentRepository;
+) : ContentRepositoryBase<StoryContent>(storage, logger), IStoryContentRepository;

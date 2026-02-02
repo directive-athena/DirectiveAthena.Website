@@ -49,14 +49,14 @@
                 <MudProgressCircular Color="Color.Secondary" Indeterminate="true" Size="Size.Large"/>
             </div>
         }
-        else if (!FilteredRules.Any()) {
+        else if (!FilteredFaqs.Any()) {
             <MudCard Class="card-glass pa-8 text-center border-dashed">
                 <MudText Typo="Typo.h6" Class="opacity-70">@LocalizerShared[Shared.FaqEmpty]</MudText>
             </MudCard>
         }
         else {
             <MudExpansionPanels MultiExpansion="true">
-                @foreach (FaqView rule in FilteredRules) {
+                @foreach (FaqView rule in FilteredFaqs) {
                     <MudExpansionPanel Class="card-glass mb-4">
                         <TitleContent>
                             <div class="d-flex flex-column gap-2">
@@ -104,43 +104,43 @@
 
     protected override async Task OnInitializedAsync() {
         IEnumerable<FaqContent> rules = await FaqRepository.GetAllAsync();
-        List<FaqView> viewRules = new();
+        List<FaqView> viewFaqs = new();
         string locale = LocalizationProvider.GetCurrentLocalization().Code;
 
         foreach (FaqContent rule in rules) {
             string content = await FaqManager.GetRawMarkdownContentAsync(rule, locale);
-            viewRules.Add(new FaqView(
+            viewFaqs.Add(new FaqView(
                 rule,
                 FaqManager.GetLocalizedQuestion(rule),
                 FaqManager.GetLocalizedAnswer(rule),
                 content));
         }
 
-        _rules = viewRules;
+        _rules = viewFaqs;
     }
 
-    private IEnumerable<FaqView> OrderedRules =>
+    private IEnumerable<FaqView> OrderedFaqs =>
         (_rules ?? [])
         .OrderByDescending(rule => rule.SortDate)
         .ThenBy(rule => rule.Title);
 
-    private IEnumerable<FaqView> FilteredRules =>
+    private IEnumerable<FaqView> FilteredFaqs =>
         string.IsNullOrEmpty(_selectedTag)
-            ? OrderedRules
-            : OrderedRules.Where(rule => rule.Tags.Contains(_selectedTag));
+            ? OrderedFaqs
+            : OrderedFaqs.Where(rule => rule.Tags.Contains(_selectedTag));
 
     private void FilterByTag(string tag) => _selectedTag = tag;
     private void ClearTag() => _selectedTag = null;
 
     private record FaqView(
-        FaqContent Rule,
+        FaqContent Faq,
         string Title,
         string Summary,
         string Content
     ) {
-        public DateTime SortDate => Rule.LastModifiedAt;
-        public string Date => FormatDate(Rule.LastModifiedAt);
-        public List<string> Tags => Rule.Tags;
+        public DateTime SortDate => Faq.LastModifiedAt;
+        public string Date => FormatDate(Faq.LastModifiedAt);
+        public List<string> Tags => Faq.Tags.ToList();
     }
 
     private static string FormatDate(DateTime date)

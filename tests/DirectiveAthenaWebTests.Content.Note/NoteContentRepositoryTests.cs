@@ -267,7 +267,8 @@ public class NoteContentRepositoryTests {
         NoteContent[] notes = [NoteFaker.Create(21)];
 
         // Act
-        bool result = await repo.SaveAsync(notes);
+        await repo.AddOrUpdateRangeAsync(notes);
+        bool result = await repo.SaveAsync();
 
         // Assert
         await Assert.That(result).IsTrue();
@@ -285,7 +286,8 @@ public class NoteContentRepositoryTests {
         NoteContent[] notes = [NoteFaker.Create(22)];
 
         // Act
-        bool result = await repo.SaveAsync(notes);
+        await repo.AddOrUpdateRangeAsync(notes);
+        bool result = await repo.SaveAsync();
 
         // Assert
         await Assert.That(result).IsFalse();
@@ -304,7 +306,8 @@ public class NoteContentRepositoryTests {
         article.LastModifiedAt = DateTime.MinValue;
 
         // Act
-        bool result = await repo.SaveAsync([article]);
+        await repo.AddOrUpdateAsync(article);
+        bool result = await repo.SaveAsync();
 
         // Assert
         await Assert.That(result).IsTrue();
@@ -325,7 +328,8 @@ public class NoteContentRepositoryTests {
         article.LastModifiedAt = DateTime.MinValue;
 
         // Act
-        bool result = await repo.SaveAsync([article]);
+        await repo.AddOrUpdateAsync(article);
+        bool result = await repo.SaveAsync();
 
         // Assert
         await Assert.That(result).IsTrue();
@@ -373,7 +377,8 @@ public class NoteContentRepositoryTests {
         var repo = new NoteContentRepository(storage, logger);
 
         // Act
-        bool result = await repo.DeleteByIdAsync(article.Id);
+        await repo.SoftDeleteByIdAsync(article.Id);
+        bool result = await repo.SaveAsync();
 
         // Assert
         await Assert.That(result).IsTrue();
@@ -393,7 +398,8 @@ public class NoteContentRepositoryTests {
         var repo = new NoteContentRepository(storage, logger);
 
         // Act
-        bool result = await repo.DeleteByIdAsync(article.Id);
+        await repo.SoftDeleteByIdAsync(article.Id);
+        bool result = await repo.SaveAsync();
 
         // Assert
         await Assert.That(result).IsFalse();

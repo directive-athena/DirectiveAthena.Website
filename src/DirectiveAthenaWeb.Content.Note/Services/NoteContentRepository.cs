@@ -16,4 +16,4 @@ namespace DirectiveAthenaWeb.Content.Note.Services;
 internal class NoteContentRepository(
     [FromKeyedServices("note")] IContentStorage storage,
     ILogger<NoteContentRepository> logger
-) : ContentRepository<NoteContent>(storage, logger), INoteContentRepository;
+) : ContentRepositoryBase<NoteContent>(storage, logger), INoteContentRepository;

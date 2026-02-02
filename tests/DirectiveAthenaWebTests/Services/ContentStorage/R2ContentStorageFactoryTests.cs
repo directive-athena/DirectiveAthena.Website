@@ -13,8 +13,8 @@ namespace DirectiveAthenaWebTests.Services.ContentStorage;
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
-public class ContentStorageFactoryTests {
-    private static ContentStorageFactory GetFakeFactory() {
+public class R2ContentStorageFactoryTests {
+    private static R2ContentStorageFactory GetFakeFactory() {
         var localizationProvider = Substitute.For<ILocalizationProvider>();
         IOptions<R2StorageOptions> options = Options.Create(new R2StorageOptions {
             PublicBaseUrl = "https://cdn.example.com/",
@@ -29,7 +29,7 @@ public class ContentStorageFactoryTests {
         var environment = Substitute.For<IHostEnvironment>();
         environment.EnvironmentName.Returns(Environments.Development);
 
-        return new ContentStorageFactory(localizationProvider, options, httpClient, environment, loggerFactory);
+        return new R2ContentStorageFactory(localizationProvider, options, httpClient, environment, loggerFactory);
     }
 
     // -----------------------------------------------------------------------------------------------------------------
@@ -41,7 +41,7 @@ public class ContentStorageFactoryTests {
     [Arguments("story", "https://cdn.example.com/content/story/index.json")]
     public async Task ForCategory_BuildsIndexPath(string category, string expectedUrl) {
         // Arrange
-        ContentStorageFactory factory = GetFakeFactory();
+        R2ContentStorageFactory factory = GetFakeFactory();
         
         // Act
         IContentStorage storage = factory.ForCategory(category);

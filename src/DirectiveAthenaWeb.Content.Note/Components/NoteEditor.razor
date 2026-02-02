@@ -1,77 +1,75 @@
-@* ------------------------------------------------------------------------------------------------------------------ *@
-@* Imports *@
-@* ------------------------------------------------------------------------------------------------------------------ *@
-@using DirectiveAthenaWeb.Services.Content
-@using DirectiveAthenaWeb.Services.ContentStorage
-@using DirectiveAthenaWeb.Services.Localization.Resources
-@using Microsoft.Extensions.Localization
-
-@namespace DirectiveAthenaWeb.Content.Note
-@* ------------------------------------------------------------------------------------------------------------------ *@
-@* Descriptors *@
-@* ------------------------------------------------------------------------------------------------------------------ *@
-@inject INoteContentManager NoteManager
-@inject IContentStorageFactory ContentStorageFactory
-@inject IStringLocalizer<Shared> Localizer
-
-@inherits ContentEditorComponentBase<NoteContent>
-@* ------------------------------------------------------------------------------------------------------------------ *@
-@* Html *@
-@* ------------------------------------------------------------------------------------------------------------------ *@
-<ContentEditor TContent="NoteContent" Content="@Note"
-               Tags="@Note.Tags"
-               Storage="@_storage"
-               LoadContentAsync="@((string locale) => NoteManager.GetRawMarkdownContentAsync(Note, locale))"
-               BuildDefaultContent="@BuildDefaultMarkdown"
-               OnGenerateStubs="OnGenerateStubs"
-               OnTagsChanged="OnTagsChanged"
-               OnContentChanged="OnContentChanged"
-               OnDeleted="OnDeleted"
-               ShowHiddenToggle="true">
-    <LocalizedFields Context="culture">
-        <MudTextField Value="@GetTitle(culture.Code)"
-                      ValueChanged="@((string s) => SetTitle(culture.Code, s))"
-                      Label="@($"{Localizer[Shared.EditorTitleLabel]} ({culture.Code})")"
-                      Required="@(LocalizationProvider.IsDefaultCultureCode(culture.Code))"/>
-        <MudTextField Value="@GetSummary(culture.Code)"
-                      ValueChanged="@((string s) => SetSummary(culture.Code, s))"
-                      Label="@($"{Localizer[Shared.EditorSummaryLabel]} ({culture.Code})")"
-                      Required="@(LocalizationProvider.IsDefaultCultureCode(culture.Code))" Lines="3"/>
-    </LocalizedFields>
-</ContentEditor>
-
-@* ------------------------------------------------------------------------------------------------------------------ *@
-@* Code *@
-@* ------------------------------------------------------------------------------------------------------------------ *@
-
-@code {
-    [Parameter, EditorRequired] public NoteContent Note { get => Content; set => Content = value; }
-    [Parameter] public EventCallback<bool> OnGenerateStubs { get; set; }
-    [Parameter] public EventCallback<ContentDeleteResult<NoteContent>> OnDeleted { get; set; }
-
-    private IContentStorage _storage = null!;
-
-    protected override void OnInitialized() {
-        _storage = ContentStorageFactory.ForCategory("note");
-    }
-
-    // -----------------------------------------------------------------------------------------------------------------
-    // Methods
-    // -----------------------------------------------------------------------------------------------------------------
-    private string GetTitle(string culture)
-        => Note.Title.GetValueOrDefault(culture) ?? "";
-    private void SetTitle(string culture, string value)
-        => SetLocalizedValue(Note.Title, culture, value);
-
-    private string GetSummary(string culture)
-        => Note.Summary.GetValueOrDefault(culture) ?? "";
-    private void SetSummary(string culture, string value)
-        => SetLocalizedValue(Note.Summary, culture, value);
-
-    private string BuildDefaultMarkdown(string locale) {
-        string title = Note.Title.GetValueOrDefault(locale) ?? Localizer[Shared.EditorNewPostTitle];
-        string summary = Note.Summary.GetValueOrDefault(locale) ?? "";
-        return $"# {title}\n\n{summary}";
-    }
-
-}
+@* $1$ ------------------------------------------------------------------------------------------------------------------ #1# *@
+@* $1$ Imports #1# *@
+@* $1$ ------------------------------------------------------------------------------------------------------------------ #1# *@
+@* @using DirectiveAthenaWeb.Services.ContentStorage *@
+@* @using DirectiveAthenaWeb.Services.Localization.Resources *@
+@* @using Microsoft.Extensions.Localization *@
+@* *@
+@* @namespace DirectiveAthenaWeb.Content.Note *@
+@* $1$ ------------------------------------------------------------------------------------------------------------------ #1# *@
+@* $1$ Descriptors #1# *@
+@* $1$ ------------------------------------------------------------------------------------------------------------------ #1# *@
+@* @inject INoteContentManager NoteManager *@
+@* @inject IContentStorageFactory ContentStorageFactory *@
+@* @inject IStringLocalizer<Shared> Localizer *@
+@* *@
+@* $1$ ------------------------------------------------------------------------------------------------------------------ #1# *@
+@* $1$ Html #1# *@
+@* $1$ ------------------------------------------------------------------------------------------------------------------ #1# *@
+@* <ContentEditor TContent="NoteContent" Content="@Note" *@
+@*                Tags="@Note.Tags" *@
+@*                Storage="@_storage" *@
+@*                LoadContentAsync="@((string locale) => NoteManager.GetRawMarkdownContentAsync(Note, locale))" *@
+@*                BuildDefaultContent="@BuildDefaultMarkdown" *@
+@*                OnGenerateStubs="OnGenerateStubs" *@
+@*                OnTagsChanged="OnTagsChanged" *@
+@*                OnContentChanged="OnContentChanged" *@
+@*                OnDeleted="OnDeleted" *@
+@*                ShowHiddenToggle="true"> *@
+@*     <LocalizedFields Context="culture"> *@
+@*         <MudTextField Value="@GetTitle(culture.Code)" *@
+@*                       ValueChanged="@((string s) => SetTitle(culture.Code, s))" *@
+@*                       Label="@($"{Localizer[Shared.EditorTitleLabel]} ({culture.Code})")" *@
+@*                       Required="@(LocalizationProvider.IsDefaultCultureCode(culture.Code))"/> *@
+@*         <MudTextField Value="@GetSummary(culture.Code)" *@
+@*                       ValueChanged="@((string s) => SetSummary(culture.Code, s))" *@
+@*                       Label="@($"{Localizer[Shared.EditorSummaryLabel]} ({culture.Code})")" *@
+@*                       Required="@(LocalizationProvider.IsDefaultCultureCode(culture.Code))" Lines="3"/> *@
+@*     </LocalizedFields> *@
+@* </ContentEditor> *@
+@* *@
+@* $1$ ------------------------------------------------------------------------------------------------------------------ #1# *@
+@* $1$ Code #1# *@
+@* $1$ ------------------------------------------------------------------------------------------------------------------ #1# *@
+@* *@
+@* @code { *@
+@*     [Parameter, EditorRequired] public NoteContent Note { get => Content; set => Content = value; } *@
+@*     [Parameter] public EventCallback<bool> OnGenerateStubs { get; set; } *@
+@*     [Parameter] public EventCallback<ContentDeleteResult<NoteContent>> OnDeleted { get; set; } *@
+@* *@
+@*     private IContentStorage _storage = null!; *@
+@* *@
+@*     protected override void OnInitialized() { *@
+@*         _storage = ContentStorageFactory.ForCategory("note"); *@
+@*     } *@
+@* *@
+@*     // ----------------------------------------------------------------------------------------------------------------- *@
+@*     // Methods *@
+@*     // ----------------------------------------------------------------------------------------------------------------- *@
+@*     private string GetTitle(string culture) *@
+@*         => Note.Title.GetValueOrDefault(culture) ?? ""; *@
+@*     private void SetTitle(string culture, string value) *@
+@*         => SetLocalizedValue(Note.Title, culture, value); *@
+@* *@
+@*     private string GetSummary(string culture) *@
+@*         => Note.Summary.GetValueOrDefault(culture) ?? ""; *@
+@*     private void SetSummary(string culture, string value) *@
+@*         => SetLocalizedValue(Note.Summary, culture, value); *@
+@* *@
+@*     private string BuildDefaultMarkdown(string locale) { *@
+@*         string title = Note.Title.GetValueOrDefault(locale) ?? Localizer[Shared.EditorNewPostTitle]; *@
+@*         string summary = Note.Summary.GetValueOrDefault(locale) ?? ""; *@
+@*         return $"# {title}\n\n{summary}"; *@
+@*     } *@
+@* *@
+@* } *@

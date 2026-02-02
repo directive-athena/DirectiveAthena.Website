@@ -1,11 +1,25 @@
 ﻿// ---------------------------------------------------------------------------------------------------------------------
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
-namespace DirectiveAthenaWeb.Content.Note;
+namespace DirectiveAthenaWeb.Services.Content;
+
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
-public class NoteContent : ContentBase {
-    public Dictionary<string, string> Title { get; set; } = new();
-    public Dictionary<string, string> Summary { get; set; } = new();
+public interface IContent {
+    Guid Id { get; }
+    
+    IReadOnlyCollection<string> Tags { get; }
+    
+    DateTime HiddenAt { get; }
+    DateTime SoftDeletedAt { get; }
+    DateTime CreatedAt { get; }
+    DateTime LastModifiedAt { get; }
+    
+    bool IsHidden { get; }
+    bool IsSoftDeleted { get; }
+    string MarkdownFileName { get; }
+    
+    bool AddTag(string tag);
+    bool RemoveTag(string tag);
 }

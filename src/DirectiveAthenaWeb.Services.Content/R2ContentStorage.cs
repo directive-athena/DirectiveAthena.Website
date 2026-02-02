@@ -31,8 +31,6 @@ public class R2ContentStorage(
     private readonly bool _canWrite = options.CanWrite;
     private readonly Uri? _proxyUploadEndpoint = BuildProxyEndpoint(options.ProxyEndpoint, "upload");
     private readonly Uri? _proxyDeleteEndpoint = BuildProxyEndpoint(options.ProxyEndpoint, "delete");
-    private readonly bool _allowInMemoryFallback = allowInMemoryFallback;
-    private readonly IR2StatusTracker? _statusTracker = statusTracker;
     private readonly ConcurrentDictionary<string, InMemoryFile> _inMemoryFiles = new(StringComparer.Ordinal);
     private volatile bool _useInMemoryFallback;
     private readonly JsonSerializerOptions _jsonOptions = new() {
@@ -60,7 +58,7 @@ public class R2ContentStorage(
                 ? null
                 : await response.Content.ReadAsStringAsync(ct);
 
-            if (_allowInMemoryFallback && response.IsSuccessStatusCode && !string.IsNullOrWhiteSpace(content)) {
+            if (allowInMemoryFallback && response.IsSuccessStatusCode && !string.IsNullOrWhiteSpace(content)) {
                 StoreInMemory(GetIndexDiskPath(), content, response.Headers.ETag, response.Content.Headers.LastModified);
             }
 
@@ -71,7 +69,7 @@ public class R2ContentStorage(
                 response.Content.Headers.LastModified
             );
         }
-        catch (Exception ex) when (IsConnectionFailure(ex, ct) && _allowInMemoryFallback) {
+        catch (Exception ex) when (IsConnectionFailure(ex, ct) && allowInMemoryFallback) {
             ActivateInMemoryFallback(ex);
             return ReadIndexFromMemory(etag, lastModifiedUtc);
         }
@@ -113,12 +111,12 @@ public class R2ContentStorage(
                 .WithContentType(ResolveContentType(key));
 
             await minioClient.PutObjectAsync(putArgs, ct);
-            if (_allowInMemoryFallback) {
+            if (allowInMemoryFallback) {
                 StoreInMemory(relativePath, content);
             }
             return true;
         }
-        catch (Exception ex) when (IsConnectionFailure(ex, ct) && _allowInMemoryFallback) {
+        catch (Exception ex) when (IsConnectionFailure(ex, ct) && allowInMemoryFallback) {
             ActivateInMemoryFallback(ex);
             StoreInMemory(relativePath, content);
             return true;
@@ -156,12 +154,12 @@ public class R2ContentStorage(
                 .WithObject(key);
 
             await minioClient.RemoveObjectAsync(deleteArgs, ct);
-            if (_allowInMemoryFallback) {
+            if (allowInMemoryFallback) {
                 RemoveFromMemory(relativePath);
             }
             return true;
         }
-        catch (Exception ex) when (IsConnectionFailure(ex, ct) && _allowInMemoryFallback) {
+        catch (Exception ex) when (IsConnectionFailure(ex, ct) && allowInMemoryFallback) {
             ActivateInMemoryFallback(ex);
             RemoveFromMemory(relativePath);
             return true;
@@ -201,13 +199,13 @@ public class R2ContentStorage(
             if (!response.IsSuccessStatusCode) return null;
 
             string content = await response.Content.ReadAsStringAsync(ct);
-            if (_allowInMemoryFallback && !string.IsNullOrWhiteSpace(content)) {
+            if (allowInMemoryFallback && !string.IsNullOrWhiteSpace(content)) {
                 StoreInMemory(relativePath, content);
             }
 
             return content;
         }
-        catch (Exception ex) when (IsConnectionFailure(ex, ct) && _allowInMemoryFallback) {
+        catch (Exception ex) when (IsConnectionFailure(ex, ct) && allowInMemoryFallback) {
             ActivateInMemoryFallback(ex);
             return ReadFromMemory(relativePath);
         }
@@ -251,12 +249,12 @@ public class R2ContentStorage(
 
         try {
             using HttpResponseMessage response = await httpClient.SendAsync(request, ct);
-            if (_allowInMemoryFallback && response.IsSuccessStatusCode) {
+            if (allowInMemoryFallback && response.IsSuccessStatusCode) {
                 StoreInMemory(key, content);
             }
             return response.IsSuccessStatusCode;
         }
-        catch (Exception ex) when (IsConnectionFailure(ex, ct) && _allowInMemoryFallback) {
+        catch (Exception ex) when (IsConnectionFailure(ex, ct) && allowInMemoryFallback) {
             ActivateInMemoryFallback(ex);
             StoreInMemory(key, content);
             return true;
@@ -274,12 +272,12 @@ public class R2ContentStorage(
 
         try {
             using HttpResponseMessage response = await httpClient.SendAsync(request, ct);
-            if (_allowInMemoryFallback && response.IsSuccessStatusCode) {
+            if (allowInMemoryFallback && response.IsSuccessStatusCode) {
                 RemoveFromMemory(key);
             }
             return response.IsSuccessStatusCode;
         }
-        catch (Exception ex) when (IsConnectionFailure(ex, ct) && _allowInMemoryFallback) {
+        catch (Exception ex) when (IsConnectionFailure(ex, ct) && allowInMemoryFallback) {
             ActivateInMemoryFallback(ex);
             RemoveFromMemory(key);
             return true;
@@ -302,7 +300,7 @@ public class R2ContentStorage(
         if (_useInMemoryFallback) return;
 
         _useInMemoryFallback = true;
-        _statusTracker?.ActivateFallback(exception?.Message);
+        statusTracker?.ActivateFallback(exception?.Message);
         if (exception is null) {
             logger.Information("R2 fallback activated for {Folder}; using in-memory content store.", categoryFolder);
             return;

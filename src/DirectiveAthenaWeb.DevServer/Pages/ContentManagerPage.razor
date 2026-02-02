@@ -98,11 +98,11 @@
 
                     <MudItem xs="12" md="8">
                         @if (_selectedWriting is not null) {
-                            <NoteEditor Note="_selectedWriting"
-                                           OnGenerateStubs="GenerateWritingStubs"
-                                           OnTagsChanged="OnTagsChanged"
-                                           OnContentChanged="OnWritingChanged"
-                                           OnDeleted="OnNoteDeleted"/>
+                            @* <NoteEditor Note="_selectedWriting" *@
+                            @*                OnGenerateStubs="GenerateWritingStubs" *@
+                            @*                OnTagsChanged="OnTagsChanged" *@
+                            @*                OnContentChanged="OnWritingChanged" *@
+                            @*                OnDeleted="OnNoteDeleted"/> *@
                         }
                         else {
                             <MudAlert Severity="Severity.Info" Variant="Variant.Outlined">
@@ -222,11 +222,11 @@
 
                     <MudItem xs="12" md="8">
                         @if (_selectedStory is not null) {
-                            <StoryEditor Story="_selectedStory"
-                                         OnGenerateStubs="GenerateStoryStubs"
-                                         OnTagsChanged="OnTagsChanged"
-                                         OnContentChanged="OnStoryChanged"
-                                         OnDeleted="OnStoryDeleted"/>
+                            @* <StoryEditor Story="_selectedStory" *@
+                            @*              OnGenerateStubs="GenerateStoryStubs" *@
+                            @*              OnTagsChanged="OnTagsChanged" *@
+                            @*              OnContentChanged="OnStoryChanged" *@
+                            @*              OnDeleted="OnStoryDeleted"/> *@
                         }
                         else {
                             <MudAlert Severity="Severity.Info" Variant="Variant.Outlined">
@@ -327,32 +327,32 @@
         OnStoryChanged();
     }
 
-    private void OnNoteDeleted(ContentDeleteResult<NoteContent> result) {
-        if (!result.HardDelete || !result.Success || _notes is null) return;
-
-        _notes.Remove(result.Content);
-        if (_selectedWriting == result.Content) {
-            _selectedWriting = null;
-        }
-    }
-
-    private void OnRuleDeleted(ContentDeleteResult<FaqContent> result) {
-        if (!result.HardDelete || !result.Success || _faq is null) return;
-
-        _faq.Remove(result.Content);
-        if (_selectedFaq == result.Content) {
-            _selectedFaq = null;
-        }
-    }
-
-    private void OnStoryDeleted(ContentDeleteResult<StoryContent> result) {
-        if (!result.HardDelete || !result.Success || _stories is null) return;
-
-        _stories.Remove(result.Content);
-        if (_selectedStory == result.Content) {
-            _selectedStory = null;
-        }
-    }
+    // private void OnNoteDeleted(ContentDeleteResult<NoteContent> result) {
+    //     if (!result.HardDelete || !result.Success || _notes is null) return;
+    //
+    //     _notes.Remove(result.Content);
+    //     if (_selectedWriting == result.Content) {
+    //         _selectedWriting = null;
+    //     }
+    // }
+    //
+    // private void OnRuleDeleted(ContentDeleteResult<FaqContent> result) {
+    //     if (!result.HardDelete || !result.Success || _faq is null) return;
+    //
+    //     _faq.Remove(result.Content);
+    //     if (_selectedFaq == result.Content) {
+    //         _selectedFaq = null;
+    //     }
+    // }
+    //
+    // private void OnStoryDeleted(ContentDeleteResult<StoryContent> result) {
+    //     if (!result.HardDelete || !result.Success || _stories is null) return;
+    //
+    //     _stories.Remove(result.Content);
+    //     if (_selectedStory == result.Content) {
+    //         _selectedStory = null;
+    //     }
+    // }
 
     private async Task SaveAllWritings()
         => _ = await SaveAllWritingsInternal(showFeedback: true);
@@ -371,7 +371,8 @@
             return;
         }
 
-        await NoteRepository.SaveAsync(_notes);
+        
+        await NoteRepository.SaveAsync();
         string json = await NoteRepository.GetAsJsonStringAsync();
         await DownloadFile("index.json", json);
     }
@@ -384,7 +385,7 @@
             return;
         }
 
-        await FaqRepository.SaveAsync(_faq);
+        await FaqRepository.SaveAsync();
         string json = await FaqRepository.GetAsJsonStringAsync();
         await DownloadFile("index.json", json);
     }
@@ -397,7 +398,7 @@
             return;
         }
 
-        await StoryRepository.SaveAsync(_stories);
+        await StoryRepository.SaveAsync();
         string json = await StoryRepository.GetAsJsonStringAsync();
         await DownloadFile("index.json", json);
     }
@@ -426,59 +427,10 @@
         Snackbar.Add(Localizer[Shared.ContentManagerJsonCopied], Severity.Success);
     }
 
-    private async Task GenerateWritingStubs(bool writeToDisk) {
-        if (_selectedWriting is null) return;
-
-        (Dictionary<string, string> Stubs, bool WroteAll) result = await NoteManager.GenerateStubsAsync(_selectedWriting, writeToDisk);
-
-        if (writeToDisk) {
-            Snackbar.Add(result.WroteAll ? Localizer[Shared.ContentManagerMarkdownStubsSaved] : Localizer[Shared.ContentManagerIndexSaveFailed], result.WroteAll ? Severity.Success : Severity.Error);
-            return;
-        }
-
-        foreach (KeyValuePair<string, string> stub in result.Stubs) {
-            await DownloadFile($"{stub.Key}/{_selectedWriting.MarkdownFileName}", stub.Value);
-        }
-    }
-
-    private async Task GenerateRuleStubs(bool writeToDisk) {
-        if (_selectedFaq is null) return;
-
-        (Dictionary<string, string> Stubs, bool WroteAll) result = await FaqManager.GenerateStubsAsync(_selectedFaq, writeToDisk);
-
-        if (writeToDisk) {
-            Snackbar.Add(result.WroteAll ? Localizer[Shared.ContentManagerMarkdownStubsSaved] : Localizer[Shared.ContentManagerIndexSaveFailed], result.WroteAll ? Severity.Success : Severity.Error);
-            return;
-        }
-
-        foreach (KeyValuePair<string, string> stub in result.Stubs) {
-            await DownloadFile($"{stub.Key}/{_selectedFaq.MarkdownFileName}", stub.Value);
-        }
-    }
-
-    private async Task GenerateStoryStubs(bool writeToDisk) {
-        if (_selectedStory is null) return;
-
-        (Dictionary<string, string> Stubs, bool WroteAll) result = await StoryManager.GenerateStubsAsync(_selectedStory, writeToDisk);
-
-        if (writeToDisk) {
-            Snackbar.Add(result.WroteAll ? Localizer[Shared.ContentManagerMarkdownStubsSaved] : Localizer[Shared.ContentManagerIndexSaveFailed], result.WroteAll ? Severity.Success : Severity.Error);
-            return;
-        }
-
-        foreach (KeyValuePair<string, string> stub in result.Stubs) {
-            await DownloadFile($"{stub.Key}/{_selectedStory.MarkdownFileName}", stub.Value);
-        }
-    }
-
     private async Task DownloadFile(string fileName, string content) {
         await WebJs.DownloadFileAsync(fileName, content);
     }
-
-    private void OnTagsChanged() {
-        StateHasChanged();
-    }
-
+    
     private void OnWritingChanged() {
         _articleHasUnsavedChanges = true;
         _articleAutoSaveStatus = AutoSaveStatus.Pending;
@@ -616,7 +568,8 @@
             return false;
         }
 
-        bool success = await NoteRepository.SaveAsync(_notes);
+        await NoteRepository.AddOrUpdateRangeAsync(_notes);
+        bool success = await NoteRepository.SaveAsync();
         if (success) {
             _articleHasUnsavedChanges = false;
             _articleAutoSaveStatus = AutoSaveStatus.Saved;
@@ -649,7 +602,8 @@
             return false;
         }
 
-        bool success = await FaqRepository.SaveAsync(_faq);
+        await FaqRepository.AddOrUpdateRangeAsync(_faq);
+        bool success = await FaqRepository.SaveAsync();
         if (success) {
             _ruleHasUnsavedChanges = false;
             _ruleAutoSaveStatus = AutoSaveStatus.Saved;
@@ -682,7 +636,8 @@
             return false;
         }
 
-        bool success = await StoryRepository.SaveAsync(_stories);
+        await StoryRepository.AddOrUpdateRangeAsync(_stories);
+        bool success = await StoryRepository.SaveAsync();
         if (success) {
             _storyHasUnsavedChanges = false;
             _storyAutoSaveStatus = AutoSaveStatus.Saved;
