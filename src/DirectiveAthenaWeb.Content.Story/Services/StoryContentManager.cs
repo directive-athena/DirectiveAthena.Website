@@ -2,6 +2,7 @@
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
 using CodeOfChaos.Extensions.DependencyInjection;
+using DirectiveAthenaWeb.Services.Content;
 using DirectiveAthenaWeb.Services.ContentStorage;
 using DirectiveAthenaWeb.Services.Localization;
 using FluentValidation;
@@ -13,12 +14,13 @@ namespace DirectiveAthenaWeb.Content.Story.Services;
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
 [InjectableScoped<IStoryContentManager>]
+[InjectableScoped<IContentManager<StoryContent>>]
 internal class StoryContentManager(
     ILocalizationProvider localizationProvider,
     IContentStorageFactory storageFactory,
     IValidator<IEnumerable<StoryContent>> validator,
     ILogger<StoryContentManager> logger
-) : IStoryContentManager {
+) : ContentManagerBase<StoryContent>(storageFactory, logger), IStoryContentManager {
     private readonly IContentStorage _storage = storageFactory.ForCategory("story");
 
     public string GetLocalizedTitle(StoryContent article)

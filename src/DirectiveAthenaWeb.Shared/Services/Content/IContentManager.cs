@@ -1,23 +1,12 @@
 ﻿// ---------------------------------------------------------------------------------------------------------------------
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
-using DirectiveAthenaWeb.Content.Note;
-using JetBrains.Annotations;
+namespace DirectiveAthenaWeb.Services.Content;
 
-// ReSharper disable once CheckNamespace
-namespace Microsoft.Extensions.DependencyInjection;
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
-public static class ServiceCollectionExtensions {
-    extension(IServiceCollection services) {
-        [UsedImplicitly] public IServiceCollection AddNoteContent() {
-            services.RegisterServicesFromDirectiveAthenaWebContentNote();
-
-            services.AddContentStorage<NoteContent>("note");
-
-            return services;
-        }
-    }
-
+public interface IContentManager<in TContent> where TContent : IContent {
+    Task<string> GetMarkdownContentAsync(TContent rule, string locale, CancellationToken ct = default);
+    Task<bool> WriteMarkdownContentAsync(TContent rule, string locale, string content, CancellationToken ct = default);
 }

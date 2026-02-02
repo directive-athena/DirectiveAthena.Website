@@ -2,6 +2,7 @@
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
 using CodeOfChaos.Extensions.DependencyInjection;
+using DirectiveAthenaWeb.Services.Content;
 using DirectiveAthenaWeb.Services.ContentStorage;
 using DirectiveAthenaWeb.Services.Localization;
 using FluentValidation;
@@ -13,13 +14,13 @@ namespace DirectiveAthenaWeb.Content.Faq.Services;
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
 [InjectableScoped<IFaqContentManager>]
+[InjectableScoped<IContentManager<FaqContent>>]
 internal class FaqContentManager(
     ILocalizationProvider localizationProvider,
     IContentStorageFactory storageFactory,
     IValidator<IEnumerable<FaqContent>> validator,
     ILogger<FaqContentManager> logger
-) : IFaqContentManager {
-    private readonly IContentStorage _storage = storageFactory.ForCategory("faq");
+) : ContentManagerBase<FaqContent>(storageFactory, logger), IFaqContentManager {
 
     public string GetLocalizedQuestion(FaqContent rule)
         => GetLocalizedValue(rule.Question);
@@ -29,19 +30,7 @@ internal class FaqContentManager(
 
     public string GetLocalizedFilePath(FaqContent rule) {
         LocalizationInfo localization = localizationProvider.GetCurrentLocalization();
-        return _storage.GetMarkdownContentPath(localization.Code, rule.MarkdownFileName);
-    }
-
-    public async Task<string> GetRawMarkdownContentAsync(FaqContent rule, string locale, CancellationToken ct = default) {
-        try {
-            string path = _storage.GetMarkdownDiskPath(locale, rule.MarkdownFileName);
-            logger.Debug("Fetching markdown for world rule {Id} at {Path}.", rule.Id, path);
-            return await _storage.ReadFileAsync(path, ct) ?? string.Empty;
-        }
-        catch (Exception ex) {
-            logger.Warning(ex, "Failed to fetch markdown for world rule {Id} ({Locale}).", rule.Id, locale);
-            return string.Empty;
-        }
+        return Storage.GetMarkdownContentPath(localization.Code, rule.MarkdownFileName);
     }
 
     public FaqContent NewRule() {
@@ -90,8 +79,8 @@ internal class FaqContentManager(
 
         bool wroteAll = true;
         foreach (KeyValuePair<string, string> stub in stubs) {
-            string path = _storage.GetMarkdownDiskPath(stub.Key, rule.MarkdownFileName);
-            if (!await _storage.WriteFileAsync(path, stub.Value, ct)) {
+            string path = Storage.GetMarkdownDiskPath(stub.Key, rule.MarkdownFileName);
+            if (!await Storage.WriteFileAsync(path, stub.Value, ct)) {
                 wroteAll = false;
             }
         }

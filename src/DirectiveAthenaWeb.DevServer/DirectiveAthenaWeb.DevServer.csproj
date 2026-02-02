@@ -24,8 +24,4 @@
         <ProjectReference Include="..\DirectiveAthenaWeb.Shared\DirectiveAthenaWeb.Shared.csproj"/>
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Components\" />
-    </ItemGroup>
-
 </Project>

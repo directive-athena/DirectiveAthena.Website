@@ -108,7 +108,7 @@
         string locale = LocalizationProvider.GetCurrentLocalization().Code;
 
         foreach (FaqContent rule in rules) {
-            string content = await FaqManager.GetRawMarkdownContentAsync(rule, locale);
+            string content = await FaqManager.GetMarkdownContentAsync(rule, locale);
             viewFaqs.Add(new FaqView(
                 rule,
                 FaqManager.GetLocalizedQuestion(rule),

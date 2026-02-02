@@ -98,6 +98,9 @@
 
                     <MudItem xs="12" md="8">
                         @if (_selectedWriting is not null) {
+                            <ContentEditor TContent="NoteContent" Content="_selectedWriting">
+        
+                            </ContentEditor>
                             @* <NoteEditor Note="_selectedWriting" *@
                             @*                OnGenerateStubs="GenerateWritingStubs" *@
                             @*                OnTagsChanged="OnTagsChanged" *@

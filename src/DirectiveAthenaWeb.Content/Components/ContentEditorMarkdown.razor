@@ -1,0 +1,142 @@
+﻿@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Imports *@
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@using DirectiveAthenaWeb.Content
+@using DirectiveAthenaWeb.Content.Resources
+@using DirectiveAthenaWeb.Services.Content
+@using DirectiveAthenaWeb.Services.Js
+@using DirectiveAthenaWeb.Services.Localization
+@using Microsoft.Extensions.Localization
+@using Microsoft.Extensions.Logging
+@using MudBlazor
+
+@namespace DirectiveAthenaWeb.Components
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Descriptors *@
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@inject IStringLocalizer<Editor> EditorLocalizer
+@inject IDirectiveAthenaWebJs WebJs
+@inject IContentManager<TContent> ContentManager
+@inject ISnackbar Snackbar
+
+@typeparam TContent where TContent : ContentBase
+@inherits WebsiteComponentBase
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Html *@
+@* ------------------------------------------------------------------------------------------------------------------ *@
+<MudStack Spacing="8">
+    @* Title *@
+    <MudStack Row>
+        <MudText Typo="Typo.subtitle1">
+            @EditorLocalizer[Editor.MarkdownFileLabelSelectedFile, _selectedLocale, Content.MarkdownFileName]
+        </MudText>
+    
+        <MudSelect T="string" Label="@EditorLocalizer[Editor.MarkdownFileLabelLocale]" Value="@_selectedLocale"
+                   ValueChanged="@OnLocaleChangedAsync" Class="w-10">
+            @foreach (LocalizationInfo culture in LocalizationProvider.GetSupportedLocalizations()) {
+                <MudSelectItem Value="@culture.Code">@culture.DisplayName</MudSelectItem>
+            }
+        </MudSelect>
+    </MudStack>
+    
+    <MudDivider/>
+
+    @* Buttons *@
+    <MudStack Row>
+        <MudButton Size="Size.Small" Variant="Variant.Filled" Color="Color.Success" OnClick="@SaveContentAsync" Disabled="@_isLoadingContent"
+                   StartIcon="@Icons.Material.Filled.Save">
+            @EditorLocalizer[Editor.MarkdownFileButtonSave]
+        </MudButton>
+        <MudButton Size="Size.Small" Variant="Variant.Filled" Color="Color.Primary" OnClick="@DownloadMarkdown" Disabled="@_isLoadingContent"
+                   StartIcon="@Icons.Material.Filled.Download">
+            @EditorLocalizer[Editor.MarkdownFileButtonDownload]
+        </MudButton>
+        @* <MudButton Variant="Variant.Outlined" Color="Color.Info" OnClick="@CopyToClipboard" Disabled="@_isLoadingContent" *@
+        @*            StartIcon="@Icons.Material.Filled.ContentCopy"> *@
+        @*     @EditorLocalizer[Shared.MarkdownEditorCopy] *@
+        @* </MudButton> *@
+        <MudButton Size="Size.Small" Variant="Variant.Text" Color="Color.Default" OnClick="@LoadContentAsync" Disabled="@_isLoadingContent"
+                   StartIcon="@Icons.Material.Filled.Refresh">
+            @EditorLocalizer[Editor.MarkdownFileButtonReload]
+        </MudButton>
+    </MudStack>
+
+
+    @* Markdown Content *@
+    @if (_isLoadingContent) {
+        <MudProgressCircular Color="Color.Secondary" Indeterminate="true" Size="Size.Large"/>
+    }
+    else {
+        <MudTextField T="string" Value="@_content" ValueChanged="@OnContentChangedAsync" Immediate="false"
+                      Label="@EditorLocalizer[Editor.MarkdownFileLabelContent]"
+                      Lines="16" Variant="Variant.Outlined"/>
+    }
+
+</MudStack>
+
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Code *@
+@* ------------------------------------------------------------------------------------------------------------------ *@
+
+@code {
+    [CascadingParameter] public TContent Content { get; set; } = null!;
+    [Parameter] public EventCallback OnFileChanged { get; set; }
+
+    private string _content = string.Empty;
+    private string _selectedLocale = string.Empty;
+    private bool _isLoadingContent;
+
+    // -----------------------------------------------------------------------------------------------------------------
+    // Methods
+    // -----------------------------------------------------------------------------------------------------------------
+    protected override async Task OnInitializedAsync() {
+        await base.OnInitializedAsync();
+
+        _selectedLocale = LocalizationProvider.DefaultLocalization.Code;
+        await LoadContentAsync();
+    }
+
+    private async Task DownloadMarkdown() {
+        if (Content.MarkdownFileName.IsNullOrWhiteSpace()) return;
+
+        string path = $"{_selectedLocale}/{Content.MarkdownFileName}";
+        await WebJs.DownloadFileAsync(path, _content);
+    }
+
+    private Task OnContentChangedAsync(string value) {
+        _content = value;
+        return Task.CompletedTask;
+    }
+
+    private async Task OnLocaleChangedAsync(string newLocale) {
+        if (string.Equals(newLocale, _selectedLocale, StringComparison.OrdinalIgnoreCase)) return;
+
+        _selectedLocale = newLocale;
+        await LoadContentAsync();
+    }
+
+    private async Task SaveContentAsync() {
+        var cts = new CancellationTokenSource(TimeSpan.FromSeconds(5));
+        try {
+            await ContentManager.WriteMarkdownContentAsync(Content, _selectedLocale, _content, cts.Token);
+            Snackbar.Add(EditorLocalizer[Editor.SaveItemSuccess], Severity.Success);
+        }
+        catch (Exception e) {
+            Logger.Warning(e, "Failed to save content.");
+            Snackbar.Add(EditorLocalizer[Editor.SaveItemFailed], Severity.Error);
+        }
+    }
+
+    private async Task LoadContentAsync() {
+        var cts = new CancellationTokenSource(TimeSpan.FromSeconds(5));
+
+        _isLoadingContent = true;
+        await InvokeAsync(StateHasChanged);
+
+        _content = await ContentManager.GetMarkdownContentAsync(Content, _selectedLocale, cts.Token);
+
+        _isLoadingContent = false;
+        await InvokeAsync(StateHasChanged);
+    }
+
+}

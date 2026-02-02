@@ -4,6 +4,7 @@
 using CodeOfChaos.Extensions.DependencyInjection;
 using DirectiveAthenaWeb.Services.ContentStorage;
 using DirectiveAthenaWeb.Services.Localization;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -20,6 +21,7 @@ public class R2ContentStorageFactory(
     HttpClient httpClient,
     IHostEnvironment environment,
     ILoggerFactory loggerFactory,
+    IServiceProvider? serviceProvider = null,
     IR2StatusTracker? statusTracker = null
 ) : IContentStorageFactory {
     private const string ContentRoot = "content";
@@ -41,6 +43,9 @@ public class R2ContentStorageFactory(
             statusTracker
         );
     }
+    
+    public IContentStorage ForCategory<TContent>() where TContent : IContent
+        => serviceProvider!.GetRequiredKeyedService<IContentStorage>(typeof(TContent));
     
     private static Uri BuildPublicBaseUri(R2StorageOptions options, ILogger logger) {
         if (string.IsNullOrWhiteSpace(options.PublicBaseUrl)) {

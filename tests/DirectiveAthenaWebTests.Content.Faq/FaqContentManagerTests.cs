@@ -116,7 +116,7 @@ public class FaqContentManagerTests {
         FaqContent rule = CreateRule(4);
 
         // Act
-        string result = await manager.GetRawMarkdownContentAsync(rule, "en");
+        string result = await manager.GetMarkdownContentAsync(rule, "en");
 
         // Assert
         await Assert.That(result).IsEmpty();

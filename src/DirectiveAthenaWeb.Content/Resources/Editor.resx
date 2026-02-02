@@ -59,11 +59,11 @@
     <data name="MarkdownLabel" xml:space="preserve">
     <value>Markdown</value>
   </data>
-    <data name="MarkdownStubsSaveDisk" xml:space="preserve">
-    <value>Save Markdown file to R2</value>
+    <data name="MarkdownFileButtonDownload" xml:space="preserve">
+    <value>Download file</value>
   </data>
-    <data name="MarkdownStubsDownload" xml:space="preserve">
-    <value>Download Markdown file</value>
+    <data name="MarkdownFileButtonSave" xml:space="preserve">
+    <value>Save file</value>
   </data>
     <data name="DeleteItemHardConfirm" xml:space="preserve">
     <value>Permanently delete this item and its files?</value>
@@ -83,4 +83,22 @@
     <data name="DeleteItemHardFailed" xml:space="preserve">
     <value>Item removed from the list, but the hard delete failed or was kept as soft deleted.</value>
   </data>
+    <data name="SaveItemSuccess" xml:space="preserve">
+        <value>Item has been saved</value>
+    </data>
+    <data name="SaveItemFailed" xml:space="preserve">
+        <value>Item could not be saved to R2</value>
+    </data>
+    <data name="MarkdownFileLabelContent" xml:space="preserve">
+        <value>Markdown Content</value>
+    </data>
+    <data name="MarkdownFileButtonReload" xml:space="preserve">
+        <value>Reload File</value>
+    </data>
+    <data name="MarkdownFileLabelSelectedFile" xml:space="preserve">
+        <value>File : {0}/{1}</value>
+    </data>
+    <data name="MarkdownFileLabelLocale" xml:space="preserve">
+        <value>Locale</value>
+    </data>
 </root>

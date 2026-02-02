@@ -2,6 +2,7 @@
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
 using CodeOfChaos.Extensions.DependencyInjection;
+using DirectiveAthenaWeb.Services.Content;
 using DirectiveAthenaWeb.Services.ContentStorage;
 using DirectiveAthenaWeb.Services.Localization;
 using FluentValidation;
@@ -13,12 +14,13 @@ namespace DirectiveAthenaWeb.Content.Note.Services;
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
 [InjectableScoped<INoteContentManager>]
+[InjectableScoped<IContentManager<NoteContent>>]
 internal class NoteContentManager(
     ILocalizationProvider localizationProvider,
     IContentStorageFactory storageFactory,
     IValidator<IEnumerable<NoteContent>> validator,
     ILogger<NoteContentManager> logger
-) : INoteContentManager {
+) : ContentManagerBase<NoteContent>(storageFactory, logger), INoteContentManager {
     private readonly IContentStorage _storage = storageFactory.ForCategory("note");
 
     public string GetLocalizedTitle(NoteContent article)
