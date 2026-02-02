@@ -12,8 +12,7 @@ public interface IFaqContentManager : IContentManager<FaqContent> {
     string GetLocalizedAnswer(FaqContent rule);
     string GetLocalizedFilePath(FaqContent rule);
     
-    FaqContent NewRule();
-    bool Validate(IEnumerable<FaqContent> rules, out string? errorMessage);
+    
     Task<(Dictionary<string, string> Stubs, bool WroteAll)> GenerateStubsAsync(FaqContent rule, bool writeToDisk = false, CancellationToken ct = default);
     Task EnsureResxAsync(CancellationToken ct = default);
 }

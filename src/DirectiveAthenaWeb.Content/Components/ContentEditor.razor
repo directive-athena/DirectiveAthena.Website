@@ -3,7 +3,6 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @using DirectiveAthenaWeb.Content.Resources
 @using DirectiveAthenaWeb.Services.Content
-@using DirectiveAthenaWeb.Services.ContentStorage
 @using DirectiveAthenaWeb.Services.Js
 @using DirectiveAthenaWeb.Services.Localization
 @using Microsoft.Extensions.Localization
@@ -90,13 +89,6 @@
     [Parameter, EditorRequired] public TContent Content { get; set; } = null!;
     [Parameter] public RenderFragment<LocalizationInfo>? LocalizedFields { get; set; }
     [Parameter] public RenderFragment? AdditionalFields { get; set; }
-    [Parameter] public bool AlwaysShowLastModified { get; set; }
-    [Parameter] public bool ShowHiddenToggle { get; set; }
-    [Parameter] public bool ShowTags { get; set; } = true;
-    [Parameter] public IContentStorage? Storage { get; set; }
-    [Parameter] public Func<string, Task<string>>? LoadContentAsync { get; set; }
-    [Parameter] public Func<string, string>? BuildDefaultContent { get; set; }
-    [Parameter] public EventCallback<bool> OnGenerateStubs { get; set; }
     [Parameter] public EventCallback OnContentChanged { get; set; }
 
     // -----------------------------------------------------------------------------------------------------------------
@@ -107,12 +99,6 @@
         Content.HiddenAt = value ? now : DateTime.MinValue;
         Content.LastModifiedAt = now;
         await OnSaveChangesAsync();
-    }
-
-    private void NotifyContentChanged() {
-        if (OnContentChanged.HasDelegate) {
-            _ = OnContentChanged.InvokeAsync();
-        }
     }
 
     private async Task DeleteContentAsync() {
@@ -130,7 +116,7 @@
             Snackbar.Add(
                 softDeleted ? EditorLocalizer[Editor.DeleteItemSoftSuccess] : EditorLocalizer[Editor.DeleteItemSoftFailed],
                 softDeleted ? Severity.Success : Severity.Warning);
-            NotifyContentChanged();
+            await OnContentChanged.InvokeAsync();
             return;
         }
 
@@ -150,7 +136,7 @@
 
             if (result) {
                 Snackbar.Add(EditorLocalizer[Editor.SaveItemSuccess], Severity.Success);
-                NotifyContentChanged();
+                await OnContentChanged.InvokeAsync();
             }
             else {
                 Snackbar.Add(EditorLocalizer[Editor.SaveItemFailed], Severity.Error);

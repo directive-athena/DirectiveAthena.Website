@@ -5,7 +5,6 @@ using DirectiveAthenaWeb.Content.Faq;
 using DirectiveAthenaWeb.Content.Faq.Services;
 using DirectiveAthenaWeb.Services.ContentStorage;
 using DirectiveAthenaWeb.Services.Localization;
-using FluentValidation;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
 
@@ -35,19 +34,16 @@ public class FaqContentManagerTests {
 
     private static FaqContentManager CreateManager(
         ILocalizationProvider localizationProvider,
-        IContentStorage? storage = null,
-        IValidator<IEnumerable<FaqContent>>? validator = null
+        IContentStorage? storage = null
     ) {
         storage ??= Substitute.For<IContentStorage>();
-        validator ??= new FaqContentCollectionValidator(new FaqContentValidator(localizationProvider));
         var logger = Substitute.For<ILogger<FaqContentManager>>();
-        return new FaqContentManager(localizationProvider, CreateStorageFactory(storage), validator, logger);
+        return new FaqContentManager(localizationProvider, CreateStorageFactory(storage), logger);
     }
 
     private static FaqContent CreateRule(int seed, bool includeNl = true) {
         var rule = new FaqContent {
             Id = Guid.NewGuid(),
-            Date = $"2026-01-{seed:D2}",
             Question = new Dictionary<string, string> { ["en"] = $"Question {seed}" },
             Answer = new Dictionary<string, string> { ["en"] = $"Answer {seed}" },
             Tags = ["tag-one"]
@@ -129,14 +125,13 @@ public class FaqContentManagerTests {
         FaqContentManager manager = CreateManager(localizationProvider);
 
         // Act
-        FaqContent rule = manager.NewRule();
+        FaqContent rule = manager.Create();
         HashSet<string> expected = localizationProvider.GetSupportedLocalizations().Select(c => c.Code).ToHashSet();
 
         // Assert
         await Assert.That(rule.Question.Keys.ToHashSet()).IsEquivalentTo(expected);
         await Assert.That(rule.Answer.Keys.ToHashSet()).IsEquivalentTo(expected);
         await Assert.That(rule.Id).IsNotEqualTo(Guid.Empty);
-        await Assert.That(rule.Date).IsNotNullOrWhiteSpace();
         await Assert.That(rule.Tags).IsEmpty();
     }
 

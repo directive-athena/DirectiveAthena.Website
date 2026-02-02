@@ -98,14 +98,7 @@
 
                     <MudItem xs="12" md="8">
                         @if (_selectedWriting is not null) {
-                            <ContentEditor TContent="NoteContent" Content="_selectedWriting">
-        
-                            </ContentEditor>
-                            @* <NoteEditor Note="_selectedWriting" *@
-                            @*                OnGenerateStubs="GenerateWritingStubs" *@
-                            @*                OnTagsChanged="OnTagsChanged" *@
-                            @*                OnContentChanged="OnWritingChanged" *@
-                            @*                OnDeleted="OnNoteDeleted"/> *@
+                            <ContentEditor TContent="NoteContent" Content="_selectedWriting"/>
                         }
                         else {
                             <MudAlert Severity="Severity.Info" Variant="Variant.Outlined">
@@ -305,7 +298,7 @@
     }
 
     private void CreateNewNote() {
-        _selectedWriting = NoteManager.NewWriting();
+        _selectedWriting = NoteManager.Create();
         _notes?.Insert(0, _selectedWriting);
         OnWritingChanged();
     }
@@ -315,7 +308,7 @@
     }
 
     private void CreateNewRule() {
-        _selectedFaq = FaqManager.NewRule();
+        _selectedFaq = FaqManager.Create();
         _faq?.Insert(0, _selectedFaq);
         OnRuleChanged();
     }
@@ -325,7 +318,7 @@
     }
 
     private void CreateNewStory() {
-        _selectedStory = StoryManager.NewWriting();
+        _selectedStory = StoryManager.Create();
         _stories?.Insert(0, _selectedStory);
         OnStoryChanged();
     }

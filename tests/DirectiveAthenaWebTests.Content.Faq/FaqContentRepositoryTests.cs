@@ -23,7 +23,6 @@ public class FaqContentRepositoryTests {
 
     private static FaqContent CreateRule(int seed) => new() {
         Id = Guid.NewGuid(),
-        Date = $"2026-01-{seed:D2}",
         Question = new Dictionary<string, string> { ["en"] = $"Question {seed}" },
         Answer = new Dictionary<string, string> { ["en"] = $"Answer {seed}" }
     };

@@ -3,6 +3,9 @@
 // ---------------------------------------------------------------------------------------------------------------------
 using DirectiveAthenaWeb.Services.Content;
 using DirectiveAthenaWeb.Services.ContentStorage;
+using FluentValidation;
+using FluentValidation.Results;
+using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Logging;
 
 namespace DirectiveAthenaWeb.Content;
@@ -10,12 +13,44 @@ namespace DirectiveAthenaWeb.Content;
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
-public abstract class ContentManagerBase<TContent>(IContentStorageFactory storageFactory, ILogger<ContentManagerBase<TContent>> logger) : IContentManager<TContent> where TContent : ContentBase, IContent {
+public abstract class ContentManagerBase<TContent>(
+    IContentStorageFactory storageFactory,
+    ILogger<ContentManagerBase<TContent>> logger
+) : IContentManager<TContent> where TContent : ContentBase, IContent {
     protected readonly IContentStorage Storage = storageFactory.ForCategory<TContent>();
-
+    
+    [Inject] public IValidator<TContent> SingleValidator { get; set; } = null!;
+    [Inject] public IValidator<IEnumerable<TContent>> MultipleValidator { get; set; } = null!;
+    
     // -----------------------------------------------------------------------------------------------------------------
     // Methods
     // -----------------------------------------------------------------------------------------------------------------
+    public abstract TContent Create(Guid id = default);
+
+    public bool Validate(TContent rule, out string? errorMessage) {
+        ValidationResult? result = SingleValidator.Validate(rule);
+        if (result.IsValid) {
+            errorMessage = null;
+            return true;
+        }
+
+        errorMessage = result.Errors.First().ErrorMessage;
+        logger.Warning("World rule validation failed: {Error}.", errorMessage);
+        return false;
+    }
+    
+    public bool Validate(IEnumerable<TContent> rules, out string? errorMessage) {
+        ValidationResult? result = MultipleValidator.Validate(rules);
+        if (result.IsValid) {
+            errorMessage = null;
+            return true;
+        }
+
+        errorMessage = result.Errors.First().ErrorMessage;
+        logger.Warning("World rule validation failed: {Error}.", errorMessage);
+        return false;
+    }
+
     public async Task<string> GetMarkdownContentAsync(TContent rule, string locale, CancellationToken ct = default) {
         try {
             string path = Storage.GetMarkdownDiskPath(locale, rule.MarkdownFileName);

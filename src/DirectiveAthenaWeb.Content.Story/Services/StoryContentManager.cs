@@ -5,8 +5,6 @@ using CodeOfChaos.Extensions.DependencyInjection;
 using DirectiveAthenaWeb.Services.Content;
 using DirectiveAthenaWeb.Services.ContentStorage;
 using DirectiveAthenaWeb.Services.Localization;
-using FluentValidation;
-using FluentValidation.Results;
 using Microsoft.Extensions.Logging;
 
 namespace DirectiveAthenaWeb.Content.Story.Services;
@@ -18,7 +16,6 @@ namespace DirectiveAthenaWeb.Content.Story.Services;
 internal class StoryContentManager(
     ILocalizationProvider localizationProvider,
     IContentStorageFactory storageFactory,
-    IValidator<IEnumerable<StoryContent>> validator,
     ILogger<StoryContentManager> logger
 ) : ContentManagerBase<StoryContent>(storageFactory, logger), IStoryContentManager {
     private readonly IContentStorage _storage = storageFactory.ForCategory("story");
@@ -61,8 +58,8 @@ internal class StoryContentManager(
         }
     }
 
-    public StoryContent NewWriting() {
-        var id = Guid.CreateVersion7();
+    public override StoryContent Create(Guid id = default) {
+        if (id == Guid.Empty) id = Guid.CreateVersion7();
         DateTime now = DateTime.UtcNow;
         IReadOnlyCollection<LocalizationInfo> locals = localizationProvider.GetSupportedLocalizations();
 
@@ -78,18 +75,6 @@ internal class StoryContentManager(
         };
         logger.Information("Created new article stub {Id}.", article.Id);
         return article;
-    }
-
-    public bool Validate(IEnumerable<StoryContent> storys, out string? errorMessage) {
-        ValidationResult? result = validator.Validate(storys);
-        if (result.IsValid) {
-            errorMessage = null;
-            return true;
-        }
-
-        errorMessage = result.Errors.First().ErrorMessage;
-        logger.Warning("Writing validation failed: {Error}.", errorMessage);
-        return false;
     }
 
     public async Task<(Dictionary<string, string> Stubs, bool WroteAll)> GenerateStubsAsync(StoryContent article, bool writeToDisk = false, CancellationToken ct = default) {

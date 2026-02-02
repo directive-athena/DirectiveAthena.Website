@@ -38,9 +38,8 @@ public class NoteContentManagerTests {
         IContentStorage? storage = null
     ) {
         storage ??= Substitute.For<IContentStorage>();
-        var validator = new NoteContentCollectionValidator(new NoteContentValidator(localizationProvider));
         var logger = Substitute.For<ILogger<NoteContentManager>>();
-        return new NoteContentManager(localizationProvider, CreateStorageFactory(storage), validator, logger);
+        return new NoteContentManager(localizationProvider, CreateStorageFactory(storage), logger);
     }
 
     // -----------------------------------------------------------------------------------------------------------------
@@ -114,7 +113,7 @@ public class NoteContentManagerTests {
         NoteContentManager manager = CreateManager(localizationProvider);
 
         // Act
-        NoteContent article = manager.NewWriting();
+        NoteContent article = manager.Create();
         HashSet<string> expected = NoteFaker.DefaultLocalizations().Select(c => c.Code).ToHashSet();
 
         // Assert

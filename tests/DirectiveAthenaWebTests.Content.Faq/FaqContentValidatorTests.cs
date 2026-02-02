@@ -27,7 +27,6 @@ public class FaqContentValidatorTests {
 
     private static FaqContent CreateValidRule() => new() {
         Id = Guid.NewGuid(),
-        Date = "2026-01-01",
         Question = new Dictionary<string, string> {
             ["en"] = "Question",
             ["nl"] = "Vraag"
@@ -57,7 +56,6 @@ public class FaqContentValidatorTests {
     public async Task FaqValidator_RejectsMissingDate() {
         // Arrange
         FaqContent rule = CreateValidRule();
-        rule.Date = "";
         var validator = new FaqContentValidator(CreateLocalizationProvider());
 
         // Act

@@ -5,8 +5,6 @@ using CodeOfChaos.Extensions.DependencyInjection;
 using DirectiveAthenaWeb.Services.Content;
 using DirectiveAthenaWeb.Services.ContentStorage;
 using DirectiveAthenaWeb.Services.Localization;
-using FluentValidation;
-using FluentValidation.Results;
 using Microsoft.Extensions.Logging;
 
 namespace DirectiveAthenaWeb.Content.Faq.Services;
@@ -18,7 +16,6 @@ namespace DirectiveAthenaWeb.Content.Faq.Services;
 internal class FaqContentManager(
     ILocalizationProvider localizationProvider,
     IContentStorageFactory storageFactory,
-    IValidator<IEnumerable<FaqContent>> validator,
     ILogger<FaqContentManager> logger
 ) : ContentManagerBase<FaqContent>(storageFactory, logger), IFaqContentManager {
 
@@ -32,9 +29,9 @@ internal class FaqContentManager(
         LocalizationInfo localization = localizationProvider.GetCurrentLocalization();
         return Storage.GetMarkdownContentPath(localization.Code, rule.MarkdownFileName);
     }
-
-    public FaqContent NewRule() {
-        var id = Guid.CreateVersion7();
+    
+    public override FaqContent Create(Guid id = default) {
+        if (id == Guid.Empty) id = Guid.CreateVersion7();
         DateTime now = DateTime.UtcNow;
         IReadOnlyCollection<LocalizationInfo> locals = localizationProvider.GetSupportedLocalizations();
 
@@ -43,7 +40,6 @@ internal class FaqContentManager(
 
         var rule = new FaqContent {
             Id = id,
-            Date = DateTime.UtcNow.ToString("yyyy-MM-dd"),
             Question = questions,
             Answer = answers,
             Tags = [],
@@ -52,18 +48,6 @@ internal class FaqContentManager(
         };
         logger.Information("Created new world rule stub {Id}.", rule.Id);
         return rule;
-    }
-
-    public bool Validate(IEnumerable<FaqContent> rules, out string? errorMessage) {
-        ValidationResult? result = validator.Validate(rules);
-        if (result.IsValid) {
-            errorMessage = null;
-            return true;
-        }
-
-        errorMessage = result.Errors.First().ErrorMessage;
-        logger.Warning("World rule validation failed: {Error}.", errorMessage);
-        return false;
     }
 
     public async Task<(Dictionary<string, string> Stubs, bool WroteAll)> GenerateStubsAsync(FaqContent rule, bool writeToDisk = false, CancellationToken ct = default) {

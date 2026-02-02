@@ -20,10 +20,6 @@ internal class FaqContentValidator : AbstractValidator<FaqContent> {
             .NotEqual(Guid.Empty)
             .WithMessage("Some rules have missing Id!");
 
-        RuleFor(rule => rule.Date)
-            .NotEmpty()
-            .WithMessage("Some rules have missing dates!");
-
         RuleFor(rule => rule)
             .Must(HasLocalizedQuestions)
             .WithMessage("Some rules have missing questions for one or more cultures!");

@@ -5,8 +5,6 @@ using CodeOfChaos.Extensions.DependencyInjection;
 using DirectiveAthenaWeb.Services.Content;
 using DirectiveAthenaWeb.Services.ContentStorage;
 using DirectiveAthenaWeb.Services.Localization;
-using FluentValidation;
-using FluentValidation.Results;
 using Microsoft.Extensions.Logging;
 
 namespace DirectiveAthenaWeb.Content.Note.Services;
@@ -18,7 +16,6 @@ namespace DirectiveAthenaWeb.Content.Note.Services;
 internal class NoteContentManager(
     ILocalizationProvider localizationProvider,
     IContentStorageFactory storageFactory,
-    IValidator<IEnumerable<NoteContent>> validator,
     ILogger<NoteContentManager> logger
 ) : ContentManagerBase<NoteContent>(storageFactory, logger), INoteContentManager {
     private readonly IContentStorage _storage = storageFactory.ForCategory("note");
@@ -60,9 +57,9 @@ internal class NoteContentManager(
             return string.Empty;
         }
     }
-
-    public NoteContent NewWriting() {
-        var id = Guid.CreateVersion7();
+    
+    public override NoteContent Create(Guid id = default) {
+        if (id == Guid.Empty) id = Guid.CreateVersion7();
         DateTime now = DateTime.UtcNow;
         IReadOnlyCollection<LocalizationInfo> locals = localizationProvider.GetSupportedLocalizations();
 
@@ -79,18 +76,7 @@ internal class NoteContentManager(
         logger.Information("Created new article stub {Id}.", article.Id);
         return article;
     }
-
-    public bool Validate(IEnumerable<NoteContent> notes, out string? errorMessage) {
-        ValidationResult? result = validator.Validate(notes);
-        if (result.IsValid) {
-            errorMessage = null;
-            return true;
-        }
-
-        errorMessage = result.Errors.First().ErrorMessage;
-        logger.Warning("Writing validation failed: {Error}.", errorMessage);
-        return false;
-    }
+   
 
     public async Task<(Dictionary<string, string> Stubs, bool WroteAll)> GenerateStubsAsync(NoteContent article, bool writeToDisk = false, CancellationToken ct = default) {
         IReadOnlyCollection<LocalizationInfo> locals = localizationProvider.GetSupportedLocalizations();
