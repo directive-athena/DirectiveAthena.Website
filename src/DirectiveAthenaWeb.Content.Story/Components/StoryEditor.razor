@@ -17,7 +17,7 @@
 @* $1$ ------------------------------------------------------------------------------------------------------------------ #1# *@
 @* $1$ Html #1# *@
 @* $1$ ------------------------------------------------------------------------------------------------------------------ #1# *@
-@* <ContentEditor TContent="StoryContent" Content="@Story" *@
+@* <ContentEditorItem TContent="StoryContent" Content="@Story" *@
 @*                Tags="@Story.Tags" *@
 @*                Storage="@_storage" *@
 @*                LoadContentAsync="@((string locale) => StoryManager.GetRawMarkdownContentAsync(Story, locale))" *@
@@ -57,7 +57,7 @@
 @*                       Label="@($"{Localizer[Shared.EditorSummaryLabel]} ({culture.Code})")" *@
 @*                       Required="@(LocalizationProvider.IsDefaultCultureCode(culture.Code))" Lines="3"/> *@
 @*     </LocalizedFields> *@
-@* </ContentEditor> *@
+@* </ContentEditorItem> *@
 @* *@
 @* $1$ ------------------------------------------------------------------------------------------------------------------ #1# *@
 @* $1$ Code #1# *@

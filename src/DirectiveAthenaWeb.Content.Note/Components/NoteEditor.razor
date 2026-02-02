@@ -16,7 +16,7 @@
 @* $1$ ------------------------------------------------------------------------------------------------------------------ #1# *@
 @* $1$ Html #1# *@
 @* $1$ ------------------------------------------------------------------------------------------------------------------ #1# *@
-@* <ContentEditor TContent="NoteContent" Content="@Note" *@
+@* <ContentEditorItem TContent="NoteContent" Content="@Note" *@
 @*                Tags="@Note.Tags" *@
 @*                Storage="@_storage" *@
 @*                LoadContentAsync="@((string locale) => NoteManager.GetRawMarkdownContentAsync(Note, locale))" *@
@@ -36,7 +36,7 @@
 @*                       Label="@($"{Localizer[Shared.EditorSummaryLabel]} ({culture.Code})")" *@
 @*                       Required="@(LocalizationProvider.IsDefaultCultureCode(culture.Code))" Lines="3"/> *@
 @*     </LocalizedFields> *@
-@* </ContentEditor> *@
+@* </ContentEditorItem> *@
 @* *@
 @* $1$ ------------------------------------------------------------------------------------------------------------------ #1# *@
 @* $1$ Code #1# *@

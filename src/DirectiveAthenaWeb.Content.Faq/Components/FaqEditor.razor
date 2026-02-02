@@ -15,11 +15,11 @@
 @* @inject IContentStorageFactory ContentStorageFactory *@
 @* @inject IStringLocalizer<Shared> Localizer *@
 @* *@
-@* @inherits DirectiveAthenaWeb.Services.Content.Components.ContentEditorComponentBase<FaqContent> *@
+@* @inherits DirectiveAthenaWeb.Services.Content.Components.ContentEditorItemComponentBase<FaqContent> *@
 @* $1$ ------------------------------------------------------------------------------------------------------------------ #1# *@
 @* $1$ Html #1# *@
 @* $1$ ------------------------------------------------------------------------------------------------------------------ #1# *@
-@* <ContentEditor TContent="FaqContent" Content="@Rule" *@
+@* <ContentEditorItem TContent="FaqContent" Content="@Rule" *@
 @*                Tags="@Rule.Tags" *@
 @*                Storage="@_storage" *@
 @*                LoadContentAsync="@((string locale) => FaqManager.GetRawMarkdownContentAsync(Rule, locale))" *@
@@ -39,7 +39,7 @@
 @*                       Label="@($"{Localizer[Shared.EditorAnswerLabel]} ({culture.Code})")" *@
 @*                       Required="@(LocalizationProvider.IsDefaultCultureCode(culture.Code))" Lines="3"/> *@
 @*     </LocalizedFields> *@
-@* </ContentEditor> *@
+@* </ContentEditorItem> *@
 @* *@
 @* $1$ ------------------------------------------------------------------------------------------------------------------ #1# *@
 @* $1$ Code #1# *@

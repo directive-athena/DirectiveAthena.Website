@@ -160,12 +160,35 @@ public abstract class ContentRepositoryBase<T>(IContentStorage contentStorage, I
 
         bool sortByCreated = config.HasFlagFast(QueryConfig.SortByCreatedAt);
         bool sortByModified = config.HasFlagFast(QueryConfig.SortByModifiedAt);
-        if (sortByCreated && sortByModified) query = query.OrderBy(item => item.LastModifiedAt).ThenBy(item => item.CreatedAt);
-        else if (sortByModified) query = query.OrderBy(item => item.LastModifiedAt);
-        else if (sortByCreated) query = query.OrderBy(item => item.CreatedAt);
-        else query = query.OrderBy(item => item.Id);
+        bool sortByInternalTitle = config.HasFlagFast(QueryConfig.SortByInternalTitle);
+        bool reversed = config.HasFlagFast(QueryConfig.Reversed);
 
-        if (config.HasFlagFast(QueryConfig.Reversed)) query = query.Reverse();
+        IOrderedEnumerable<T> ordered = (sortByCreated, sortByModified, sortByInternalTitle, reversed) switch {
+            // Both timestamps: use a compound key.
+            (true,  true,  _,     false) => query.OrderBy(i => i.LastModifiedAt).ThenBy(i => i.CreatedAt),
+            (true,  true,  _,     true)  => query.OrderByDescending(i => i.LastModifiedAt).ThenByDescending(i => i.CreatedAt),
+
+            // Single-key sorts
+            (false, true,  _,     false) => query.OrderBy(i => i.LastModifiedAt),
+            (false, true,  _,     true)  => query.OrderByDescending(i => i.LastModifiedAt),
+
+            (true,  false, _,     false) => query.OrderBy(i => i.CreatedAt),
+            (true,  false, _,     true)  => query.OrderByDescending(i => i.CreatedAt),
+
+            (false, false, true,  false) => query.OrderBy(i => i.InternalTitle),
+            (false, false, true,  true)  => query.OrderByDescending(i => i.InternalTitle),
+
+            // Default
+            (false, false, false, false) => query.OrderBy(i => i.Id),
+            (false, false, false, true)  => query.OrderByDescending(i => i.Id),
+        };
+        
+        // Always stable tie-break (especially important when many keys are equal)
+        ordered = reversed
+            ? ordered.ThenByDescending(i => i.Id)
+            : ordered.ThenBy(i => i.Id);
+
+        query = ordered;
 
         return query;
     }

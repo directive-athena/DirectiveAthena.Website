@@ -11,6 +11,8 @@ namespace DirectiveAthenaWeb.Content;
 public abstract class ContentBase : IContent {
     public Guid Id { get; set; } = Guid.CreateVersion7();
 
+    public string InternalTitle { get; set; } = string.Empty;
+
     [JsonIgnore] private readonly HashSet<string> _tags = [];
     [JsonIgnore] public IReadOnlyCollection<string> Tags {
         get => _tags.AsReadOnly();
@@ -52,4 +54,7 @@ public abstract class ContentBase : IContent {
         LastModifiedAt = DateTime.UtcNow;
         return true;
     }
+
+    public string GetReadableInternalTitle() 
+        => InternalTitle.IsNotNullOrWhiteSpace() ? InternalTitle : Id.ToString();
 }

@@ -1,0 +1,162 @@
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Imports *@
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@using DirectiveAthenaWeb.Content.Resources
+@using DirectiveAthenaWeb.Services.Content
+@using DirectiveAthenaWeb.Services.Js
+@using DirectiveAthenaWeb.Services.Localization
+@using Microsoft.Extensions.Localization
+@using Microsoft.Extensions.Logging
+@using MudBlazor
+
+@namespace DirectiveAthenaWeb.Components
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Descriptors *@
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@inject IContentRepository<TContent> Repository
+@inject IDirectiveAthenaWebJs WebJs
+@inject ISnackbar Snackbar
+@inject IStringLocalizer<Editor> EditorLocalizer
+
+@typeparam TContent where TContent : DirectiveAthenaWeb.Content.ContentBase
+@inherits WebsiteComponentBase
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Html *@
+@* ------------------------------------------------------------------------------------------------------------------ *@
+<CascadingValue Value="Content">
+    <MudPaper Class="pa-6 card-glass no-hover">
+        <div class="d-flex justify-space-between align-center mb-6">
+            <MudText Typo="Typo.h5">@EditorLocalizer[Editor.EditItem, Content.GetReadableInternalTitle()]</MudText>
+            <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error"
+                           OnClick="@DeleteContentAsync"/>
+        </div>
+
+        <MudTabs Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
+            <MudTabPanel Text="Metadata">
+                <MudStack Spacing="8">
+                    <MudTextField T="string" @bind-Value="@Content.InternalTitle" Label="Internal Title" Required="true"
+                                  TextChanged="@OnInputChangedAsync"/>
+
+                    <MudTextField Value="@Content.Id.ToString("D")" Label="@EditorLocalizer[Editor.UniqueId]"
+                                  Required="true" ReadOnly="true"
+                                  HelperText="@EditorLocalizer[Editor.IdHelperItem]"/>
+
+                    <MudTextField Value="@FormatDate(Content.CreatedAt)" Label="@EditorLocalizer[Editor.CreatedAtLabel]"
+                                  Required="true" ReadOnly="true"/>
+
+                    <MudTextField Value="@FormatDate(Content.LastModifiedAt)"
+                                  Label="@EditorLocalizer[Editor.LastModifiedAtLabel]"
+                                  Required="true" ReadOnly="true"/>
+
+                    <MudItem xs="12">
+                        <MudSwitch T="bool" Value="@Content.IsHidden" ValueChanged="@OnHiddenChangedAsync"
+                                   Label="@EditorLocalizer[Editor.HiddenLabel]" Color="Color.Primary"/>
+                    </MudItem>
+
+                    @if (AdditionalFields is not null) {
+                        @AdditionalFields
+                    }
+
+                    @if (LocalizedFields is not null) {
+                        foreach (LocalizationInfo culture in LocalizationProvider.GetSupportedLocalizations()) {
+                            <MudItem xs="12">
+                                <MudDivider Class="my-4"/>
+                                <MudText Typo="Typo.subtitle1" Color="Color.Primary">@culture.DisplayName (@culture.Code)
+                                </MudText>
+                                @LocalizedFields(culture)
+                            </MudItem>
+                        }
+                    }
+                    <MudTextField Value="@Content.MarkdownFileName"
+                                  Label="@EditorLocalizer[Editor.MarkdownFileLabel, Content.MarkdownFileName]"
+                                  Required="true" ReadOnly="true"
+                                  HelperText="@EditorLocalizer[Editor.MarkdownFileHelper]"/>
+
+                </MudStack>
+
+                <ContentEditorItemTags TContent="@TContent" OnTagsChanged="OnSaveChangesAsync"/>
+            </MudTabPanel>
+
+            <MudTabPanel Text="Markdown">
+                <ContentEditorItemMarkdown TContent="@TContent" OnFileChanged="OnSaveChangesAsync"/>
+            </MudTabPanel>
+        </MudTabs>
+    </MudPaper>
+
+</CascadingValue>
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Code *@
+@* ------------------------------------------------------------------------------------------------------------------ *@
+
+@code {
+    [Parameter, EditorRequired] public TContent Content { get; set; } = null!;
+    [Parameter] public RenderFragment<LocalizationInfo>? LocalizedFields { get; set; }
+    [Parameter] public RenderFragment? AdditionalFields { get; set; }
+    [Parameter] public EventCallback OnContentChanged { get; set; }
+
+    // -----------------------------------------------------------------------------------------------------------------
+    // Methods
+    // -----------------------------------------------------------------------------------------------------------------
+    private async Task OnHiddenChangedAsync(bool value) {
+        DateTime now = DateTime.UtcNow;
+        Content.HiddenAt = value ? now : DateTime.MinValue;
+        Content.LastModifiedAt = now;
+        await OnSaveChangesAsync();
+    }
+
+    private async Task DeleteContentAsync() {
+        bool hardDelete = Content.IsSoftDeleted;
+        string confirmText = hardDelete ? EditorLocalizer[Editor.DeleteItemHardConfirm] : EditorLocalizer[Editor.DeleteItemSoftConfirm];
+        bool confirm = await WebJs.ConfirmAsync(confirmText);
+        if (!confirm) return;
+
+        if (!hardDelete) {
+            DateTime now = DateTime.UtcNow;
+            Content.SoftDeletedAt = now;
+            Content.LastModifiedAt = now;
+
+            bool softDeleted = await Repository.SoftDeleteByIdAsync(Content.Id);
+            Snackbar.Add(
+                softDeleted ? EditorLocalizer[Editor.DeleteItemSoftSuccess] : EditorLocalizer[Editor.DeleteItemSoftFailed],
+                softDeleted ? Severity.Success : Severity.Warning);
+            await OnContentChanged.InvokeAsync();
+            return;
+        }
+
+        bool success = await Repository.HardDeleteByIdAsync(Content.Id);
+        Snackbar.Add(
+            success ? EditorLocalizer[Editor.DeleteItemHardSuccess] : EditorLocalizer[Editor.DeleteItemHardFailed],
+            success ? Severity.Success : Severity.Warning);
+    }
+
+    private static string FormatDate(DateTime date)
+        => date == DateTime.MinValue ? string.Empty : date.ToString("yyyy-MM-dd");
+
+    private async Task OnSaveChangesAsync() {
+        var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+        try {
+            bool result = await Repository.AddOrUpdateAsync(Content, cts.Token);
+
+            if (result) {
+                Snackbar.Add(EditorLocalizer[Editor.SaveItemSuccess], Severity.Success);
+                await Repository.SaveAsync(cts.Token);
+                await OnContentChanged.InvokeAsync();
+            }
+            else {
+                Snackbar.Add(EditorLocalizer[Editor.SaveItemFailed], Severity.Error);
+            }
+
+        }
+        catch (Exception e) {
+            Logger.Error(e, "Failed to save content.");
+            Snackbar.Add(EditorLocalizer[Editor.SaveItemFailed], Severity.Error);
+        }
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task OnInputChangedAsync(string obj) {
+        Content.InternalTitle = obj;
+        await OnSaveChangesAsync();
+    }
+}
