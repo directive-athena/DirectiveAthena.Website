@@ -17,6 +17,10 @@
         <PackageReference Include="FluentValidation"/>
         <PackageReference Include="Minio"/>
         <PackageReference Include="MudBlazor"/>
+        <PackageReference Include="Serilog"/>
+        <PackageReference Include="Serilog.Extensions.Logging"/>
+        <PackageReference Include="Serilog.Sinks.BrowserConsole"/>
+        <PackageReference Include="Serilog.Sinks.Console"/>
     </ItemGroup>
 
     <ItemGroup>

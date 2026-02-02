@@ -17,6 +17,9 @@ public static class Program {
         // Builder
         // -------------------------------------------------------------------------------------------------------------
         WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+
+        builder.AddWebsiteLogging();
+        
         builder.Services.AddMudServices();
         builder.Services.AddLocalization();
         builder.Services.AddRazorComponents()

@@ -10,9 +10,6 @@ using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.Hosting;
 using MudBlazor.Services;
-using Serilog;
-using Serilog.Core;
-using Serilog.Events;
 
 namespace DirectiveAthenaWeb.Client;
 // ---------------------------------------------------------------------------------------------------------------------
@@ -25,22 +22,7 @@ public static class Program {
         // -------------------------------------------------------------------------------------------------------------
         var builder = WebAssemblyHostBuilder.CreateDefault(args);
 
-        LogEventLevel minimumLevel = builder.HostEnvironment.IsDevelopment()
-            ? LogEventLevel.Debug
-            : LogEventLevel.Information;
-        Logger logger = new LoggerConfiguration()
-            .MinimumLevel.Is(minimumLevel)
-            .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
-            .MinimumLevel.Override("System", LogEventLevel.Warning)
-            .Enrich.FromLogContext()
-            .Enrich.WithProperty("Application", "DirectiveAthenaWeb")
-            .WriteTo.BrowserConsole()
-            .WriteTo.Console()
-            .CreateLogger();
-        Log.Logger = logger;
-
-        builder.Logging.ClearProviders();
-        builder.Logging.AddSerilog(logger, dispose: true);
+        builder.AddWebsiteLogging();
 
         builder.RootComponents.Add<App>("#app");
         builder.RootComponents.Add<HeadOutlet>("head::after");

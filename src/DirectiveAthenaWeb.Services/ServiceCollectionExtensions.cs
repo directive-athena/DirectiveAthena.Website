@@ -14,6 +14,7 @@ namespace DirectiveAthenaWeb.Services;
 // ---------------------------------------------------------------------------------------------------------------------
 public static class ServiceCollectionExtensions {
     extension(IServiceCollection services) {
+        
         [UsedImplicitly] public IServiceCollection AddWebsiteServices() {
             services.AddInfiniBlazor(static config => {
                 config.Components.SetRenderMode(RenderMode.InteractiveWebAssembly);
