@@ -31,6 +31,10 @@
         <EmbeddedResource Update="Resources\Tags.nl.resx">
             <DependentUpon>Tags.cs</DependentUpon>
         </EmbeddedResource>
+        <EmbeddedResource Update="Resources\Editor.resx">
+          <Generator>ResXFileCodeGenerator</Generator>
+          <LastGenOutput>Editor.Designer.cs</LastGenOutput>
+        </EmbeddedResource>
     </ItemGroup>
 
 </Project>

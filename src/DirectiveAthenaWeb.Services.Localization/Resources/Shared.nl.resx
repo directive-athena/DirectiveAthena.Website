@@ -330,69 +330,6 @@
     <data name="ContentManager.MarkdownStubsDownload" xml:space="preserve">
     <value>Markdown-stubs downloaden</value>
   </data>
-    <data name="Editor.EditItem" xml:space="preserve">
-    <value>Regel bewerken: {0}</value>
-  </data>
-    <data name="Editor.UniqueId" xml:space="preserve">
-    <value>Unieke ID</value>
-  </data>
-    <data name="Editor.IdHelperItem" xml:space="preserve">
-    <value>GUID wordt automatisch gegenereerd voor nieuwe regels.</value>
-  </data>
-    <data name="Editor.CreatedAtLabel" xml:space="preserve">
-    <value>Aangemaakt (UTC)</value>
-  </data>
-    <data name="Editor.LastModifiedAtLabel" xml:space="preserve">
-    <value>Laatst gewijzigd (UTC)</value>
-  </data>
-    <data name="Editor.TitleLabel" xml:space="preserve">
-    <value>Titel</value>
-  </data>
-    <data name="Editor.SummaryLabel" xml:space="preserve">
-    <value>Samenvatting</value>
-  </data>
-    <data name="Editor.QuestionLabel" xml:space="preserve">
-    <value>Vraag</value>
-  </data>
-    <data name="Editor.AnswerLabel" xml:space="preserve">
-    <value>Antwoord</value>
-  </data>
-    <data name="Editor.HiddenLabel" xml:space="preserve">
-    <value>Verborgen (niet tonen in lijsten)</value>
-  </data>
-    <data name="Editor.NewPostTitle" xml:space="preserve">
-    <value>Nieuw bericht</value>
-  </data>
-    <data name="Editor.NewRuleTitle" xml:space="preserve">
-    <value>Nieuwe regel</value>
-  </data>
-    <data name="Editor.NewStoryTitle" xml:space="preserve">
-    <value>Nieuw verhaal</value>
-  </data>
-    <data name="Editor.MarkdownFileLabel" xml:space="preserve">
-    <value>Markdown-bestandsnaam (bijv. {0})</value>
-  </data>
-    <data name="Editor.MarkdownFileHelper" xml:space="preserve">
-    <value>Bestandsnaam komt overeen met de GUID en kan niet worden gewijzigd.</value>
-  </data>
-    <data name="Editor.TagsTitle" xml:space="preserve">
-    <value>Tags</value>
-  </data>
-    <data name="Editor.AddTag" xml:space="preserve">
-    <value>Tag-ID toevoegen</value>
-  </data>
-    <data name="Editor.TagsHint" xml:space="preserve">
-    <value>Zorg dat de Tag-ID in het tabblad Tags bestaat.</value>
-  </data>
-    <data name="Editor.ChaptersTitle" xml:space="preserve">
-    <value>Hoofdstukken</value>
-  </data>
-    <data name="Editor.AddChapter" xml:space="preserve">
-    <value>Hoofdstuk toevoegen</value>
-  </data>
-    <data name="Editor.ChaptersHint" xml:space="preserve">
-    <value>Gebruik korte, unieke hoofdstuk-ID's.</value>
-  </data>
     <data name="Markdown.Label" xml:space="preserve">
     <value>Markdown</value>
   </data>

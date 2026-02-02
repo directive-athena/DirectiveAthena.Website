@@ -330,69 +330,6 @@
     <data name="ContentManager.MarkdownStubsDownload" xml:space="preserve">
     <value>Download Markdown Stubs</value>
   </data>
-    <data name="Editor.EditItem" xml:space="preserve">
-    <value>Edit Rule: {0}</value>
-  </data>
-    <data name="Editor.UniqueId" xml:space="preserve">
-    <value>Unique ID</value>
-  </data>
-    <data name="Editor.IdHelperItem" xml:space="preserve">
-    <value>GUID is generated automatically for new rules.</value>
-  </data>
-    <data name="Editor.CreatedAtLabel" xml:space="preserve">
-    <value>Created (UTC)</value>
-  </data>
-    <data name="Editor.LastModifiedAtLabel" xml:space="preserve">
-    <value>Last Modified (UTC)</value>
-  </data>
-    <data name="Editor.TitleLabel" xml:space="preserve">
-    <value>Title</value>
-  </data>
-    <data name="Editor.SummaryLabel" xml:space="preserve">
-    <value>Summary</value>
-  </data>
-    <data name="Editor.QuestionLabel" xml:space="preserve">
-    <value>Question</value>
-  </data>
-    <data name="Editor.AnswerLabel" xml:space="preserve">
-    <value>Answer</value>
-  </data>
-    <data name="Editor.HiddenLabel" xml:space="preserve">
-    <value>Hidden (Exclude from lists)</value>
-  </data>
-    <data name="Editor.NewPostTitle" xml:space="preserve">
-    <value>New Post</value>
-  </data>
-    <data name="Editor.NewRuleTitle" xml:space="preserve">
-    <value>New Rule</value>
-  </data>
-    <data name="Editor.NewStoryTitle" xml:space="preserve">
-    <value>New Story</value>
-  </data>
-    <data name="Editor.MarkdownFileLabel" xml:space="preserve">
-    <value>Markdown Filename (e.g. {0})</value>
-  </data>
-    <data name="Editor.MarkdownFileHelper" xml:space="preserve">
-    <value>Filename matches GUID and cannot be changed.</value>
-  </data>
-    <data name="Editor.TagsTitle" xml:space="preserve">
-    <value>Tags</value>
-  </data>
-    <data name="Editor.AddTag" xml:space="preserve">
-    <value>Add Tag ID</value>
-  </data>
-    <data name="Editor.TagsHint" xml:space="preserve">
-    <value>Ensure Tag ID exists in the Tags tab.</value>
-  </data>
-    <data name="Editor.ChaptersTitle" xml:space="preserve">
-    <value>Chapters</value>
-  </data>
-    <data name="Editor.AddChapter" xml:space="preserve">
-    <value>Add Chapter</value>
-  </data>
-    <data name="Editor.ChaptersHint" xml:space="preserve">
-    <value>Use short, unique chapter identifiers.</value>
-  </data>
     <data name="Markdown.Label" xml:space="preserve">
     <value>Markdown</value>
   </data>
