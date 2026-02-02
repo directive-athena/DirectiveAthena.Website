@@ -48,12 +48,12 @@ public static class LoggingExtensions {
     extension(IHostApplicationBuilder builder) {
         [UsedImplicitly] public IHostApplicationBuilder AddWebsiteLogging() {
             
-            LogEventLevel minimumLevel = builder.Environment.IsDevelopment()
-                ? LogEventLevel.Debug
-                : LogEventLevel.Information;
+            // LogEventLevel minimumLevel = builder.Environment.IsDevelopment()
+            //     ? LogEventLevel.Debug
+            //     : LogEventLevel.Information;
 
             LoggerConfiguration loggerConfig = ConfigureLogger()
-                .MinimumLevel.Is(minimumLevel);
+                .MinimumLevel.Is(LogEventLevel.Information);
             
             Logger logger = loggerConfig.CreateLogger();
             Log.Logger = logger;

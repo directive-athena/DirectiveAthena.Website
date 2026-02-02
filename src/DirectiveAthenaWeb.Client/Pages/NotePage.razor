@@ -49,11 +49,11 @@
                              Style="letter-spacing: 0.2em; text-transform: uppercase;">@FormatDate(_currentPost.CreatedAt)</MudText>
                     @if (HasDate(_currentPost.LastModifiedAt)) {
                         <MudText Typo="Typo.caption" Class="opacity-60">
-                            @string.Format(LocalizerShared[Shared.FaqUpdated], FormatDate(_currentPost.LastModifiedAt))
+                            @LocalizerShared[Shared.FaqUpdated, FormatDate(_currentPost.LastModifiedAt)]
                         </MudText>
                     }
                     <MudText Typo="Typo.caption" Class="opacity-60">
-                        @string.Format(LocalizerShared[Shared.WritingsDetailReadTime], _readTimeMinutes)
+                        @LocalizerShared[Shared.WritingsDetailReadTime, _readTimeMinutes]
                     </MudText>
                     <MudButton Variant="Variant.Text" Color="Color.Secondary" Size="Size.Small"
                                StartIcon="@(_isLinkCopied ? Icons.Material.Filled.Check : Icons.Material.Filled.ContentCopy)"

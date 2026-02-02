@@ -77,7 +77,7 @@
                                 </MudText>
                                 @if (story.Chapters.Count > 0) {
                                     <MudText Typo="Typo.caption" Class="opacity-60 mb-4">
-                                        @string.Format(LocalizerShared[Shared.StoryChapters], story.Chapters.Count)
+                                        @LocalizerShared[Shared.StoryChapters, story.Chapters.Count]
                                     </MudText>
                                 }
                                 <MudButton Variant="Variant.Text" Color="Color.Secondary"

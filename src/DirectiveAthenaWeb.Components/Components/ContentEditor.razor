@@ -23,7 +23,7 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 <MudPaper Class="pa-6 card-glass no-hover">
     <div class="d-flex justify-space-between align-center mb-6">
-        <MudText Typo="Typo.h5">@string.Format(Localizer[Shared.EditorEditItem], Content.Id.ToString("D"))</MudText>
+        <MudText Typo="Typo.h5">@Localizer[Shared.EditorEditItem, Content.Id.ToString("D")]</MudText>
         <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error"
                        OnClick="@DeleteContentAsync"/>
     </div>
@@ -68,7 +68,7 @@
         <MudItem xs="12">
             <MudDivider Class="my-4"/>
             <MudTextField Value="@Content.MarkdownFileName"
-                          Label="@(string.Format(Localizer[Shared.EditorMarkdownFileLabel]))"
+                          Label="@Localizer[Shared.EditorMarkdownFileLabel, Content.MarkdownFileName]"
                           Required="true" ReadOnly="true"
                           HelperText="@Localizer[Shared.EditorMarkdownFileHelper]"/>
         </MudItem>

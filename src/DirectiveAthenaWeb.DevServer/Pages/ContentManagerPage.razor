@@ -737,7 +737,7 @@
             AutoSaveStatus.Pending => Localizer[Shared.ContentManagerAutoSaveScheduled],
             AutoSaveStatus.Paused => Localizer[Shared.ContentManagerAutoSavePaused],
             AutoSaveStatus.Error => Localizer[Shared.ContentManagerAutoSaveFailed],
-            AutoSaveStatus.Saved => string.Format(Localizer[Shared.ContentManagerAutoSaveSaved], FormatTimeStamp(lastSavedAt)),
+            AutoSaveStatus.Saved => Localizer[Shared.ContentManagerAutoSaveSaved, FormatTimeStamp(lastSavedAt)],
             _ => Localizer[Shared.ContentManagerAutoSaveOn]
         };
     }

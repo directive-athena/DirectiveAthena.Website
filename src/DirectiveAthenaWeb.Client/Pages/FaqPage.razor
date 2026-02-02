@@ -63,7 +63,7 @@
                                 @if (!string.IsNullOrWhiteSpace(rule.Date)) {
                                     <MudText Typo="Typo.caption" Color="Color.Secondary"
                                              Style="letter-spacing: 0.15em; text-transform: uppercase;">
-                                        @string.Format(LocalizerShared[Shared.FaqUpdated], rule.Date)
+                                        @LocalizerShared[Shared.FaqUpdated, rule.Date]
                                     </MudText>
                                 }
                                 <MudText Typo="Typo.h5" Class="SpaceGrotesk">@rule.Title</MudText>

@@ -46,7 +46,7 @@
                              Style="letter-spacing: 0.2em; text-transform: uppercase;">@FormatDate(_currentStory.CreatedAt)</MudText>
                     @if (HasDate(_currentStory.LastModifiedAt)) {
                         <MudText Typo="Typo.caption" Class="opacity-60">
-                            @string.Format(LocalizerShared[Shared.FaqUpdated], FormatDate(_currentStory.LastModifiedAt))
+                            @LocalizerShared[Shared.FaqUpdated, FormatDate(_currentStory.LastModifiedAt)]
                         </MudText>
                     }
                 </div>
