@@ -17,4 +17,10 @@
         <ProjectReference Include="..\DirectiveAthenaWeb.Shared\DirectiveAthenaWeb.Shared.csproj"/>
     </ItemGroup>
 
+    <ItemGroup>
+      <EmbeddedResource Update="Resources\Components.nl.resx">
+        <DependentUpon>Components.cs</DependentUpon>
+      </EmbeddedResource>
+    </ItemGroup>
+
 </Project>

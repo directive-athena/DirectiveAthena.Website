@@ -32,4 +32,10 @@
       <ProjectReference Include="..\DirectiveAthenaWeb.Shared\DirectiveAthenaWeb.Shared.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <EmbeddedResource Update="Resources\Faq.nl.resx">
+        <DependentUpon>Faq.cs</DependentUpon>
+      </EmbeddedResource>
+    </ItemGroup>
+
 </Project>
