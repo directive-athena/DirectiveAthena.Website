@@ -107,4 +107,25 @@
     <data name="MarkdownFileLabelLocale" xml:space="preserve">
         <value>Locale</value>
     </data>
+    <data name="ContentManager.Actions" xml:space="preserve">
+        <value>Actions</value>
+    </data>
+    <data name="ContentManager.SaveIndex" xml:space="preserve">
+        <value>Save index.json</value>
+    </data>
+    <data name="ContentManager.DownloadIndex" xml:space="preserve">
+        <value>Download index.json</value>
+    </data>
+    <data name="ContentManager.IndexSaved" xml:space="preserve">
+        <value>index.json saved to R2!</value>
+    </data>
+    <data name="ContentManager.IndexSaveFailed" xml:space="preserve">
+        <value>Failed to save index.json.</value>
+    </data>
+    <data name="List.Deleted" xml:space="preserve">
+        <value>Deleted</value>
+    </data>
+    <data name="List.Hidden" xml:space="preserve">
+        <value>Hidden</value>
+    </data>
 </root>

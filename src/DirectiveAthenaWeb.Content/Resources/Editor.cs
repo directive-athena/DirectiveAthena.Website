@@ -18,6 +18,13 @@ public class Editor {
     public const string TagsHint = "TagsHint";
     public const string SaveItemSuccess = "SaveItemSuccess";
     public const string SaveItemFailed = "SaveItemFailed";
+    public const string ContentManagerActions = "ContentManager.Actions";
+    public const string ContentManagerSaveIndex = "ContentManager.SaveIndex";
+    public const string ContentManagerDownloadIndex = "ContentManager.DownloadIndex";
+    public const string ContentManagerIndexSaved = "ContentManager.IndexSaved";
+    public const string ContentManagerIndexSaveFailed = "ContentManager.IndexSaveFailed";
+    public const string ListDeleted = "List.Deleted";
+    public const string ListHidden = "List.Hidden";
 
     public const string MarkdownFileLabel = "MarkdownFileLabel";
     public const string MarkdownFileLabelLocale = "MarkdownFileLabelLocale";

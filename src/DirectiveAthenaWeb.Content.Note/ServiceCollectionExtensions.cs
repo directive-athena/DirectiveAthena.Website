@@ -1,8 +1,13 @@
 ﻿// ---------------------------------------------------------------------------------------------------------------------
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
+using DirectiveAthenaWeb.Content;
 using DirectiveAthenaWeb.Content.Note;
+using DirectiveAthenaWeb.DevServer.Pages;
+using DirectiveAthenaWeb.Services.Localization.Resources;
 using JetBrains.Annotations;
+using Microsoft.Extensions.Localization;
+using MudBlazor;
 
 // ReSharper disable once CheckNamespace
 namespace Microsoft.Extensions.DependencyInjection;
@@ -15,6 +20,11 @@ public static class ServiceCollectionExtensions {
             services.RegisterServicesFromDirectiveAthenaWebContentNote();
 
             services.AddContentStorage<NoteContent>("note");
+            
+            ContentEditorProvider.Register<NoteContentEditor, IStringLocalizer<Shared>>(
+                localizer => localizer[Shared.ContentManagerTabStory],
+                Icons.Material.Filled.Article
+            );
 
             return services;
         }

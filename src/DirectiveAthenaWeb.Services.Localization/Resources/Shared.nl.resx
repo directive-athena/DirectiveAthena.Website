@@ -246,18 +246,9 @@
     <data name="ContentManager.SelectStory" xml:space="preserve">
     <value>Selecteer een verhaal of maak een nieuw verhaal.</value>
   </data>
-    <data name="ContentManager.SaveIndex" xml:space="preserve">
-    <value>index.json opslaan</value>
-  </data>
-    <data name="ContentManager.DownloadIndex" xml:space="preserve">
-    <value>index.json downloaden</value>
-  </data>
     <data name="ContentManager.CopyIndex" xml:space="preserve">
-    <value>index.json kopieren naar klembord</value>
-  </data>
-    <data name="ContentManager.Actions" xml:space="preserve">
-    <value>Acties</value>
-  </data>
+      <value>index.json kopieren naar klembord</value>
+    </data>
     <data name="ContentManager.AutoSave.Label" xml:space="preserve">
     <value>Automatisch opslaan</value>
   </data>
@@ -294,15 +285,9 @@
     <data name="ContentManager.AutoSave.DetailPaused" xml:space="preserve">
     <value>Los validatiefouten op om verder te kunnen opslaan.</value>
   </data>
-    <data name="ContentManager.IndexSaved" xml:space="preserve">
-    <value>index.json opgeslagen in R2!</value>
-  </data>
-    <data name="ContentManager.IndexSaveFailed" xml:space="preserve">
-    <value>Opslaan van index.json mislukt.</value>
-  </data>
     <data name="ContentManager.JsonCopied" xml:space="preserve">
-    <value>JSON gekopieerd naar klembord</value>
-  </data>
+      <value>JSON gekopieerd naar klembord</value>
+    </data>
     <data name="ContentManager.DeleteItemSoftConfirm" xml:space="preserve">
     <value>Deze regel soft verwijderen? Het is niet zichtbaar voor bezoekers maar blijft zichtbaar in de manager.</value>
   </data>
@@ -408,15 +393,9 @@
     <data name="List.MissingNl" xml:space="preserve">
     <value>NL ontbreekt</value>
   </data>
-    <data name="List.Hidden" xml:space="preserve">
-    <value>Verborgen</value>
-  </data>
-    <data name="List.Deleted" xml:space="preserve">
-    <value>Verwijderd</value>
-  </data>
     <data name="List.Untitled" xml:space="preserve">
-    <value>Zonder titel</value>
-  </data>
+      <value>Zonder titel</value>
+    </data>
     <data name="Story.Title" xml:space="preserve">
     <value>Verhaal - Directive Athena</value>
   </data>

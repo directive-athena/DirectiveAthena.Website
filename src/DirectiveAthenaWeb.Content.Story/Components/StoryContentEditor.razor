@@ -1,0 +1,34 @@
+﻿@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Imports
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@using DirectiveAthenaWeb.Content.Story
+@using DirectiveAthenaWeb.Services.Localization
+
+@namespace DirectiveAthenaWeb.DevServer.Pages
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Descriptors
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@inherits WebsiteComponentBase
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Html
+@* ------------------------------------------------------------------------------------------------------------------ *@
+<ContentEditor TContent="@StoryContent">
+    <Fields Context="_">
+                        
+    </Fields>
+    <LocalizedFields Context="box">
+        @{ StoryContent content = box.Item1;LocalizationInfo culture = box.Item2; }
+        <MudTextField Label="Title" Variant="Variant.Filled"
+                      @bind-Value="@content.Title[culture.Code]"
+                      Required="true"
+                      FullWidth="true"/>
+        <MudTextField Label="Summary" Variant="Variant.Filled"
+                      @bind-Value="@content.Summary[culture.Code]"
+                      FullWidth="true"/>
+    </LocalizedFields>
+</ContentEditor>
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Code
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@code {
+}

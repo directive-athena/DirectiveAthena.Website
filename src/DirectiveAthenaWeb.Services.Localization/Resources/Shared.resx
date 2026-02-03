@@ -246,17 +246,8 @@
     <data name="ContentManager.SelectStory" xml:space="preserve">
     <value>Select a story or create a new one.</value>
   </data>
-    <data name="ContentManager.SaveIndex" xml:space="preserve">
-    <value>Save index.json</value>
-  </data>
-    <data name="ContentManager.DownloadIndex" xml:space="preserve">
-    <value>Download index.json</value>
-  </data>
     <data name="ContentManager.CopyIndex" xml:space="preserve">
     <value>Copy index.json to Clipboard</value>
-  </data>
-    <data name="ContentManager.Actions" xml:space="preserve">
-    <value>Actions</value>
   </data>
     <data name="ContentManager.AutoSave.Label" xml:space="preserve">
     <value>Auto-save</value>
@@ -293,12 +284,6 @@
   </data>
     <data name="ContentManager.AutoSave.DetailPaused" xml:space="preserve">
     <value>Resolve validation issues to continue saving.</value>
-  </data>
-    <data name="ContentManager.IndexSaved" xml:space="preserve">
-    <value>index.json saved to R2!</value>
-  </data>
-    <data name="ContentManager.IndexSaveFailed" xml:space="preserve">
-    <value>Failed to save index.json.</value>
   </data>
     <data name="ContentManager.JsonCopied" xml:space="preserve">
     <value>JSON copied to clipboard</value>
@@ -407,12 +392,6 @@
   </data>
     <data name="List.MissingNl" xml:space="preserve">
     <value>Missing NL</value>
-  </data>
-    <data name="List.Hidden" xml:space="preserve">
-    <value>Hidden</value>
-  </data>
-    <data name="List.Deleted" xml:space="preserve">
-    <value>Deleted</value>
   </data>
     <data name="List.Untitled" xml:space="preserve">
     <value>Untitled</value>

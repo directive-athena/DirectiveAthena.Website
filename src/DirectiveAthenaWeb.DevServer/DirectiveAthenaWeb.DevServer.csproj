@@ -24,4 +24,11 @@
         <ProjectReference Include="..\DirectiveAthenaWeb.Shared\DirectiveAthenaWeb.Shared.csproj"/>
     </ItemGroup>
 
+    <ItemGroup>
+      <EmbeddedResource Update="Resources\DevServer.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>DevServer.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+    </ItemGroup>
+
 </Project>

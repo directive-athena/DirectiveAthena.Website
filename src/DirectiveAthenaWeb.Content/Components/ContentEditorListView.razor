@@ -2,7 +2,7 @@
 @* Imports
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @using DirectiveAthenaWeb.Services.Content
-@using DirectiveAthenaWeb.Services.Localization.Resources
+@using DirectiveAthenaWeb.Content.Resources
 @using Microsoft.Extensions.Localization
 @using MudBlazor
 
@@ -10,7 +10,7 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Descriptors
 @* ------------------------------------------------------------------------------------------------------------------ *@
-@inject IStringLocalizer<Shared> Localizer
+@inject IStringLocalizer<Editor> Localizer
 
 @typeparam TContent where TContent : IContent
 @* ------------------------------------------------------------------------------------------------------------------ *@
@@ -31,13 +31,13 @@
                         @if (item.IsSoftDeleted) {
                             <MudChip T="string" Size="Size.Small" Color="Color.Error" Variant="Variant.Text"
                                      Icon="@Icons.Material.Filled.Delete">
-                                @Localizer[Shared.ListDeleted]
+                                @Localizer[Editor.ListDeleted]
                             </MudChip>
                         }
                         @if (item.IsHidden) {
                             <MudChip T="string" Size="Size.Small" Color="Color.Default" Variant="Variant.Text"
                                      Icon="@Icons.Material.Filled.VisibilityOff">
-                                @Localizer[Shared.ListHidden]
+                                @Localizer[Editor.ListHidden]
                             </MudChip>
                         }
                     </div>

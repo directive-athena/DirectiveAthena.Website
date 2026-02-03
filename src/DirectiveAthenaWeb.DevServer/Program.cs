@@ -1,6 +1,7 @@
 // ---------------------------------------------------------------------------------------------------------------------
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
+using DirectiveAthenaWeb.Content;
 using DirectiveAthenaWeb.Services;
 using DirectiveAthenaWeb.Services.Contact;
 using DirectiveAthenaWeb.Services.ContentStorage;
@@ -36,11 +37,11 @@ public static class Program {
         });
         
         builder.Services.AddWebsiteServices();
-
+        builder.Services.AddWebsiteContent();
+        
         builder.Services.Configure<R2StorageOptions>(builder.Configuration.GetSection("ContentStorage:R2"));
         builder.Services.Configure<ContactInfoOptions>(builder.Configuration.GetSection("ContactInfo"));
         builder.Services.Configure<LocalizationOptions>(builder.Configuration.GetSection("Localization"));
-
         
         builder.Services.AddNoteContent();
         builder.Services.AddFaqContent();

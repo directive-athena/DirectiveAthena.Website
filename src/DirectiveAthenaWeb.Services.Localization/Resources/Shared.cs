@@ -14,7 +14,6 @@ public class Shared {
     public const string ContactReturn = "Contact.Return";
     public const string ContactSubtitle = "Contact.Subtitle";
     public const string ContactTitle = "Contact.Title";
-    public const string ContentManagerActions = "ContentManager.Actions";
     public const string ContentManagerAutoSaveDetailOff = "ContentManager.AutoSave.DetailOff";
     public const string ContentManagerAutoSaveDetailPaused = "ContentManager.AutoSave.DetailPaused";
     public const string ContentManagerAutoSaveDetailReady = "ContentManager.AutoSave.DetailReady";
@@ -28,13 +27,9 @@ public class Shared {
     public const string ContentManagerAutoSaveSaving = "ContentManager.AutoSave.Saving";
     public const string ContentManagerAutoSaveScheduled = "ContentManager.AutoSave.Scheduled";
     public const string ContentManagerCopyIndex = "ContentManager.CopyIndex";
-    public const string ContentManagerDownloadIndex = "ContentManager.DownloadIndex";
     public const string ContentManagerHeading = "ContentManager.Heading";
-    public const string ContentManagerIndexSaveFailed = "ContentManager.IndexSaveFailed";
-    public const string ContentManagerIndexSaved = "ContentManager.IndexSaved";
     public const string ContentManagerJsonCopied = "ContentManager.JsonCopied";
     public const string ContentManagerMarkdownStubsSaved = "ContentManager.MarkdownStubsSaved";
-    public const string ContentManagerSaveIndex = "ContentManager.SaveIndex";
     public const string ContentManagerSelectPost = "ContentManager.SelectPost";
     public const string ContentManagerSelectRule = "ContentManager.SelectRule";
     public const string ContentManagerSelectStory = "ContentManager.SelectStory";
@@ -83,8 +78,6 @@ public class Shared {
     public const string HomeWritingsTitle = "Home.Writings.Title";
     public const string HomeWritingsViewAll = "Home.Writings.ViewAll";
     public const string HomeWritingsViewArchive = "Home.Writings.ViewArchive";
-    public const string ListDeleted = "List.Deleted";
-    public const string ListHidden = "List.Hidden";
     public const string ListMissingNl = "List.MissingNl";
     public const string ListNotes = "List.Notes";
     public const string ListRules = "List.Rules";
