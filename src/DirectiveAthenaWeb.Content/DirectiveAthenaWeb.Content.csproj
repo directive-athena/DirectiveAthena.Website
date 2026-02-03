@@ -37,9 +37,6 @@
       <EmbeddedResource Update="Resources\Tags.nl.resx">
         <DependentUpon>Tags.cs</DependentUpon>
       </EmbeddedResource>
-      <EmbeddedResource Update="Resources\Editor.nl.resx">
-        <DependentUpon>Editor.cs</DependentUpon>
-      </EmbeddedResource>
     </ItemGroup>
 
 </Project>

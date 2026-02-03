@@ -56,9 +56,7 @@ internal class FaqContentManager(
         IReadOnlyCollection<LocalizationInfo> locals = localizationProvider.GetSupportedLocalizations();
         Dictionary<string, string> stubs = locals.ToDictionary(
             c => c.Code,
-            c => $"# {rule.Question.GetValueOrDefault(c.Code)}
-
-{rule.Answer.GetValueOrDefault(c.Code)}");
+            c => $"# {rule.Question.GetValueOrDefault(c.Code)}\n\n{rule.Answer.GetValueOrDefault(c.Code)}");
 
         if (!writeToDisk) {
             logger.Debug("Generated world rule stubs for {Id} without writing to disk.", rule.Id);
