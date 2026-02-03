@@ -56,10 +56,8 @@
                                   Label="@EditorLocalizer[Editor.LastModifiedAtLabel]"
                                   Required="true" ReadOnly="true"/>
 
-                    <MudItem xs="12">
-                        <MudSwitch T="bool" Value="@Content.IsHidden" ValueChanged="@OnHiddenChangedAsync"
-                                   Label="@EditorLocalizer[Editor.HiddenLabel]" Color="Color.Primary"/>
-                    </MudItem>
+                    <MudSwitch T="bool" Value="@Content.IsHidden" ValueChanged="@OnHiddenChangedAsync"
+                               Label="@EditorLocalizer[Editor.HiddenLabel]" Color="Color.Primary"/>
 
                     @if (Fields is not null) {
                         @Fields
@@ -99,7 +97,7 @@
 @code {
     [Parameter, EditorRequired] public TContent Content { get; set; } = null!;
     [Parameter, EditorRequired] public RenderFragment<(TContent, LocalizationInfo)>? LocalizedFields { get; set; }
-    [Parameter, EditorRequired] public RenderFragment? Fields { get; set; }
+    [Parameter, EditorRequired] public RenderFragment<TContent>? Fields { get; set; }
     [Parameter] public EventCallback OnContentChanged { get; set; }
 
     // -----------------------------------------------------------------------------------------------------------------
