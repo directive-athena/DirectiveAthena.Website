@@ -58,7 +58,7 @@ internal class NoteContentManager(
         }
     }
     
-    public override NoteContent Create(Guid id = default) {
+    public override NoteContent Create(Guid id = default, string? internalTitle = null) {
         if (id == Guid.Empty) id = Guid.CreateVersion7();
         DateTime now = DateTime.UtcNow;
         IReadOnlyCollection<LocalizationInfo> locals = localizationProvider.GetSupportedLocalizations();
@@ -69,9 +69,11 @@ internal class NoteContentManager(
             Id = id,
             Title = titles,
             Summary = summaries,
-            Tags = [],
+            Tags = [
+            ],
             CreatedAt = now,
-            LastModifiedAt = now
+            LastModifiedAt = now,
+            InternalTitle = internalTitle ?? string.Empty
         };
         logger.Information("Created new article stub {Id}.", article.Id);
         return article;

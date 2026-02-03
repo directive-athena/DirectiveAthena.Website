@@ -44,9 +44,16 @@ public class FaqContentManagerTests {
     private static FaqContent CreateRule(int seed, bool includeNl = true) {
         var rule = new FaqContent {
             Id = Guid.NewGuid(),
-            Question = new Dictionary<string, string> { ["en"] = $"Question {seed}" },
-            Answer = new Dictionary<string, string> { ["en"] = $"Answer {seed}" },
-            Tags = ["tag-one"]
+            Question = new Dictionary<string, string> {
+                ["en"] = $"Question {seed}"
+            },
+            Answer = new Dictionary<string, string> {
+                ["en"] = $"Answer {seed}"
+            },
+            Tags = [
+                "tag-one"
+            ],
+            InternalTitle = string.Empty
         };
 
         if (!includeNl) return rule;

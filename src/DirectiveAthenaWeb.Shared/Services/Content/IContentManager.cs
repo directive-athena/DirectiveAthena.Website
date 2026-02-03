@@ -7,7 +7,7 @@ namespace DirectiveAthenaWeb.Services.Content;
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
 public interface IContentManager<TContent> where TContent : IContent {
-    TContent Create(Guid id = default);
+    TContent Create(Guid id = default, string? internalTitle = null);
     
     bool Validate(TContent rule, out string? errorMessage);
     bool Validate(IEnumerable<TContent> rules, out string? errorMessage);

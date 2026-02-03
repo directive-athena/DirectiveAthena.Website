@@ -9,9 +9,8 @@ namespace DirectiveAthenaWeb.Content;
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
 public abstract class ContentBase : IContent {
-    public Guid Id { get; set; } = Guid.CreateVersion7();
-
-    public string InternalTitle { get; set; } = string.Empty;
+    public required Guid Id { get; set; }
+    public required string InternalTitle { get; set; }
 
     [JsonIgnore] private readonly HashSet<string> _tags = [];
     [JsonIgnore] public IReadOnlyCollection<string> Tags {

@@ -40,7 +40,8 @@ public class FaqListTests {
                 ["en"] = "Answer",
                 ["nl"] = "Antwoord"
             },
-            SoftDeletedAt = DateTime.UtcNow
+            SoftDeletedAt = DateTime.UtcNow,
+            InternalTitle = string.Empty
         };
 
         // Act

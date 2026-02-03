@@ -23,8 +23,13 @@ public class FaqContentRepositoryTests {
 
     private static FaqContent CreateRule(int seed) => new() {
         Id = Guid.NewGuid(),
-        Question = new Dictionary<string, string> { ["en"] = $"Question {seed}" },
-        Answer = new Dictionary<string, string> { ["en"] = $"Answer {seed}" }
+        Question = new Dictionary<string, string> {
+            ["en"] = $"Question {seed}"
+        },
+        Answer = new Dictionary<string, string> {
+            ["en"] = $"Answer {seed}"
+        },
+        InternalTitle = string.Empty
     };
 
     [Test]

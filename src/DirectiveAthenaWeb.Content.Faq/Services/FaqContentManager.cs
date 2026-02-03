@@ -30,7 +30,7 @@ internal class FaqContentManager(
         return Storage.GetMarkdownContentPath(localization.Code, rule.MarkdownFileName);
     }
     
-    public override FaqContent Create(Guid id = default) {
+    public override FaqContent Create(Guid id = default, string? internalTitle = null) {
         if (id == Guid.Empty) id = Guid.CreateVersion7();
         DateTime now = DateTime.UtcNow;
         IReadOnlyCollection<LocalizationInfo> locals = localizationProvider.GetSupportedLocalizations();
@@ -42,9 +42,11 @@ internal class FaqContentManager(
             Id = id,
             Question = questions,
             Answer = answers,
-            Tags = [],
+            Tags = [
+            ],
             CreatedAt = now,
-            LastModifiedAt = now
+            LastModifiedAt = now,
+            InternalTitle = internalTitle ?? string.Empty
         };
         logger.Information("Created new world rule stub {Id}.", rule.Id);
         return rule;

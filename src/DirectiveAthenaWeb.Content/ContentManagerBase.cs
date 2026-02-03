@@ -25,7 +25,7 @@ public abstract class ContentManagerBase<TContent>(
     // -----------------------------------------------------------------------------------------------------------------
     // Methods
     // -----------------------------------------------------------------------------------------------------------------
-    public abstract TContent Create(Guid id = default);
+    public abstract TContent Create(Guid id = default, string? internalTitle = null);
 
     public bool Validate(TContent rule, out string? errorMessage) {
         ValidationResult? result = SingleValidator.Validate(rule);

@@ -33,14 +33,18 @@ public static class NoteFaker {
             Id = id,
             Title = title,
             Summary = summary,
-            Tags = faker.Lorem.Words(2).ToList(),
-            HiddenAt = hidden ? DateTime.UtcNow : DateTime.MinValue
+            Tags = faker.Lorem.Words(2)
+                .ToList(),
+            HiddenAt = hidden
+                ? DateTime.UtcNow
+                : DateTime.MinValue,
+            InternalTitle = string.Empty
         };
     }
 
     public static IReadOnlyCollection<LocalizationInfo> DefaultLocalizations()
         => [
-            new LocalizationInfo("en", "English", "EN", "https://flagcdn.com/w40/us.png"),
-            new LocalizationInfo("nl", "Nederlands", "NL", "https://flagcdn.com/w40/nl.png")
+            new("en", "English", "EN", "https://flagcdn.com/w40/us.png"),
+            new("nl", "Nederlands", "NL", "https://flagcdn.com/w40/nl.png")
         ];
 }

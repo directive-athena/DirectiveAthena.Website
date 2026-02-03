@@ -127,7 +127,10 @@ public class NoteContentManagerTests {
     public async Task Validate_RejectsMissingId() {
         // Arrange
         NoteContent[] notes = [
-            new() { Id = Guid.Empty }
+            new() {
+                Id = Guid.Empty,
+                InternalTitle = string.Empty
+            }
         ];
 
         NoteContentManager manager = CreateManager(CreateLocalizationProvider("en"));

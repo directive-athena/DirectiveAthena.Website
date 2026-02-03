@@ -34,7 +34,8 @@ public class FaqContentValidatorTests {
         Answer = new Dictionary<string, string> {
             ["en"] = "Answer",
             ["nl"] = "Antwoord"
-        }
+        },
+        InternalTitle = string.Empty
     };
 
     [Test]
