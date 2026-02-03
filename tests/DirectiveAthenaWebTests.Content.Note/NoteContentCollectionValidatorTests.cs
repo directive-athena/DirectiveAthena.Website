@@ -23,7 +23,7 @@ public class NoteContentCollectionValidatorTests {
         ];
         notes[1].Id = notes[0].Id;
 
-        var validator = new NoteContentCollectionValidator(new NoteContentValidator(TestLocalization.CreateLocalizationProvider("en")));
+        var validator = new NoteContentCollectionValidator(new NoteContentValidator(TestLocalization.CreateLocalizationProvider()));
 
         // Act
         ValidationResult? result = await validator.ValidateAsync(notes);
@@ -40,7 +40,7 @@ public class NoteContentCollectionValidatorTests {
         NoteContent invalid = ContentFaker.CreateNote(421, includeNl: false);
         NoteContent[] notes = [valid, invalid];
 
-        var validator = new NoteContentCollectionValidator(new NoteContentValidator(TestLocalization.CreateLocalizationProvider("en")));
+        var validator = new NoteContentCollectionValidator(new NoteContentValidator(TestLocalization.CreateLocalizationProvider()));
 
         // Act
         ValidationResult? result = await validator.ValidateAsync(notes);

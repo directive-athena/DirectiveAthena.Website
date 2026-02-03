@@ -17,7 +17,7 @@ public class NoteContentValidatorTests {
     [Test]
     public async Task Validate_RejectsMissingId() {
         // Arrange
-        var validator = new NoteContentValidator(TestLocalization.CreateLocalizationProvider("en"));
+        var validator = new NoteContentValidator(TestLocalization.CreateLocalizationProvider());
         NoteContent article = ContentFaker.CreateNote(300);
         article.Id = Guid.Empty;
 
@@ -32,7 +32,7 @@ public class NoteContentValidatorTests {
     [Test]
     public async Task Validate_RejectsMissingLocalizedTitle() {
         // Arrange
-        var validator = new NoteContentValidator(TestLocalization.CreateLocalizationProvider("en"));
+        var validator = new NoteContentValidator(TestLocalization.CreateLocalizationProvider());
         NoteContent article = ContentFaker.CreateNote(301, includeNl: false);
 
         // Act
@@ -46,7 +46,7 @@ public class NoteContentValidatorTests {
     [Test]
     public async Task Validate_RejectsMissingLocalizedSummary() {
         // Arrange
-        var validator = new NoteContentValidator(TestLocalization.CreateLocalizationProvider("en"));
+        var validator = new NoteContentValidator(TestLocalization.CreateLocalizationProvider());
         NoteContent article = ContentFaker.CreateNote(302);
         article.Summary.Remove("nl");
 
@@ -61,7 +61,7 @@ public class NoteContentValidatorTests {
     [Test]
     public async Task Validate_AllowsValidWriting() {
         // Arrange
-        var validator = new NoteContentValidator(TestLocalization.CreateLocalizationProvider("en"));
+        var validator = new NoteContentValidator(TestLocalization.CreateLocalizationProvider());
         NoteContent article = ContentFaker.CreateNote(303);
 
         // Act

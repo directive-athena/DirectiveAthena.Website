@@ -87,7 +87,7 @@ public class NoteContentManagerTests {
         var storage = Substitute.For<IContentStorage>();
         storage.ReadFileAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns(new ValueTask<string?>((string?)null));
-        NoteContentManager manager = CreateManager(TestLocalization.CreateLocalizationProvider("en"), storage);
+        NoteContentManager manager = CreateManager(TestLocalization.CreateLocalizationProvider(), storage);
         NoteContent article = ContentFaker.CreateNote(103);
 
         // Act
@@ -100,7 +100,7 @@ public class NoteContentManagerTests {
     [Test]
     public async Task NewWriting_PopulatesLocalizedFields() {
         // Arrange
-        ILocalizationProvider localizationProvider = TestLocalization.CreateLocalizationProvider("en");
+        ILocalizationProvider localizationProvider = TestLocalization.CreateLocalizationProvider();
         NoteContentManager manager = CreateManager(localizationProvider);
 
         // Act
@@ -124,7 +124,7 @@ public class NoteContentManagerTests {
             }
         ];
 
-        NoteContentManager manager = CreateManager(TestLocalization.CreateLocalizationProvider("en"));
+        NoteContentManager manager = CreateManager(TestLocalization.CreateLocalizationProvider());
 
         // Act
         bool result = manager.Validate(notes, out string? error);
@@ -143,7 +143,7 @@ public class NoteContentManagerTests {
         ];
         notes[1].Id = notes[0].Id;
 
-        NoteContentManager manager = CreateManager(TestLocalization.CreateLocalizationProvider("en"));
+        NoteContentManager manager = CreateManager(TestLocalization.CreateLocalizationProvider());
 
         // Act
         bool result = manager.Validate(notes, out string? error);
@@ -159,7 +159,7 @@ public class NoteContentManagerTests {
         NoteContent article = ContentFaker.CreateNote(200, includeNl: false);
         NoteContent[] notes = [article];
 
-        NoteContentManager manager = CreateManager(TestLocalization.CreateLocalizationProvider("en"));
+        NoteContentManager manager = CreateManager(TestLocalization.CreateLocalizationProvider());
 
         // Act
         bool result = manager.Validate(notes, out string? error);
@@ -176,7 +176,7 @@ public class NoteContentManagerTests {
         article.Summary.Remove("nl");
         NoteContent[] notes = [article];
 
-        NoteContentManager manager = CreateManager(TestLocalization.CreateLocalizationProvider("en"));
+        NoteContentManager manager = CreateManager(TestLocalization.CreateLocalizationProvider());
 
         // Act
         bool result = manager.Validate(notes, out string? error);
@@ -191,7 +191,7 @@ public class NoteContentManagerTests {
         // Arrange
         NoteContent article = ContentFaker.CreateNote(120);
         var storage = Substitute.For<IContentStorage>();
-        NoteContentManager manager = CreateManager(TestLocalization.CreateLocalizationProvider("en"), storage);
+        NoteContentManager manager = CreateManager(TestLocalization.CreateLocalizationProvider(), storage);
 
         // Act
         (Dictionary<string, string> Stubs, bool WroteAll) result = await manager.GenerateStubsAsync(article, writeToDisk: false);
@@ -199,7 +199,7 @@ public class NoteContentManagerTests {
         // Assert
         await Assert.That(result.Stubs.Count).IsEqualTo(TestLocalization.DefaultLocalizations().Count);
         await Assert.That(result.WroteAll).IsFalse();
-        await storage.DidNotReceiveWithAnyArgs().WriteFileAsync(null!, null!, default);
+        await storage.DidNotReceiveWithAnyArgs().WriteFileAsync(null!, null!);
     }
 
     [Test]
@@ -212,7 +212,7 @@ public class NoteContentManagerTests {
         storage.GetMarkdownDiskPath(Arg.Any<string>(), Arg.Any<string>())
             .Returns(call => $"{call.ArgAt<string>(0)}/{call.ArgAt<string>(1)}");
 
-        NoteContentManager manager = CreateManager(TestLocalization.CreateLocalizationProvider("en"), storage);
+        NoteContentManager manager = CreateManager(TestLocalization.CreateLocalizationProvider(), storage);
 
         // Act
         (Dictionary<string, string> Stubs, bool WroteAll) result = await manager.GenerateStubsAsync(article, writeToDisk: true);
