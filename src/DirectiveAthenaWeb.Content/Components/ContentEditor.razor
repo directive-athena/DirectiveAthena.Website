@@ -1,0 +1,129 @@
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Imports *@
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@using DirectiveAthenaWeb.Services.Content
+@using DirectiveAthenaWeb.Services.Js
+@using DirectiveAthenaWeb.Services.Localization
+@using DirectiveAthenaWeb.Services.Localization.Resources
+@using Microsoft.Extensions.Localization
+@using MudBlazor
+
+@namespace DirectiveAthenaWeb.Components
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Descriptors *@
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@inject IContentRepository<TContent> Repository
+@inject IDirectiveAthenaWebJs WebJs
+@inject ISnackbar Snackbar
+@inject IStringLocalizer<Shared> Localizer
+@inject IContentManager<TContent> ContentManager
+
+@typeparam TContent where TContent : DirectiveAthenaWeb.Content.ContentBase
+@inherits WebsiteComponentBase
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Html *@
+@* ------------------------------------------------------------------------------------------------------------------ *@
+<CascadingValue Value="Items">
+    <CascadingValue Value="SelectedItem">
+        <MudGrid>
+            <MudItem xs="12" md="4">
+                <MudStack>
+                    <MudPaper Class="pa-4 card-glass no-hover">
+                        <div class="d-flex justify-space-between align-center mb-2">
+                            <MudText Typo="Typo.subtitle1">@Localizer[Shared.ContentManagerActions]</MudText>
+                        </div>
+                        <MudDivider Class="my-3"/>
+                        <MudButton Variant="Variant.Filled" Color="Color.Success" FullWidth="true"
+                                   OnClick="@SaveIndexAsync"
+                                   StartIcon="@Icons.Material.Filled.Save" Class="mb-3">
+                            @Localizer[Shared.ContentManagerSaveIndex]
+                        </MudButton>
+                        <MudButton Variant="Variant.Filled" Color="Color.Secondary" FullWidth="true"
+                                   OnClick="@DownloadIndexAsync"
+                                   StartIcon="@Icons.Material.Filled.Download" Class="mb-3">
+                            @Localizer[Shared.ContentManagerDownloadIndex]
+                        </MudButton>
+                    </MudPaper>
+                    
+                    <ContentEditorListView TContent="@TContent" OnSelected="@OnItemSelectedAsync"
+                                           OnCreate="@OnCreateAsync"/>
+                </MudStack>
+            </MudItem>
+
+            @if (SelectedItem is not null) {
+                <MudItem xs="12" md="8">
+                    <ContentEditorItem TContent="@TContent"
+                                       Content="SelectedItem"
+                                       Fields="@Fields"
+                                       LocalizedFields="@LocalizedFields"/>
+                </MudItem>
+            }
+        </MudGrid>
+    </CascadingValue>
+</CascadingValue>
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Code *@
+@* ------------------------------------------------------------------------------------------------------------------ *@
+
+@code {
+    private TContent[] Items { get; set; } = [];
+    private TContent? SelectedItem { get; set; }
+
+    [Parameter] public RenderFragment<(TContent, LocalizationInfo)>? LocalizedFields { get; set; }
+    [Parameter] public RenderFragment<TContent>? Fields { get; set; }
+
+    const QueryConfig Config = QueryConfig.WithHidden | QueryConfig.WithSoftDeleted | QueryConfig.SortByCreatedAt;
+
+    // -----------------------------------------------------------------------------------------------------------------
+    // Methods
+    // -----------------------------------------------------------------------------------------------------------------
+    protected override async Task OnInitializedAsync() {
+        await base.OnInitializedAsync();
+        Items = await Repository.GetAllAsync(Config);
+    }
+
+    private async Task OnItemSelectedAsync(TContent? selectedItem) {
+        SelectedItem = selectedItem;
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task OnCreateAsync() {
+        SelectedItem = ContentManager.Create();
+        await Repository.AddOrUpdateAsync(SelectedItem);
+
+        Items = await Repository.GetAllAsync(Config);
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task SaveIndexAsync()
+        => _ = await SaveIndexInternalAsync(showFeedback: true);
+
+    private async Task DownloadIndexAsync() {
+        if (!await SaveIndexInternalAsync(showFeedback: true)) return;
+
+        string json = await Repository.GetAsJsonStringAsync();
+        await DownloadFileAsync("index.json", json);
+    }
+
+    private async Task<bool> SaveIndexInternalAsync(bool showFeedback) {
+        if (!ContentManager.Validate(Items, out string? errorMessage)) {
+            if (showFeedback) {
+                Snackbar.Add(errorMessage!, Severity.Error);
+            }
+            return false;
+        }
+
+        await Repository.AddOrUpdateRangeAsync(Items);
+        bool success = await Repository.SaveAsync();
+        if (showFeedback) {
+            Snackbar.Add(Localizer[success ? Shared.ContentManagerIndexSaved : Shared.ContentManagerIndexSaveFailed],
+                success ? Severity.Success : Severity.Error);
+        }
+
+        return success;
+    }
+
+    private async Task DownloadFileAsync(string fileName, string content) {
+        await WebJs.DownloadFileAsync(fileName, content);
+    }
+}

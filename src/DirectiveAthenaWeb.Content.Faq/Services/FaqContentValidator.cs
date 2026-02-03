@@ -10,7 +10,7 @@ namespace DirectiveAthenaWeb.Content.Faq.Services;
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
 [InjectableTransient<IValidator<FaqContent>>]
-public class FaqContentValidator : AbstractValidator<FaqContent> {
+internal class FaqContentValidator : AbstractValidator<FaqContent> {
     private readonly IReadOnlyCollection<LocalizationInfo> _localizations;
 
     public FaqContentValidator(ILocalizationProvider localizationProvider) {
@@ -19,10 +19,6 @@ public class FaqContentValidator : AbstractValidator<FaqContent> {
         RuleFor(rule => rule.Id)
             .NotEqual(Guid.Empty)
             .WithMessage("Some rules have missing Id!");
-
-        RuleFor(rule => rule.Date)
-            .NotEmpty()
-            .WithMessage("Some rules have missing dates!");
 
         RuleFor(rule => rule)
             .Must(HasLocalizedQuestions)

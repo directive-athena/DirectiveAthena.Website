@@ -28,27 +28,19 @@ public class R2ContentStorageTests {
         PublicBaseUrl = "https://cdn.example.com/"
     };
 
-    private static ILocalizationProvider CreateLocalizationProvider(params string[] codes) {
-        var provider = Substitute.For<ILocalizationProvider>();
-        LocalizationInfo[] localizations = codes
-            .Select(code => new LocalizationInfo(code, code.ToUpperInvariant(), code.ToUpperInvariant(), $"flags/{code}.png"))
-            .ToArray();
-        provider.GetSupportedLocalizations().Returns(localizations);
-        return provider;
-    }
-
     private static R2ContentStorage CreateStorage(
         R2StorageOptions options,
         IMinioClient? minioClient,
         ILocalizationProvider? localizationProvider = null,
         HttpClient? httpClient = null,
-        string categoryFolder = "content/writings",
-        string publicBaseUrl = "https://cdn.example.com/"
+        string categoryFolder = "content/notes",
+        string publicBaseUrl = "https://cdn.example.com/",
+        bool allowInMemoryFallback = false
     ) {
-        localizationProvider ??= CreateLocalizationProvider("en");
+        localizationProvider ??= TestLocalization.CreateLocalizationProviderForCodes("en");
         var logger = Substitute.For<ILogger>();
         httpClient ??= new HttpClient(new TestHttpMessageHandler(_ => new HttpResponseMessage(HttpStatusCode.OK)));
-        return new R2ContentStorage(localizationProvider, options, categoryFolder, new Uri(publicBaseUrl), httpClient, minioClient, logger);
+        return new R2ContentStorage(localizationProvider, options, categoryFolder, new Uri(publicBaseUrl), httpClient, minioClient, logger, allowInMemoryFallback);
     }
 
     private static T? GetPrivateFieldValue<T>(object instance, string fieldName) {
@@ -84,7 +76,7 @@ public class R2ContentStorageTests {
         R2ContentStorage storage = CreateStorage(options, minioClient);
 
         // Act
-        bool result = await storage.WriteFileAsync("content/writings/index.json", "{}");
+        bool result = await storage.WriteFileAsync("content/notes/index.json", "{}");
 
         // Assert
         await Assert.That(result).IsFalse();
@@ -97,7 +89,7 @@ public class R2ContentStorageTests {
         R2ContentStorage storage = CreateStorage(WriteEnabledOptions(), null);
 
         // Act
-        bool result = await storage.WriteFileAsync("content/writings/index.json", "{}");
+        bool result = await storage.WriteFileAsync("content/notes/index.json", "{}");
 
         // Assert
         await Assert.That(result).IsFalse();
@@ -114,12 +106,12 @@ public class R2ContentStorageTests {
         R2ContentStorage storage = CreateStorage(WriteEnabledOptions(), minioClient);
 
         // Act
-        bool result = await storage.WriteFileAsync("/content/writings/index.json", "{ \"ok\": true }");
+        bool result = await storage.WriteFileAsync("/content/notes/index.json", "{ \"ok\": true }");
 
         // Assert
         await Assert.That(result).IsTrue();
         await Assert.That(captured is not null).IsTrue();
-        await Assert.That(GetPrivateFieldValue<string>(captured!, "<ObjectName>k__BackingField")).IsEqualTo("content/writings/index.json");
+        await Assert.That(GetPrivateFieldValue<string>(captured!, "<ObjectName>k__BackingField")).IsEqualTo("content/notes/index.json");
         await Assert.That(GetPrivateFieldValue<string>(captured!, "<ContentType>k__BackingField")).IsEqualTo("application/json");
         await Assert.That(GetPrivateFieldValue<long>(captured!, "<ObjectSize>k__BackingField")).IsEqualTo(Encoding.UTF8.GetByteCount("{ \"ok\": true }"));
     }
@@ -135,7 +127,7 @@ public class R2ContentStorageTests {
         R2ContentStorage storage = CreateStorage(WriteEnabledOptions(), minioClient);
 
         // Act
-        bool result = await storage.WriteFileAsync("content/writings/en/post.md", "# Title");
+        bool result = await storage.WriteFileAsync("content/notes/en/post.md", "# Title");
 
         // Assert
         await Assert.That(result).IsTrue();
@@ -156,7 +148,7 @@ public class R2ContentStorageTests {
             }), Arg.Any<CancellationToken>())
             .Returns(Task.CompletedTask);
 
-        ILocalizationProvider localizationProvider = CreateLocalizationProvider("en", "nl");
+        ILocalizationProvider localizationProvider = TestLocalization.CreateLocalizationProviderForCodes("en", "nl");
         R2ContentStorage storage = CreateStorage(WriteEnabledOptions(), minioClient, localizationProvider);
 
         // Act
@@ -165,8 +157,8 @@ public class R2ContentStorageTests {
         // Assert
         await Assert.That(result).IsTrue();
         await Assert.That(keys.Count).IsEqualTo(2);
-        await Assert.That(keys.Any(key => key == "content/writings/en/post.md")).IsTrue();
-        await Assert.That(keys.Any(key => key == "content/writings/nl/post.md")).IsTrue();
+        await Assert.That(keys.Any(key => key == "content/notes/en/post.md")).IsTrue();
+        await Assert.That(keys.Any(key => key == "content/notes/nl/post.md")).IsTrue();
     }
 
     [Test]
@@ -184,7 +176,7 @@ public class R2ContentStorageTests {
             )
             .Returns(Task.CompletedTask);
 
-        ILocalizationProvider localizationProvider = CreateLocalizationProvider("en", "nl");
+        ILocalizationProvider localizationProvider = TestLocalization.CreateLocalizationProviderForCodes("en", "nl");
         R2ContentStorage storage = CreateStorage(WriteEnabledOptions(), minioClient, localizationProvider);
 
         // Act
@@ -216,7 +208,7 @@ public class R2ContentStorageTests {
         var storage = CreateStorage(options, null, httpClient: httpClient);
 
         // Act
-        bool result = await storage.WriteFileAsync("content/writings/en/post.md", "# Title");
+        bool result = await storage.WriteFileAsync("content/notes/en/post.md", "# Title");
 
         // Assert
         await Assert.That(result).IsTrue();
@@ -242,7 +234,7 @@ public class R2ContentStorageTests {
             ProxyEndpoint = "https://api.example.com"
         };
 
-        var localizationProvider = CreateLocalizationProvider("en", "nl");
+        var localizationProvider = TestLocalization.CreateLocalizationProviderForCodes("en", "nl");
         var storage = CreateStorage(options, null, localizationProvider, httpClient);
 
         // Act

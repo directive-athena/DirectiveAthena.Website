@@ -1,16 +1,15 @@
 // ---------------------------------------------------------------------------------------------------------------------
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
-using Microsoft.AspNetCore.Components.Web;
-using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
-using MudBlazor.Services;
+using DirectiveAthenaWeb.Client.Services;
 using DirectiveAthenaWeb.Services;
 using DirectiveAthenaWeb.Services.Contact;
 using DirectiveAthenaWeb.Services.ContentStorage;
 using DirectiveAthenaWeb.Services.Localization;
-using Serilog;
-using Serilog.Core;
-using Serilog.Events;
+using Microsoft.AspNetCore.Components.Web;
+using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+using Microsoft.Extensions.Hosting;
+using MudBlazor.Services;
 
 namespace DirectiveAthenaWeb.Client;
 // ---------------------------------------------------------------------------------------------------------------------
@@ -23,27 +22,14 @@ public static class Program {
         // -------------------------------------------------------------------------------------------------------------
         var builder = WebAssemblyHostBuilder.CreateDefault(args);
 
-        LogEventLevel minimumLevel = builder.HostEnvironment.IsDevelopment()
-            ? LogEventLevel.Debug
-            : LogEventLevel.Information;
-        Logger logger = new LoggerConfiguration()
-            .MinimumLevel.Is(minimumLevel)
-            .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
-            .MinimumLevel.Override("System", LogEventLevel.Warning)
-            .Enrich.FromLogContext()
-            .Enrich.WithProperty("Application", "DirectiveAthenaWeb")
-            .WriteTo.BrowserConsole()
-            .WriteTo.Console()
-            .CreateLogger();
-        Log.Logger = logger;
-
-        builder.Logging.ClearProviders();
-        builder.Logging.AddSerilog(logger, dispose: true);
+        builder.AddWebsiteLogging();
 
         builder.RootComponents.Add<App>("#app");
         builder.RootComponents.Add<HeadOutlet>("head::after");
 
         builder.Services.AddScoped(_ => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
+        builder.Services.AddSingleton<IHostEnvironment>(_ => new WasmHostEnvironmentAdapter(builder.HostEnvironment));
+        builder.Services.AddSingleton<IR2StatusTracker, R2StatusTracker>();
         builder.Services.AddMudServices();
         builder.Services.AddLocalization();
 
@@ -52,8 +38,9 @@ public static class Program {
         builder.Services.Configure<ContactInfoOptions>(builder.Configuration.GetSection("ContactInfo"));
         builder.Services.Configure<LocalizationOptions>(builder.Configuration.GetSection("Localization"));
         
-        builder.Services.AddWritingContent();
+        builder.Services.AddNoteContent();
         builder.Services.AddFaqContent();
+        builder.Services.AddStoryContent();
 
         // -------------------------------------------------------------------------------------------------------------
         // App

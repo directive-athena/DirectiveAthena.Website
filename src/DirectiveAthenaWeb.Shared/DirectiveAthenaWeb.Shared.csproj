@@ -14,8 +14,4 @@
         <PackageReference Include="Microsoft.JSInterop"/>
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Content\" />
-    </ItemGroup>
-
 </Project>

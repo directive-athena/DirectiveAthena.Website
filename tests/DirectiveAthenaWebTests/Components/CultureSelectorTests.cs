@@ -66,7 +66,5 @@ public class CultureSelectorTests {
     }
 
     private static IOptions<LocalizationOptions> BuildOptions()
-        => Options.Create(new LocalizationOptions()
-            .AddLocalization("en", "English", "EN", "https://flagcdn.com/w40/us.png")
-            .AddLocalization("nl", "Nederlands", "NL", "https://flagcdn.com/w40/nl.png"));
+        => TestLocalization.CreateLocalizationOptions();
 }

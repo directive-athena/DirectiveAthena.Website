@@ -58,7 +58,7 @@
         @foreach (LocalizationInfo culture in LocalizationProvider.GetSupportedLocalizations()) {
             <MudButton Variant="Variant.Filled" Color="Color.Success"
                        OnClick="@(() => SaveResx(culture.Code))" StartIcon="@Icons.Material.Filled.Save">
-                @string.Format(LocalizerShared[Shared.TagsManagerSaveResx], culture.Code)
+                @LocalizerShared[Shared.TagsManagerSaveResx, culture.Code]
             </MudButton>
         }
 
@@ -67,14 +67,14 @@
         @foreach (LocalizationInfo culture in LocalizationProvider.GetSupportedLocalizations()) {
             <MudButton Variant="Variant.Filled" Color="Color.Secondary"
                        OnClick="@(() => DownloadResx(culture.Code))" StartIcon="@Icons.Material.Filled.Download">
-                @string.Format(LocalizerShared[Shared.TagsManagerDownloadResx], culture.Code)
+                @LocalizerShared[Shared.TagsManagerDownloadResx, culture.Code]
             </MudButton>
         }
     </div>
 
     @if (_inUseTags.Any()) {
         <MudAlert Severity="Severity.Info" Class="mt-4">
-            @string.Format(LocalizerShared[Shared.TagsManagerInUse], string.Join(", ", _inUseTags))
+            @LocalizerShared[Shared.TagsManagerInUse, string.Join(", ", _inUseTags)]
         </MudAlert>
     }
 </MudPaper>
@@ -159,7 +159,7 @@
         string content = GenerateResx(locale, existingXml ?? "");
         bool success = await WebJs.WriteFileAsync(path, content);
         if (success) {
-            Snackbar.Add(string.Format(LocalizerShared[Shared.TagsManagerSaveSuccess], path), Severity.Success);
+            Snackbar.Add(LocalizerShared[Shared.TagsManagerSaveSuccess, path], Severity.Success);
         }
         else {
             Snackbar.Add(LocalizerShared[Shared.TagsManagerSaveFailed], Severity.Error);

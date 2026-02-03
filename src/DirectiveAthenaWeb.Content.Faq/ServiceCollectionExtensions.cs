@@ -1,6 +1,7 @@
 ﻿// ---------------------------------------------------------------------------------------------------------------------
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
+using DirectiveAthenaWeb.Content.Faq;
 using JetBrains.Annotations;
 
 // ReSharper disable once CheckNamespace
@@ -13,7 +14,7 @@ public static class ServiceCollectionExtensions {
         [UsedImplicitly] public IServiceCollection AddFaqContent() {
             services.RegisterServicesFromDirectiveAthenaWebContentFaq();
 
-            services.AddContentStorage("faq");
+            services.AddContentStorage<FaqContent>("faq");
             return services;
         }
     }

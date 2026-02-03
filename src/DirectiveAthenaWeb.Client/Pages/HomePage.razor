@@ -1,8 +1,9 @@
 ﻿@* ------------------------------------------------------------------------------------------------------------------ *@
 @* Imports
 @* ------------------------------------------------------------------------------------------------------------------ *@
-@using DirectiveAthenaWeb.Services.Localization.Resources
+@using DirectiveAthenaWeb.Content.Faq.Components
 @using Microsoft.Extensions.Localization
+@using DirectiveAthenaWeb.Services.Localization.Resources
 
 @namespace DirectiveAthenaWeb.Client.Pages
 @* ------------------------------------------------------------------------------------------------------------------ *@
@@ -16,18 +17,12 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 <PageTitle>@Localizer[Shared.HomeTitle]</PageTitle>
 
-<MudStack Spacing="8">
+<MudStack Spacing="20">
     <Hero/>
 
-    <MudSpacer/>
-
-    <WritingHomeSection/>
-
-    <MudSpacer/>
+    <NoteHomeSection/>
 
     <FaqHomeSection/>
-
-    <MudSpacer/>
 
     <TwitchSection/>
 </MudStack>

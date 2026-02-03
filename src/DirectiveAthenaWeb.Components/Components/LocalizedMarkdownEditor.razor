@@ -36,7 +36,7 @@
     }
     else {
         <MudText Typo="Typo.subtitle1" Class="mb-2">
-            @string.Format(Localizer[Shared.MarkdownEditorEditing], _selectedLocale, FileName)
+            @Localizer[Shared.MarkdownEditorEditing, _selectedLocale, FileName]
         </MudText>
 
         <MudTextField T="string" Value="@_content" ValueChanged="@OnContentChanged" Immediate="true"
@@ -192,7 +192,7 @@
         }
 
         if (success) {
-            Snackbar.Add(string.Format(Localizer[Shared.MarkdownEditorSaveSuccess], _selectedLocale, FileName), Severity.Success);
+            Snackbar.Add(Localizer[Shared.MarkdownEditorSaveSuccess, _selectedLocale, FileName], Severity.Success);
         }
         else {
             Snackbar.Add(Localizer[Shared.MarkdownEditorSaveFailed], Severity.Error);

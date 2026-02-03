@@ -13,7 +13,8 @@ public enum QueryConfig {
     WithSoftDeleted = 0b10,
     WithHidden = 0b100,
     SortByCreatedAt = 0b1000,
-    SortByModifiedAt = 0b10000
+    SortByModifiedAt = 0b10000,
+    SortByInternalTitle = 0b100000
 }
 
 public static class QueryConfigExtensions {
