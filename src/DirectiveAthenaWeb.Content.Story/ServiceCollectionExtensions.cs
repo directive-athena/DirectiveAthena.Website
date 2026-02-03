@@ -21,13 +21,12 @@ public static class ServiceCollectionExtensions {
 
             services.AddContentStorage<StoryContent>("story");
             
-            ContentEditorProvider.Register<StoryContentEditor, IStringLocalizer<Shared>>(
+            ContentEditorProvider.RegisterAtContentEditor<StoryContentEditor, IStringLocalizer<Shared>>(
                 localizer => localizer[Shared.ContentManagerTabStory],
                 Icons.Material.Filled.AutoStories
             );
 
-
-            
+            ContentEditorProvider.RegisterAtTagsEditor<StoryContent>();
             
             return services;
         }

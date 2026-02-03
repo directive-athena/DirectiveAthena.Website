@@ -21,10 +21,12 @@ public static class ServiceCollectionExtensions {
 
             services.AddContentStorage<NoteContent>("note");
             
-            ContentEditorProvider.Register<NoteContentEditor, IStringLocalizer<Shared>>(
+            ContentEditorProvider.RegisterAtContentEditor<NoteContentEditor, IStringLocalizer<Shared>>(
                 localizer => localizer[Shared.ContentManagerTabStory],
                 Icons.Material.Filled.Article
             );
+            
+            ContentEditorProvider.RegisterAtTagsEditor<NoteContent>();
 
             return services;
         }

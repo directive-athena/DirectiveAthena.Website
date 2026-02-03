@@ -8,4 +8,5 @@ namespace DirectiveAthenaWeb.Services.Content;
 // ---------------------------------------------------------------------------------------------------------------------
 public interface IContentEditorProvider {
     IReadOnlyCollection<ContentEditorInfo> GetEditors();
+    IEnumerable<Func<Task<IEnumerable<IContent>>>> GetTagRetrievers();
 }

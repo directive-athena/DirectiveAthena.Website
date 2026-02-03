@@ -1,10 +1,13 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Imports
 @* ------------------------------------------------------------------------------------------------------------------ *@
+@using DirectiveAthenaWeb.Services.Content
+@using DirectiveAthenaWeb.Services.Js
 @using DirectiveAthenaWeb.Services.Localization
 @using DirectiveAthenaWeb.Services.Localization.Resources
 @using System.Xml.Linq
 @using Microsoft.Extensions.Localization
+@using MudBlazor
 
 @namespace DirectiveAthenaWeb.Components
 @* ------------------------------------------------------------------------------------------------------------------ *@
@@ -14,6 +17,7 @@
 @inject IStringLocalizer<Shared> LocalizerShared
 @inject IDirectiveAthenaWebJs WebJs
 @inject ISnackbar Snackbar
+@inject IContentEditorProvider ContentEditorProvider
 
 @inherits WebsiteComponentBase
 @* ------------------------------------------------------------------------------------------------------------------ *@
@@ -84,18 +88,30 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 
 @code {
-    [Parameter] public IEnumerable<string> UsedTags { get; set; } = [];
-
     private readonly List<TagModel> _tagModels = [];
     private HashSet<string> _inUseTags = [];
+
+    // -----------------------------------------------------------------------------------------------------------------
+    // Methods
+    // -----------------------------------------------------------------------------------------------------------------
+    protected override async Task OnInitializedAsync() {
+        await base.OnInitializedAsync();
+
+        foreach (Func<Task<IEnumerable<IContent>>> retriever in ContentEditorProvider.GetTagRetrievers()) {
+            foreach (IContent content in await retriever()) {
+                IReadOnlyCollection<string> tags = content.Tags;
+                _inUseTags.UnionWith(tags);
+            }
+        }
+        
+        LoadTags();
+    }
 
     protected override void OnParametersSet() {
         LoadTags();
     }
 
     private void LoadTags() {
-        _inUseTags = UsedTags.ToHashSet();
-
         foreach (string tagId in _inUseTags) {
             AddTagToModel(tagId, true);
         }

@@ -21,10 +21,12 @@ public static class ServiceCollectionExtensions {
 
             services.AddContentStorage<FaqContent>("faq");
             
-            ContentEditorProvider.Register<FaqContentEditor, IStringLocalizer<Shared>>(
+            ContentEditorProvider.RegisterAtContentEditor<FaqContentEditor, IStringLocalizer<Shared>>(
                 localizer => localizer[Shared.ContentManagerTabFaq],
                 Icons.Material.Filled.Rule
             );
+            
+            ContentEditorProvider.RegisterAtTagsEditor<FaqContent>();
             
             return services;
         }

@@ -7,5 +7,6 @@ namespace DirectiveAthenaWeb.DevServer.Resources;
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
 public class DevServer {
-    
+    public const string EditorTabTags = "EditorTabTags";
+    public const string EditorHeader = "EditorHeader";
 }
