@@ -1,6 +1,7 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Imports *@
 @* ------------------------------------------------------------------------------------------------------------------ *@
+@using DirectiveAthenaWeb.Components
 @using DirectiveAthenaWeb.Content.Resources
 @using DirectiveAthenaWeb.Services.Content
 @using DirectiveAthenaWeb.Services.Js
@@ -9,7 +10,7 @@
 @using Microsoft.Extensions.Logging
 @using MudBlazor
 
-@namespace DirectiveAthenaWeb.Components
+@namespace DirectiveAthenaWeb.Content.Components
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Descriptors *@
 @* ------------------------------------------------------------------------------------------------------------------ *@
@@ -27,7 +28,7 @@
     <MudPaper Class="pa-6 card-glass no-hover">
         <div class="d-flex justify-space-between align-center mb-6">
             <MudText Typo="Typo.h5">@EditorLocalizer[Editor.EditItem, Content.GetReadableInternalTitle()]</MudText>
-            <MudStack Direction="Row" Spacing="2">
+            <MudStack Row Spacing="2">
                 <MudButton Variant="Variant.Filled" Color="Color.Success" StartIcon="@Icons.Material.Filled.Save"
                            OnClick="@OnSaveChangesAsync">
                     @EditorLocalizer[Editor.SaveItemButton]

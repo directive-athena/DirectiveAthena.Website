@@ -1,8 +1,8 @@
-﻿@* ------------------------------------------------------------------------------------------------------------------ *@
+@* ------------------------------------------------------------------------------------------------------------------ *@
 @* Imports
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @using DirectiveAthenaWeb.Content.Note
-@using DirectiveAthenaWeb.Services.Localization.Resources
+@using DirectiveAthenaWeb.Content.Note.Resources
 @using Microsoft.Extensions.Localization
 
 @namespace DirectiveAthenaWeb.Components
@@ -14,7 +14,7 @@
 @inject INoteContentRepository NoteRepository
 @inject INoteContentManager NoteManager
 @inject NavigationManager Nav
-@inject IStringLocalizer<Shared> Localizer
+@inject IStringLocalizer<Note> Localizer
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Html
 @* ------------------------------------------------------------------------------------------------------------------ *@
@@ -22,13 +22,13 @@
     <MudContainer MaxWidth="MaxWidth.Large">
         <div class="d-flex justify-space-between align-end mb-12">
             <div>
-                <MudText Typo="Typo.h2" Class="mb-4">@Localizer[Shared.HomeWritingsTitle]</MudText>
+                <MudText Typo="Typo.h2" Class="mb-4">@Localizer[Note.HomeWritingsTitle]</MudText>
                 <MudText Typo="Typo.body1"
-                         Class="text-secondary opacity-70">@Localizer[Shared.HomeWritingsSubtitle]</MudText>
+                         Class="text-secondary opacity-70">@Localizer[Note.HomeWritingsSubtitle]</MudText>
             </div>
             <MudButton Variant="Variant.Text" Color="Color.Secondary" Href="/notes"
                        EndIcon="@Icons.Material.Filled.ArrowForward"
-                       Class="d-none d-sm-flex">@Localizer[Shared.HomeWritingsViewArchive]</MudButton>
+                       Class="d-none d-sm-flex">@Localizer[Note.HomeWritingsViewArchive]</MudButton>
         </div>
 
         <MudGrid Spacing="6">
@@ -61,7 +61,7 @@
                             <MudItem xs="12" md="7" Class="pa-8 d-flex flex-column justify-center">
                                 <MudText Typo="Typo.caption" Color="Color.Primary"
                                          Style="letter-spacing: 0.2em; text-transform: uppercase;"
-                                         Class="mb-4">@Localizer[Shared.HomeWritingsLatestLabel]</MudText>
+                                         Class="mb-4">@Localizer[Note.HomeWritingsLatestLabel]</MudText>
                                 <MudText Typo="Typo.h3"
                                          Class="mb-4 SpaceGrotesk">@NoteManager.GetLocalizedTitle(HighlightedPost)</MudText>
                                 <MudText Typo="Typo.body1" Class="text-secondary mb-8"
@@ -70,7 +70,7 @@
                                 </MudText>
                                 <div class="d-flex align-center gap-4">
                                     <MudButton Variant="Variant.Filled" Color="Color.Primary"
-                                               Class="px-6">@Localizer[Shared.HomeWritingsReadFull]</MudButton>
+                                               Class="px-6">@Localizer[Note.HomeWritingsReadFull]</MudButton>
                                     <MudText Typo="Typo.caption"
                                              Class="opacity-50">@FormatDate(HighlightedPost.CreatedAt)</MudText>
                                 </div>
@@ -122,7 +122,7 @@
                                     @NoteManager.GetLocalizedSummary(post)
                                 </MudText>
                                 <MudButton Variant="Variant.Text" Color="Color.Secondary"
-                                           Class="pa-0">@Localizer[Shared.HomeWritingsReadMore]</MudButton>
+                                           Class="pa-0">@Localizer[Note.HomeWritingsReadMore]</MudButton>
                             </MudCardContent>
                         </MudCard>
                     </MudItem>
@@ -132,7 +132,7 @@
 
         <div class="d-flex justify-center mt-12 d-sm-none">
             <MudButton Variant="Variant.Outlined" Color="Color.Secondary"
-                       Href="/notes">@Localizer[Shared.HomeWritingsViewAll]</MudButton>
+                       Href="/notes">@Localizer[Note.HomeWritingsViewAll]</MudButton>
         </div>
     </MudContainer>
 </section>

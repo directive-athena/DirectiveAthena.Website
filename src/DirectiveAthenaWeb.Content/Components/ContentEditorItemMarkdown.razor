@@ -1,6 +1,7 @@
 ﻿@* ------------------------------------------------------------------------------------------------------------------ *@
 @* Imports *@
 @* ------------------------------------------------------------------------------------------------------------------ *@
+@using DirectiveAthenaWeb.Components
 @using DirectiveAthenaWeb.Content
 @using DirectiveAthenaWeb.Content.Resources
 @using DirectiveAthenaWeb.Services.Content
@@ -10,7 +11,7 @@
 @using Microsoft.Extensions.Logging
 @using MudBlazor
 
-@namespace DirectiveAthenaWeb.Components
+@namespace DirectiveAthenaWeb.Content.Components
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Descriptors *@
 @* ------------------------------------------------------------------------------------------------------------------ *@
@@ -54,7 +55,7 @@
         @* TODO Implement the copy button *@
         @* <MudButton Variant="Variant.Outlined" Color="Color.Info" OnClick="@CopyToClipboard" Disabled="@_isLoadingContent" *@
         @*            StartIcon="@Icons.Material.Filled.ContentCopy"> *@
-        @*     @EditorLocalizer[Shared.MarkdownEditorCopy] *@
+        @*     @EditorLocalizer[Editor.MarkdownEditorCopy] *@
         @* </MudButton> *@
         <MudButton Size="Size.Small" Variant="Variant.Text" Color="Color.Default" OnClick="@LoadContentAsync" Disabled="@_isLoadingContent"
                    StartIcon="@Icons.Material.Filled.Refresh">

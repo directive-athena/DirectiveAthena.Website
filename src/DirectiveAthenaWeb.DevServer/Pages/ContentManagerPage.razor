@@ -1,13 +1,10 @@
 ﻿@* ------------------------------------------------------------------------------------------------------------------ *@
 @* Imports
 @* ------------------------------------------------------------------------------------------------------------------ *@
-@using DirectiveAthenaWeb.Content.Faq
-@using DirectiveAthenaWeb.Content.Note
-@using DirectiveAthenaWeb.Content.Story
+@using DirectiveAthenaWeb.Content.Components
 @using DirectiveAthenaWeb.DevServer.Layouts
-@using DirectiveAthenaWeb.Services.Localization.Resources
+@using DirectiveAthenaWeb.DevServer.Resources
 @using DirectiveAthenaWeb.Services.Content
-@using DirectiveAthenaWeb.Services.Localization
 
 @namespace DirectiveAthenaWeb.DevServer.Pages
 @* ------------------------------------------------------------------------------------------------------------------ *@
@@ -15,10 +12,9 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @page "/manager"
 
-@inject INoteContentRepository NoteRepository
-@inject IFaqContentRepository FaqRepository
-@inject IStoryContentRepository StoryRepository
-@inject IStringLocalizer<Shared> Localizer
+@inject IStringLocalizer<DevServer> Localizer
+@inject IContentEditorProvider ContentEditorProvider
+@inject IServiceProvider ServiceProvider
 
 @inherits WebsiteComponentBase
 
@@ -27,7 +23,7 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Html
 @* ------------------------------------------------------------------------------------------------------------------ *@
-<PageTitle>@Localizer[Shared.ContentManagerTitle]</PageTitle>
+<PageTitle>@Localizer[DevServer.ContentManagerTitle]</PageTitle>
 
 <WebsiteThemeProviders/>
 <MudPopoverProvider/>
@@ -36,75 +32,20 @@
 
 <MudContainer MaxWidth="MaxWidth.Large" Class="py-12">
     <div class="d-flex justify-space-between align-center mb-8">
-        <MudText Typo="Typo.h3">@Localizer[Shared.ContentManagerHeading]</MudText>
+        <MudText Typo="Typo.h3">@Localizer[DevServer.EditorHeader]</MudText>
     </div>
 
-    @if (_notes is null || _faq is null || _stories is null) {
-        <MudProgressCircular Color="Color.Primary" Indeterminate="true"/>
-    }
-    else {
-        <MudTabs Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6"
-                 @bind-ActivePanelIndex="_activeTab">
-            <MudTabPanel Text="@Localizer[Shared.ContentManagerTabWritings]" Icon="@Icons.Material.Filled.Article">
-                <ContentEditor TContent="@NoteContent">
-                    <Fields Context="_">
-
-                    </Fields>
-                    <LocalizedFields Context="box">
-                        @{ NoteContent content = box.Item1;LocalizationInfo culture = box.Item2; }
-                        <MudTextField Label="Title" Variant="Variant.Filled"
-                                     @bind-Value="@content.Title[culture.Code]"
-                                     Required="true"
-                                     FullWidth="true"/>
-                        <MudTextField Label="Summary" Variant="Variant.Filled"
-                                     @bind-Value="@content.Summary[culture.Code]"
-                                     FullWidth="true"/>
-                    </LocalizedFields>
-                </ContentEditor>
+    <MudTabs Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6" @bind-ActivePanelIndex="_activeTab">
+        @foreach (ContentEditorInfo contentEditorInfo in ContentEditorProvider.GetEditors()) {
+            <MudTabPanel Text="@contentEditorInfo.GetTitle(ServiceProvider)" Icon="@contentEditorInfo.Icon">
+                <DynamicComponent Type="@contentEditorInfo.Type"></DynamicComponent>
             </MudTabPanel>
+        }
 
-            <MudTabPanel Text="@Localizer[Shared.ContentManagerTabFaq]" Icon="@Icons.Material.Filled.Rule">
-                <ContentEditor TContent="@FaqContent">
-                    <Fields Context="content">
-                        <MudSwitch T="bool" @bind-Value="@content.ShowOnHomepage"
-                                   Label="Show On Homepage" Color="Color.Secondary"/>
-                    </Fields>
-                    <LocalizedFields Context="box">
-                        @{ FaqContent content = box.Item1;LocalizationInfo culture = box.Item2; }
-                        <MudTextField Label="Title" Variant="Variant.Filled"
-                                      @bind-Value="@content.Question[culture.Code]"
-                                      Required="true"
-                                      FullWidth="true"/>
-                        <MudTextField Label="Summary" Variant="Variant.Filled"
-                                      @bind-Value="@content.Answer[culture.Code]"
-                                      FullWidth="true"/>
-                    </LocalizedFields>
-                </ContentEditor>
-            </MudTabPanel>
-
-            <MudTabPanel Text="@Localizer[Shared.ContentManagerTabStory]" Icon="@Icons.Material.Filled.AutoStories">
-                <ContentEditor TContent="@StoryContent">
-                    <Fields Context="_">
-                        
-                    </Fields>
-                    <LocalizedFields Context="box">
-                        @{ StoryContent content = box.Item1;LocalizationInfo culture = box.Item2; }
-                        <MudTextField Label="Title" Variant="Variant.Filled"
-                                      @bind-Value="@content.Title[culture.Code]"
-                                      Required="true"
-                                      FullWidth="true"/>
-                        <MudTextField Label="Summary" Variant="Variant.Filled"
-                                      @bind-Value="@content.Summary[culture.Code]"
-                                      FullWidth="true"/>
-                    </LocalizedFields>
-                </ContentEditor>
-            </MudTabPanel>
-
-            <MudTabPanel Text="@Localizer[Shared.ContentManagerTabTags]" Icon="@Icons.Material.Filled.Label">
-                <TagsEditor UsedTags="@AllTags"/>
-            </MudTabPanel>
-        </MudTabs>
-    }
+        <MudTabPanel Text="@Localizer[DevServer.EditorTabTags]" Icon="@Icons.Material.Filled.Label">
+            <TagsEditor/>
+        </MudTabPanel>
+    </MudTabs>
 </MudContainer>
 
 @* ------------------------------------------------------------------------------------------------------------------ *@
@@ -112,26 +53,5 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 
 @code {
-    private NoteContent[]? _notes;
-    private FaqContent[]? _faq;
-    private StoryContent[]? _stories;
     private int _activeTab;
-
-    private IEnumerable<string> AllTags =>
-        (_notes ?? [])
-        .SelectMany(post => post.Tags)
-        .Concat((_faq ?? []).SelectMany(rule => rule.Tags))
-        .Concat((_stories ?? []).SelectMany(story => story.Tags))
-        .Distinct();
-    
-    private const QueryConfig Config = QueryConfig.WithHidden | QueryConfig.WithSoftDeleted;
-    
-    // -----------------------------------------------------------------------------------------------------------------
-    // Methods
-    // -----------------------------------------------------------------------------------------------------------------
-    protected override async Task OnInitializedAsync() {
-        _notes = await NoteRepository.GetAllAsync(Config);
-        _faq = await FaqRepository.GetAllAsync(Config);
-        _stories = await StoryRepository.GetAllAsync(Config);
-    }
 }

@@ -1,21 +1,22 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Imports *@
 @* ------------------------------------------------------------------------------------------------------------------ *@
+@using DirectiveAthenaWeb.Components
 @using DirectiveAthenaWeb.Services.Content
 @using DirectiveAthenaWeb.Services.Js
+@using DirectiveAthenaWeb.Content.Resources
 @using DirectiveAthenaWeb.Services.Localization
-@using DirectiveAthenaWeb.Services.Localization.Resources
 @using Microsoft.Extensions.Localization
 @using MudBlazor
 
-@namespace DirectiveAthenaWeb.Components
+@namespace DirectiveAthenaWeb.Content.Components
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Descriptors *@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @inject IContentRepository<TContent> Repository
 @inject IDirectiveAthenaWebJs WebJs
 @inject ISnackbar Snackbar
-@inject IStringLocalizer<Shared> Localizer
+@inject IStringLocalizer<Editor> Localizer
 @inject IContentManager<TContent> ContentManager
 
 @typeparam TContent where TContent : DirectiveAthenaWeb.Content.ContentBase
@@ -30,18 +31,18 @@
                 <MudStack>
                     <MudPaper Class="pa-4 card-glass no-hover">
                         <div class="d-flex justify-space-between align-center mb-2">
-                            <MudText Typo="Typo.subtitle1">@Localizer[Shared.ContentManagerActions]</MudText>
+                            <MudText Typo="Typo.subtitle1">@Localizer[Editor.ContentManagerActions]</MudText>
                         </div>
                         <MudDivider Class="my-3"/>
                         <MudButton Variant="Variant.Filled" Color="Color.Success" FullWidth="true"
                                    OnClick="@SaveIndexAsync"
                                    StartIcon="@Icons.Material.Filled.Save" Class="mb-3">
-                            @Localizer[Shared.ContentManagerSaveIndex]
+                            @Localizer[Editor.ContentManagerSaveIndex]
                         </MudButton>
                         <MudButton Variant="Variant.Filled" Color="Color.Secondary" FullWidth="true"
                                    OnClick="@DownloadIndexAsync"
                                    StartIcon="@Icons.Material.Filled.Download" Class="mb-3">
-                            @Localizer[Shared.ContentManagerDownloadIndex]
+                            @Localizer[Editor.ContentManagerDownloadIndex]
                         </MudButton>
                     </MudPaper>
                     
@@ -116,7 +117,7 @@
         await Repository.AddOrUpdateRangeAsync(Items);
         bool success = await Repository.SaveAsync();
         if (showFeedback) {
-            Snackbar.Add(Localizer[success ? Shared.ContentManagerIndexSaved : Shared.ContentManagerIndexSaveFailed],
+            Snackbar.Add(Localizer[success ? Editor.ContentManagerIndexSaved : Editor.ContentManagerIndexSaveFailed],
                 success ? Severity.Success : Severity.Error);
         }
 

@@ -1,8 +1,8 @@
-﻿@* ------------------------------------------------------------------------------------------------------------------ *@
+@* ------------------------------------------------------------------------------------------------------------------ *@
 @* Imports
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @using DirectiveAthenaWeb.Components.Layouts
-@using DirectiveAthenaWeb.Services.Localization.Resources
+@using DirectiveAthenaWeb.Components.Resources
 @using Microsoft.Extensions.Localization
 
 @namespace DirectiveAthenaWeb.Components.Pages
@@ -10,7 +10,7 @@
 @* Descriptors
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @page "/not-found"
-@inject IStringLocalizer<Shared> Localizer
+@inject IStringLocalizer<Components> Localizer
 @layout EmptyLayout
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Html
@@ -22,17 +22,17 @@
                 <MudIcon Icon="@Icons.Material.Filled.SearchOff" Size="Size.Large"
                          Style="font-size: 4rem; opacity: 0.35;"/>
 
-                <MudText Typo="Typo.h3" Class="SpaceGrotesk">@Localizer[Shared.NotFoundTitle]</MudText>
+                <MudText Typo="Typo.h3" Class="SpaceGrotesk">@Localizer[Components.NotFoundTitle]</MudText>
                 <MudText Typo="Typo.body1" Class="text-secondary opacity-70" Style="max-width: 420px;">
-                    @Localizer[Shared.NotFoundMessage]
+                    @Localizer[Components.NotFoundMessage]
                 </MudText>
 
                 <MudStack Spacing="2" Class="mt-2">
                     <MudButton Variant="Variant.Filled" Color="Color.Primary" Href="/">
-                        @Localizer[Shared.NotFoundGoHome]
+                        @Localizer[Components.NotFoundGoHome]
                     </MudButton>
                     <MudButton Variant="Variant.Outlined" Color="Color.Secondary" Href="/notes">
-                        @Localizer[Shared.NotFoundBrowseWritings]
+                        @Localizer[Components.NotFoundBrowseWritings]
                     </MudButton>
                 </MudStack>
             </MudStack>

@@ -2,7 +2,8 @@
 @* Imports
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @using DirectiveAthenaWeb.Content.Story
-@using DirectiveAthenaWeb.Services.Localization.Resources
+@using DirectiveAthenaWeb.Client.Resources
+@using DirectiveAthenaWeb.Content.Resources
 @using InfiniBlazor.Markdown
 @using Microsoft.Extensions.Localization
 
@@ -16,17 +17,17 @@
 @inject IStoryContentManager StoryManager
 @inject HttpClient HttpClient
 @inject NavigationManager NavigationManager
-@inject IStringLocalizer<Shared> LocalizerShared
+@inject IStringLocalizer<Client> LocalizerShared
 @inject IStringLocalizer<Tags> LocalizerTags
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Html
 @* ------------------------------------------------------------------------------------------------------------------ *@
-<PageTitle>@LocalizerShared[Shared.StoryTitle]</PageTitle>
+<PageTitle>@LocalizerShared[Client.StoryTitle]</PageTitle>
 
 <div class="min-vh-100 py-32">
     <MudContainer MaxWidth="MaxWidth.Large">
         <MudButton StartIcon="@Icons.Material.Filled.ArrowBack" Color="Color.Secondary" OnClick="@BackToList"
-                   Class="mb-12">@LocalizerShared[Shared.StoryDetailBack]
+                   Class="mb-12">@LocalizerShared[Client.StoryDetailBack]
         </MudButton>
 
         @if (_loading) {
@@ -36,7 +37,7 @@
         }
         else if (_error || _currentStory is null) {
             <MudAlert Severity="Severity.Error" Variant="Variant.Filled"
-                      Class="card-glass">@LocalizerShared[Shared.StoryDetailError]
+                      Class="card-glass">@LocalizerShared[Client.StoryDetailError]
             </MudAlert>
         }
         else {
@@ -46,7 +47,7 @@
                              Style="letter-spacing: 0.2em; text-transform: uppercase;">@FormatDate(_currentStory.CreatedAt)</MudText>
                     @if (HasDate(_currentStory.LastModifiedAt)) {
                         <MudText Typo="Typo.caption" Class="opacity-60">
-                            @LocalizerShared[Shared.FaqUpdated, FormatDate(_currentStory.LastModifiedAt)]
+                            @LocalizerShared[Client.FaqUpdated, FormatDate(_currentStory.LastModifiedAt)]
                         </MudText>
                     }
                 </div>
@@ -62,7 +63,7 @@
                     }
                 </div>
                 @if (_currentStory.Chapters.Count > 0) {
-                    <MudText Typo="Typo.subtitle2" Class="mb-2">@LocalizerShared[Shared.StoryDetailChapters]</MudText>
+                    <MudText Typo="Typo.subtitle2" Class="mb-2">@LocalizerShared[Client.StoryDetailChapters]</MudText>
                     <div class="d-flex flex-wrap gap-2 mb-6">
                         @foreach (string chapter in _currentStory.Chapters) {
                             <MudChip T="string" Size="Size.Small" Color="Color.Primary"
@@ -78,7 +79,7 @@
             <MudDivider Class="my-16 opacity-10"/>
             <div class="d-flex justify-center">
                 <MudButton Variant="Variant.Outlined" Color="Color.Secondary"
-                           OnClick="@BackToList">@LocalizerShared[Shared.StoryDetailBackBottom]
+                           OnClick="@BackToList">@LocalizerShared[Client.StoryDetailBackBottom]
                 </MudButton>
             </div>
         }

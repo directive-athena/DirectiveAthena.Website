@@ -39,6 +39,11 @@
     <ItemGroup Condition="'$(Configuration)' != 'Debug'">
         <Content Remove="wwwroot\appsettings.local.json"/>
     </ItemGroup>
+    <ItemGroup>
+      <EmbeddedResource Update="Resources\Client.nl.resx">
+        <DependentUpon>Client.cs</DependentUpon>
+      </EmbeddedResource>
+    </ItemGroup>
 
     <Target Name="BuildWebpackRelease" BeforeTargets="Publish" Condition="'$(Configuration)' == 'Release'">
         <Message Text="Building webpack bundle (Release)..." Importance="high"/>

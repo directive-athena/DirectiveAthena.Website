@@ -1,6 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
 <root>
-    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-                xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
         <xsd:import namespace="http://www.w3.org/XML/1998/namespace"/>
         <xsd:element name="root" msdata:IsDataSet="true">
             <xsd:complexType>
@@ -61,8 +61,20 @@
         <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral,
             PublicKeyToken=b77a5c561934e089
         </value>
-    </resheader>
-    <data name="Tag.Thankyou" xml:space="preserve">
-    <value>Dankje</value>
-  </data>
+    </resheader>    <data name="ContentManagerTabFaq" xml:space="preserve">
+        <value>Wereld FAQ</value>
+    </data>
+    <data name="HomeFaqEmpty" xml:space="preserve">
+        <value>Nog geen FAQs beschikbaar voor de homepage.</value>
+    </data>
+    <data name="HomeFaqSubtitle" xml:space="preserve">
+        <value>Snelle antwoorden en canonische ankers in een oogopslag.</value>
+    </data>
+    <data name="HomeFaqTitle" xml:space="preserve">
+        <value>Wereld FAQ</value>
+    </data>
+    <data name="HomeFaqViewAll" xml:space="preserve">
+        <value>Bekijk alle FAQs</value>
+    </data>
 </root>
+

@@ -1,38 +1,43 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Imports
 @* ------------------------------------------------------------------------------------------------------------------ *@
+@using DirectiveAthenaWeb.Components
+@using DirectiveAthenaWeb.Services.Content
+@using DirectiveAthenaWeb.Services.Js
 @using DirectiveAthenaWeb.Services.Localization
-@using DirectiveAthenaWeb.Services.Localization.Resources
+@using DirectiveAthenaWeb.Content.Resources
 @using System.Xml.Linq
 @using Microsoft.Extensions.Localization
+@using MudBlazor
 
-@namespace DirectiveAthenaWeb.Components
+@namespace DirectiveAthenaWeb.Content.Components
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Descriptors
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @inject IStringLocalizer<Tags> Localizer
-@inject IStringLocalizer<Shared> LocalizerShared
+@inject IStringLocalizer<Editor> LocalizerShared
 @inject IDirectiveAthenaWebJs WebJs
 @inject ISnackbar Snackbar
+@inject IContentEditorProvider ContentEditorProvider
 
 @inherits WebsiteComponentBase
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Html
 @* ------------------------------------------------------------------------------------------------------------------ *@
 <MudPaper Class="pa-6 card-glass no-hover">
-    <MudText Typo="Typo.h5" Class="mb-4">@LocalizerShared[Shared.TagsManagerTitle]</MudText>
+    <MudText Typo="Typo.h5" Class="mb-4">@LocalizerShared[Editor.TagsManagerTitle]</MudText>
 
     <MudTable Items="@_tagModels" Hover="true" Breakpoint="Breakpoint.Sm" Dense="true" Class="mb-6">
         <HeaderContent>
-            <MudTh>@LocalizerShared[Shared.TagsManagerTagId]</MudTh>
+            <MudTh>@LocalizerShared[Editor.TagsManagerTagId]</MudTh>
             @foreach (LocalizationInfo culture in LocalizationProvider.GetSupportedLocalizations()) {
                 <MudTh>@culture.DisplayName (@culture.Code)</MudTh>
             }
-            <MudTh>@LocalizerShared[Shared.TagsManagerActions]</MudTh>
+            <MudTh>@LocalizerShared[Editor.TagsManagerActions]</MudTh>
         </HeaderContent>
         <RowTemplate>
-            <MudTd DataLabel="@LocalizerShared[Shared.TagsManagerTagId]">
-                <MudTextField @bind-Value="context.Id" Label="@LocalizerShared[Shared.TagsManagerTagId]" Required="true"
+            <MudTd DataLabel="@LocalizerShared[Editor.TagsManagerTagId]">
+                <MudTextField @bind-Value="context.Id" Label="@LocalizerShared[Editor.TagsManagerTagId]" Required="true"
                               ReadOnly="@context.IsOriginal"/>
             </MudTd>
             @foreach (LocalizationInfo culture in LocalizationProvider.GetSupportedLocalizations()) {
@@ -49,7 +54,7 @@
         </RowTemplate>
         <FooterContent>
             <MudButton StartIcon="@Icons.Material.Filled.Add" OnClick="@AddNewTag" Color="Color.Primary" Class="ma-2">
-                @LocalizerShared[Shared.TagsManagerAddTag]
+                @LocalizerShared[Editor.TagsManagerAddTag]
             </MudButton>
         </FooterContent>
     </MudTable>
@@ -58,7 +63,7 @@
         @foreach (LocalizationInfo culture in LocalizationProvider.GetSupportedLocalizations()) {
             <MudButton Variant="Variant.Filled" Color="Color.Success"
                        OnClick="@(() => SaveResx(culture.Code))" StartIcon="@Icons.Material.Filled.Save">
-                @LocalizerShared[Shared.TagsManagerSaveResx, culture.Code]
+                @LocalizerShared[Editor.TagsManagerSaveResx, culture.Code]
             </MudButton>
         }
 
@@ -67,14 +72,14 @@
         @foreach (LocalizationInfo culture in LocalizationProvider.GetSupportedLocalizations()) {
             <MudButton Variant="Variant.Filled" Color="Color.Secondary"
                        OnClick="@(() => DownloadResx(culture.Code))" StartIcon="@Icons.Material.Filled.Download">
-                @LocalizerShared[Shared.TagsManagerDownloadResx, culture.Code]
+                @LocalizerShared[Editor.TagsManagerDownloadResx, culture.Code]
             </MudButton>
         }
     </div>
 
     @if (_inUseTags.Any()) {
         <MudAlert Severity="Severity.Info" Class="mt-4">
-            @LocalizerShared[Shared.TagsManagerInUse, string.Join(", ", _inUseTags)]
+            @LocalizerShared[Editor.TagsManagerInUse, string.Join(", ", _inUseTags)]
         </MudAlert>
     }
 </MudPaper>
@@ -84,18 +89,30 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 
 @code {
-    [Parameter] public IEnumerable<string> UsedTags { get; set; } = [];
-
     private readonly List<TagModel> _tagModels = [];
     private HashSet<string> _inUseTags = [];
+
+    // -----------------------------------------------------------------------------------------------------------------
+    // Methods
+    // -----------------------------------------------------------------------------------------------------------------
+    protected override async Task OnInitializedAsync() {
+        await base.OnInitializedAsync();
+
+        foreach (Func<Task<IEnumerable<IContent>>> retriever in ContentEditorProvider.GetTagRetrievers()) {
+            foreach (IContent content in await retriever()) {
+                IReadOnlyCollection<string> tags = content.Tags;
+                _inUseTags.UnionWith(tags);
+            }
+        }
+        
+        LoadTags();
+    }
 
     protected override void OnParametersSet() {
         LoadTags();
     }
 
     private void LoadTags() {
-        _inUseTags = UsedTags.ToHashSet();
-
         foreach (string tagId in _inUseTags) {
             AddTagToModel(tagId, true);
         }
@@ -150,7 +167,7 @@
 
     private async Task SaveResx(string locale) {
         if (!await EnsureFsAccessAsync()) {
-            Snackbar.Add(LocalizerShared[Shared.TagsManagerFsRequired], Severity.Warning);
+            Snackbar.Add(LocalizerShared[Editor.TagsManagerFsRequired], Severity.Warning);
             return;
         }
 
@@ -159,10 +176,10 @@
         string content = GenerateResx(locale, existingXml ?? "");
         bool success = await WebJs.WriteFileAsync(path, content);
         if (success) {
-            Snackbar.Add(LocalizerShared[Shared.TagsManagerSaveSuccess, path], Severity.Success);
+            Snackbar.Add(LocalizerShared[Editor.TagsManagerSaveSuccess, path], Severity.Success);
         }
         else {
-            Snackbar.Add(LocalizerShared[Shared.TagsManagerSaveFailed], Severity.Error);
+            Snackbar.Add(LocalizerShared[Editor.TagsManagerSaveFailed], Severity.Error);
         }
     }
 
@@ -178,7 +195,7 @@
 
     private string GetResxPath(string locale) {
         string fileName = LocalizationProvider.IsDefaultCultureCode(locale) ? "Tags.resx" : $"Tags.{locale}.resx";
-        return $"src/DirectiveAthenaWeb.Services.Localization/Resources/{fileName}";
+        return $"src/DirectiveAthenaWeb.Content/Resources/{fileName}";
     }
 
     private string GenerateResx(string locale, string existingXml) {

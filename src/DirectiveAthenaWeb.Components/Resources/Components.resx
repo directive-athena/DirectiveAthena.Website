@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+        <xsd:import namespace="http://www.w3.org/XML/1998/namespace"/>
+        <xsd:element name="root" msdata:IsDataSet="true">
+            <xsd:complexType>
+                <xsd:choice maxOccurs="unbounded">
+                    <xsd:element name="metadata">
+                        <xsd:complexType>
+                            <xsd:sequence>
+                                <xsd:element name="value" type="xsd:string" minOccurs="0"/>
+                            </xsd:sequence>
+                            <xsd:attribute name="name" use="required" type="xsd:string"/>
+                            <xsd:attribute name="type" type="xsd:string"/>
+                            <xsd:attribute name="mimetype" type="xsd:string"/>
+                            <xsd:attribute ref="xml:space"/>
+                        </xsd:complexType>
+                    </xsd:element>
+                    <xsd:element name="assembly">
+                        <xsd:complexType>
+                            <xsd:attribute name="alias" type="xsd:string"/>
+                            <xsd:attribute name="name" type="xsd:string"/>
+                        </xsd:complexType>
+                    </xsd:element>
+                    <xsd:element name="data">
+                        <xsd:complexType>
+                            <xsd:sequence>
+                                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1"/>
+                                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2"/>
+                            </xsd:sequence>
+                            <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1"/>
+                            <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3"/>
+                            <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4"/>
+                            <xsd:attribute ref="xml:space"/>
+                        </xsd:complexType>
+                    </xsd:element>
+                    <xsd:element name="resheader">
+                        <xsd:complexType>
+                            <xsd:sequence>
+                                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1"/>
+                            </xsd:sequence>
+                            <xsd:attribute name="name" type="xsd:string" use="required"/>
+                        </xsd:complexType>
+                    </xsd:element>
+                </xsd:choice>
+            </xsd:complexType>
+        </xsd:element>
+    </xsd:schema>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>2.0</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral,
+            PublicKeyToken=b77a5c561934e089
+        </value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral,
+            PublicKeyToken=b77a5c561934e089
+        </value>
+    </resheader>    <data name="BrandName" xml:space="preserve">
+        <value>Directive Athena</value>
+    </data>
+    <data name="FooterCopyright" xml:space="preserve">
+        <value>© {0} Anna Sas. Built with Blazor &amp; MudBlazor.</value>
+    </data>
+    <data name="FooterDescription" xml:space="preserve">
+        <value>A project made by Anna Sas to show her take on a science fiction setting where there is no good or bad outcome. Just History, marching on.</value>
+    </data>
+    <data name="FooterVersion" xml:space="preserve">
+        <value>Version {0}</value>
+    </data>
+    <data name="HomeHeroBody" xml:space="preserve">
+        <value>A personal writing project of Anna Sas, which is meant to become a collection of stories and games</value>
+    </data>
+    <data name="HomeHeroExplore" xml:space="preserve">
+        <value>Explore Directive Athena</value>
+    </data>
+    <data name="HomeHeroRead" xml:space="preserve">
+        <value>Read the Writings</value>
+    </data>
+    <data name="HomeHeroSubtitle" xml:space="preserve">
+        <value>A science fiction project where technology and scheming politics reign.</value>
+    </data>
+    <data name="HomeHeroTitle" xml:space="preserve">
+        <value>Directive Athena</value>
+    </data>
+    <data name="HomeLiveFollow" xml:space="preserve">
+        <value>Follow on Twitch</value>
+    </data>
+    <data name="HomeLiveSubtitle" xml:space="preserve">
+        <value>Watch the development process live on Twitch.</value>
+    </data>
+    <data name="HomeLiveTitle" xml:space="preserve">
+        <value>Live Development</value>
+    </data>
+    <data name="HomeWritingsEmpty" xml:space="preserve">
+        <value>No dispatches currently available. Check back soon for updates from the frontier.</value>
+    </data>
+    <data name="MarkdownEditorContent" xml:space="preserve">
+        <value>Markdown Content</value>
+    </data>
+    <data name="MarkdownEditorCopy" xml:space="preserve">
+        <value>Copy to Clipboard</value>
+    </data>
+    <data name="MarkdownEditorDownload" xml:space="preserve">
+        <value>Download Markdown</value>
+    </data>
+    <data name="MarkdownEditorEditing" xml:space="preserve">
+        <value>Editing: {0}/{1}</value>
+    </data>
+    <data name="MarkdownEditorLocale" xml:space="preserve">
+        <value>Locale</value>
+    </data>
+    <data name="MarkdownEditorReload" xml:space="preserve">
+        <value>Reload Original</value>
+    </data>
+    <data name="MarkdownEditorSave" xml:space="preserve">
+        <value>Save to R2</value>
+    </data>
+    <data name="MarkdownEditorSaveFailed" xml:space="preserve">
+        <value>Failed to save markdown file.</value>
+    </data>
+    <data name="MarkdownEditorSaveSuccess" xml:space="preserve">
+        <value>Saved {0}/{1} to R2!</value>
+    </data>
+    <data name="MarkdownEditorSelectItem" xml:space="preserve">
+        <value>Select an item to edit its markdown.</value>
+    </data>
+    <data name="MarkdownEditorTitle" xml:space="preserve">
+        <value>Markdown Editor</value>
+    </data>
+    <data name="NavContact" xml:space="preserve">
+        <value>Contact</value>
+    </data>
+    <data name="NavContentManager" xml:space="preserve">
+        <value>Content Manager</value>
+    </data>
+    <data name="NavFaq" xml:space="preserve">
+        <value>World FAQ</value>
+    </data>
+    <data name="NavHome" xml:space="preserve">
+        <value>Home</value>
+    </data>
+    <data name="NavStory" xml:space="preserve">
+        <value>Story</value>
+    </data>
+    <data name="NavWritings" xml:space="preserve">
+        <value>Writings</value>
+    </data>
+    <data name="NotFoundBrowseWritings" xml:space="preserve">
+        <value>Browse notes</value>
+    </data>
+    <data name="NotFoundGoHome" xml:space="preserve">
+        <value>Go home</value>
+    </data>
+    <data name="NotFoundMessage" xml:space="preserve">
+        <value>The page you are looking for does not exist or has been moved.</value>
+    </data>
+    <data name="NotFoundTitle" xml:space="preserve">
+        <value>Page not found</value>
+    </data>
+</root>
+

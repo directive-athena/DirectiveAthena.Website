@@ -1,8 +1,13 @@
-﻿// ---------------------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
+using DirectiveAthenaWeb.Content;
 using DirectiveAthenaWeb.Content.Faq;
+using DirectiveAthenaWeb.DevServer.Pages;
+using DirectiveAthenaWeb.Content.Faq.Resources;
 using JetBrains.Annotations;
+using Microsoft.Extensions.Localization;
+using MudBlazor;
 
 // ReSharper disable once CheckNamespace
 namespace Microsoft.Extensions.DependencyInjection;
@@ -15,6 +20,14 @@ public static class ServiceCollectionExtensions {
             services.RegisterServicesFromDirectiveAthenaWebContentFaq();
 
             services.AddContentStorage<FaqContent>("faq");
+            
+            ContentEditorProvider.RegisterAtContentEditor<FaqContentEditor, IStringLocalizer<Faq>>(
+                localizer => localizer[Faq.ContentManagerTabFaq],
+                Icons.Material.Filled.Rule
+            );
+            
+            ContentEditorProvider.RegisterAtTagsEditor<FaqContent>();
+            
             return services;
         }
     }

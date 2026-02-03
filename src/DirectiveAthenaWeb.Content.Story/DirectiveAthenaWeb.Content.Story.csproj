@@ -22,7 +22,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Folder Include="Components\" />
         <Folder Include="wwwroot\" />
     </ItemGroup>
 
@@ -38,6 +37,12 @@
       <UpToDateCheckInput Remove="Components\StoryEditor.razor" />
       <UpToDateCheckInput Remove="Components\StoryHomeSection.razor" />
       <UpToDateCheckInput Remove="Components\StoryList.razor" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Update="Resources\Story.nl.resx">
+        <DependentUpon>Story.cs</DependentUpon>
+      </EmbeddedResource>
     </ItemGroup>
 
 </Project>

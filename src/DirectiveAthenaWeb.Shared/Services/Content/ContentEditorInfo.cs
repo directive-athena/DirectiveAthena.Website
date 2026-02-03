@@ -1,11 +1,12 @@
-// ---------------------------------------------------------------------------------------------------------------------
+﻿// ---------------------------------------------------------------------------------------------------------------------
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
-namespace DirectiveAthenaWeb.Services.Localization.Resources;
+namespace DirectiveAthenaWeb.Services.Content;
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
-/// <summary>
-/// Marker type for tags localization resources, e.g., injected via IStringLocalizer.
-/// </summary>
-public class Tags;
+public record ContentEditorInfo(
+    Type Type,
+    Func<IServiceProvider, string> GetTitle,
+    string Icon
+);
