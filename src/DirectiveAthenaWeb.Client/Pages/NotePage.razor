@@ -3,14 +3,10 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @using DirectiveAthenaWeb.Content.Note
 @using System.Text.RegularExpressions
-@using DirectiveAthenaWeb
 @using DirectiveAthenaWeb.Client.Resources
-@using DirectiveAthenaWeb.Content.Note
-@using DirectiveAthenaWeb.Services.Js
-@using Microsoft.AspNetCore.Components
-@using Microsoft.AspNetCore.Components.Web
+@using DirectiveAthenaWeb.Content.Resources
+@using InfiniBlazor.Markdown
 @using Microsoft.Extensions.Localization
-@using MudBlazor
 
 @namespace DirectiveAthenaWeb.Client.Pages
 @* ------------------------------------------------------------------------------------------------------------------ *@
@@ -172,17 +168,11 @@
         string title = NoteManager.GetLocalizedTitle(_currentPost);
         string encodedTitle = Uri.EscapeDataString(title);
         string encodedUrl = Uri.EscapeDataString(NavigationManager.Uri);
-        string blueskyText = Uri.EscapeDataString($"{title
-    }
-    {
-        NavigationManager.Uri
-    }
+        string blueskyText = Uri.EscapeDataString($"{title}\n{NavigationManager.Uri}\n");
 
-    ");
-
-    _shareTwitterUrl = $"https://twitter.com/intent/tweet?text={encodedTitle}&url={encodedUrl}";
-    _shareBlueskyUrl = $"https://bsky.app/intent/compose?text={blueskyText}";
-    _shareRedditUrl = $"https://www.reddit.com/submit?url={encodedUrl}&title={encodedTitle}";
+        _shareTwitterUrl = $"https://twitter.com/intent/tweet?text={encodedTitle}&url={encodedUrl}";
+        _shareBlueskyUrl = $"https://bsky.app/intent/compose?text={blueskyText}";
+        _shareRedditUrl = $"https://www.reddit.com/submit?url={encodedUrl}&title={encodedTitle}";
     }
 
     private async Task CopyLinkAsync() {
