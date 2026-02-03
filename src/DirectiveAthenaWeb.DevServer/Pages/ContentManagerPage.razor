@@ -59,7 +59,7 @@
                     </Fields>
                     <LocalizedFields Context="box">
                         @{ NoteContent content = box.Item1;LocalizationInfo culture = box.Item2; }
-                        <MudTextField Label="@Localizer[Shared.ContentManagerTitle]" Variant="Variant.Filled"
+                        <MudTextField Label="Title" Variant="Variant.Filled"
                                      @bind-Value="@content.Title[culture.Code]"
                                      Required="true"
                                      FullWidth="true"/>

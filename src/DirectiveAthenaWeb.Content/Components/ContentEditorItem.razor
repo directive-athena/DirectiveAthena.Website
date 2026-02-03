@@ -27,8 +27,16 @@
     <MudPaper Class="pa-6 card-glass no-hover">
         <div class="d-flex justify-space-between align-center mb-6">
             <MudText Typo="Typo.h5">@EditorLocalizer[Editor.EditItem, Content.GetReadableInternalTitle()]</MudText>
-            <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error"
-                           OnClick="@DeleteContentAsync"/>
+            <MudStack Direction="Row" Spacing="2">
+                <MudButton Variant="Variant.Filled" Color="Color.Success" StartIcon="@Icons.Material.Filled.Save"
+                           OnClick="@OnSaveChangesAsync">
+                    @EditorLocalizer[Editor.SaveItemButton]
+                </MudButton>
+                <MudButton Variant="Variant.Outlined" Color="Color.Error" StartIcon="@Icons.Material.Filled.Delete"
+                           OnClick="@DeleteContentAsync">
+                    @EditorLocalizer[Editor.DeleteItemButton]
+                </MudButton>
+            </MudStack>
         </div>
 
         <MudTabs Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">

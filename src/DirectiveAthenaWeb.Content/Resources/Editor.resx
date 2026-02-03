@@ -65,6 +65,12 @@
     <data name="MarkdownFileButtonSave" xml:space="preserve">
     <value>Save file</value>
   </data>
+    <data name="SaveItemButton" xml:space="preserve">
+        <value>Save</value>
+    </data>
+    <data name="DeleteItemButton" xml:space="preserve">
+        <value>Delete</value>
+    </data>
     <data name="DeleteItemHardConfirm" xml:space="preserve">
     <value>Permanently delete this item and its files?</value>
   </data>

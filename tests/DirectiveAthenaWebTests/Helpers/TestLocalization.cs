@@ -16,7 +16,7 @@ public static class TestLocalization {
             new("nl", "Nederlands", "NL", "https://flagcdn.com/w40/nl.png")
         ];
 
-    public static IReadOnlyCollection<LocalizationInfo> BuildLocalizations(params string[] codes)
+    private static IReadOnlyCollection<LocalizationInfo> BuildLocalizations(params string[] codes)
         => codes
             .Select(code => new LocalizationInfo(code, code.ToUpperInvariant(), code.ToUpperInvariant(), $"flags/{code}.png"))
             .ToArray();

@@ -34,4 +34,6 @@ public class Editor {
     public const string DeleteItemSoftFailed = "DeleteItemSoftFailed";
     public const string DeleteItemHardSuccess = "DeleteItemHardSuccess";
     public const string DeleteItemHardFailed = "DeleteItemHardFailed";
+    public const string SaveItemButton = "SaveItemButton";
+    public const string DeleteItemButton = "DeleteItemButton";
 }
