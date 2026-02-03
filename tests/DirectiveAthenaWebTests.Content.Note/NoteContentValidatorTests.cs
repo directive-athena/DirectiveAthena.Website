@@ -3,36 +3,22 @@
 // ---------------------------------------------------------------------------------------------------------------------
 using DirectiveAthenaWeb.Content.Note;
 using DirectiveAthenaWeb.Content.Note.Services;
-using DirectiveAthenaWeb.Services.Localization;
 using FluentValidation.Results;
-using NSubstitute;
+using DirectiveAthenaWebTests.Helpers;
 
 namespace DirectiveAthenaWebTests.Content.Note;
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
 public class NoteContentValidatorTests {
-
-    private static ILocalizationProvider CreateLocalizationProvider(string currentCode) {
-        LocalizationInfo[] localizations = [
-            new("en", "English", "EN", ""),
-            new("nl", "Nederlands", "NL", "")
-        ];
-
-        var localizationProvider = Substitute.For<ILocalizationProvider>();
-        localizationProvider.GetCurrentLocalization().Returns(localizations.First(l => l.Code == currentCode));
-        localizationProvider.GetSupportedLocalizations().Returns(localizations);
-        return localizationProvider;
-    }
-
     // -----------------------------------------------------------------------------------------------------------------
     // Test Methods
     // -----------------------------------------------------------------------------------------------------------------
     [Test]
     public async Task Validate_RejectsMissingId() {
         // Arrange
-        var validator = new NoteContentValidator(CreateLocalizationProvider("en"));
-        NoteContent article = NoteFaker.Create(300);
+        var validator = new NoteContentValidator(TestLocalization.CreateLocalizationProvider("en"));
+        NoteContent article = ContentFaker.CreateNote(300);
         article.Id = Guid.Empty;
 
         // Act
@@ -46,8 +32,8 @@ public class NoteContentValidatorTests {
     [Test]
     public async Task Validate_RejectsMissingLocalizedTitle() {
         // Arrange
-        var validator = new NoteContentValidator(CreateLocalizationProvider("en"));
-        NoteContent article = NoteFaker.Create(301, includeNl: false);
+        var validator = new NoteContentValidator(TestLocalization.CreateLocalizationProvider("en"));
+        NoteContent article = ContentFaker.CreateNote(301, includeNl: false);
 
         // Act
         ValidationResult? result = await validator.ValidateAsync(article);
@@ -60,8 +46,8 @@ public class NoteContentValidatorTests {
     [Test]
     public async Task Validate_RejectsMissingLocalizedSummary() {
         // Arrange
-        var validator = new NoteContentValidator(CreateLocalizationProvider("en"));
-        NoteContent article = NoteFaker.Create(302);
+        var validator = new NoteContentValidator(TestLocalization.CreateLocalizationProvider("en"));
+        NoteContent article = ContentFaker.CreateNote(302);
         article.Summary.Remove("nl");
 
         // Act
@@ -75,8 +61,8 @@ public class NoteContentValidatorTests {
     [Test]
     public async Task Validate_AllowsValidWriting() {
         // Arrange
-        var validator = new NoteContentValidator(CreateLocalizationProvider("en"));
-        NoteContent article = NoteFaker.Create(303);
+        var validator = new NoteContentValidator(TestLocalization.CreateLocalizationProvider("en"));
+        NoteContent article = ContentFaker.CreateNote(303);
 
         // Act
         ValidationResult? result = await validator.ValidateAsync(article);

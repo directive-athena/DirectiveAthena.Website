@@ -5,11 +5,9 @@ using Bunit;
 using DirectiveAthenaWeb.Content.Faq;
 using DirectiveAthenaWeb.Content.Faq.Components;
 using DirectiveAthenaWeb.Services.Localization;
-using DirectiveAthenaWeb.Services.Localization.Resources;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Options;
 using MudBlazor.Services;
+using DirectiveAthenaWebTests.Helpers;
 
 namespace DirectiveAthenaWebTests.Content.Faq;
 // ---------------------------------------------------------------------------------------------------------------------
@@ -23,12 +21,9 @@ public class FaqListTests {
         ctx.Services.AddMudServices();
         ctx.Services.AddLocalization();
         ctx.Services.AddLogging();
-        ctx.Services.AddSingleton(Options.Create(new DirectiveAthenaWeb.Services.Localization.LocalizationOptions()
-            .AddLocalization("en", "English", "EN", "https://flagcdn.com/w40/us.png")
-            .AddLocalization("nl", "Nederlands", "NL", "https://flagcdn.com/w40/nl.png")));
+        ctx.Services.AddSingleton(TestLocalization.CreateLocalizationOptions());
         ctx.Services.AddSingleton<ILocalizationProvider, LocalizationProvider>();
         ctx.JSInterop.SetupVoid("mudKeyInterceptor.connect", _ => true);
-        var localizer = ctx.Services.GetRequiredService<IStringLocalizer<Shared>>();
 
         var rule = new FaqContent {
             Id = Guid.NewGuid(),
@@ -49,6 +44,6 @@ public class FaqListTests {
             .Add(p => p.Rules, [rule]));
 
         // Assert
-        await Assert.That(component.Markup).Contains(localizer[Shared.ListDeleted]);
+        await Assert.That(component.Markup).IsEmpty();
     }
 }

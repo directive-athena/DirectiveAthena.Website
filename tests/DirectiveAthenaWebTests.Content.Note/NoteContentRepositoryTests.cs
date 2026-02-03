@@ -10,6 +10,7 @@ using NSubstitute;
 using System.Net;
 using System.Net.Http.Headers;
 using System.Text.Json;
+using DirectiveAthenaWebTests.Helpers;
 
 namespace DirectiveAthenaWebTests.Content.Note;
 // ---------------------------------------------------------------------------------------------------------------------
@@ -26,9 +27,9 @@ public class NoteContentRepositoryTests {
     public async Task GetPostsAsync_FiltersOutHiddenPosts() {
         // Arrange
         NoteContent[] notes = [
-            NoteFaker.Create(1, hidden: false),
-            NoteFaker.Create(2, hidden: true),
-            NoteFaker.Create(3, hidden: false)
+            ContentFaker.CreateNote(1, hidden: false),
+            ContentFaker.CreateNote(2, hidden: true),
+            ContentFaker.CreateNote(3, hidden: false)
         ];
 
         IContentStorage storage = CreateStorage();
@@ -65,8 +66,8 @@ public class NoteContentRepositoryTests {
     public async Task GetPostsAsync_CachesResults() {
         // Arrange
         NoteContent[] notes = [
-            NoteFaker.Create(10, hidden: false),
-            NoteFaker.Create(11, hidden: true)
+            ContentFaker.CreateNote(10, hidden: false),
+            ContentFaker.CreateNote(11, hidden: true)
         ];
 
         IContentStorage storage = CreateStorage();
@@ -103,7 +104,7 @@ public class NoteContentRepositoryTests {
     [Test]
     public async Task GetByIdAsync_ReturnsNullForSoftDeleted() {
         // Arrange
-        NoteContent article = NoteFaker.Create(6);
+        NoteContent article = ContentFaker.CreateNote(6);
         article.SoftDeletedAt = DateTime.UtcNow;
         IContentStorage storage = CreateStorage();
         storage.ReadIndexAsync(Arg.Any<EntityTagHeaderValue?>(), Arg.Any<DateTimeOffset?>(), Arg.Any<CancellationToken>())
@@ -122,8 +123,8 @@ public class NoteContentRepositoryTests {
     public async Task GetPostsAsync_CachesAcrossConcurrentCalls() {
         // Arrange
         NoteContent[] notes = [
-            NoteFaker.Create(12, hidden: false),
-            NoteFaker.Create(13, hidden: true)
+            ContentFaker.CreateNote(12, hidden: false),
+            ContentFaker.CreateNote(13, hidden: true)
         ];
 
         IContentStorage storage = CreateStorage();
@@ -146,9 +147,9 @@ public class NoteContentRepositoryTests {
     [Test]
     public async Task GetAllAsync_DefaultFiltersHiddenAndSoftDeleted() {
         // Arrange
-        NoteContent visible = NoteFaker.Create(50, hidden: false);
-        NoteContent hidden = NoteFaker.Create(51, hidden: true);
-        NoteContent softDeleted = NoteFaker.Create(52, hidden: false);
+        NoteContent visible = ContentFaker.CreateNote(50, hidden: false);
+        NoteContent hidden = ContentFaker.CreateNote(51, hidden: true);
+        NoteContent softDeleted = ContentFaker.CreateNote(52, hidden: false);
         softDeleted.SoftDeletedAt = DateTime.UtcNow;
 
         NoteContent[] notes = [visible, hidden, softDeleted];
@@ -169,9 +170,9 @@ public class NoteContentRepositoryTests {
     [Test]
     public async Task GetAllAsync_WithHidden_IncludesHiddenButNotSoftDeleted() {
         // Arrange
-        NoteContent visible = NoteFaker.Create(53, hidden: false);
-        NoteContent hidden = NoteFaker.Create(54, hidden: true);
-        NoteContent softDeleted = NoteFaker.Create(55, hidden: false);
+        NoteContent visible = ContentFaker.CreateNote(53, hidden: false);
+        NoteContent hidden = ContentFaker.CreateNote(54, hidden: true);
+        NoteContent softDeleted = ContentFaker.CreateNote(55, hidden: false);
         softDeleted.SoftDeletedAt = DateTime.UtcNow;
 
         NoteContent[] notes = [visible, hidden, softDeleted];
@@ -191,9 +192,9 @@ public class NoteContentRepositoryTests {
     [Test]
     public async Task GetAllAsync_WithSoftDeleted_IncludesSoftDeletedButNotHidden() {
         // Arrange
-        NoteContent visible = NoteFaker.Create(56, hidden: false);
-        NoteContent hidden = NoteFaker.Create(57, hidden: true);
-        NoteContent softDeleted = NoteFaker.Create(58, hidden: false);
+        NoteContent visible = ContentFaker.CreateNote(56, hidden: false);
+        NoteContent hidden = ContentFaker.CreateNote(57, hidden: true);
+        NoteContent softDeleted = ContentFaker.CreateNote(58, hidden: false);
         softDeleted.SoftDeletedAt = DateTime.UtcNow;
 
         NoteContent[] notes = [visible, hidden, softDeleted];
@@ -213,9 +214,9 @@ public class NoteContentRepositoryTests {
     [Test]
     public async Task GetAllAsync_WithHiddenAndSoftDeleted_IncludesAll() {
         // Arrange
-        NoteContent visible = NoteFaker.Create(59, hidden: false);
-        NoteContent hidden = NoteFaker.Create(60, hidden: true);
-        NoteContent softDeleted = NoteFaker.Create(61, hidden: false);
+        NoteContent visible = ContentFaker.CreateNote(59, hidden: false);
+        NoteContent hidden = ContentFaker.CreateNote(60, hidden: true);
+        NoteContent softDeleted = ContentFaker.CreateNote(61, hidden: false);
         softDeleted.SoftDeletedAt = DateTime.UtcNow;
 
         NoteContent[] notes = [visible, hidden, softDeleted];
@@ -235,11 +236,11 @@ public class NoteContentRepositoryTests {
     [Test]
     public async Task GetAllAsync_SortsByCreatedAtAndReverses() {
         // Arrange
-        NoteContent first = NoteFaker.Create(62, hidden: false);
+        NoteContent first = ContentFaker.CreateNote(62, hidden: false);
         first.CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-        NoteContent second = NoteFaker.Create(63, hidden: false);
+        NoteContent second = ContentFaker.CreateNote(63, hidden: false);
         second.CreatedAt = new DateTime(2024, 2, 1, 0, 0, 0, DateTimeKind.Utc);
-        NoteContent third = NoteFaker.Create(64, hidden: false);
+        NoteContent third = ContentFaker.CreateNote(64, hidden: false);
         third.CreatedAt = new DateTime(2024, 3, 1, 0, 0, 0, DateTimeKind.Utc);
 
         NoteContent[] notes = [second, third, first];
@@ -264,7 +265,7 @@ public class NoteContentRepositoryTests {
 
         var logger = Substitute.For<ILogger<NoteContentRepository>>();
         var repo = new NoteContentRepository(storage, logger);
-        NoteContent[] notes = [NoteFaker.Create(21)];
+        NoteContent[] notes = [ContentFaker.CreateNote(21)];
 
         // Act
         await repo.AddOrUpdateRangeAsync(notes);
@@ -283,7 +284,7 @@ public class NoteContentRepositoryTests {
 
         var logger = Substitute.For<ILogger<NoteContentRepository>>();
         var repo = new NoteContentRepository(storage, logger);
-        NoteContent[] notes = [NoteFaker.Create(22)];
+        NoteContent[] notes = [ContentFaker.CreateNote(22)];
 
         // Act
         await repo.AddOrUpdateRangeAsync(notes);
@@ -295,13 +296,13 @@ public class NoteContentRepositoryTests {
     }
 
     [Test]
-    public async Task SaveAsync_SetsTimestampsWhenMissing() {
+    public async Task SaveAsync_DoesNotBackfillCreatedAt() {
         // Arrange
         IContentStorage storage = CreateStorage();
         storage.WriteIndexAsync(Arg.Any<string>()).Returns(new ValueTask<bool>(true));
         var logger = Substitute.For<ILogger<NoteContentRepository>>();
         var repo = new NoteContentRepository(storage, logger);
-        NoteContent article = NoteFaker.Create(25);
+        NoteContent article = ContentFaker.CreateNote(25);
         article.CreatedAt = DateTime.MinValue;
         article.LastModifiedAt = DateTime.MinValue;
 
@@ -311,8 +312,8 @@ public class NoteContentRepositoryTests {
 
         // Assert
         await Assert.That(result).IsTrue();
-        await Assert.That(article.CreatedAt).IsNotEqualTo(DateTime.MinValue);
-        await Assert.That(article.LastModifiedAt).IsEqualTo(article.CreatedAt);
+        await Assert.That(article.CreatedAt).IsEqualTo(DateTime.MinValue);
+        await Assert.That(article.LastModifiedAt).IsNotEqualTo(DateTime.MinValue);
     }
 
     [Test]
@@ -322,7 +323,7 @@ public class NoteContentRepositoryTests {
         storage.WriteIndexAsync(Arg.Any<string>()).Returns(new ValueTask<bool>(true));
         var logger = Substitute.For<ILogger<NoteContentRepository>>();
         var repo = new NoteContentRepository(storage, logger);
-        NoteContent article = NoteFaker.Create(26);
+        NoteContent article = ContentFaker.CreateNote(26);
         DateTime createdAt = new(2024, 02, 10, 0, 0, 0, DateTimeKind.Utc);
         article.CreatedAt = createdAt;
         article.LastModifiedAt = DateTime.MinValue;
@@ -340,7 +341,7 @@ public class NoteContentRepositoryTests {
     [Test]
     public async Task SoftDeleteByIdAsync_MarksDeletedAndWritesIndex() {
         // Arrange
-        NoteContent article = NoteFaker.Create(27);
+        NoteContent article = ContentFaker.CreateNote(27);
         IContentStorage storage = CreateStorage();
         storage.ReadIndexAsync(Arg.Any<EntityTagHeaderValue?>(), Arg.Any<DateTimeOffset?>(), Arg.Any<CancellationToken>())
             .Returns(Task.FromResult(new ContentReadResult(HttpStatusCode.OK, JsonSerializer.Serialize(new[] { article }), null, null)));
@@ -351,23 +352,25 @@ public class NoteContentRepositoryTests {
 
         // Act
         bool result = await repo.SoftDeleteByIdAsync(article.Id);
+        bool savedResult = await repo.SaveAsync();
 
         // Assert
         await Assert.That(result).IsTrue();
+        await Assert.That(savedResult).IsTrue();
         await Assert.That(capturedJson).IsNotNull();
-        NoteContent[]? saved = JsonSerializer.Deserialize<NoteContent[]>(
+        NoteContent[]? savedItems = JsonSerializer.Deserialize<NoteContent[]>(
             capturedJson!,
             new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-        await Assert.That(saved).IsNotNull();
-        await Assert.That(saved!.Single().IsSoftDeleted).IsTrue();
-        await Assert.That(saved!.Single().SoftDeletedAt).IsNotEqualTo(DateTime.MinValue);
+        await Assert.That(savedItems).IsNotNull();
+        await Assert.That(savedItems!.Single().IsSoftDeleted).IsTrue();
+        await Assert.That(savedItems!.Single().SoftDeletedAt).IsNotEqualTo(DateTime.MinValue);
         await storage.Received(1).WriteIndexAsync(Arg.Any<string>());
     }
 
     [Test]
     public async Task DeleteAsync_DeletesLocalizedFilesAndSaves() {
         // Arrange
-        NoteContent article = NoteFaker.Create(30);
+        NoteContent article = ContentFaker.CreateNote(30);
         IContentStorage storage = CreateStorage();
         storage.DeleteLocalizedFilesAsync(article.MarkdownFileName).Returns(Task.FromResult(true));
         storage.WriteIndexAsync(Arg.Any<string>()).Returns(new ValueTask<bool>(true));
@@ -377,10 +380,11 @@ public class NoteContentRepositoryTests {
         var repo = new NoteContentRepository(storage, logger);
 
         // Act
-        await repo.SoftDeleteByIdAsync(article.Id);
+        bool deleted = await repo.HardDeleteByIdAsync(article.Id);
         bool result = await repo.SaveAsync();
 
         // Assert
+        await Assert.That(deleted).IsTrue();
         await Assert.That(result).IsTrue();
         await storage.Received(1).DeleteLocalizedFilesAsync(article.MarkdownFileName);
         await storage.Received(1).WriteIndexAsync(Arg.Any<string>());
@@ -389,7 +393,7 @@ public class NoteContentRepositoryTests {
     [Test]
     public async Task DeleteAsync_ReturnsFalseWhenLocalizedDeleteFails() {
         // Arrange
-        NoteContent article = NoteFaker.Create(40);
+        NoteContent article = ContentFaker.CreateNote(40);
         IContentStorage storage = CreateStorage();
         storage.DeleteLocalizedFilesAsync(article.MarkdownFileName).Returns(Task.FromResult(false));
         storage.ReadIndexAsync(Arg.Any<EntityTagHeaderValue?>(), Arg.Any<DateTimeOffset?>(), Arg.Any<CancellationToken>())
@@ -398,11 +402,10 @@ public class NoteContentRepositoryTests {
         var repo = new NoteContentRepository(storage, logger);
 
         // Act
-        await repo.SoftDeleteByIdAsync(article.Id);
-        bool result = await repo.SaveAsync();
+        bool deleted = await repo.HardDeleteByIdAsync(article.Id);
 
         // Assert
-        await Assert.That(result).IsFalse();
+        await Assert.That(deleted).IsFalse();
         await storage.Received(1).DeleteLocalizedFilesAsync(article.MarkdownFileName);
         await storage.DidNotReceiveWithAnyArgs().WriteIndexAsync(null!);
     }

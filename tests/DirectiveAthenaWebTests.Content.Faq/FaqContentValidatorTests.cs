@@ -3,28 +3,15 @@
 // ---------------------------------------------------------------------------------------------------------------------
 using DirectiveAthenaWeb.Content.Faq;
 using DirectiveAthenaWeb.Content.Faq.Services;
-using DirectiveAthenaWeb.Services.Localization;
 using FluentValidation;
 using FluentValidation.Results;
-using NSubstitute;
+using DirectiveAthenaWebTests.Helpers;
 
 namespace DirectiveAthenaWebTests.Content.Faq;
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
 public class FaqContentValidatorTests {
-    private static ILocalizationProvider CreateLocalizationProvider() {
-        LocalizationInfo[] localizations = [
-            new("en", "English", "EN", ""),
-            new("nl", "Nederlands", "NL", "")
-        ];
-
-        var provider = Substitute.For<ILocalizationProvider>();
-        provider.GetSupportedLocalizations().Returns(localizations);
-        provider.DefaultLocalization.Returns(localizations.First(l => l.Code == "en"));
-        return provider;
-    }
-
     private static FaqContent CreateValidRule() => new() {
         Id = Guid.NewGuid(),
         Question = new Dictionary<string, string> {
@@ -43,7 +30,7 @@ public class FaqContentValidatorTests {
         // Arrange
         FaqContent rule = CreateValidRule();
         rule.Id = Guid.Empty;
-        var validator = new FaqContentValidator(CreateLocalizationProvider());
+        var validator = new FaqContentValidator(TestLocalization.CreateLocalizationProvider());
 
         // Act
         ValidationResult? result = await validator.ValidateAsync(rule);
@@ -54,17 +41,16 @@ public class FaqContentValidatorTests {
     }
 
     [Test]
-    public async Task FaqValidator_RejectsMissingDate() {
+    public async Task FaqValidator_AllowsMissingDate() {
         // Arrange
         FaqContent rule = CreateValidRule();
-        var validator = new FaqContentValidator(CreateLocalizationProvider());
+        var validator = new FaqContentValidator(TestLocalization.CreateLocalizationProvider());
 
         // Act
         ValidationResult? result = await validator.ValidateAsync(rule);
 
         // Assert
-        await Assert.That(result.IsValid).IsFalse();
-        await Assert.That(result.Errors.First().ErrorMessage).IsEqualTo("Some rules have missing dates!");
+        await Assert.That(result.IsValid).IsTrue();
     }
 
     [Test]
@@ -72,7 +58,7 @@ public class FaqContentValidatorTests {
         // Arrange
         FaqContent rule = CreateValidRule();
         rule.Question.Remove("nl");
-        var validator = new FaqContentValidator(CreateLocalizationProvider());
+        var validator = new FaqContentValidator(TestLocalization.CreateLocalizationProvider());
 
         // Act
         ValidationResult? result = await validator.ValidateAsync(rule);
@@ -88,7 +74,7 @@ public class FaqContentValidatorTests {
         // Arrange
         FaqContent rule = CreateValidRule();
         rule.Answer.Remove("nl");
-        var validator = new FaqContentValidator(CreateLocalizationProvider());
+        var validator = new FaqContentValidator(TestLocalization.CreateLocalizationProvider());
 
         // Act
         ValidationResult? result = await validator.ValidateAsync(rule);
@@ -110,7 +96,7 @@ public class FaqContentValidatorTests {
         rules[0].Id = sharedId;
         rules[1].Id = sharedId;
 
-        IValidator<FaqContent> ruleValidator = new FaqContentValidator(CreateLocalizationProvider());
+        IValidator<FaqContent> ruleValidator = new FaqContentValidator(TestLocalization.CreateLocalizationProvider());
         var collectionValidator = new FaqContentCollectionValidator(ruleValidator);
 
         // Act

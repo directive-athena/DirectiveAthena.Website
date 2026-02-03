@@ -3,28 +3,14 @@
 // ---------------------------------------------------------------------------------------------------------------------
 using DirectiveAthenaWeb.Content.Note;
 using DirectiveAthenaWeb.Content.Note.Services;
-using DirectiveAthenaWeb.Services.Localization;
 using FluentValidation.Results;
-using NSubstitute;
+using DirectiveAthenaWebTests.Helpers;
 
 namespace DirectiveAthenaWebTests.Content.Note;
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
 public class NoteContentCollectionValidatorTests {
-
-    private static ILocalizationProvider CreateLocalizationProvider(string currentCode) {
-        LocalizationInfo[] localizations = [
-            new("en", "English", "EN", ""),
-            new("nl", "Nederlands", "NL", "")
-        ];
-
-        var localizationProvider = Substitute.For<ILocalizationProvider>();
-        localizationProvider.GetCurrentLocalization().Returns(localizations.First(l => l.Code == currentCode));
-        localizationProvider.GetSupportedLocalizations().Returns(localizations);
-        return localizationProvider;
-    }
-
     // -----------------------------------------------------------------------------------------------------------------
     // Test Methods
     // -----------------------------------------------------------------------------------------------------------------
@@ -32,12 +18,12 @@ public class NoteContentCollectionValidatorTests {
     public async Task Validate_RejectsDuplicateIds() {
         // Arrange
         NoteContent[] notes = [
-            NoteFaker.Create(400),
-            NoteFaker.Create(401)
+            ContentFaker.CreateNote(400),
+            ContentFaker.CreateNote(401)
         ];
         notes[1].Id = notes[0].Id;
 
-        var validator = new NoteContentCollectionValidator(new NoteContentValidator(CreateLocalizationProvider("en")));
+        var validator = new NoteContentCollectionValidator(new NoteContentValidator(TestLocalization.CreateLocalizationProvider("en")));
 
         // Act
         ValidationResult? result = await validator.ValidateAsync(notes);
@@ -50,11 +36,11 @@ public class NoteContentCollectionValidatorTests {
     [Test]
     public async Task Validate_FailsWhenAnyWritingIsInvalid() {
         // Arrange
-        NoteContent valid = NoteFaker.Create(420);
-        NoteContent invalid = NoteFaker.Create(421, includeNl: false);
+        NoteContent valid = ContentFaker.CreateNote(420);
+        NoteContent invalid = ContentFaker.CreateNote(421, includeNl: false);
         NoteContent[] notes = [valid, invalid];
 
-        var validator = new NoteContentCollectionValidator(new NoteContentValidator(CreateLocalizationProvider("en")));
+        var validator = new NoteContentCollectionValidator(new NoteContentValidator(TestLocalization.CreateLocalizationProvider("en")));
 
         // Act
         ValidationResult? result = await validator.ValidateAsync(notes);

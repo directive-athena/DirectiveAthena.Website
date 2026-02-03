@@ -4,6 +4,7 @@
 @using DirectiveAthenaWeb.Content.Resources
 @using DirectiveAthenaWeb.Services.Content
 @using DirectiveAthenaWeb.Services.Js
+@using DirectiveAthenaWeb.Services.Localization
 @using Microsoft.Extensions.Localization
 @using MudBlazor
 
@@ -23,62 +24,61 @@
 @* Html *@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 <CascadingValue Value="Items">
-<CascadingValue Value="SelectedItem">
-    <MudGrid>
-        <MudItem xs="12" md="4">
-            <MudStack Spacing="3">
-                <ContentEditorListView TContent="@TContent" OnSelected="@OnItemSelectedAsync" OnCreate="@OnCreateAsync"/>
+    <CascadingValue Value="SelectedItem">
+        <MudGrid>
+            <MudItem xs="12" md="4">
+                <MudStack Spacing="3">
+                    <ContentEditorListView TContent="@TContent" OnSelected="@OnItemSelectedAsync"
+                                           OnCreate="@OnCreateAsync"/>
 
-                @* <MudPaper Class="pa-4 card-glass no-hover"> *@
-                @*     <div class="d-flex justify-space-between align-center mb-2"> *@
-                @*         <MudText Typo="Typo.subtitle1">@Localizer[Shared.ContentManagerActions]</MudText> *@
-                @*         <MudSwitch T="bool" @bind-Value="AutoSaveEnabled" Color="Color.Success" *@
-                @*                    Label="@Localizer[Shared.ContentManagerAutoSaveLabel]"/> *@
-                @*     </div> *@
-                @*     <div class="d-flex align-center gap-2 mb-2"> *@
-                @*         <MudChip T="string" Color="@GetAutoSaveColor(_articleAutoSaveStatus)" *@
-                @*                  Variant="Variant.Filled" Icon="@GetAutoSaveIcon(_articleAutoSaveStatus)"> *@
-                @*             @GetAutoSaveStatusText(_articleAutoSaveStatus, _articleLastSavedAt) *@
-                @*         </MudChip> *@
-                @*         <MudText Typo="Typo.caption" Class="opacity-70"> *@
-                @*             @GetAutoSaveDetailText(_articleAutoSaveStatus) *@
-                @*         </MudText> *@
-                @*     </div> *@
-                @*     @if (!string.IsNullOrWhiteSpace(_articleAutoSaveError)) { *@
-                @*         <MudText Typo="Typo.caption" Color="Color.Warning">@_articleAutoSaveError</MudText> *@
-                @*     } *@
-                @*     <MudDivider Class="my-3"/> *@
-                @*     <MudButton Variant="Variant.Filled" Color="Color.Success" FullWidth="true" *@
-                @*                OnClick="@SaveAllWritings" *@
-                @*                StartIcon="@Icons.Material.Filled.Save" Class="mb-3"> *@
-                @*         @Localizer[Shared.ContentManagerSaveIndex] *@
-                @*     </MudButton> *@
-                @*     <MudButton Variant="Variant.Filled" Color="Color.Secondary" FullWidth="true" *@
-                @*                OnClick="@ExportWritingsJson" *@
-                @*                StartIcon="@Icons.Material.Filled.Download" Class="mb-3"> *@
-                @*         @Localizer[Shared.ContentManagerDownloadIndex] *@
-                @*     </MudButton> *@
-                @*     <MudButton Variant="Variant.Outlined" Color="Color.Info" FullWidth="true" *@
-                @*                OnClick="@CopyWritingsJson" *@
-                @*                StartIcon="@Icons.Material.Filled.ContentCopy"> *@
-                @*         @Localizer[Shared.ContentManagerCopyIndex] *@
-                @*     </MudButton> *@
-                @* </MudPaper> *@
-            </MudStack>
-        </MudItem>
+                    @* <MudPaper Class="pa-4 card-glass no-hover"> *@
+                    @*     <div class="d-flex justify-space-between align-center mb-2"> *@
+                    @*         <MudText Typo="Typo.subtitle1">@Localizer[Shared.ContentManagerActions]</MudText> *@
+                    @*         <MudSwitch T="bool" @bind-Value="AutoSaveEnabled" Color="Color.Success" *@
+                    @*                    Label="@Localizer[Shared.ContentManagerAutoSaveLabel]"/> *@
+                    @*     </div> *@
+                    @*     <div class="d-flex align-center gap-2 mb-2"> *@
+                    @*         <MudChip T="string" Color="@GetAutoSaveColor(_articleAutoSaveStatus)" *@
+                    @*                  Variant="Variant.Filled" Icon="@GetAutoSaveIcon(_articleAutoSaveStatus)"> *@
+                    @*             @GetAutoSaveStatusText(_articleAutoSaveStatus, _articleLastSavedAt) *@
+                    @*         </MudChip> *@
+                    @*         <MudText Typo="Typo.caption" Class="opacity-70"> *@
+                    @*             @GetAutoSaveDetailText(_articleAutoSaveStatus) *@
+                    @*         </MudText> *@
+                    @*     </div> *@
+                    @*     @if (!string.IsNullOrWhiteSpace(_articleAutoSaveError)) { *@
+                    @*         <MudText Typo="Typo.caption" Color="Color.Warning">@_articleAutoSaveError</MudText> *@
+                    @*     } *@
+                    @*     <MudDivider Class="my-3"/> *@
+                    @*     <MudButton Variant="Variant.Filled" Color="Color.Success" FullWidth="true" *@
+                    @*                OnClick="@SaveAllWritings" *@
+                    @*                StartIcon="@Icons.Material.Filled.Save" Class="mb-3"> *@
+                    @*         @Localizer[Shared.ContentManagerSaveIndex] *@
+                    @*     </MudButton> *@
+                    @*     <MudButton Variant="Variant.Filled" Color="Color.Secondary" FullWidth="true" *@
+                    @*                OnClick="@ExportWritingsJson" *@
+                    @*                StartIcon="@Icons.Material.Filled.Download" Class="mb-3"> *@
+                    @*         @Localizer[Shared.ContentManagerDownloadIndex] *@
+                    @*     </MudButton> *@
+                    @*     <MudButton Variant="Variant.Outlined" Color="Color.Info" FullWidth="true" *@
+                    @*                OnClick="@CopyWritingsJson" *@
+                    @*                StartIcon="@Icons.Material.Filled.ContentCopy"> *@
+                    @*         @Localizer[Shared.ContentManagerCopyIndex] *@
+                    @*     </MudButton> *@
+                    @* </MudPaper> *@
+                </MudStack>
+            </MudItem>
 
-        <MudItem xs="12" md="8">
             @if (SelectedItem is not null) {
-                <ContentEditorItem TContent="@TContent" Content="SelectedItem"/>
+                <MudItem xs="12" md="8">
+                    <ContentEditorItem TContent="@TContent"
+                                       Content="SelectedItem"
+                                       Fields="@Fields"
+                                       LocalizedFields="@LocalizedFields"/>
+                </MudItem>
             }
-            else {
-                @* <MudAlert Severity="Severity.Info" Variant="Variant.Outlined"> *@
-                @*     @Localizer[Shared.ContentManagerSelectPost] *@
-                @* </MudAlert> *@
-            }
-        </MudItem>
-    </MudGrid>
-</CascadingValue>
+        </MudGrid>
+    </CascadingValue>
 </CascadingValue>
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Code *@
@@ -87,7 +87,10 @@
 @code {
     private TContent[] Items { get; set; } = [];
     private TContent? SelectedItem { get; set; }
-    
+
+    [Parameter] public RenderFragment<(TContent, LocalizationInfo)>? LocalizedFields { get; set; }
+    [Parameter] public RenderFragment? Fields { get; set; }
+
     const QueryConfig Config = QueryConfig.WithHidden | QueryConfig.WithSoftDeleted | QueryConfig.SortByCreatedAt;
 
     // -----------------------------------------------------------------------------------------------------------------
@@ -102,7 +105,7 @@
         SelectedItem = selectedItem;
         await InvokeAsync(StateHasChanged);
     }
-    
+
     private async Task OnCreateAsync() {
         SelectedItem = ContentManager.Create();
         await Repository.AddOrUpdateAsync(SelectedItem);

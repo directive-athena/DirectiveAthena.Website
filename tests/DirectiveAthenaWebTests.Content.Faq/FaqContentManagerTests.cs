@@ -7,28 +7,17 @@ using DirectiveAthenaWeb.Services.ContentStorage;
 using DirectiveAthenaWeb.Services.Localization;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
+using DirectiveAthenaWebTests.Helpers;
 
 namespace DirectiveAthenaWebTests.Content.Faq;
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
 public class FaqContentManagerTests {
-    private static ILocalizationProvider CreateLocalizationProvider(string currentCode) {
-        LocalizationInfo[] localizations = [
-            new("en", "English", "EN", ""),
-            new("nl", "Nederlands", "NL", "")
-        ];
-
-        var localizationProvider = Substitute.For<ILocalizationProvider>();
-        localizationProvider.DefaultLocalization.Returns(localizations.First(l => l.Code == "en"));
-        localizationProvider.GetCurrentLocalization().Returns(localizations.First(l => l.Code == currentCode));
-        localizationProvider.GetSupportedLocalizations().Returns(localizations);
-        return localizationProvider;
-    }
-
     private static IContentStorageFactory CreateStorageFactory(IContentStorage storage) {
         var factory = Substitute.For<IContentStorageFactory>();
         factory.ForCategory("faq").Returns(storage);
+        factory.ForCategory<FaqContent>().Returns(storage);
         return factory;
     }
 
@@ -38,37 +27,17 @@ public class FaqContentManagerTests {
     ) {
         storage ??= Substitute.For<IContentStorage>();
         var logger = Substitute.For<ILogger<FaqContentManager>>();
-        return new FaqContentManager(localizationProvider, CreateStorageFactory(storage), logger);
-    }
-
-    private static FaqContent CreateRule(int seed, bool includeNl = true) {
-        var rule = new FaqContent {
-            Id = Guid.NewGuid(),
-            Question = new Dictionary<string, string> {
-                ["en"] = $"Question {seed}"
-            },
-            Answer = new Dictionary<string, string> {
-                ["en"] = $"Answer {seed}"
-            },
-            Tags = [
-                "tag-one"
-            ],
-            InternalTitle = string.Empty
-        };
-
-        if (!includeNl) return rule;
-
-        rule.Question["nl"] = $"Vraag {seed}";
-        rule.Answer["nl"] = $"Antwoord {seed}";
-
-        return rule;
+        var manager = new FaqContentManager(localizationProvider, CreateStorageFactory(storage), logger);
+        manager.SingleValidator = new FaqContentValidator(localizationProvider);
+        manager.MultipleValidator = new FaqContentCollectionValidator(manager.SingleValidator);
+        return manager;
     }
 
     [Test]
     public async Task GetLocalizedQuestion_FallsBackToDefaultCulture() {
         // Arrange
-        FaqContent rule = CreateRule(1, includeNl: false);
-        ILocalizationProvider localizationProvider = CreateLocalizationProvider("nl");
+        FaqContent rule = ContentFaker.CreateFaq(1, includeNl: false);
+        ILocalizationProvider localizationProvider = TestLocalization.CreateLocalizationProvider("nl");
         FaqContentManager manager = CreateManager(localizationProvider);
 
         // Act
@@ -81,8 +50,8 @@ public class FaqContentManagerTests {
     [Test]
     public async Task GetLocalizedAnswer_FallsBackToDefaultCulture() {
         // Arrange
-        FaqContent rule = CreateRule(2, includeNl: false);
-        ILocalizationProvider localizationProvider = CreateLocalizationProvider("nl");
+        FaqContent rule = ContentFaker.CreateFaq(2, includeNl: false);
+        ILocalizationProvider localizationProvider = TestLocalization.CreateLocalizationProvider("nl");
         FaqContentManager manager = CreateManager(localizationProvider);
 
         // Act
@@ -95,8 +64,8 @@ public class FaqContentManagerTests {
     [Test]
     public async Task GetLocalizedFilePath_UsesCurrentLocalization() {
         // Arrange
-        FaqContent rule = CreateRule(3);
-        ILocalizationProvider localizationProvider = CreateLocalizationProvider("nl");
+        FaqContent rule = ContentFaker.CreateFaq(3);
+        ILocalizationProvider localizationProvider = TestLocalization.CreateLocalizationProvider("nl");
         var storage = Substitute.For<IContentStorage>();
         storage.GetMarkdownContentPath(Arg.Any<string>(), Arg.Any<string>())
             .Returns(call => $"content/worldrules/{call.ArgAt<string>(0)}/{call.ArgAt<string>(1)}");
@@ -115,8 +84,8 @@ public class FaqContentManagerTests {
         var storage = Substitute.For<IContentStorage>();
         storage.ReadFileAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns(new ValueTask<string?>((string?)null));
-        FaqContentManager manager = CreateManager(CreateLocalizationProvider("en"), storage);
-        FaqContent rule = CreateRule(4);
+        FaqContentManager manager = CreateManager(TestLocalization.CreateLocalizationProvider("en"), storage);
+        FaqContent rule = ContentFaker.CreateFaq(4);
 
         // Act
         string result = await manager.GetMarkdownContentAsync(rule, "en");
@@ -128,7 +97,7 @@ public class FaqContentManagerTests {
     [Test]
     public async Task NewRule_PopulatesLocalizedFields() {
         // Arrange
-        ILocalizationProvider localizationProvider = CreateLocalizationProvider("en");
+        ILocalizationProvider localizationProvider = TestLocalization.CreateLocalizationProvider("en");
         FaqContentManager manager = CreateManager(localizationProvider);
 
         // Act
@@ -147,13 +116,13 @@ public class FaqContentManagerTests {
         // Arrange
         var sharedId = Guid.NewGuid();
         FaqContent[] rules = [
-            CreateRule(10),
-            CreateRule(11)
+            ContentFaker.CreateFaq(10),
+            ContentFaker.CreateFaq(11)
         ];
         rules[0].Id = sharedId;
         rules[1].Id = sharedId;
 
-        FaqContentManager manager = CreateManager(CreateLocalizationProvider("en"));
+        FaqContentManager manager = CreateManager(TestLocalization.CreateLocalizationProvider("en"));
 
         // Act
         bool result = manager.Validate(rules, out string? error);
@@ -166,9 +135,9 @@ public class FaqContentManagerTests {
     [Test]
     public async Task GenerateStubsAsync_ReturnsStubsForAllCultures() {
         // Arrange
-        FaqContent rule = CreateRule(20);
+        FaqContent rule = ContentFaker.CreateFaq(20);
         var storage = Substitute.For<IContentStorage>();
-        ILocalizationProvider localizationProvider = CreateLocalizationProvider("en");
+        ILocalizationProvider localizationProvider = TestLocalization.CreateLocalizationProvider("en");
         FaqContentManager manager = CreateManager(localizationProvider, storage);
 
         // Act
@@ -177,16 +146,17 @@ public class FaqContentManagerTests {
         // Assert
         await Assert.That(result.Stubs.Count).IsEqualTo(localizationProvider.GetSupportedLocalizations().Count);
         await Assert.That(result.WroteAll).IsFalse();
-        await storage.DidNotReceiveWithAnyArgs().WriteFileAsync(null!, null!);
+        await storage.DidNotReceiveWithAnyArgs().WriteFileAsync(null!, null!, default);
     }
 
     [Test]
     public async Task GenerateStubsAsync_WritesWhenRequested() {
         // Arrange
-        FaqContent rule = CreateRule(21);
+        FaqContent rule = ContentFaker.CreateFaq(21);
         var storage = Substitute.For<IContentStorage>();
-        ILocalizationProvider localizationProvider = CreateLocalizationProvider("en");
-        storage.WriteFileAsync(Arg.Any<string>(), Arg.Any<string>()).Returns(new ValueTask<bool>(true));
+        ILocalizationProvider localizationProvider = TestLocalization.CreateLocalizationProvider("en");
+        storage.WriteFileAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns(new ValueTask<bool>(true));
         storage.GetMarkdownDiskPath(Arg.Any<string>(), Arg.Any<string>())
             .Returns(call => $"{call.ArgAt<string>(0)}/{call.ArgAt<string>(1)}");
 
@@ -200,7 +170,7 @@ public class FaqContentManagerTests {
         await Assert.That(result.WroteAll).IsTrue();
         foreach (LocalizationInfo localization in localizationProvider.GetSupportedLocalizations()) {
             string path = storage.GetMarkdownDiskPath(localization.Code, rule.MarkdownFileName);
-            await storage.Received(1).WriteFileAsync(path, Arg.Any<string>());
+            await storage.Received(1).WriteFileAsync(path, Arg.Any<string>(), Arg.Any<CancellationToken>());
         }
     }
 }

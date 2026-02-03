@@ -8,6 +8,7 @@ using NSubstitute;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using DirectiveAthenaWeb.Services.Js;
+using DirectiveAthenaWebTests.Helpers;
 
 namespace DirectiveAthenaWebTests.Services.Localization;
 // ---------------------------------------------------------------------------------------------------------------------
@@ -76,7 +77,5 @@ public class LocalizationInitializerTests {
     }
 
     private static IOptions<LocalizationOptions> BuildOptions()
-        => Options.Create(new LocalizationOptions()
-            .AddLocalization("en", "English", "EN", "https://flagcdn.com/w40/us.png")
-            .AddLocalization("nl", "Nederlands", "NL", "https://flagcdn.com/w40/nl.png"));
+        => TestLocalization.CreateLocalizationOptions();
 }

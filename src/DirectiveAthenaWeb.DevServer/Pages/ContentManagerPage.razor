@@ -8,6 +8,7 @@
 @using DirectiveAthenaWeb.DevServer.Layouts
 @using DirectiveAthenaWeb.Services.Localization.Resources
 @using DirectiveAthenaWeb.Services.Content
+@using DirectiveAthenaWeb.Services.Localization
 @using System.Threading
 
 @namespace DirectiveAthenaWeb.DevServer.Pages
@@ -52,7 +53,21 @@
         <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6"
                  @bind-ActivePanelIndex="_activeTab">
             <MudTabPanel Text="@Localizer[Shared.ContentManagerTabWritings]" Icon="@Icons.Material.Filled.Article">
-                <ContentEditor TContent="@NoteContent"/>
+                <ContentEditor TContent="@NoteContent">
+                    <Fields>
+
+                    </Fields>
+                    <LocalizedFields Context="box">
+                        @{ NoteContent content = box.Item1;LocalizationInfo culture = box.Item2; }
+                        <MudTextField Label="@Localizer[Shared.ContentManagerTitle]" Variant="Variant.Filled"
+                                     @bind-Value="@content.Title[culture.Code]"
+                                     Required="true"
+                                     FullWidth="true"/>
+                        <MudTextField Label="Summary" Variant="Variant.Filled"
+                                     @bind-Value="@content.Summary[culture.Code]"
+                                     FullWidth="true"/>
+                    </LocalizedFields>
+                </ContentEditor>
             </MudTabPanel>
 
             <MudTabPanel Text="@Localizer[Shared.ContentManagerTabFaq]" Icon="@Icons.Material.Filled.Rule">
@@ -60,7 +75,7 @@
                     <MudItem xs="12" md="4">
                         <MudStack Spacing="3">
                             <FaqList Rules="_faq" SelectedRule="_selectedFaq"
-                                           OnRuleSelected="OnRuleSelected" OnCreateRule="CreateNewRule"/>
+                                     OnRuleSelected="OnRuleSelected" OnCreateRule="CreateNewRule"/>
 
                             <MudPaper Class="pa-4 card-glass no-hover">
                                 <div class="d-flex justify-space-between align-center mb-2">
@@ -103,10 +118,10 @@
                     <MudItem xs="12" md="8">
                         @if (_selectedFaq is not null) {
                             <FaqEditor Rule="_selectedFaq"
-                                             OnGenerateStubs="GenerateRuleStubs"
-                                             OnTagsChanged="OnTagsChanged"
-                                             OnContentChanged="OnRuleChanged"
-                                             OnDeleted="OnRuleDeleted"/>
+                                       OnGenerateStubs="GenerateRuleStubs"
+                                       OnTagsChanged="OnTagsChanged"
+                                       OnContentChanged="OnRuleChanged"
+                                       OnDeleted="OnRuleDeleted"/>
                         }
                         else {
                             <MudAlert Severity="Severity.Info" Variant="Variant.Outlined">
@@ -313,7 +328,7 @@
             return;
         }
 
-        
+
         await NoteRepository.SaveAsync();
         string json = await NoteRepository.GetAsJsonStringAsync();
         await DownloadFile("index.json", json);
@@ -372,7 +387,7 @@
     private async Task DownloadFile(string fileName, string content) {
         await WebJs.DownloadFileAsync(fileName, content);
     }
-    
+
     private void OnWritingChanged() {
         _articleHasUnsavedChanges = true;
         _articleAutoSaveStatus = AutoSaveStatus.Pending;
@@ -428,6 +443,7 @@
             try {
                 await Task.Delay(TimeSpan.FromSeconds(2), token);
                 if (token.IsCancellationRequested) return;
+
                 await InvokeAsync(AutoSaveWritingsAsync);
             }
             catch (TaskCanceledException) {
@@ -446,6 +462,7 @@
             try {
                 await Task.Delay(TimeSpan.FromSeconds(2), token);
                 if (token.IsCancellationRequested) return;
+
                 await InvokeAsync(AutoSaveRulesAsync);
             }
             catch (TaskCanceledException) {
@@ -464,6 +481,7 @@
             try {
                 await Task.Delay(TimeSpan.FromSeconds(2), token);
                 if (token.IsCancellationRequested) return;
+
                 await InvokeAsync(AutoSaveStoriesAsync);
             }
             catch (TaskCanceledException) {
@@ -661,4 +679,5 @@
         Paused,
         Error
     }
+
 }

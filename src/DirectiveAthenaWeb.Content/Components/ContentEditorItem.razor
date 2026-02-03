@@ -53,8 +53,8 @@
                                    Label="@EditorLocalizer[Editor.HiddenLabel]" Color="Color.Primary"/>
                     </MudItem>
 
-                    @if (AdditionalFields is not null) {
-                        @AdditionalFields
+                    @if (Fields is not null) {
+                        @Fields
                     }
 
                     @if (LocalizedFields is not null) {
@@ -63,7 +63,7 @@
                                 <MudDivider Class="my-4"/>
                                 <MudText Typo="Typo.subtitle1" Color="Color.Primary">@culture.DisplayName (@culture.Code)
                                 </MudText>
-                                @LocalizedFields(culture)
+                                @LocalizedFields((Content, culture))
                             </MudItem>
                         }
                     }
@@ -90,8 +90,8 @@
 
 @code {
     [Parameter, EditorRequired] public TContent Content { get; set; } = null!;
-    [Parameter] public RenderFragment<LocalizationInfo>? LocalizedFields { get; set; }
-    [Parameter] public RenderFragment? AdditionalFields { get; set; }
+    [Parameter, EditorRequired] public RenderFragment<(TContent, LocalizationInfo)>? LocalizedFields { get; set; }
+    [Parameter, EditorRequired] public RenderFragment? Fields { get; set; }
     [Parameter] public EventCallback OnContentChanged { get; set; }
 
     // -----------------------------------------------------------------------------------------------------------------
