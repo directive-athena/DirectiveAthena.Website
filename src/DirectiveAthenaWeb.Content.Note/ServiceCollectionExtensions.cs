@@ -1,10 +1,10 @@
-﻿// ---------------------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
 using DirectiveAthenaWeb.Content;
 using DirectiveAthenaWeb.Content.Note;
 using DirectiveAthenaWeb.DevServer.Pages;
-using DirectiveAthenaWeb.Services.Localization.Resources;
+using DirectiveAthenaWeb.Content.Note.Resources;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Localization;
 using MudBlazor;
@@ -21,8 +21,8 @@ public static class ServiceCollectionExtensions {
 
             services.AddContentStorage<NoteContent>("note");
             
-            ContentEditorProvider.RegisterAtContentEditor<NoteContentEditor, IStringLocalizer<Shared>>(
-                localizer => localizer[Shared.ContentManagerTabStory],
+            ContentEditorProvider.RegisterAtContentEditor<NoteContentEditor, IStringLocalizer<Note>>(
+                localizer => localizer[Note.ContentManagerTabWritings],
                 Icons.Material.Filled.Article
             );
             

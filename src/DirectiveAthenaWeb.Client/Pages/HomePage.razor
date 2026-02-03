@@ -1,9 +1,9 @@
-﻿@* ------------------------------------------------------------------------------------------------------------------ *@
+@* ------------------------------------------------------------------------------------------------------------------ *@
 @* Imports
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @using DirectiveAthenaWeb.Content.Faq.Components
 @using Microsoft.Extensions.Localization
-@using DirectiveAthenaWeb.Services.Localization.Resources
+@using DirectiveAthenaWeb.Client.Resources
 
 @namespace DirectiveAthenaWeb.Client.Pages
 @* ------------------------------------------------------------------------------------------------------------------ *@
@@ -11,11 +11,11 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @page "/"
 
-@inject IStringLocalizer<Shared> Localizer
+@inject IStringLocalizer<Client> Localizer
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Html
 @* ------------------------------------------------------------------------------------------------------------------ *@
-<PageTitle>@Localizer[Shared.HomeTitle]</PageTitle>
+<PageTitle>@Localizer[Client.HomeTitle]</PageTitle>
 
 <MudStack Spacing="20">
     <Hero/>

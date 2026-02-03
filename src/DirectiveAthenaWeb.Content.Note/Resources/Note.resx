@@ -1,6 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
 <root>
-    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-                xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
         <xsd:import namespace="http://www.w3.org/XML/1998/namespace"/>
         <xsd:element name="root" msdata:IsDataSet="true">
             <xsd:complexType>
@@ -61,8 +61,29 @@
         <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral,
             PublicKeyToken=b77a5c561934e089
         </value>
-    </resheader>
-    <data name="Tag.Thankyou" xml:space="preserve">
-        <value>Thank you</value>
+    </resheader>    <data name="ContentManagerTabWritings" xml:space="preserve">
+        <value>Writings</value>
+    </data>
+    <data name="HomeWritingsLatestLabel" xml:space="preserve">
+        <value>Latest Writing</value>
+    </data>
+    <data name="HomeWritingsReadFull" xml:space="preserve">
+        <value>Read Full Post</value>
+    </data>
+    <data name="HomeWritingsReadMore" xml:space="preserve">
+        <value>Read More</value>
+    </data>
+    <data name="HomeWritingsSubtitle" xml:space="preserve">
+        <value>Recent dispatches from the frontier.</value>
+    </data>
+    <data name="HomeWritingsTitle" xml:space="preserve">
+        <value>Latest Intel</value>
+    </data>
+    <data name="HomeWritingsViewAll" xml:space="preserve">
+        <value>View All Writings</value>
+    </data>
+    <data name="HomeWritingsViewArchive" xml:space="preserve">
+        <value>View Archive</value>
     </data>
 </root>
+

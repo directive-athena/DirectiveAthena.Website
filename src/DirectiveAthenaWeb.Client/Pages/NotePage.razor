@@ -2,7 +2,8 @@
 @* Imports
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @using DirectiveAthenaWeb.Content.Note
-@using DirectiveAthenaWeb.Services.Localization.Resources
+@using DirectiveAthenaWeb.Client.Resources
+@using DirectiveAthenaWeb.Content.Resources
 @using InfiniBlazor.Markdown
 @using Microsoft.Extensions.Localization
 @using System.Text.RegularExpressions
@@ -18,18 +19,18 @@
 @inject HttpClient HttpClient
 @inject NavigationManager NavigationManager
 @inject IDirectiveAthenaWebJs WebJs
-@inject IStringLocalizer<Shared> LocalizerShared
+@inject IStringLocalizer<Client> LocalizerShared
 @inject IStringLocalizer<Tags> LocalizerTags
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Html
 @* ------------------------------------------------------------------------------------------------------------------ *@
-<PageTitle>@LocalizerShared[Shared.WritingsTitle]</PageTitle>
+<PageTitle>@LocalizerShared[Client.WritingsTitle]</PageTitle>
 
 <div class="min-vh-100 py-32">
     <MudContainer MaxWidth="MaxWidth.Large">
         @* Detail View *@
         <MudButton StartIcon="@Icons.Material.Filled.ArrowBack" Color="Color.Secondary" OnClick="@BackToList"
-                   Class="mb-12">@LocalizerShared[Shared.WritingsDetailBack]
+                   Class="mb-12">@LocalizerShared[Client.WritingsDetailBack]
         </MudButton>
 
         @if (_loading) {
@@ -39,7 +40,7 @@
         }
         else if (_error || _currentPost is null) {
             <MudAlert Severity="Severity.Error" Variant="Variant.Filled"
-                      Class="card-glass">@LocalizerShared[Shared.WritingsDetailError]
+                      Class="card-glass">@LocalizerShared[Client.WritingsDetailError]
             </MudAlert>
         }
         else {
@@ -49,33 +50,33 @@
                              Style="letter-spacing: 0.2em; text-transform: uppercase;">@FormatDate(_currentPost.CreatedAt)</MudText>
                     @if (HasDate(_currentPost.LastModifiedAt)) {
                         <MudText Typo="Typo.caption" Class="opacity-60">
-                            @LocalizerShared[Shared.FaqUpdated, FormatDate(_currentPost.LastModifiedAt)]
+                            @LocalizerShared[Client.FaqUpdated, FormatDate(_currentPost.LastModifiedAt)]
                         </MudText>
                     }
                     <MudText Typo="Typo.caption" Class="opacity-60">
-                        @LocalizerShared[Shared.WritingsDetailReadTime, _readTimeMinutes]
+                        @LocalizerShared[Client.WritingsDetailReadTime, _readTimeMinutes]
                     </MudText>
                     <MudButton Variant="Variant.Text" Color="Color.Secondary" Size="Size.Small"
                                StartIcon="@(_isLinkCopied ? Icons.Material.Filled.Check : Icons.Material.Filled.ContentCopy)"
                                OnClick="@CopyLinkAsync" Disabled="@_isCopyInProgress"
                                Class="pa-0">
                         @(_isLinkCopied
-                            ? LocalizerShared[Shared.WritingsDetailLinkCopied]
-                            : LocalizerShared[Shared.WritingsDetailCopyLink])
+                            ? LocalizerShared[Client.WritingsDetailLinkCopied]
+                            : LocalizerShared[Client.WritingsDetailCopyLink])
                     </MudButton>
                     <MudSpacer/>
                     <div class="d-flex align-center gap-2">
                         <MudText Typo="Typo.caption"
-                                 Class="opacity-60">@LocalizerShared[Shared.WritingsDetailShareLabel]</MudText>
-                        <MudTooltip Text="@LocalizerShared[Shared.WritingsDetailShareTwitter]">
+                                 Class="opacity-60">@LocalizerShared[Client.WritingsDetailShareLabel]</MudText>
+                        <MudTooltip Text="@LocalizerShared[Client.WritingsDetailShareTwitter]">
                             <MudIconButton Icon="@Icons.Custom.Brands.X" Color="Color.Secondary" Size="Size.Small"
                                            Href="@_shareTwitterUrl" Target="_blank"/>
                         </MudTooltip>
-                        <MudTooltip Text="@LocalizerShared[Shared.WritingsDetailShareBluesky]">
+                        <MudTooltip Text="@LocalizerShared[Client.WritingsDetailShareBluesky]">
                             <MudIconButton Icon="@CustomIcons.Bluesky" Color="Color.Secondary" Size="Size.Small"
                                            Href="@_shareBlueskyUrl" Target="_blank"/>
                         </MudTooltip>
-                        <MudTooltip Text="@LocalizerShared[Shared.WritingsDetailShareReddit]">
+                        <MudTooltip Text="@LocalizerShared[Client.WritingsDetailShareReddit]">
                             <MudIconButton Icon="@Icons.Custom.Brands.Reddit" Color="Color.Secondary" Size="Size.Small"
                                            Href="@_shareRedditUrl" Target="_blank"/>
                         </MudTooltip>
@@ -97,7 +98,7 @@
             <MudDivider Class="my-16 opacity-10"/>
             <div class="d-flex justify-center">
                 <MudButton Variant="Variant.Outlined" Color="Color.Secondary"
-                           OnClick="@BackToList">@LocalizerShared[Shared.WritingsDetailBackBottom]
+                           OnClick="@BackToList">@LocalizerShared[Client.WritingsDetailBackBottom]
                 </MudButton>
             </div>
         }
@@ -167,7 +168,8 @@
         string title = NoteManager.GetLocalizedTitle(_currentPost);
         string encodedTitle = Uri.EscapeDataString(title);
         string encodedUrl = Uri.EscapeDataString(NavigationManager.Uri);
-        string blueskyText = Uri.EscapeDataString($"{title}\n{NavigationManager.Uri}");
+        string blueskyText = Uri.EscapeDataString($"{title}
+{NavigationManager.Uri}");
 
         _shareTwitterUrl = $"https://twitter.com/intent/tweet?text={encodedTitle}&url={encodedUrl}";
         _shareBlueskyUrl = $"https://bsky.app/intent/compose?text={blueskyText}";

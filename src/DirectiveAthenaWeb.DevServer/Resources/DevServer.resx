@@ -24,4 +24,7 @@
     <data name="EditorHeader" xml:space="preserve">
         <value>Content Manager</value>
     </data>
+    <data name="ContentManagerTitle" xml:space="preserve">
+        <value>Content Manager - Directive Athena</value>
+    </data>
 </root>

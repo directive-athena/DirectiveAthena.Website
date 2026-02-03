@@ -3,7 +3,7 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @using DirectiveAthenaWeb.Services.ContentStorage
 @using DirectiveAthenaWeb.Services.Localization
-@using DirectiveAthenaWeb.Services.Localization.Resources
+@using DirectiveAthenaWeb.Components.Resources
 @using Microsoft.Extensions.Localization
 
 @namespace DirectiveAthenaWeb.Components
@@ -12,7 +12,7 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @inject IDirectiveAthenaWebJs WebJs
 @inject ISnackbar Snackbar
-@inject IStringLocalizer<Shared> Localizer
+@inject IStringLocalizer<Components> Localizer
 
 @inherits WebsiteComponentBase
 @* ------------------------------------------------------------------------------------------------------------------ *@
@@ -22,7 +22,7 @@
     <div class="d-flex justify-space-between align-center mb-4">
         <MudText Typo="Typo.h6">@TitleText</MudText>
         <div class="d-flex gap-2">
-            <MudSelect T="string" Label="@Localizer[Shared.MarkdownEditorLocale]" Value="@_selectedLocale"
+            <MudSelect T="string" Label="@Localizer[Components.MarkdownEditorLocale]" Value="@_selectedLocale"
                        ValueChanged="@OnLocaleChanged" Class="width-100">
                 @foreach (LocalizationInfo culture in LocalizationProvider.GetSupportedLocalizations()) {
                     <MudSelectItem Value="@culture.Code">@culture.DisplayName</MudSelectItem>
@@ -32,33 +32,33 @@
     </div>
 
     @if (string.IsNullOrWhiteSpace(FileName) || LoadContentAsync is null || BuildDefaultContent is null || Storage is null) {
-        <MudAlert Severity="Severity.Info">@Localizer[Shared.MarkdownEditorSelectItem]</MudAlert>
+        <MudAlert Severity="Severity.Info">@Localizer[Components.MarkdownEditorSelectItem]</MudAlert>
     }
     else {
         <MudText Typo="Typo.subtitle1" Class="mb-2">
-            @Localizer[Shared.MarkdownEditorEditing, _selectedLocale, FileName]
+            @Localizer[Components.MarkdownEditorEditing, _selectedLocale, FileName]
         </MudText>
 
         <MudTextField T="string" Value="@_content" ValueChanged="@OnContentChanged" Immediate="true"
-                      Label="@Localizer[Shared.MarkdownEditorContent]"
+                      Label="@Localizer[Components.MarkdownEditorContent]"
                       Lines="16" Variant="Variant.Outlined" Class="mb-4"/>
 
         <div class="d-flex gap-4">
             <MudButton Variant="Variant.Filled" Color="Color.Success" OnClick="@SaveMarkdown"
                        StartIcon="@Icons.Material.Filled.Save">
-                @Localizer[Shared.MarkdownEditorSave]
+                @Localizer[Components.MarkdownEditorSave]
             </MudButton>
             <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="@DownloadMarkdown"
                        StartIcon="@Icons.Material.Filled.Download">
-                @Localizer[Shared.MarkdownEditorDownload]
+                @Localizer[Components.MarkdownEditorDownload]
             </MudButton>
             <MudButton Variant="Variant.Outlined" Color="Color.Info" OnClick="@CopyToClipboard"
                        StartIcon="@Icons.Material.Filled.ContentCopy">
-                @Localizer[Shared.MarkdownEditorCopy]
+                @Localizer[Components.MarkdownEditorCopy]
             </MudButton>
             <MudButton Variant="Variant.Text" Color="Color.Default" OnClick="@LoadContent"
                        StartIcon="@Icons.Material.Filled.Refresh">
-                @Localizer[Shared.MarkdownEditorReload]
+                @Localizer[Components.MarkdownEditorReload]
             </MudButton>
         </div>
     }
@@ -83,7 +83,7 @@
     private CancellationTokenSource? _autoSaveCts;
     private bool _isLoadingContent;
     private string TitleText => string.IsNullOrWhiteSpace(Title)
-        ? Localizer[Shared.MarkdownEditorTitle]
+        ? Localizer[Components.MarkdownEditorTitle]
         : Title;
 
     protected override async Task OnParametersSetAsync() {
@@ -185,17 +185,17 @@
         bool success = await Storage.WriteFileAsync(path, _content);
         if (!showFeedback) {
             if (!success) {
-                Snackbar.Add(Localizer[Shared.MarkdownEditorSaveFailed], Severity.Error);
+                Snackbar.Add(Localizer[Components.MarkdownEditorSaveFailed], Severity.Error);
             }
 
             return success;
         }
 
         if (success) {
-            Snackbar.Add(Localizer[Shared.MarkdownEditorSaveSuccess, _selectedLocale, FileName], Severity.Success);
+            Snackbar.Add(Localizer[Components.MarkdownEditorSaveSuccess, _selectedLocale, FileName], Severity.Success);
         }
         else {
-            Snackbar.Add(Localizer[Shared.MarkdownEditorSaveFailed], Severity.Error);
+            Snackbar.Add(Localizer[Components.MarkdownEditorSaveFailed], Severity.Error);
         }
 
         return success;

@@ -1,131 +1,197 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-
 <root>
-    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-                xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+        <xsd:import namespace="http://www.w3.org/XML/1998/namespace"/>
         <xsd:element name="root" msdata:IsDataSet="true">
-
+            <xsd:complexType>
+                <xsd:choice maxOccurs="unbounded">
+                    <xsd:element name="metadata">
+                        <xsd:complexType>
+                            <xsd:sequence>
+                                <xsd:element name="value" type="xsd:string" minOccurs="0"/>
+                            </xsd:sequence>
+                            <xsd:attribute name="name" use="required" type="xsd:string"/>
+                            <xsd:attribute name="type" type="xsd:string"/>
+                            <xsd:attribute name="mimetype" type="xsd:string"/>
+                            <xsd:attribute ref="xml:space"/>
+                        </xsd:complexType>
+                    </xsd:element>
+                    <xsd:element name="assembly">
+                        <xsd:complexType>
+                            <xsd:attribute name="alias" type="xsd:string"/>
+                            <xsd:attribute name="name" type="xsd:string"/>
+                        </xsd:complexType>
+                    </xsd:element>
+                    <xsd:element name="data">
+                        <xsd:complexType>
+                            <xsd:sequence>
+                                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1"/>
+                                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2"/>
+                            </xsd:sequence>
+                            <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1"/>
+                            <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3"/>
+                            <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4"/>
+                            <xsd:attribute ref="xml:space"/>
+                        </xsd:complexType>
+                    </xsd:element>
+                    <xsd:element name="resheader">
+                        <xsd:complexType>
+                            <xsd:sequence>
+                                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1"/>
+                            </xsd:sequence>
+                            <xsd:attribute name="name" type="xsd:string" use="required"/>
+                        </xsd:complexType>
+                    </xsd:element>
+                </xsd:choice>
+            </xsd:complexType>
         </xsd:element>
     </xsd:schema>
     <resheader name="resmimetype">
         <value>text/microsoft-resx</value>
     </resheader>
     <resheader name="version">
-        <value>1.3</value>
+        <value>2.0</value>
     </resheader>
     <resheader name="reader">
-        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral,
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral,
             PublicKeyToken=b77a5c561934e089
         </value>
     </resheader>
     <resheader name="writer">
-        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral,
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral,
             PublicKeyToken=b77a5c561934e089
         </value>
-    </resheader>
-    <data name="EditItem" xml:space="preserve">
-        <value>Edit Item: {0}</value>
+    </resheader>    <data name="AddTag" xml:space="preserve">
+        <value>Add Tag ID</value>
     </data>
-    <data name="UniqueId" xml:space="preserve">
-    <value>Unique ID</value>
-  </data>
-    <data name="IdHelperItem" xml:space="preserve">
-    <value>GUID is generated automatically for new items.</value>
-  </data>
+    <data name="ContentManagerActions" xml:space="preserve">
+        <value>Actions</value>
+    </data>
+    <data name="ContentManagerDownloadIndex" xml:space="preserve">
+        <value>Download index.json</value>
+    </data>
+    <data name="ContentManagerIndexSaved" xml:space="preserve">
+        <value>index.json saved to R2!</value>
+    </data>
+    <data name="ContentManagerIndexSaveFailed" xml:space="preserve">
+        <value>Failed to save index.json.</value>
+    </data>
+    <data name="ContentManagerSaveIndex" xml:space="preserve">
+        <value>Save index.json</value>
+    </data>
     <data name="CreatedAtLabel" xml:space="preserve">
-    <value>Created (UTC)</value>
-  </data>
-    <data name="LastModifiedAtLabel" xml:space="preserve">
-    <value>Last Modified (UTC)</value>
-  </data>
-    <data name="HiddenLabel" xml:space="preserve">
-    <value>Hidden (Exclude from lists)</value>
-  </data>
-    <data name="MarkdownFileLabel" xml:space="preserve">
-    <value>Markdown Filename (e.g. {0})</value>
-  </data>
-    <data name="MarkdownFileHelper" xml:space="preserve">
-    <value>Filename matches GUID and cannot be changed.</value>
-  </data>
-    <data name="TagsTitle" xml:space="preserve">
-    <value>Tags</value>
-  </data>
-    <data name="AddTag" xml:space="preserve">
-    <value>Add Tag ID</value>
-  </data>
-    <data name="TagsHint" xml:space="preserve">
-    <value>Ensure Tag ID exists in the Tags tab.</value>
-  </data>
-    <data name="MarkdownLabel" xml:space="preserve">
-    <value>Markdown</value>
-  </data>
-    <data name="MarkdownFileButtonDownload" xml:space="preserve">
-    <value>Download file</value>
-  </data>
-    <data name="MarkdownFileButtonSave" xml:space="preserve">
-    <value>Save file</value>
-  </data>
-    <data name="SaveItemButton" xml:space="preserve">
-        <value>Save</value>
+        <value>Created (UTC)</value>
     </data>
     <data name="DeleteItemButton" xml:space="preserve">
         <value>Delete</value>
     </data>
     <data name="DeleteItemHardConfirm" xml:space="preserve">
-    <value>Permanently delete this item and its files?</value>
-  </data>
-    <data name="DeleteItemSoftConfirm" xml:space="preserve">
-    <value>Soft delete this item? It will be hidden from visitors but still visible in the manager.</value>
-  </data>
-    <data name="DeleteItemSoftSuccess" xml:space="preserve">
-    <value>Item soft deleted.</value>
-  </data>
-    <data name="DeleteItemSoftFailed" xml:space="preserve">
-    <value>Failed to soft delete the item.</value>
-  </data>
-    <data name="DeleteItemHardSuccess" xml:space="preserve">
-    <value>Item permanently deleted.</value>
-  </data>
+        <value>Permanently delete this item and its files?</value>
+    </data>
     <data name="DeleteItemHardFailed" xml:space="preserve">
-    <value>Item removed from the list, but the hard delete failed or was kept as soft deleted.</value>
-  </data>
-    <data name="SaveItemSuccess" xml:space="preserve">
-        <value>Item has been saved</value>
+        <value>Item removed from the list, but the hard delete failed or was kept as soft deleted.</value>
     </data>
-    <data name="SaveItemFailed" xml:space="preserve">
-        <value>Item could not be saved to R2</value>
+    <data name="DeleteItemHardSuccess" xml:space="preserve">
+        <value>Item permanently deleted.</value>
     </data>
-    <data name="MarkdownFileLabelContent" xml:space="preserve">
-        <value>Markdown Content</value>
+    <data name="DeleteItemSoftConfirm" xml:space="preserve">
+        <value>Soft delete this item? It will be hidden from visitors but still visible in the manager.</value>
+    </data>
+    <data name="DeleteItemSoftFailed" xml:space="preserve">
+        <value>Failed to soft delete the item.</value>
+    </data>
+    <data name="DeleteItemSoftSuccess" xml:space="preserve">
+        <value>Item soft deleted.</value>
+    </data>
+    <data name="EditItem" xml:space="preserve">
+        <value>Edit Item: {0}</value>
+    </data>
+    <data name="HiddenLabel" xml:space="preserve">
+        <value>Hidden (Exclude from lists)</value>
+    </data>
+    <data name="IdHelperItem" xml:space="preserve">
+        <value>GUID is generated automatically for new items.</value>
+    </data>
+    <data name="LastModifiedAtLabel" xml:space="preserve">
+        <value>Last Modified (UTC)</value>
+    </data>
+    <data name="ListDeleted" xml:space="preserve">
+        <value>Deleted</value>
+    </data>
+    <data name="ListHidden" xml:space="preserve">
+        <value>Hidden</value>
+    </data>
+    <data name="MarkdownFileButtonDownload" xml:space="preserve">
+        <value>Download file</value>
     </data>
     <data name="MarkdownFileButtonReload" xml:space="preserve">
         <value>Reload File</value>
     </data>
-    <data name="MarkdownFileLabelSelectedFile" xml:space="preserve">
-        <value>File : {0}/{1}</value>
+    <data name="MarkdownFileButtonSave" xml:space="preserve">
+        <value>Save file</value>
+    </data>
+    <data name="MarkdownFileHelper" xml:space="preserve">
+        <value>Filename matches GUID and cannot be changed.</value>
+    </data>
+    <data name="MarkdownFileLabel" xml:space="preserve">
+        <value>Markdown Filename (e.g. {0})</value>
+    </data>
+    <data name="MarkdownFileLabelContent" xml:space="preserve">
+        <value>Markdown Content</value>
     </data>
     <data name="MarkdownFileLabelLocale" xml:space="preserve">
         <value>Locale</value>
     </data>
-    <data name="ContentManager.Actions" xml:space="preserve">
+    <data name="MarkdownFileLabelSelectedFile" xml:space="preserve">
+        <value>File : {0}/{1}</value>
+    </data>
+    <data name="SaveItemButton" xml:space="preserve">
+        <value>Save</value>
+    </data>
+    <data name="SaveItemFailed" xml:space="preserve">
+        <value>Item could not be saved to R2</value>
+    </data>
+    <data name="SaveItemSuccess" xml:space="preserve">
+        <value>Item has been saved</value>
+    </data>
+    <data name="TagsHint" xml:space="preserve">
+        <value>Ensure Tag ID exists in the Tags tab.</value>
+    </data>
+    <data name="TagsManagerActions" xml:space="preserve">
         <value>Actions</value>
     </data>
-    <data name="ContentManager.SaveIndex" xml:space="preserve">
-        <value>Save index.json</value>
+    <data name="TagsManagerAddTag" xml:space="preserve">
+        <value>Add Tag</value>
     </data>
-    <data name="ContentManager.DownloadIndex" xml:space="preserve">
-        <value>Download index.json</value>
+    <data name="TagsManagerDownloadResx" xml:space="preserve">
+        <value>Download Resx ({0})</value>
     </data>
-    <data name="ContentManager.IndexSaved" xml:space="preserve">
-        <value>index.json saved to R2!</value>
+    <data name="TagsManagerFsRequired" xml:space="preserve">
+        <value>Filesystem access required.</value>
     </data>
-    <data name="ContentManager.IndexSaveFailed" xml:space="preserve">
-        <value>Failed to save index.json.</value>
+    <data name="TagsManagerInUse" xml:space="preserve">
+        <value>Tags currently in use: {0}</value>
     </data>
-    <data name="List.Deleted" xml:space="preserve">
-        <value>Deleted</value>
+    <data name="TagsManagerSaveFailed" xml:space="preserve">
+        <value>Failed to save RESX file.</value>
     </data>
-    <data name="List.Hidden" xml:space="preserve">
-        <value>Hidden</value>
+    <data name="TagsManagerSaveResx" xml:space="preserve">
+        <value>Save Resx ({0})</value>
+    </data>
+    <data name="TagsManagerSaveSuccess" xml:space="preserve">
+        <value>Saved {0} to disk!</value>
+    </data>
+    <data name="TagsManagerTagId" xml:space="preserve">
+        <value>Tag ID</value>
+    </data>
+    <data name="TagsManagerTitle" xml:space="preserve">
+        <value>Tags Management</value>
+    </data>
+    <data name="TagsTitle" xml:space="preserve">
+        <value>Tags</value>
+    </data>
+    <data name="UniqueId" xml:space="preserve">
+        <value>Unique ID</value>
     </data>
 </root>
+

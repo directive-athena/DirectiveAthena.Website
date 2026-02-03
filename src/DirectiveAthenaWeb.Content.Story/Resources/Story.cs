@@ -1,13 +1,12 @@
-﻿// ---------------------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
-namespace DirectiveAthenaWeb.DevServer.Resources;
+namespace DirectiveAthenaWeb.Content.Story.Resources;
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
-public class DevServer {
-    public const string ContentManagerTitle = "ContentManagerTitle";
-    public const string EditorTabTags = "EditorTabTags";
-    public const string EditorHeader = "EditorHeader";
+public class Story {
+    public const string ContentManagerTabStory = "ContentManagerTabStory";
 }
+

@@ -1,11 +1,16 @@
 // ---------------------------------------------------------------------------------------------------------------------
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
-namespace DirectiveAthenaWeb.Services.Localization.Resources;
+namespace DirectiveAthenaWeb.Content.Faq.Resources;
+
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
-/// <summary>
-/// Marker type for tags localization resources, e.g., injected via IStringLocalizer.
-/// </summary>
-public class Tags;
+public class Faq {
+    public const string ContentManagerTabFaq = "ContentManagerTabFaq";
+    public const string HomeFaqEmpty = "HomeFaqEmpty";
+    public const string HomeFaqSubtitle = "HomeFaqSubtitle";
+    public const string HomeFaqTitle = "HomeFaqTitle";
+    public const string HomeFaqViewAll = "HomeFaqViewAll";
+}
+

@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+        <xsd:import namespace="http://www.w3.org/XML/1998/namespace"/>
+        <xsd:element name="root" msdata:IsDataSet="true">
+            <xsd:complexType>
+                <xsd:choice maxOccurs="unbounded">
+                    <xsd:element name="metadata">
+                        <xsd:complexType>
+                            <xsd:sequence>
+                                <xsd:element name="value" type="xsd:string" minOccurs="0"/>
+                            </xsd:sequence>
+                            <xsd:attribute name="name" use="required" type="xsd:string"/>
+                            <xsd:attribute name="type" type="xsd:string"/>
+                            <xsd:attribute name="mimetype" type="xsd:string"/>
+                            <xsd:attribute ref="xml:space"/>
+                        </xsd:complexType>
+                    </xsd:element>
+                    <xsd:element name="assembly">
+                        <xsd:complexType>
+                            <xsd:attribute name="alias" type="xsd:string"/>
+                            <xsd:attribute name="name" type="xsd:string"/>
+                        </xsd:complexType>
+                    </xsd:element>
+                    <xsd:element name="data">
+                        <xsd:complexType>
+                            <xsd:sequence>
+                                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1"/>
+                                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2"/>
+                            </xsd:sequence>
+                            <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1"/>
+                            <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3"/>
+                            <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4"/>
+                            <xsd:attribute ref="xml:space"/>
+                        </xsd:complexType>
+                    </xsd:element>
+                    <xsd:element name="resheader">
+                        <xsd:complexType>
+                            <xsd:sequence>
+                                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1"/>
+                            </xsd:sequence>
+                            <xsd:attribute name="name" type="xsd:string" use="required"/>
+                        </xsd:complexType>
+                    </xsd:element>
+                </xsd:choice>
+            </xsd:complexType>
+        </xsd:element>
+    </xsd:schema>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>2.0</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral,
+            PublicKeyToken=b77a5c561934e089
+        </value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral,
+            PublicKeyToken=b77a5c561934e089
+        </value>
+    </resheader>    <data name="ContactHeading" xml:space="preserve">
+        <value>Contact</value>
+    </data>
+    <data name="ContactReturn" xml:space="preserve">
+        <value>Return to Headquarters</value>
+    </data>
+    <data name="ContactSubtitle" xml:space="preserve">
+        <value>Reach out to us through our official channels or follow our progress on social media.</value>
+    </data>
+    <data name="ContactTitle" xml:space="preserve">
+        <value>Contact - Directive Athena</value>
+    </data>
+    <data name="FaqAll" xml:space="preserve">
+        <value>All FAQs</value>
+    </data>
+    <data name="FaqEmpty" xml:space="preserve">
+        <value>No FAQs published yet. Add your first entry to begin shaping the canon.</value>
+    </data>
+    <data name="FaqHeading" xml:space="preserve">
+        <value>World FAQ</value>
+    </data>
+    <data name="FaqSubtitle" xml:space="preserve">
+        <value>Quick answers, boundaries, and canon anchors for the setting.</value>
+    </data>
+    <data name="FaqTitle" xml:space="preserve">
+        <value>World FAQ - Directive Athena</value>
+    </data>
+    <data name="FaqUpdated" xml:space="preserve">
+        <value>Updated {0}</value>
+    </data>
+    <data name="HomeTitle" xml:space="preserve">
+        <value>Directive Athena</value>
+    </data>
+    <data name="StoryAll" xml:space="preserve">
+        <value>All Stories</value>
+    </data>
+    <data name="StoryChapters" xml:space="preserve">
+        <value>{0} chapters</value>
+    </data>
+    <data name="StoryDetailBack" xml:space="preserve">
+        <value>Back to Stories</value>
+    </data>
+    <data name="StoryDetailBackBottom" xml:space="preserve">
+        <value>Back to all stories</value>
+    </data>
+    <data name="StoryDetailChapters" xml:space="preserve">
+        <value>Chapters</value>
+    </data>
+    <data name="StoryDetailError" xml:space="preserve">
+        <value>Unable to load the content of this story.</value>
+    </data>
+    <data name="StoryEmpty" xml:space="preserve">
+        <value>No story entries published yet.</value>
+    </data>
+    <data name="StoryHeading" xml:space="preserve">
+        <value>Stories</value>
+    </data>
+    <data name="StoryRead" xml:space="preserve">
+        <value>Read Story</value>
+    </data>
+    <data name="StorySubtitle" xml:space="preserve">
+        <value>Explore the narrative arcs and chapter notes.</value>
+    </data>
+    <data name="StoryTitle" xml:space="preserve">
+        <value>Story - Directive Athena</value>
+    </data>
+    <data name="WritingsArchiveAllPosts" xml:space="preserve">
+        <value>All Posts</value>
+    </data>
+    <data name="WritingsArchiveReadWriting" xml:space="preserve">
+        <value>Read Writing</value>
+    </data>
+    <data name="WritingsArchiveSubtitle" xml:space="preserve">
+        <value>A collection of all the notes and snippets that have so far been published. Stay tuned for more.</value>
+    </data>
+    <data name="WritingsArchiveTitle" xml:space="preserve">
+        <value>Archive</value>
+    </data>
+    <data name="WritingsDetailBack" xml:space="preserve">
+        <value>Back to Archive</value>
+    </data>
+    <data name="WritingsDetailBackBottom" xml:space="preserve">
+        <value>Back to all notes</value>
+    </data>
+    <data name="WritingsDetailCopyLink" xml:space="preserve">
+        <value>Copy link</value>
+    </data>
+    <data name="WritingsDetailError" xml:space="preserve">
+        <value>Unable to load the content of this post.</value>
+    </data>
+    <data name="WritingsDetailLinkCopied" xml:space="preserve">
+        <value>Link copied</value>
+    </data>
+    <data name="WritingsDetailReadTime" xml:space="preserve">
+        <value>{0} min read</value>
+    </data>
+    <data name="WritingsDetailShareBluesky" xml:space="preserve">
+        <value>Bluesky</value>
+    </data>
+    <data name="WritingsDetailShareLabel" xml:space="preserve">
+        <value>Share</value>
+    </data>
+    <data name="WritingsDetailShareReddit" xml:space="preserve">
+        <value>Reddit</value>
+    </data>
+    <data name="WritingsDetailShareTwitter" xml:space="preserve">
+        <value>Twitter</value>
+    </data>
+    <data name="WritingsTitle" xml:space="preserve">
+        <value>Writings - Directive Athena</value>
+    </data>
+</root>
+

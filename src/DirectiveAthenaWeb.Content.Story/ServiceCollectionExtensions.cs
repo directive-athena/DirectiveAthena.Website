@@ -1,10 +1,10 @@
-﻿// ---------------------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
 using DirectiveAthenaWeb.Content;
 using DirectiveAthenaWeb.Content.Story;
 using DirectiveAthenaWeb.DevServer.Pages;
-using DirectiveAthenaWeb.Services.Localization.Resources;
+using DirectiveAthenaWeb.Content.Story.Resources;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Localization;
 using MudBlazor;
@@ -21,8 +21,8 @@ public static class ServiceCollectionExtensions {
 
             services.AddContentStorage<StoryContent>("story");
             
-            ContentEditorProvider.RegisterAtContentEditor<StoryContentEditor, IStringLocalizer<Shared>>(
-                localizer => localizer[Shared.ContentManagerTabStory],
+            ContentEditorProvider.RegisterAtContentEditor<StoryContentEditor, IStringLocalizer<Story>>(
+                localizer => localizer[Story.ContentManagerTabStory],
                 Icons.Material.Filled.AutoStories
             );
 

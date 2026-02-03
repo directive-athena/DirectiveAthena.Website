@@ -4,7 +4,7 @@
 @using DirectiveAthenaWeb.Services.Contact
 @using DirectiveAthenaWeb.Services.Contact.Components
 @using Microsoft.Extensions.Localization
-@using DirectiveAthenaWeb.Services.Localization.Resources
+@using DirectiveAthenaWeb.Client.Resources
 
 @namespace DirectiveAthenaWeb.Client.Pages
 @* ------------------------------------------------------------------------------------------------------------------ *@
@@ -12,18 +12,18 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @page "/contact"
 
-@inject IStringLocalizer<Shared> Localizer
+@inject IStringLocalizer<Client> Localizer
 @inject IContactInfoProvider ContactInfoProvider
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Html
 @* ------------------------------------------------------------------------------------------------------------------ *@
-<PageTitle>@Localizer[Shared.ContactTitle]</PageTitle>
+<PageTitle>@Localizer[Client.ContactTitle]</PageTitle>
 
 <div class="min-vh-100 py-32 d-flex align-center">
     <MudContainer MaxWidth="MaxWidth.Small" Class="text-center">
-        <MudText Typo="Typo.h2" Class="mb-6">@Localizer[Shared.ContactHeading]</MudText>
+        <MudText Typo="Typo.h2" Class="mb-6">@Localizer[Client.ContactHeading]</MudText>
         <MudText Typo="Typo.body1" Class="text-secondary mb-12">
-            @Localizer[Shared.ContactSubtitle]
+            @Localizer[Client.ContactSubtitle]
         </MudText>
 
         <MudGrid Spacing="4">
@@ -36,7 +36,7 @@
 
         <div class="mt-16">
             <MudButton Variant="Variant.Text" Color="Color.Secondary" Href="/"
-                       StartIcon="@Icons.Material.Filled.ArrowBack">@Localizer[Shared.ContactReturn]
+                       StartIcon="@Icons.Material.Filled.ArrowBack">@Localizer[Client.ContactReturn]
             </MudButton>
         </div>
     </MudContainer>

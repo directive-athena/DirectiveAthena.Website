@@ -1,8 +1,9 @@
-﻿@* ------------------------------------------------------------------------------------------------------------------ *@
+@* ------------------------------------------------------------------------------------------------------------------ *@
 @* Imports
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @using DirectiveAthenaWeb.Content.Faq
-@using DirectiveAthenaWeb.Services.Localization.Resources
+@using DirectiveAthenaWeb.Content.Faq.Resources
+@using DirectiveAthenaWeb.Content.Resources
 @using Microsoft.Extensions.Localization
 
 @namespace DirectiveAthenaWeb.Content.Faq.Components
@@ -11,7 +12,7 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @inject IFaqContentRepository FaqRepository
 @inject IFaqContentManager FaqManager
-@inject IStringLocalizer<Shared> LocalizerShared
+@inject IStringLocalizer<Faq> LocalizerShared
 @inject IStringLocalizer<Tags> LocalizerTags
 @inject NavigationManager NavigationManager
 @* ------------------------------------------------------------------------------------------------------------------ *@
@@ -21,13 +22,13 @@
     <MudContainer MaxWidth="MaxWidth.Large">
         <div class="d-flex justify-space-between align-end mb-12">
             <div>
-                <MudText Typo="Typo.h2" Class="mb-4">@LocalizerShared[Shared.HomeFaqTitle]</MudText>
+                <MudText Typo="Typo.h2" Class="mb-4">@LocalizerShared[Faq.HomeFaqTitle]</MudText>
                 <MudText Typo="Typo.body1"
-                         Class="text-secondary opacity-70">@LocalizerShared[Shared.HomeFaqSubtitle]</MudText>
+                         Class="text-secondary opacity-70">@LocalizerShared[Faq.HomeFaqSubtitle]</MudText>
             </div>
             <MudButton Variant="Variant.Text" Color="Color.Secondary" Href="/faq"
                        EndIcon="@Icons.Material.Filled.ArrowForward"
-                       Class="d-none d-sm-flex">@LocalizerShared[Shared.HomeFaqViewAll]</MudButton>
+                       Class="d-none d-sm-flex">@LocalizerShared[Faq.HomeFaqViewAll]</MudButton>
         </div>
 
         @if (!_isLoaded) {
@@ -52,7 +53,7 @@
         else if (Faqs is not null) {
             if (!Faqs.Any()) {
                 <MudCard Class="card-glass pa-8 text-center border-dashed">
-                    <MudText Typo="Typo.h6" Class="opacity-50">@LocalizerShared[Shared.HomeFaqEmpty]</MudText>
+                    <MudText Typo="Typo.h6" Class="opacity-50">@LocalizerShared[Faq.HomeFaqEmpty]</MudText>
                 </MudCard>
             }
             else {
@@ -86,7 +87,7 @@
 
         <div class="d-flex justify-center mt-12 d-sm-none">
             <MudButton Variant="Variant.Outlined" Color="Color.Secondary"
-                       Href="/faq">@LocalizerShared[Shared.HomeFaqViewAll]</MudButton>
+                       Href="/faq">@LocalizerShared[Faq.HomeFaqViewAll]</MudButton>
         </div>
     </MudContainer>
 </section>

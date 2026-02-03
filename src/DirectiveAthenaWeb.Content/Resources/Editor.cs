@@ -1,4 +1,4 @@
-﻿// ---------------------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
 namespace DirectiveAthenaWeb.Content.Resources;
@@ -18,13 +18,23 @@ public class Editor {
     public const string TagsHint = "TagsHint";
     public const string SaveItemSuccess = "SaveItemSuccess";
     public const string SaveItemFailed = "SaveItemFailed";
-    public const string ContentManagerActions = "ContentManager.Actions";
-    public const string ContentManagerSaveIndex = "ContentManager.SaveIndex";
-    public const string ContentManagerDownloadIndex = "ContentManager.DownloadIndex";
-    public const string ContentManagerIndexSaved = "ContentManager.IndexSaved";
-    public const string ContentManagerIndexSaveFailed = "ContentManager.IndexSaveFailed";
-    public const string ListDeleted = "List.Deleted";
-    public const string ListHidden = "List.Hidden";
+    public const string ContentManagerActions = "ContentManagerActions";
+    public const string ContentManagerSaveIndex = "ContentManagerSaveIndex";
+    public const string ContentManagerDownloadIndex = "ContentManagerDownloadIndex";
+    public const string ContentManagerIndexSaved = "ContentManagerIndexSaved";
+    public const string ContentManagerIndexSaveFailed = "ContentManagerIndexSaveFailed";
+    public const string ListDeleted = "ListDeleted";
+    public const string ListHidden = "ListHidden";
+    public const string TagsManagerTitle = "TagsManagerTitle";
+    public const string TagsManagerTagId = "TagsManagerTagId";
+    public const string TagsManagerActions = "TagsManagerActions";
+    public const string TagsManagerAddTag = "TagsManagerAddTag";
+    public const string TagsManagerSaveResx = "TagsManagerSaveResx";
+    public const string TagsManagerDownloadResx = "TagsManagerDownloadResx";
+    public const string TagsManagerInUse = "TagsManagerInUse";
+    public const string TagsManagerFsRequired = "TagsManagerFsRequired";
+    public const string TagsManagerSaveSuccess = "TagsManagerSaveSuccess";
+    public const string TagsManagerSaveFailed = "TagsManagerSaveFailed";
 
     public const string MarkdownFileLabel = "MarkdownFileLabel";
     public const string MarkdownFileLabelLocale = "MarkdownFileLabelLocale";
@@ -34,7 +44,7 @@ public class Editor {
     public const string MarkdownFileButtonReload = "MarkdownFileButtonReload";
     public const string MarkdownFileLabelContent = "MarkdownFileLabelContent";
     public const string MarkdownFileLabelSelectedFile = "MarkdownFileLabelSelectedFile";
-    
+
     public const string DeleteItemHardConfirm = "DeleteItemHardConfirm";
     public const string DeleteItemSoftConfirm = "DeleteItemSoftConfirm";
     public const string DeleteItemSoftSuccess = "DeleteItemSoftSuccess";
