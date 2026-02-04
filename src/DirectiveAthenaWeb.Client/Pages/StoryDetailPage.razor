@@ -65,9 +65,9 @@
                 @if (_currentStory.Chapters.Count > 0) {
                     <MudText Typo="Typo.subtitle2" Class="mb-2">@LocalizerShared[Client.StoryDetailChapters]</MudText>
                     <div class="d-flex flex-wrap gap-2 mb-6">
-                        @foreach (string chapter in _currentStory.Chapters) {
+                        @foreach (StoryChapterContent chapter in _currentStory.Chapters) {
                             <MudChip T="string" Size="Size.Small" Color="Color.Primary"
-                                     Variant="Variant.Text">@chapter</MudChip>
+                                     Variant="Variant.Text">@chapter.Id</MudChip>
                         }
                     </div>
                 }
