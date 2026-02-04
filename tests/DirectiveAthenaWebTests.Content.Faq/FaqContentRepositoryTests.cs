@@ -3,7 +3,7 @@
 // ---------------------------------------------------------------------------------------------------------------------
 using DirectiveAthenaWeb.Content.Faq;
 using DirectiveAthenaWeb.Content.Faq.Services;
-using DirectiveAthenaWeb.Services.ContentStorage;
+using DirectiveAthenaWeb.Services.R2Storage;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
 using System.Net;

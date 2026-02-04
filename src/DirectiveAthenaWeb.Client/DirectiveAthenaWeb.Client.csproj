@@ -36,7 +36,7 @@
         <ProjectReference Include="..\DirectiveAthenaWeb.Content.Note\DirectiveAthenaWeb.Content.Note.csproj" />
         <ProjectReference Include="..\DirectiveAthenaWeb.Content.Story\DirectiveAthenaWeb.Content.Story.csproj" />
         <ProjectReference Include="..\DirectiveAthenaWeb.Services.Contact\DirectiveAthenaWeb.Services.Contact.csproj" />
-        <ProjectReference Include="..\DirectiveAthenaWeb.Services.Content\DirectiveAthenaWeb.Services.Content.csproj" />
+        <ProjectReference Include="..\DirectiveAthenaWeb.Services.R2Storage\DirectiveAthenaWeb.Services.R2Storage.csproj" />
         <ProjectReference Include="..\DirectiveAthenaWeb.Services.Js\DirectiveAthenaWeb.Services.Js.csproj"/>
         <ProjectReference Include="..\DirectiveAthenaWeb.Services\DirectiveAthenaWeb.Services.csproj"/>
         <ProjectReference Include="..\DirectiveAthenaWeb.Shared\DirectiveAthenaWeb.Shared.csproj"/>

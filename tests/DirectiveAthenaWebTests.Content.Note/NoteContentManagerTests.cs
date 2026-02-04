@@ -3,10 +3,11 @@
 // ---------------------------------------------------------------------------------------------------------------------
 using DirectiveAthenaWeb.Content.Note;
 using DirectiveAthenaWeb.Content.Note.Services;
-using DirectiveAthenaWeb.Services.ContentStorage;
 using DirectiveAthenaWeb.Services.Localization;
+using DirectiveAthenaWeb.Services.R2Storage;
 using NSubstitute;
 using DirectiveAthenaWebTests.Helpers;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace DirectiveAthenaWebTests.Content.Note;
 // ---------------------------------------------------------------------------------------------------------------------
@@ -21,10 +22,24 @@ public class NoteContentManagerTests {
     // }
 
     private static NoteContentManager CreateManager(
-        ILocalizationProvider localizationProvider
+        ILocalizationProvider localizationProvider,
+        IContentStorage? storage = null
     ) {
-        var manager = new NoteContentManager(localizationProvider, Substitute.For<IServiceProvider>());
-        return manager;
+        storage ??= Substitute.For<IContentStorage>();
+
+        var services = new ServiceCollection();
+        services.AddLogging();
+        services.AddSingleton(localizationProvider);
+
+        var factory = Substitute.For<IContentStorageFactory>();
+        factory.ForCategory(Arg.Any<string>()).Returns(storage);
+        factory.ForCategory<NoteContent>().Returns(storage);
+        services.AddSingleton(factory);
+
+        services.AddNoteContent();
+
+        ServiceProvider provider = services.BuildServiceProvider();
+        return new NoteContentManager(localizationProvider, provider);
     }
 
     // -----------------------------------------------------------------------------------------------------------------
@@ -66,7 +81,7 @@ public class NoteContentManagerTests {
         var storage = Substitute.For<IContentStorage>();
         storage.GetMarkdownContentPath(Arg.Any<string>(), Arg.Any<string>())
             .Returns(call => $"content/notes/{call.ArgAt<string>(0)}/{call.ArgAt<string>(1)}");
-        NoteContentManager manager = CreateManager(localizationProvider);
+        NoteContentManager manager = CreateManager(localizationProvider, storage);
 
         // Act
         string result = manager.GetLocalizedFilePath(article);
@@ -81,7 +96,7 @@ public class NoteContentManagerTests {
         var storage = Substitute.For<IContentStorage>();
         storage.ReadFileAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns(new ValueTask<string?>((string?)null));
-        NoteContentManager manager = CreateManager(TestLocalization.CreateLocalizationProvider());
+        NoteContentManager manager = CreateManager(TestLocalization.CreateLocalizationProvider(), storage);
         NoteContent article = ContentFaker.CreateNote(103);
 
         // Act
@@ -185,7 +200,7 @@ public class NoteContentManagerTests {
         // Arrange
         NoteContent article = ContentFaker.CreateNote(120);
         var storage = Substitute.For<IContentStorage>();
-        NoteContentManager manager = CreateManager(TestLocalization.CreateLocalizationProvider());
+        NoteContentManager manager = CreateManager(TestLocalization.CreateLocalizationProvider(), storage);
 
         // Act
         (Dictionary<string, string> Stubs, bool WroteAll) result = await manager.GenerateStubsAsync(article, writeToDisk: false);
@@ -206,7 +221,7 @@ public class NoteContentManagerTests {
         storage.GetMarkdownDiskPath(Arg.Any<string>(), Arg.Any<string>())
             .Returns(call => $"{call.ArgAt<string>(0)}/{call.ArgAt<string>(1)}");
 
-        NoteContentManager manager = CreateManager(TestLocalization.CreateLocalizationProvider());
+        NoteContentManager manager = CreateManager(TestLocalization.CreateLocalizationProvider(), storage);
 
         // Act
         (Dictionary<string, string> Stubs, bool WroteAll) result = await manager.GenerateStubsAsync(article, writeToDisk: true);

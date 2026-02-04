@@ -27,7 +27,7 @@
     </Folder>
     <Folder Name="/src/services/">
         <Project Path="src/DirectiveAthenaWeb.Services.Contact/DirectiveAthenaWeb.Services.Contact.csproj" />
-        <Project Path="src/DirectiveAthenaWeb.Services.Content/DirectiveAthenaWeb.Services.Content.csproj" />
+        <Project Path="src/DirectiveAthenaWeb.Services.R2Storage/DirectiveAthenaWeb.Services.R2Storage.csproj" />
         <Project Path="src/DirectiveAthenaWeb.Services.Js/DirectiveAthenaWeb.Services.Js.csproj" />
         <Project Path="src/DirectiveAthenaWeb.Services.Localization/DirectiveAthenaWeb.Services.Localization.csproj" />
         <Project Path="src/DirectiveAthenaWeb.Services/DirectiveAthenaWeb.Services.csproj" />

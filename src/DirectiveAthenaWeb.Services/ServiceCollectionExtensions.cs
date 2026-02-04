@@ -40,7 +40,7 @@ public static class ServiceCollectionExtensions {
 
             services.RegisterServicesFromDirectiveAthenaWebServices();
             services.RegisterServicesFromDirectiveAthenaWebServicesContact();
-            services.RegisterServicesFromDirectiveAthenaWebServicesContent();
+            services.RegisterServicesFromDirectiveAthenaWebServicesR2Storage();
             services.RegisterServicesFromDirectiveAthenaWebServicesJs();
             services.RegisterServicesFromDirectiveAthenaWebServicesLocalization();
 

@@ -1,12 +1,10 @@
 ﻿// ---------------------------------------------------------------------------------------------------------------------
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
-namespace DirectiveAthenaWeb.Services.Content;
+using JetBrains.Annotations;
 
+namespace DirectiveAthenaWeb.Services.R2Storage;
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
-public interface IContentEditorProvider {
-    IReadOnlyCollection<ContentEditorInfo> GetEditors();
-    IEnumerable<Func<Task<IEnumerable<IContent>>>> GetTagRetrievers();
-}
+[UsedImplicitly] public record ProxyDeleteRequest(string Key);

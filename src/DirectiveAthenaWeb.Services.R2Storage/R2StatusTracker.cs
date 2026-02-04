@@ -2,9 +2,8 @@
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
 using CodeOfChaos.Extensions.DependencyInjection;
-using DirectiveAthenaWeb.Services.ContentStorage;
 
-namespace DirectiveAthenaWeb.Services.Content;
+namespace DirectiveAthenaWeb.Services.R2Storage;
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------

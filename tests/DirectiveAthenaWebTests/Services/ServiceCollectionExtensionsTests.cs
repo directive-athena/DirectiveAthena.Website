@@ -5,9 +5,9 @@ using DirectiveAthenaWeb.Content.Faq;
 using DirectiveAthenaWeb.Content.Note;
 using DirectiveAthenaWeb.Services;
 using DirectiveAthenaWeb.Services.Contact;
-using DirectiveAthenaWeb.Services.ContentStorage;
 using DirectiveAthenaWeb.Services.Js;
 using DirectiveAthenaWeb.Services.Localization;
+using DirectiveAthenaWeb.Services.R2Storage;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 

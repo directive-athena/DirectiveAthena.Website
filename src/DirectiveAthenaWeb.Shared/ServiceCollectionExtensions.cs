@@ -1,8 +1,8 @@
 ﻿// ---------------------------------------------------------------------------------------------------------------------
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
-using DirectiveAthenaWeb.Services.Content;
-using DirectiveAthenaWeb.Services.ContentStorage;
+using DirectiveAthenaWeb.Content;
+using DirectiveAthenaWeb.Services.R2Storage;
 
 // ReSharper disable once CheckNamespace
 namespace Microsoft.Extensions.DependencyInjection;

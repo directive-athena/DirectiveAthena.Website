@@ -1,13 +1,18 @@
 // ---------------------------------------------------------------------------------------------------------------------
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
-using DirectiveAthenaWeb.Services.Content;
+using System.Net;
+using System.Net.Http.Headers;
 
-namespace DirectiveAthenaWeb.Services.ContentStorage;
+namespace DirectiveAthenaWeb.Services.R2Storage;
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
-public interface IContentStorageFactory {
-    IContentStorage ForCategory(string category);
-    IContentStorage ForCategory<TContent>() where TContent : IContent;
+public readonly record struct ContentReadResult(
+    HttpStatusCode StatusCode,
+    string? Content,
+    EntityTagHeaderValue? ETag,
+    DateTimeOffset? LastModifiedUtc
+) {
+    public bool IsSuccessStatusCode => (int)StatusCode is >= 200 and <= 299;
 }

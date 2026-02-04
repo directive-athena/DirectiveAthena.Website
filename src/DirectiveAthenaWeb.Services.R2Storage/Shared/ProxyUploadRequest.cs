@@ -1,13 +1,10 @@
-// ---------------------------------------------------------------------------------------------------------------------
+﻿// ---------------------------------------------------------------------------------------------------------------------
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
-namespace DirectiveAthenaWeb.Services.ContentStorage;
+using JetBrains.Annotations;
+
+namespace DirectiveAthenaWeb.Services.R2Storage;
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
-public interface IR2StatusTracker {
-    bool IsFallbackActive { get; }
-    string? LastError { get; }
-    event Action? StatusChanged;
-    void ActivateFallback(string? message);
-}
+[UsedImplicitly] public record ProxyUploadRequest(string Key, string Content, string ContentType);

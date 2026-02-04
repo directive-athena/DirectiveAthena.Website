@@ -1,10 +1,9 @@
 ﻿// ---------------------------------------------------------------------------------------------------------------------
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
-using DirectiveAthenaWeb.Services.Content;
+using DirectiveAthenaWeb.Services.R2Storage;
 using System.Net;
 using System.Text;
-using DirectiveAthenaWeb.Services.ContentStorage;
 using DirectiveAthenaWeb.Services.Localization;
 using Microsoft.Extensions.Logging;
 using Minio;

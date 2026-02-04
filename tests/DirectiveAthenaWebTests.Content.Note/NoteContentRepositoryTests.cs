@@ -1,10 +1,10 @@
 ﻿// ---------------------------------------------------------------------------------------------------------------------
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
+using DirectiveAthenaWeb.Content;
 using DirectiveAthenaWeb.Content.Note;
 using DirectiveAthenaWeb.Content.Note.Services;
-using DirectiveAthenaWeb.Services.Content;
-using DirectiveAthenaWeb.Services.ContentStorage;
+using DirectiveAthenaWeb.Services.R2Storage;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
 using System.Net;

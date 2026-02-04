@@ -1,10 +1,13 @@
-﻿// ---------------------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
-using JetBrains.Annotations;
-
-namespace DirectiveAthenaWeb.Services.Content;
+namespace DirectiveAthenaWeb.Services.R2Storage;
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
-[UsedImplicitly] public record ProxyDeleteRequest(string Key);
+public interface IR2StatusTracker {
+    bool IsFallbackActive { get; }
+    string? LastError { get; }
+    event Action? StatusChanged;
+    void ActivateFallback(string? message);
+}

@@ -4,8 +4,7 @@
 using DirectiveAthenaWeb.Content;
 using DirectiveAthenaWeb.Services;
 using DirectiveAthenaWeb.Services.Contact;
-using DirectiveAthenaWeb.Services.Content;
-using DirectiveAthenaWeb.Services.ContentStorage;
+using DirectiveAthenaWeb.Services.R2Storage;
 using DirectiveAthenaWeb.Services.Localization;
 using MudBlazor.Services;
 
