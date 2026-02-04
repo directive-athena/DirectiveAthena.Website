@@ -13,15 +13,18 @@
 @* Html
 @* ------------------------------------------------------------------------------------------------------------------ *@
 <MudAppBar Elevation="@(IsScrolled || IsStatic ? 1 : 0)"
-           Class="@(IsScrolled || IsStatic ? "appbar-glass scrolled" : "appbar-glass")"
+           Class="@(IsScrolled || IsStatic ? "appbar-glass scrolled appbar-center-logo" : "appbar-glass appbar-center-logo")"
            Fixed="true">
+
+    @* Centered logo (viewport centered, not content centered) *@
+    <div class="appbar-logo-wrapper @(IsScrolled || IsStatic ? "is-visible" : "is-hidden")" aria-hidden="true">
+        <MudImage Src="assets/logo-whiteShaded.svg" Width="32" Height="32" Alt="Logo" Class="appbar-logo"/>
+    </div>
 
     @if (OnMenuClick.HasDelegate) {
         <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start"
                        OnClick="@OnMenuClick" Class="mr-2"/>
     }
-    
-    <MudImage Src="assets/logo-whiteShaded.svg" Width="32" Height="32" Alt="Logo" Class="mr-3"/>
 
     <MudButton Variant="Variant.Text" Href="/" Class="@(IsScrolled || IsStatic ? "brand-text d-none d-sm-flex" : "brand-text")">
         @Localizer[Components.BrandName]
@@ -32,7 +35,7 @@
     @if (!IsStatic) {
         <CultureSelector/>
     }
-    
+
 </MudAppBar>
 
 @* ------------------------------------------------------------------------------------------------------------------ *@
