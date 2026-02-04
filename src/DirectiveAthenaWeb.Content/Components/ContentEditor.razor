@@ -73,14 +73,14 @@
     [Parameter] public RenderFragment<(TContent, LocalizationInfo)>? LocalizedFields { get; set; }
     [Parameter] public RenderFragment<TContent>? Fields { get; set; }
 
-    const QueryConfig Config = QueryConfig.WithHidden | QueryConfig.WithSoftDeleted | QueryConfig.SortByCreatedAt;
-
+    private const QueryConfig BaseConfig = QueryConfig.WithHidden | QueryConfig.WithSoftDeleted | QueryConfig.SortByCreatedAt;
+    
     // -----------------------------------------------------------------------------------------------------------------
     // Methods
     // -----------------------------------------------------------------------------------------------------------------
     protected override async Task OnInitializedAsync() {
         await base.OnInitializedAsync();
-        Items = await Repository.GetAllAsync(Config);
+        Items = await Repository.GetAllAsync(BaseConfig.AddEnvironmentFlags());
     }
 
     private async Task OnItemSelectedAsync(TContent? selectedItem) {
@@ -92,7 +92,7 @@
         SelectedItem = ContentManager.Create();
         await Repository.AddOrUpdateAsync(SelectedItem);
 
-        Items = await Repository.GetAllAsync(Config);
+        Items = await Repository.GetAllAsync(BaseConfig.AddEnvironmentFlags());
         await InvokeAsync(StateHasChanged);
     }
 

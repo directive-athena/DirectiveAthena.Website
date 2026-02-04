@@ -154,10 +154,13 @@ public abstract class ContentRepositoryBase<T>(IContentStorage contentStorage, I
     // -----------------------------------------------------------------------------------------------------------------
     private static IEnumerable<T> GetConfiguredQuery(IEnumerable<T> data, QueryConfig config) {
         IEnumerable<T> query = data;
-
+        
+        // Filters work because they go from a complete dataset to a smaller subset
+        //      Meaning that we can't "add" by the filter, because that would make the filters not behave like expected
         if (!config.HasFlagFast(QueryConfig.WithHidden)) query = query.Where(item => !item.IsHidden);
         if (!config.HasFlagFast(QueryConfig.WithSoftDeleted)) query = query.Where(item => !item.IsSoftDeleted);
-
+        if (!config.HasFlagFast(QueryConfig.WithDevContent)) query = query.Where(item => !item.IsDevContent);
+        
         bool sortByCreated = config.HasFlagFast(QueryConfig.SortByCreatedAt);
         bool sortByModified = config.HasFlagFast(QueryConfig.SortByModifiedAt);
         bool sortByInternalTitle = config.HasFlagFast(QueryConfig.SortByInternalTitle);
@@ -183,7 +186,7 @@ public abstract class ContentRepositoryBase<T>(IContentStorage contentStorage, I
             (false, false, false, true)  => query.OrderByDescending(i => i.Id),
         };
         
-        // Always stable tie-break (especially important when many keys are equal)
+        // Always stable tie-break
         ordered = reversed
             ? ordered.ThenByDescending(i => i.Id)
             : ordered.ThenBy(i => i.Id);

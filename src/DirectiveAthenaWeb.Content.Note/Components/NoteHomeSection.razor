@@ -3,6 +3,7 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @using DirectiveAthenaWeb.Content.Note
 @using DirectiveAthenaWeb.Content.Note.Resources
+@using DirectiveAthenaWeb.Services.Content
 @using Microsoft.Extensions.Localization
 
 @namespace DirectiveAthenaWeb.Components
@@ -149,7 +150,7 @@
     // Methods
     // -----------------------------------------------------------------------------------------------------------------
     protected override async Task OnInitializedAsync() {
-        NoteContent[] posts = await NoteRepository.GetAllAsync();
+        NoteContent[] posts = await NoteRepository.GetAllAsync(QueryConfig.None.AddEnvironmentFlags());
 
         HighlightedPost = posts.FirstOrDefault();
         RemainingPosts = posts.Skip(1).Take(3);

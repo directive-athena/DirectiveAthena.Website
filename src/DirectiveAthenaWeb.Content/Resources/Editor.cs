@@ -13,6 +13,7 @@ public class Editor {
     public const string CreatedAtLabel = "CreatedAtLabel";
     public const string LastModifiedAtLabel = "LastModifiedAtLabel";
     public const string HiddenLabel = "HiddenLabel";
+    public const string DevContentLabel = "DevContentLabel";
     public const string TagsTitle = "TagsTitle";
     public const string AddTag = "AddTag";
     public const string TagsHint = "TagsHint";
@@ -25,6 +26,7 @@ public class Editor {
     public const string ContentManagerIndexSaveFailed = "ContentManagerIndexSaveFailed";
     public const string ListDeleted = "ListDeleted";
     public const string ListHidden = "ListHidden";
+    public const string ListDevContent = "ListDevContent";
     public const string TagsManagerTitle = "TagsManagerTitle";
     public const string TagsManagerTagId = "TagsManagerTagId";
     public const string TagsManagerActions = "TagsManagerActions";

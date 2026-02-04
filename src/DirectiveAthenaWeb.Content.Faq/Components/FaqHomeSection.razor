@@ -4,6 +4,7 @@
 @using DirectiveAthenaWeb.Content.Faq
 @using DirectiveAthenaWeb.Content.Faq.Resources
 @using DirectiveAthenaWeb.Content.Resources
+@using DirectiveAthenaWeb.Services.Content
 @using Microsoft.Extensions.Localization
 
 @namespace DirectiveAthenaWeb.Content.Faq.Components
@@ -104,7 +105,7 @@
     // Methods
     // -----------------------------------------------------------------------------------------------------------------
     protected override async Task OnInitializedAsync() {
-        IEnumerable<FaqContent> rules = await FaqRepository.GetAllAsync();
+        IEnumerable<FaqContent> rules = await FaqRepository.GetAllAsync(QueryConfig.None.AddEnvironmentFlags());
         Faqs = rules
             .Where(rule => rule.ShowOnHomepage)
             .OrderByDescending(rule => rule.LastModifiedAt)

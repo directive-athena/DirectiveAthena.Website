@@ -60,6 +60,9 @@
                     <MudSwitch T="bool" Value="@Content.IsHidden" ValueChanged="@OnHiddenChangedAsync"
                                Label="@EditorLocalizer[Editor.HiddenLabel]" Color="Color.Primary"/>
 
+                    <MudSwitch T="bool" Value="@Content.IsDevContent" ValueChanged="@OnDevContentChangedAsync"
+                               Label="@EditorLocalizer[Editor.DevContentLabel]" Color="Color.Primary"/>
+                    
                     @if (Fields is not null) {
                         @Fields
                     }
@@ -107,6 +110,13 @@
     private async Task OnHiddenChangedAsync(bool value) {
         DateTime now = DateTime.UtcNow;
         Content.HiddenAt = value ? now : DateTime.MinValue;
+        Content.LastModifiedAt = now;
+        await OnSaveChangesAsync();
+    }
+    
+    private async Task OnDevContentChangedAsync(bool value) {
+        DateTime now = DateTime.UtcNow;
+        Content.IsDevContent = value;
         Content.LastModifiedAt = now;
         await OnSaveChangesAsync();
     }

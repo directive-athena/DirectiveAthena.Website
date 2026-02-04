@@ -193,5 +193,11 @@
     <data name="UniqueId" xml:space="preserve">
         <value>Unique ID</value>
     </data>
+    <data name="DevContentLabel" xml:space="preserve">
+        <value>Dev Content (Only show up during development)</value>
+    </data>
+    <data name="ListDevContent" xml:space="preserve">
+        <value>DevContent</value>
+    </data>
 </root>
 

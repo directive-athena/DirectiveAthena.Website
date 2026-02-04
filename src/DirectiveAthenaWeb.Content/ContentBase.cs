@@ -2,6 +2,7 @@
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
 using DirectiveAthenaWeb.Services.Content;
+using JetBrains.Annotations;
 using System.Text.Json.Serialization;
 
 namespace DirectiveAthenaWeb.Content;
@@ -20,7 +21,7 @@ public abstract class ContentBase : IContent {
             _tags.UnionWith(value);
         }
     }
-    [JsonPropertyName("tags")] public List<string> TagsSerialized {
+    [UsedImplicitly, JsonPropertyName("tags")] public List<string> TagsSerialized {
         get => _tags.ToList();
         set {
             _tags.Clear();
@@ -33,6 +34,7 @@ public abstract class ContentBase : IContent {
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime LastModifiedAt { get; set; } = DateTime.MinValue;
 
+    public bool IsDevContent { get; set; }
     [JsonIgnore] public bool IsHidden => HiddenAt > DateTime.MinValue;
     [JsonIgnore] public bool IsSoftDeleted => SoftDeletedAt > DateTime.MinValue;
     [JsonIgnore] public string MarkdownFileName => $"{Id:D}.md";

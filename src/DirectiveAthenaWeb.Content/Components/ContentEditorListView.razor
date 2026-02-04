@@ -27,20 +27,16 @@
                 <div class="d-flex flex-column">
                     <MudText Typo="Typo.body1">@item.GetReadableInternalTitle()</MudText>
                     <MudText Typo="Typo.caption" Class="opacity-50">@item.Id.ToString("D")</MudText>
-                    <div class="d-flex align-center gap-1">
-                        @if (item.IsSoftDeleted) {
-                            <MudChip T="string" Size="Size.Small" Color="Color.Error" Variant="Variant.Text"
-                                     Icon="@Icons.Material.Filled.Delete">
-                                @Localizer[Editor.ListDeleted]
-                            </MudChip>
+                    <MudStack Row>
+                        @foreach (ChipData chip in Chips) {
+                            if (chip.IsVisible(item)) {
+                                <MudChip T="string" Size="Size.Small" Color="@chip.Color" Variant="Variant.Text"
+                                         Icon="@chip.Icon">
+                                    @Localizer[chip.LocalizedId]
+                                </MudChip>
+                            }
                         }
-                        @if (item.IsHidden) {
-                            <MudChip T="string" Size="Size.Small" Color="Color.Default" Variant="Variant.Text"
-                                     Icon="@Icons.Material.Filled.VisibilityOff">
-                                @Localizer[Editor.ListHidden]
-                            </MudChip>
-                        }
-                    </div>
+                    </MudStack>
                 </div>
             </MudListItem>
         }
@@ -54,7 +50,30 @@
 @code {
     [CascadingParameter] public TContent[] Items { get; set; } = null!;
     [CascadingParameter] public TContent? SelectedItem { get; set; }
-    
+
     [Parameter] public EventCallback<TContent?> OnSelected { get; set; }
     [Parameter] public EventCallback OnCreate { get; set; }
+
+    private static readonly ChipData[] Chips = [
+        new(
+            item => item.IsSoftDeleted,
+            Icons.Material.Filled.Delete,
+            Editor.ListDeleted,
+            Color.Error
+        ),
+        new(
+            item => item.IsHidden,
+            Icons.Material.Filled.VisibilityOff,
+            Editor.ListHidden,
+            Color.Default
+        ),
+        new(
+            item => item.IsDevContent,
+            Icons.Material.Filled.DeveloperMode,
+            Editor.ListDevContent,
+            Color.Default
+        ),
+    ];
+
+    private record ChipData(Func<TContent, bool> IsVisible, string Icon, string LocalizedId, Color Color);
 }
