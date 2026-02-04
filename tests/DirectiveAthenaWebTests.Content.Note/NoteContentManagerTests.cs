@@ -23,15 +23,15 @@ public class NoteContentManagerTests {
 
     private static NoteContentManager CreateManager(
         ILocalizationProvider localizationProvider,
-        IContentStorage? storage = null
+        IR2Storage? storage = null
     ) {
-        storage ??= Substitute.For<IContentStorage>();
+        storage ??= Substitute.For<IR2Storage>();
 
         var services = new ServiceCollection();
         services.AddLogging();
         services.AddSingleton(localizationProvider);
 
-        var factory = Substitute.For<IContentStorageFactory>();
+        var factory = Substitute.For<IR2StorageFactory>();
         factory.ForCategory(Arg.Any<string>()).Returns(storage);
         factory.ForCategory<NoteContent>().Returns(storage);
         services.AddSingleton(factory);
@@ -78,7 +78,7 @@ public class NoteContentManagerTests {
         // Arrange
         NoteContent article = ContentFaker.CreateNote(102);
         ILocalizationProvider localizationProvider = TestLocalization.CreateLocalizationProvider("nl");
-        var storage = Substitute.For<IContentStorage>();
+        var storage = Substitute.For<IR2Storage>();
         storage.GetMarkdownContentPath(Arg.Any<string>(), Arg.Any<string>())
             .Returns(call => $"content/notes/{call.ArgAt<string>(0)}/{call.ArgAt<string>(1)}");
         NoteContentManager manager = CreateManager(localizationProvider, storage);
@@ -93,7 +93,7 @@ public class NoteContentManagerTests {
     [Test]
     public async Task GetMarkdownContentAsync_ReturnsEmptyOnFailure() {
         // Arrange
-        var storage = Substitute.For<IContentStorage>();
+        var storage = Substitute.For<IR2Storage>();
         storage.ReadFileAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns(new ValueTask<string?>((string?)null));
         NoteContentManager manager = CreateManager(TestLocalization.CreateLocalizationProvider(), storage);

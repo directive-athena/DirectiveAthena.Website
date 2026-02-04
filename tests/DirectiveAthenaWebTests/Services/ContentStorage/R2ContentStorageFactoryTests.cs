@@ -43,7 +43,7 @@ public class R2ContentStorageFactoryTests {
         R2ContentStorageFactory factory = GetFakeFactory();
         
         // Act
-        IContentStorage storage = factory.ForCategory(category);
+        IR2Storage storage = factory.ForCategory(category);
 
         // Assert
         await Assert.That(storage.IndexContentPath).IsEqualTo(expectedUrl);

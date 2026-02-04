@@ -7,7 +7,7 @@ namespace DirectiveAthenaWeb.Services.R2Storage;
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
-public interface IContentStorageFactory {
-    IContentStorage ForCategory(string category);
-    IContentStorage ForCategory<TContent>() where TContent : IContent;
+public interface IR2StorageFactory {
+    IR2Storage ForCategory(string category);
+    IR2Storage ForCategory<TContent>() where TContent : IContent;
 }

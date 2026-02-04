@@ -19,7 +19,7 @@ public static class ServiceCollectionExtensions {
         [UsedImplicitly] public IServiceCollection AddFaqContent() {
             services.RegisterServicesFromDirectiveAthenaWebContentFaq();
 
-            services.AddContentStorage<FaqContent>("faq");
+            services.AddR2Storage<FaqContent>("faq");
             
             ContentEditorProvider.RegisterAtContentEditor<FaqContentEditor, IStringLocalizer<Faq>>(
                 localizer => localizer[Faq.ContentManagerTabFaq],

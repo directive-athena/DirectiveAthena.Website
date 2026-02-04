@@ -14,7 +14,7 @@ namespace DirectiveAthenaWeb.Content.Note.Services;
 [InjectableScoped<INoteContentRepository>]
 [InjectableScoped<IContentRepository<NoteContent>>]
 internal class NoteContentRepository(
-    [FromKeyedServices("note")] IContentStorage storage,
+    [FromKeyedServices("note")] IR2Storage storage,
     ILogger<NoteContentRepository> logger
 ) : ContentRepositoryBase<NoteContent>(storage, logger), INoteContentRepository {
     protected override JsonTypeInfo<NoteContent[]> ContentListTypeInfo

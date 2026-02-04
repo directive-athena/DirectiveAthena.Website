@@ -71,7 +71,7 @@
 @code {
     [Parameter] public string Title { get; set; } = "";
     [Parameter] public string? FileName { get; set; }
-    [Parameter, EditorRequired] public IContentStorage? Storage { get; set; }
+    [Parameter, EditorRequired] public IR2Storage? Storage { get; set; }
     [Parameter] public Func<string, Task<string>>? LoadContentAsync { get; set; }
     [Parameter] public Func<string, string>? BuildDefaultContent { get; set; }
 

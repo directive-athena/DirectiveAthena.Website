@@ -8,11 +8,9 @@ namespace DirectiveAthenaWeb.Services.R2Storage;
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
-public readonly record struct ContentReadResult(
+public readonly record struct R2ReadResult(
     HttpStatusCode StatusCode,
     string? Content,
     EntityTagHeaderValue? ETag,
     DateTimeOffset? LastModifiedUtc
-) {
-    public bool IsSuccessStatusCode => (int)StatusCode is >= 200 and <= 299;
-}
+);

@@ -14,7 +14,7 @@ namespace DirectiveAthenaWeb.Content;
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
-public abstract class ContentRepositoryBase<T>(IContentStorage contentStorage, ILogger logger) : IContentRepository<T>
+public abstract class ContentRepositoryBase<T>(IR2Storage contentStorage, ILogger logger) : IContentRepository<T>
     where T : ContentBase, IContent {
     
     private ConcurrentDictionary<Guid, T> Items { get; set; } = [];
@@ -237,7 +237,7 @@ public abstract class ContentRepositoryBase<T>(IContentStorage contentStorage, I
                 return;
             }
 
-            ContentReadResult response = await contentStorage.ReadIndexAsync(_etag, _lastModifiedUtc, ct);
+            R2ReadResult response = await contentStorage.ReadIndexAsync(_etag, _lastModifiedUtc, ct);
 
             // ReSharper disable once SwitchStatementHandlesSomeKnownEnumValuesWithDefault
             switch (response.StatusCode) {

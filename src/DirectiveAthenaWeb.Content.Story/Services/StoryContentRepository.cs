@@ -14,7 +14,7 @@ namespace DirectiveAthenaWeb.Content.Story.Services;
 [InjectableScoped<IStoryContentRepository>]
 [InjectableScoped<IContentRepository<StoryContent>>]
 internal class StoryContentRepository(
-    [FromKeyedServices("story")] IContentStorage storage,
+    [FromKeyedServices("story")] IR2Storage storage,
     ILogger<StoryContentRepository> logger
 ) : ContentRepositoryBase<StoryContent>(storage, logger), IStoryContentRepository {
     protected override JsonTypeInfo<StoryContent[]> ContentListTypeInfo

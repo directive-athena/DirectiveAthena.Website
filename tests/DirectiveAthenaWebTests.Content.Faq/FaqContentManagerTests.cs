@@ -23,15 +23,15 @@ public class FaqContentManagerTests {
 
     private static FaqContentManager CreateManager(
         ILocalizationProvider localizationProvider,
-        IContentStorage? storage = null
+        IR2Storage? storage = null
     ) {
-        storage ??= Substitute.For<IContentStorage>();
+        storage ??= Substitute.For<IR2Storage>();
 
         var services = new ServiceCollection();
         services.AddLogging();
         services.AddSingleton(localizationProvider);
 
-        var factory = Substitute.For<IContentStorageFactory>();
+        var factory = Substitute.For<IR2StorageFactory>();
         factory.ForCategory(Arg.Any<string>()).Returns(storage);
         factory.ForCategory<FaqContent>().Returns(storage);
         services.AddSingleton(factory);
@@ -73,7 +73,7 @@ public class FaqContentManagerTests {
     [Test]
     public async Task GetRawMarkdownContentAsync_ReturnsEmptyOnFailure() {
         // Arrange
-        var storage = Substitute.For<IContentStorage>();
+        var storage = Substitute.For<IR2Storage>();
         storage.ReadFileAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns(new ValueTask<string?>((string?)null));
         FaqContentManager manager = CreateManager(TestLocalization.CreateLocalizationProvider(), storage);

@@ -14,7 +14,7 @@ namespace DirectiveAthenaWeb.Services.R2Storage;
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
-[InjectableScoped<IContentStorageFactory>]
+[InjectableScoped<IR2StorageFactory>]
 public class R2ContentStorageFactory(
     ILocalizationProvider localizationProvider,
     IOptions<R2StorageOptions> r2Options,
@@ -23,11 +23,14 @@ public class R2ContentStorageFactory(
     ILoggerFactory loggerFactory,
     IServiceProvider? serviceProvider = null,
     IR2StatusTracker? statusTracker = null
-) : IContentStorageFactory {
+) : IR2StorageFactory {
     private const string ContentRoot = "content";
     private static bool _browserWarningLogged;
 
-    public IContentStorage ForCategory(string category) {
+    // -----------------------------------------------------------------------------------------------------------------
+    // Methods
+    // -----------------------------------------------------------------------------------------------------------------
+    public IR2Storage ForCategory(string category) {
         string folder = Path.Combine(ContentRoot, category).Replace('\\', '/');
         ILogger r2Logger = loggerFactory.CreateLogger<R2ContentStorage>();
         r2Logger.Debug("Creating R2 content storage for {Category} at {Folder}.", category, folder);
@@ -44,8 +47,8 @@ public class R2ContentStorageFactory(
         );
     }
     
-    public IContentStorage ForCategory<TContent>() where TContent : IContent
-        => serviceProvider!.GetRequiredKeyedService<IContentStorage>(typeof(TContent));
+    public IR2Storage ForCategory<TContent>() where TContent : IContent
+        => serviceProvider!.GetRequiredKeyedService<IR2Storage>(typeof(TContent));
     
     private static Uri BuildPublicBaseUri(R2StorageOptions options, ILogger logger) {
         if (string.IsNullOrWhiteSpace(options.PublicBaseUrl)) {
@@ -69,17 +72,17 @@ public class R2ContentStorageFactory(
             return null;
         }
 
-        if (!string.IsNullOrWhiteSpace(options.ProxyEndpoint)) {
+        if (!options.ProxyEndpoint.IsNullOrWhiteSpace()) {
             logger.Information("R2 proxy endpoint configured; using proxy uploads instead of direct S3 client.");
             return null;
         }
 
-        if (string.IsNullOrWhiteSpace(options.AccountId) || string.IsNullOrWhiteSpace(options.BucketName)) {
+        if (options.AccountId.IsNullOrWhiteSpace() || options.BucketName.IsNullOrWhiteSpace()) {
             logger.Warning("R2 account or bucket is missing; content reads and writes may fail.");
             return null;
         }
 
-        if (string.IsNullOrWhiteSpace(options.AccessKeyId) || string.IsNullOrWhiteSpace(options.SecretAccessKey)) {
+        if (options.AccessKeyId.IsNullOrWhiteSpace() || options.SecretAccessKey.IsNullOrWhiteSpace()) {
             logger.Warning("R2 credentials are missing; MinIO client requires access keys for writes.");
             return null;
         }

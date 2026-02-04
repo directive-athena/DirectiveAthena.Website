@@ -14,7 +14,7 @@ namespace DirectiveAthenaWeb.Content;
 // ---------------------------------------------------------------------------------------------------------------------
 public abstract class ContentManagerBase<TContent>(IServiceProvider provider) : IContentManager<TContent> where TContent : ContentBase, IContent {
     protected ILogger<ContentManagerBase<TContent>> Logger { get; } = provider.GetRequiredService<ILogger<ContentManagerBase<TContent>>>();
-    protected readonly IContentStorage Storage = provider.GetRequiredService<IContentStorageFactory>().ForCategory<TContent>();
+    protected readonly IR2Storage Storage = provider.GetRequiredService<IR2StorageFactory>().ForCategory<TContent>();
 
     private IValidator<TContent> SingleValidator { get; } = provider.GetRequiredService<IValidator<TContent>>();
     private IValidator<IEnumerable<TContent>> MultipleValidator { get; } = provider.GetRequiredService<IValidator<IEnumerable<TContent>>>();

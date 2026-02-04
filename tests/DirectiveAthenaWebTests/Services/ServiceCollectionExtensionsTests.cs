@@ -34,7 +34,7 @@ public class ServiceCollectionExtensionsTests {
         await Assert.That(services).Any(s => s.ServiceType == typeof(IValidator<IEnumerable<NoteContent>>));
 
         await Assert.That(services).Any(s => s.ServiceType == typeof(IContactInfoProvider));
-        await Assert.That(services).Any(s => s.ServiceType == typeof(IContentStorageFactory));
+        await Assert.That(services).Any(s => s.ServiceType == typeof(IR2StorageFactory));
         await Assert.That(services).Any(s => s.ServiceType == typeof(IDirectiveAthenaWebJs));
 
         await Assert.That(services).Any(s => s.ServiceType == typeof(ILocalizationInitializer));
