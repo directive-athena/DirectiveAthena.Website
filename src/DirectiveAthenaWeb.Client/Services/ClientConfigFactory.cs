@@ -19,6 +19,7 @@ public class ClientConfigFactory(IHttpClientFactory clientFactory, ILogger<Clien
     public async ValueTask<ClientConfig> CreateAsync() {
         if (_config is not null) return _config;
         
+        #if DEBUG
         var cts = new CancellationTokenSource(TimeSpan.FromSeconds(5));
         CancellationToken token = cts.Token;
 
@@ -37,5 +38,9 @@ public class ClientConfigFactory(IHttpClientFactory clientFactory, ILogger<Clien
             logger.Error(e, "Failed to fetch client config");
             return _config = new ClientConfig();
         }
+        #else
+        // In release mode there is no server to contact
+        return new ClientConfig();
+        #endif
     }
 }
