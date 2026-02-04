@@ -25,7 +25,9 @@ public static class QueryConfigExtensions {
             => (value & flag) != 0;
 
         public QueryConfig AddEnvironmentFlags() {
-            if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") != "Development") return value;
+            string? envVar = Environment.GetEnvironmentVariable("INFINILORE_INCLUDE_DEVCONTENT");
+            
+            if (envVar is null || !bool.TryParse(envVar, out bool includeDevContent) || !includeDevContent) return value;
             return value | QueryConfig.WithDevContent;
         }
     }

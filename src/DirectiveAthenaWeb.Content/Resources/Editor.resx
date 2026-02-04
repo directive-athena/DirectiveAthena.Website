@@ -199,5 +199,8 @@
     <data name="ListDevContent" xml:space="preserve">
         <value>DevContent</value>
     </data>
+    <data name="InternalTitle" xml:space="preserve">
+        <value>Internal Title</value>
+    </data>
 </root>
 

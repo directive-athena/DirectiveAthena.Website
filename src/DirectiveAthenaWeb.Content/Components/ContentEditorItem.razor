@@ -17,9 +17,9 @@
 @inject IContentRepository<TContent> Repository
 @inject IDirectiveAthenaWebJs WebJs
 @inject ISnackbar Snackbar
-@inject IStringLocalizer<Editor> EditorLocalizer
+@inject IStringLocalizer<Editor> Localizer
 
-@typeparam TContent where TContent : DirectiveAthenaWeb.Content.ContentBase
+@typeparam TContent where TContent : ContentBase
 @inherits WebsiteComponentBase
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Html *@
@@ -27,15 +27,15 @@
 <CascadingValue Value="Content">
     <MudPaper Class="pa-6 card-glass no-hover">
         <div class="d-flex justify-space-between align-center mb-6">
-            <MudText Typo="Typo.h5">@EditorLocalizer[Editor.EditItem, Content.GetReadableInternalTitle()]</MudText>
+            <MudText Typo="Typo.h5">@Localizer[Editor.EditItem, Content.GetReadableInternalTitle()]</MudText>
             <MudStack Row Spacing="2">
                 <MudButton Variant="Variant.Filled" Color="Color.Success" StartIcon="@Icons.Material.Filled.Save"
                            OnClick="@OnSaveChangesAsync">
-                    @EditorLocalizer[Editor.SaveItemButton]
+                    @Localizer[Editor.SaveItemButton]
                 </MudButton>
                 <MudButton Variant="Variant.Outlined" Color="Color.Error" StartIcon="@Icons.Material.Filled.Delete"
                            OnClick="@DeleteContentAsync">
-                    @EditorLocalizer[Editor.DeleteItemButton]
+                    @Localizer[Editor.DeleteItemButton]
                 </MudButton>
             </MudStack>
         </div>
@@ -43,25 +43,24 @@
         <MudTabs Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
             <MudTabPanel Text="Metadata">
                 <MudStack Spacing="8">
-                    <MudTextField T="string" @bind-Value="@Content.InternalTitle" Label="Internal Title" Required="true"
-                                  TextChanged="@OnInputChangedAsync"/>
+                    <MudTextField T="string" @bind-Value="@Content.InternalTitle" Label="@Localizer[Editor.InternalTitle]" TextChanged="@OnInputChangedAsync"/>
 
-                    <MudTextField Value="@Content.Id.ToString("D")" Label="@EditorLocalizer[Editor.UniqueId]"
+                    <MudTextField Value="@Content.Id.ToString("D")" Label="@Localizer[Editor.UniqueId]"
                                   Required="true" ReadOnly="true"
-                                  HelperText="@EditorLocalizer[Editor.IdHelperItem]"/>
+                                  HelperText="@Localizer[Editor.IdHelperItem]"/>
 
-                    <MudTextField Value="@FormatDate(Content.CreatedAt)" Label="@EditorLocalizer[Editor.CreatedAtLabel]"
+                    <MudTextField Value="@FormatDate(Content.CreatedAt)" Label="@Localizer[Editor.CreatedAtLabel]"
                                   Required="true" ReadOnly="true"/>
 
                     <MudTextField Value="@FormatDate(Content.LastModifiedAt)"
-                                  Label="@EditorLocalizer[Editor.LastModifiedAtLabel]"
+                                  Label="@Localizer[Editor.LastModifiedAtLabel]"
                                   Required="true" ReadOnly="true"/>
 
                     <MudSwitch T="bool" Value="@Content.IsHidden" ValueChanged="@OnHiddenChangedAsync"
-                               Label="@EditorLocalizer[Editor.HiddenLabel]" Color="Color.Primary"/>
+                               Label="@Localizer[Editor.HiddenLabel]" Color="Color.Primary"/>
 
                     <MudSwitch T="bool" Value="@Content.IsDevContent" ValueChanged="@OnDevContentChangedAsync"
-                               Label="@EditorLocalizer[Editor.DevContentLabel]" Color="Color.Primary"/>
+                               Label="@Localizer[Editor.DevContentLabel]" Color="Color.Primary"/>
                     
                     @if (Fields is not null) {
                         @Fields
@@ -78,9 +77,9 @@
                         }
                     }
                     <MudTextField Value="@Content.MarkdownFileName"
-                                  Label="@EditorLocalizer[Editor.MarkdownFileLabel, Content.MarkdownFileName]"
+                                  Label="@Localizer[Editor.MarkdownFileLabel, Content.MarkdownFileName]"
                                   Required="true" ReadOnly="true"
-                                  HelperText="@EditorLocalizer[Editor.MarkdownFileHelper]"/>
+                                  HelperText="@Localizer[Editor.MarkdownFileHelper]"/>
 
                 </MudStack>
 
@@ -123,7 +122,7 @@
 
     private async Task DeleteContentAsync() {
         bool hardDelete = Content.IsSoftDeleted;
-        string confirmText = hardDelete ? EditorLocalizer[Editor.DeleteItemHardConfirm] : EditorLocalizer[Editor.DeleteItemSoftConfirm];
+        string confirmText = hardDelete ? Localizer[Editor.DeleteItemHardConfirm] : Localizer[Editor.DeleteItemSoftConfirm];
         bool confirm = await WebJs.ConfirmAsync(confirmText);
         if (!confirm) return;
 
@@ -134,7 +133,7 @@
 
             bool softDeleted = await Repository.SoftDeleteByIdAsync(Content.Id);
             Snackbar.Add(
-                softDeleted ? EditorLocalizer[Editor.DeleteItemSoftSuccess] : EditorLocalizer[Editor.DeleteItemSoftFailed],
+                softDeleted ? Localizer[Editor.DeleteItemSoftSuccess] : Localizer[Editor.DeleteItemSoftFailed],
                 softDeleted ? Severity.Success : Severity.Warning);
             await OnContentChanged.InvokeAsync();
             return;
@@ -142,7 +141,7 @@
 
         bool success = await Repository.HardDeleteByIdAsync(Content.Id);
         Snackbar.Add(
-            success ? EditorLocalizer[Editor.DeleteItemHardSuccess] : EditorLocalizer[Editor.DeleteItemHardFailed],
+            success ? Localizer[Editor.DeleteItemHardSuccess] : Localizer[Editor.DeleteItemHardFailed],
             success ? Severity.Success : Severity.Warning);
     }
 
@@ -155,18 +154,18 @@
             bool result = await Repository.AddOrUpdateAsync(Content, cts.Token);
 
             if (result) {
-                Snackbar.Add(EditorLocalizer[Editor.SaveItemSuccess], Severity.Success);
+                Snackbar.Add(Localizer[Editor.SaveItemSuccess], Severity.Success);
                 await Repository.SaveAsync(cts.Token);
                 await OnContentChanged.InvokeAsync();
             }
             else {
-                Snackbar.Add(EditorLocalizer[Editor.SaveItemFailed], Severity.Error);
+                Snackbar.Add(Localizer[Editor.SaveItemFailed], Severity.Error);
             }
 
         }
         catch (Exception e) {
             Logger.Error(e, "Failed to save content.");
-            Snackbar.Add(EditorLocalizer[Editor.SaveItemFailed], Severity.Error);
+            Snackbar.Add(Localizer[Editor.SaveItemFailed], Severity.Error);
         }
 
         await InvokeAsync(StateHasChanged);
