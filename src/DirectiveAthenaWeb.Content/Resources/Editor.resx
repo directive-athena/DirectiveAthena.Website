@@ -202,5 +202,8 @@
     <data name="InternalTitle" xml:space="preserve">
         <value>Internal Title</value>
     </data>
+    <data name="HardDeleteItemButton" xml:space="preserve">
+        <value>Permanently Delete</value>
+    </data>
 </root>
 

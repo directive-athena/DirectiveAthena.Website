@@ -55,6 +55,7 @@ public class Editor {
     public const string DeleteItemHardFailed = "DeleteItemHardFailed";
     public const string SaveItemButton = "SaveItemButton";
     public const string DeleteItemButton = "DeleteItemButton";
+    public const string HardDeleteItemButton = "HardDeleteItemButton";
     
     public const string InternalTitle = "InternalTitle";
 }

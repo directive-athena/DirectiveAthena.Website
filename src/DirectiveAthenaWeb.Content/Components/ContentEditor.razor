@@ -131,6 +131,12 @@
     
     private async Task OnContentChangedAsync() {
         Items = await Repository.GetAllAsync(BaseConfig.AddEnvironmentFlags());
+        
+        // Check if the current selected item is still valid
+        if (SelectedItem != null && Items.All(item => item.Id != SelectedItem.Id)) {
+            SelectedItem = null;
+        }
+        
         await InvokeAsync(StateHasChanged);
     }
 }

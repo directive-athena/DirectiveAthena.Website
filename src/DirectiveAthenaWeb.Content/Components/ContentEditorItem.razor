@@ -33,10 +33,18 @@
                            OnClick="@OnSaveChangesAsync">
                     @Localizer[Editor.SaveItemButton]
                 </MudButton>
-                <MudButton Variant="Variant.Outlined" Color="Color.Error" StartIcon="@Icons.Material.Filled.Delete"
-                           OnClick="@DeleteContentAsync">
-                    @Localizer[Editor.DeleteItemButton]
-                </MudButton>
+                @if (!Content.IsSoftDeleted) {
+                    <MudButton Variant="Variant.Outlined" Color="Color.Error" StartIcon="@Icons.Material.Filled.Delete"
+                               OnClick="@SoftDeleteContentAsync">
+                        @Localizer[Editor.DeleteItemButton]
+                    </MudButton>
+                }
+                else {
+                    <MudButton Variant="Variant.Filled" Color="Color.Error" StartIcon="@Icons.Material.Filled.Delete"
+                               OnClick="@HardDeleteContentAsync">
+                        @Localizer[Editor.HardDeleteItemButton]
+                    </MudButton>
+                }
             </MudStack>
         </div>
 
@@ -120,31 +128,34 @@
         await OnSaveChangesAsync();
     }
 
-    private async Task DeleteContentAsync() {
-        bool hardDelete = Content.IsSoftDeleted;
-        string confirmText = hardDelete ? Localizer[Editor.DeleteItemHardConfirm] : Localizer[Editor.DeleteItemSoftConfirm];
-        bool confirm = await WebJs.ConfirmAsync(confirmText);
-        if (!confirm) return;
+    private async Task SoftDeleteContentAsync() {
+        if (!await WebJs.ConfirmAsync(Localizer[Editor.DeleteItemSoftConfirm])) return;
 
-        if (!hardDelete) {
-            DateTime now = DateTime.UtcNow;
-            Content.SoftDeletedAt = now;
-            Content.LastModifiedAt = now;
+        DateTime now = DateTime.UtcNow;
+        Content.SoftDeletedAt = now;
+        Content.LastModifiedAt = now;
 
-            bool softDeleted = await Repository.SoftDeleteByIdAsync(Content.Id);
-            if (softDeleted) await Repository.SaveAsync();
-            Snackbar.Add(
-                softDeleted ? Localizer[Editor.DeleteItemSoftSuccess] : Localizer[Editor.DeleteItemSoftFailed],
-                softDeleted ? Severity.Success : Severity.Warning);
-            await OnContentChanged.InvokeAsync();
+        if (!await Repository.SoftDeleteByIdAsync(Content.Id)) {
+            Snackbar.Add(Localizer[Editor.DeleteItemSoftFailed], Severity.Warning);
             return;
         }
-
-        bool success = await Repository.HardDeleteByIdAsync(Content.Id);
-        if (success) await Repository.SaveAsync();
-        Snackbar.Add(
-            success ? Localizer[Editor.DeleteItemHardSuccess] : Localizer[Editor.DeleteItemHardFailed],
-            success ? Severity.Success : Severity.Warning);
+        
+        Snackbar.Add(Localizer[Editor.DeleteItemSoftSuccess], Severity.Success);
+        await Repository.SaveAsync();
+        await OnContentChanged.InvokeAsync();
+    }
+    
+    private async Task HardDeleteContentAsync() {
+        if (!await WebJs.ConfirmAsync(Localizer[Editor.DeleteItemHardConfirm])) return;
+        
+        if (!await Repository.HardDeleteByIdAsync(Content.Id)) {
+            Snackbar.Add(Localizer[Editor.DeleteItemHardFailed], Severity.Warning);
+            return;
+        }
+        
+        Snackbar.Add(Localizer[Editor.DeleteItemHardSuccess], Severity.Success);
+        await Repository.SaveAsync();
+        await OnContentChanged.InvokeAsync();
     }
 
     private static string FormatDate(DateTime date)
