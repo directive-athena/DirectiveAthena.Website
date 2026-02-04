@@ -10,7 +10,6 @@ using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Security.Cryptography;
-using System.Text.Json;
 
 namespace DirectiveAthenaWeb.Services.R2Storage;
 // ---------------------------------------------------------------------------------------------------------------------
@@ -32,10 +31,6 @@ public class R2ContentStorage(
     private readonly Uri? _proxyDeleteEndpoint = BuildProxyEndpoint(options.ProxyEndpoint, "delete");
     private readonly ConcurrentDictionary<string, InMemoryFile> _inMemoryFiles = new(StringComparer.Ordinal);
     private volatile bool _useInMemoryFallback;
-    private readonly JsonSerializerOptions _jsonOptions = new() {
-        PropertyNameCaseInsensitive = true,
-        PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-    };
 
     public string IndexContentPath => BuildPublicUrl(GetIndexDiskPath());
 
@@ -244,7 +239,7 @@ public class R2ContentStorage(
     private async ValueTask<bool> WriteFileWithProxyAsync(string key, string content, CancellationToken ct) {
         var payload = new ProxyUploadRequest(key, content, ResolveContentType(key));
         using var request = new HttpRequestMessage(HttpMethod.Post, _proxyUploadEndpoint);
-        request.Content = JsonContent.Create(payload, options: _jsonOptions);
+        request.Content = JsonContent.Create(payload, R2StorageJsonContext.Default.ProxyUploadRequest);
 
         try {
             using HttpResponseMessage response = await httpClient.SendAsync(request, ct);
@@ -267,7 +262,7 @@ public class R2ContentStorage(
     private async ValueTask<bool> DeleteFileWithProxyAsync(string key, CancellationToken ct) {
         var payload = new ProxyDeleteRequest(key);
         using var request = new HttpRequestMessage(HttpMethod.Post, _proxyDeleteEndpoint);
-        request.Content = JsonContent.Create(payload, options: _jsonOptions);
+        request.Content = JsonContent.Create(payload, R2StorageJsonContext.Default.ProxyDeleteRequest);
 
         try {
             using HttpResponseMessage response = await httpClient.SendAsync(request, ct);

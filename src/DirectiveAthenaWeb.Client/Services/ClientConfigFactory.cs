@@ -3,7 +3,9 @@
 // ---------------------------------------------------------------------------------------------------------------------
 using CodeOfChaos.Extensions.DependencyInjection;
 using DirectiveAthenaWeb.Services.Client;
+#if DEBUG
 using System.Net.Http.Json;
+#endif
 
 namespace DirectiveAthenaWeb.Client.Services;
 // ---------------------------------------------------------------------------------------------------------------------
@@ -16,6 +18,7 @@ public class ClientConfigFactory(IHttpClientFactory clientFactory, ILogger<Clien
     // -----------------------------------------------------------------------------------------------------------------
     // Methods
     // -----------------------------------------------------------------------------------------------------------------
+    #if DEBUG
     public async ValueTask<ClientConfig> CreateAsync() {
         if (_config is not null) return _config;
         
@@ -38,4 +41,11 @@ public class ClientConfigFactory(IHttpClientFactory clientFactory, ILogger<Clien
             return _config = new ClientConfig();
         }
     }
+    #else
+    public ValueTask<ClientConfig> CreateAsync() {
+        _ = clientFactory;
+        _ = logger;
+        return ValueTask.FromResult(_config ??= new ClientConfig());
+    }
+    #endif
 }
