@@ -4,7 +4,6 @@
 using CodeOfChaos.Extensions.DependencyInjection;
 using DirectiveAthenaWeb.Content;
 using DirectiveAthenaWeb.Services.Localization;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -21,21 +20,23 @@ public class R2ContentStorageFactory(
     HttpClient httpClient,
     IHostEnvironment environment,
     ILoggerFactory loggerFactory,
-    IServiceProvider? serviceProvider = null,
     IR2StatusTracker? statusTracker = null
 ) : IR2StorageFactory {
     private const string ContentRoot = "content";
     private static bool _browserWarningLogged;
+    internal static readonly Dictionary<Type, string> CategoryMap = new();
 
     // -----------------------------------------------------------------------------------------------------------------
     // Methods
     // -----------------------------------------------------------------------------------------------------------------
-    public IR2Storage ForCategory(string category) {
+    public IR2Storage<TContent> ForCategory<TContent>() where TContent : IContent {
+        if (!CategoryMap.TryGetValue(typeof(TContent), out string? category)) throw new InvalidOperationException("No category mapping found.");
+        
         string folder = Path.Combine(ContentRoot, category).Replace('\\', '/');
-        ILogger r2Logger = loggerFactory.CreateLogger<R2ContentStorage>();
+        ILogger r2Logger = loggerFactory.CreateLogger<R2ContentStorage<TContent>>();
         r2Logger.Debug("Creating R2 content storage for {Category} at {Folder}.", category, folder);
 
-        return new R2ContentStorage(localizationProvider,
+        return new R2ContentStorage<TContent>(localizationProvider,
             r2Options.Value,
             folder,
             BuildPublicBaseUri(r2Options.Value, r2Logger),
@@ -46,9 +47,6 @@ public class R2ContentStorageFactory(
             statusTracker
         );
     }
-    
-    public IR2Storage ForCategory<TContent>() where TContent : IContent
-        => serviceProvider!.GetRequiredKeyedService<IR2Storage>(typeof(TContent));
     
     private static Uri BuildPublicBaseUri(R2StorageOptions options, ILogger logger) {
         if (string.IsNullOrWhiteSpace(options.PublicBaseUrl)) {

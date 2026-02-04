@@ -3,6 +3,8 @@
 // ---------------------------------------------------------------------------------------------------------------------
 using CodeOfChaos.Extensions.DependencyInjection;
 using DirectiveAthenaWeb.Services.Localization;
+using DirectiveAthenaWeb.Services.R2Storage;
+using FluentValidation;
 using Microsoft.Extensions.Logging;
 
 namespace DirectiveAthenaWeb.Content.Note.Services;
@@ -13,9 +15,17 @@ namespace DirectiveAthenaWeb.Content.Note.Services;
 [InjectableScoped<IContentManager<NoteContent>>]
 internal class NoteContentManager(
     ILocalizationProvider localizationProvider,
-    IServiceProvider provider
-) : ContentManagerBase<NoteContent>(provider), INoteContentManager {
+    IR2Storage<NoteContent> storage,
+    IValidator<NoteContent> singleValidator,
+    IValidator<IEnumerable<NoteContent>> multipleValidator,
+    ILogger<ContentManagerBase<NoteContent>> logger
+) : ContentManagerBase<NoteContent>(storage, singleValidator, multipleValidator, logger), INoteContentManager {
+    private readonly IR2Storage<NoteContent> _storage = storage;
+    private readonly ILogger<ContentManagerBase<NoteContent>> _logger = logger;
 
+    // -----------------------------------------------------------------------------------------------------------------
+    // Methods
+    // -----------------------------------------------------------------------------------------------------------------
     public string GetLocalizedTitle(NoteContent article)
         => GetLocalizedValue(article.Title);
 
@@ -31,7 +41,7 @@ internal class NoteContentManager(
 
     public string GetLocalizedFilePath(NoteContent article) {
         LocalizationInfo localization = localizationProvider.GetCurrentLocalization();
-        return Storage.GetMarkdownContentPath(localization.Code, article.MarkdownFileName);
+        return _storage.GetMarkdownContentPath(localization.Code, article.MarkdownFileName);
     }
     
     public override NoteContent Create(Guid id = default, string? internalTitle = null) {
@@ -51,7 +61,7 @@ internal class NoteContentManager(
             LastModifiedAt = now,
             InternalTitle = internalTitle ?? string.Empty
         };
-        Logger.Information("Created new article stub {Id}.", article.Id);
+        _logger.Information("Created new article stub {Id}.", article.Id);
         return article;
     }
 }

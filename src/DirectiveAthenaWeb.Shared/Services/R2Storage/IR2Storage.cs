@@ -1,13 +1,15 @@
 // ---------------------------------------------------------------------------------------------------------------------
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
+using DirectiveAthenaWeb.Content;
 using System.Net.Http.Headers;
 
 namespace DirectiveAthenaWeb.Services.R2Storage;
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
-public interface IR2Storage {
+// ReSharper disable once UnusedTypeParameter
+public interface IR2Storage<TContent> where TContent : IContent {
     string IndexContentPath { get; }
     string GetMarkdownContentPath(string locale, string fileName);
     string GetMarkdownDiskPath(string locale, string fileName);

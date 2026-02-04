@@ -3,6 +3,8 @@
 // ---------------------------------------------------------------------------------------------------------------------
 using CodeOfChaos.Extensions.DependencyInjection;
 using DirectiveAthenaWeb.Services.Localization;
+using DirectiveAthenaWeb.Services.R2Storage;
+using FluentValidation;
 using Microsoft.Extensions.Logging;
 
 namespace DirectiveAthenaWeb.Content.Faq.Services;
@@ -13,9 +15,16 @@ namespace DirectiveAthenaWeb.Content.Faq.Services;
 [InjectableScoped<IContentManager<FaqContent>>]
 internal class FaqContentManager(
     ILocalizationProvider localizationProvider,
-    IServiceProvider provider
-) : ContentManagerBase<FaqContent>(provider), IFaqContentManager {
-
+    IR2Storage<FaqContent> storage,
+    IValidator<FaqContent> singleValidator,
+    IValidator<IEnumerable<FaqContent>> multipleValidator,
+    ILogger<ContentManagerBase<FaqContent>> logger
+) : ContentManagerBase<FaqContent>(storage, singleValidator, multipleValidator, logger), IFaqContentManager {
+    private readonly ILogger<ContentManagerBase<FaqContent>> _logger = logger;
+    
+    // -----------------------------------------------------------------------------------------------------------------
+    // Methods
+    // -----------------------------------------------------------------------------------------------------------------
     public string GetLocalizedQuestion(FaqContent rule)
         => GetLocalizedValue(rule.Question);
 
@@ -40,7 +49,7 @@ internal class FaqContentManager(
             LastModifiedAt = now,
             InternalTitle = internalTitle ?? string.Empty
         };
-        Logger.Information("Created new world rule stub {Id}.", rule.Id);
+        _logger.Information("Created new world rule stub {Id}.", rule.Id);
         return rule;
     }
 

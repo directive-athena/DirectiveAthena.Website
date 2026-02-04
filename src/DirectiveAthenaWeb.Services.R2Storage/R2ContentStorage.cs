@@ -1,6 +1,7 @@
 // ---------------------------------------------------------------------------------------------------------------------
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
+using DirectiveAthenaWeb.Content;
 using DirectiveAthenaWeb.Services.Localization;
 using Microsoft.Extensions.Logging;
 using Minio;
@@ -15,7 +16,7 @@ namespace DirectiveAthenaWeb.Services.R2Storage;
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
-public class R2ContentStorage(
+public class R2ContentStorage<TContent>(
     ILocalizationProvider localizationProvider,
     R2StorageOptions options,
     string categoryFolder,
@@ -25,7 +26,7 @@ public class R2ContentStorage(
     ILogger logger,
     bool allowInMemoryFallback,
     IR2StatusTracker? statusTracker = null
-) : IR2Storage {
+) : IR2Storage<TContent> where TContent : IContent {
     private readonly bool _canWrite = options.CanWrite;
     private readonly Uri? _proxyUploadEndpoint = BuildProxyEndpoint(options.ProxyEndpoint, "upload");
     private readonly Uri? _proxyDeleteEndpoint = BuildProxyEndpoint(options.ProxyEndpoint, "delete");

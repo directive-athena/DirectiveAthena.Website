@@ -3,7 +3,6 @@
 // ---------------------------------------------------------------------------------------------------------------------
 using CodeOfChaos.Extensions.DependencyInjection;
 using DirectiveAthenaWeb.Services.R2Storage;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System.Text.Json.Serialization.Metadata;
 
@@ -14,7 +13,7 @@ namespace DirectiveAthenaWeb.Content.Note.Services;
 [InjectableScoped<INoteContentRepository>]
 [InjectableScoped<IContentRepository<NoteContent>>]
 internal class NoteContentRepository(
-    [FromKeyedServices("note")] IR2Storage storage,
+    IR2Storage<NoteContent> storage,
     ILogger<NoteContentRepository> logger
 ) : ContentRepositoryBase<NoteContent>(storage, logger), INoteContentRepository {
     protected override JsonTypeInfo<NoteContent[]> ContentListTypeInfo

@@ -3,6 +3,8 @@
 // ---------------------------------------------------------------------------------------------------------------------
 using CodeOfChaos.Extensions.DependencyInjection;
 using DirectiveAthenaWeb.Services.Localization;
+using DirectiveAthenaWeb.Services.R2Storage;
+using FluentValidation;
 using Microsoft.Extensions.Logging;
 
 namespace DirectiveAthenaWeb.Content.Story.Services;
@@ -13,9 +15,17 @@ namespace DirectiveAthenaWeb.Content.Story.Services;
 [InjectableScoped<IContentManager<StoryContent>>]
 internal class StoryContentManager(
     ILocalizationProvider localizationProvider,
-    IServiceProvider provider
-) : ContentManagerBase<StoryContent>(provider), IStoryContentManager {
+    IR2Storage<StoryContent> storage,
+    IValidator<StoryContent> singleValidator,
+    IValidator<IEnumerable<StoryContent>> multipleValidator,
+    ILogger<ContentManagerBase<StoryContent>> logger
+) : ContentManagerBase<StoryContent>(storage, singleValidator, multipleValidator, logger), IStoryContentManager {
+    private readonly IR2Storage<StoryContent> _storage = storage;
+    private readonly ILogger<ContentManagerBase<StoryContent>> _logger = logger;
 
+    // -----------------------------------------------------------------------------------------------------------------
+    // Methods
+    // -----------------------------------------------------------------------------------------------------------------
     public string GetLocalizedTitle(StoryContent article)
         => GetLocalizedValue(article.Title);
 
@@ -31,7 +41,7 @@ internal class StoryContentManager(
 
     public string GetLocalizedFilePath(StoryContent article) {
         LocalizationInfo localization = localizationProvider.GetCurrentLocalization();
-        return Storage.GetMarkdownContentPath(localization.Code, article.MarkdownFileName);
+        return _storage.GetMarkdownContentPath(localization.Code, article.MarkdownFileName);
     }
 
     public override StoryContent Create(Guid id = default, string? internalTitle = null) {
@@ -51,7 +61,7 @@ internal class StoryContentManager(
             LastModifiedAt = now,
             InternalTitle = internalTitle ?? string.Empty
         };
-        Logger.Information("Created new article stub {Id}.", article.Id);
+        _logger.Information("Created new article stub {Id}.", article.Id);
         return article;
     }
 }
