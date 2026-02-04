@@ -17,8 +17,8 @@ namespace DirectiveAthenaWebTests.Content.Note;
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
 public class NoteContentRepositoryTests {
-    private static IR2Storage CreateStorage() {
-        var storage = Substitute.For<IR2Storage>();
+    private static IR2Storage<NoteContent> CreateStorage() {
+        var storage = Substitute.For<IR2Storage<NoteContent>>();
         storage.IndexContentPath.Returns("content/notes/index.json");
         return storage;
     }
@@ -32,7 +32,7 @@ public class NoteContentRepositoryTests {
             ContentFaker.CreateNote(3, hidden: false)
         ];
 
-        IR2Storage storage = CreateStorage();
+        IR2Storage<NoteContent> storage = CreateStorage();
         storage.ReadIndexAsync(Arg.Any<EntityTagHeaderValue?>(), Arg.Any<DateTimeOffset?>(), Arg.Any<CancellationToken>())
             .Returns(Task.FromResult(new R2ReadResult(HttpStatusCode.OK, JsonSerializer.Serialize(notes), null, null)));
         var logger = Substitute.For<ILogger<NoteContentRepository>>();
@@ -49,7 +49,7 @@ public class NoteContentRepositoryTests {
     [Test]
     public async Task GetPostsAsync_HandlesHttpClientFailure() {
         // Arrange
-        IR2Storage storage = CreateStorage();
+        IR2Storage<NoteContent> storage = CreateStorage();
         storage.ReadIndexAsync(Arg.Any<EntityTagHeaderValue?>(), Arg.Any<DateTimeOffset?>(), Arg.Any<CancellationToken>())
             .Returns(Task.FromException<R2ReadResult>(new HttpRequestException("boom")));
         var logger = Substitute.For<ILogger<NoteContentRepository>>();
@@ -70,7 +70,7 @@ public class NoteContentRepositoryTests {
             ContentFaker.CreateNote(11, hidden: true)
         ];
 
-        IR2Storage storage = CreateStorage();
+        IR2Storage<NoteContent> storage = CreateStorage();
         storage.ReadIndexAsync(Arg.Any<EntityTagHeaderValue?>(), Arg.Any<DateTimeOffset?>(), Arg.Any<CancellationToken>())
             .Returns(Task.FromResult(new R2ReadResult(HttpStatusCode.OK, JsonSerializer.Serialize(notes), null, null)));
         var logger = Substitute.For<ILogger<NoteContentRepository>>();
@@ -88,7 +88,7 @@ public class NoteContentRepositoryTests {
     [Test]
     public async Task GetPostsAsync_ReturnsEmptyWhenResponseNull() {
         // Arrange
-        IR2Storage storage = CreateStorage();
+        IR2Storage<NoteContent> storage = CreateStorage();
         storage.ReadIndexAsync(Arg.Any<EntityTagHeaderValue?>(), Arg.Any<DateTimeOffset?>(), Arg.Any<CancellationToken>())
             .Returns(Task.FromResult(new R2ReadResult(HttpStatusCode.OK, "null", null, null)));
         var logger = Substitute.For<ILogger<NoteContentRepository>>();
@@ -106,7 +106,7 @@ public class NoteContentRepositoryTests {
         // Arrange
         NoteContent article = ContentFaker.CreateNote(6);
         article.SoftDeletedAt = DateTime.UtcNow;
-        IR2Storage storage = CreateStorage();
+        IR2Storage<NoteContent> storage = CreateStorage();
         storage.ReadIndexAsync(Arg.Any<EntityTagHeaderValue?>(), Arg.Any<DateTimeOffset?>(), Arg.Any<CancellationToken>())
             .Returns(Task.FromResult(new R2ReadResult(HttpStatusCode.OK, JsonSerializer.Serialize(new[] { article }), null, null)));
         var logger = Substitute.For<ILogger<NoteContentRepository>>();
@@ -127,7 +127,7 @@ public class NoteContentRepositoryTests {
             ContentFaker.CreateNote(13, hidden: true)
         ];
 
-        IR2Storage storage = CreateStorage();
+        IR2Storage<NoteContent> storage = CreateStorage();
         storage.ReadIndexAsync(Arg.Any<EntityTagHeaderValue?>(), Arg.Any<DateTimeOffset?>(), Arg.Any<CancellationToken>())
             .Returns(Task.FromResult(new R2ReadResult(HttpStatusCode.OK, JsonSerializer.Serialize(notes), null, null)));
         var logger = Substitute.For<ILogger<NoteContentRepository>>();
@@ -153,7 +153,7 @@ public class NoteContentRepositoryTests {
         softDeleted.SoftDeletedAt = DateTime.UtcNow;
 
         NoteContent[] notes = [visible, hidden, softDeleted];
-        IR2Storage storage = CreateStorage();
+        IR2Storage<NoteContent> storage = CreateStorage();
         storage.ReadIndexAsync(Arg.Any<EntityTagHeaderValue?>(), Arg.Any<DateTimeOffset?>(), Arg.Any<CancellationToken>())
             .Returns(Task.FromResult(new R2ReadResult(HttpStatusCode.OK, JsonSerializer.Serialize(notes), null, null)));
         var logger = Substitute.For<ILogger<NoteContentRepository>>();
@@ -176,7 +176,7 @@ public class NoteContentRepositoryTests {
         softDeleted.SoftDeletedAt = DateTime.UtcNow;
 
         NoteContent[] notes = [visible, hidden, softDeleted];
-        IR2Storage storage = CreateStorage();
+        IR2Storage<NoteContent> storage = CreateStorage();
         storage.ReadIndexAsync(Arg.Any<EntityTagHeaderValue?>(), Arg.Any<DateTimeOffset?>(), Arg.Any<CancellationToken>())
             .Returns(Task.FromResult(new R2ReadResult(HttpStatusCode.OK, JsonSerializer.Serialize(notes), null, null)));
         var logger = Substitute.For<ILogger<NoteContentRepository>>();
@@ -198,7 +198,7 @@ public class NoteContentRepositoryTests {
         softDeleted.SoftDeletedAt = DateTime.UtcNow;
 
         NoteContent[] notes = [visible, hidden, softDeleted];
-        IR2Storage storage = CreateStorage();
+        IR2Storage<NoteContent> storage = CreateStorage();
         storage.ReadIndexAsync(Arg.Any<EntityTagHeaderValue?>(), Arg.Any<DateTimeOffset?>(), Arg.Any<CancellationToken>())
             .Returns(Task.FromResult(new R2ReadResult(HttpStatusCode.OK, JsonSerializer.Serialize(notes), null, null)));
         var logger = Substitute.For<ILogger<NoteContentRepository>>();
@@ -220,7 +220,7 @@ public class NoteContentRepositoryTests {
         softDeleted.SoftDeletedAt = DateTime.UtcNow;
 
         NoteContent[] notes = [visible, hidden, softDeleted];
-        IR2Storage storage = CreateStorage();
+        IR2Storage<NoteContent> storage = CreateStorage();
         storage.ReadIndexAsync(Arg.Any<EntityTagHeaderValue?>(), Arg.Any<DateTimeOffset?>(), Arg.Any<CancellationToken>())
             .Returns(Task.FromResult(new R2ReadResult(HttpStatusCode.OK, JsonSerializer.Serialize(notes), null, null)));
         var logger = Substitute.For<ILogger<NoteContentRepository>>();
@@ -244,7 +244,7 @@ public class NoteContentRepositoryTests {
         third.CreatedAt = new DateTime(2024, 3, 1, 0, 0, 0, DateTimeKind.Utc);
 
         NoteContent[] notes = [second, third, first];
-        IR2Storage storage = CreateStorage();
+        IR2Storage<NoteContent> storage = CreateStorage();
         storage.ReadIndexAsync(Arg.Any<EntityTagHeaderValue?>(), Arg.Any<DateTimeOffset?>(), Arg.Any<CancellationToken>())
             .Returns(Task.FromResult(new R2ReadResult(HttpStatusCode.OK, JsonSerializer.Serialize(notes), null, null)));
         var logger = Substitute.For<ILogger<NoteContentRepository>>();
@@ -260,7 +260,7 @@ public class NoteContentRepositoryTests {
     [Test]
     public async Task SaveAsync_WritesIndex() {
         // Arrange
-        IR2Storage storage = CreateStorage();
+        IR2Storage<NoteContent> storage = CreateStorage();
         storage.WriteIndexAsync(Arg.Any<string>()).Returns(new ValueTask<bool>(true));
 
         var logger = Substitute.For<ILogger<NoteContentRepository>>();
@@ -279,7 +279,7 @@ public class NoteContentRepositoryTests {
     [Test]
     public async Task SaveAsync_ReturnsFalseWhenWriteFails() {
         // Arrange
-        IR2Storage storage = CreateStorage();
+        IR2Storage<NoteContent> storage = CreateStorage();
         storage.WriteIndexAsync(Arg.Any<string>()).Returns(new ValueTask<bool>(false));
 
         var logger = Substitute.For<ILogger<NoteContentRepository>>();
@@ -298,7 +298,7 @@ public class NoteContentRepositoryTests {
     [Test]
     public async Task SaveAsync_DoesNotBackfillCreatedAt() {
         // Arrange
-        IR2Storage storage = CreateStorage();
+        IR2Storage<NoteContent> storage = CreateStorage();
         storage.WriteIndexAsync(Arg.Any<string>()).Returns(new ValueTask<bool>(true));
         var logger = Substitute.For<ILogger<NoteContentRepository>>();
         var repo = new NoteContentRepository(storage, logger);
@@ -319,7 +319,7 @@ public class NoteContentRepositoryTests {
     [Test]
     public async Task SaveAsync_PreservesCreatedAt() {
         // Arrange
-        IR2Storage storage = CreateStorage();
+        IR2Storage<NoteContent> storage = CreateStorage();
         storage.WriteIndexAsync(Arg.Any<string>()).Returns(new ValueTask<bool>(true));
         var logger = Substitute.For<ILogger<NoteContentRepository>>();
         var repo = new NoteContentRepository(storage, logger);
@@ -342,7 +342,7 @@ public class NoteContentRepositoryTests {
     public async Task SoftDeleteByIdAsync_MarksDeletedAndWritesIndex() {
         // Arrange
         NoteContent article = ContentFaker.CreateNote(27);
-        IR2Storage storage = CreateStorage();
+        IR2Storage<NoteContent> storage = CreateStorage();
         storage.ReadIndexAsync(Arg.Any<EntityTagHeaderValue?>(), Arg.Any<DateTimeOffset?>(), Arg.Any<CancellationToken>())
             .Returns(Task.FromResult(new R2ReadResult(HttpStatusCode.OK, JsonSerializer.Serialize(new[] { article }), null, null)));
         string? capturedJson = null;
@@ -371,7 +371,7 @@ public class NoteContentRepositoryTests {
     public async Task DeleteAsync_DeletesLocalizedFilesAndSaves() {
         // Arrange
         NoteContent article = ContentFaker.CreateNote(30);
-        IR2Storage storage = CreateStorage();
+        IR2Storage<NoteContent> storage = CreateStorage();
         storage.DeleteLocalizedFilesAsync(article.MarkdownFileName).Returns(Task.FromResult(true));
         storage.WriteIndexAsync(Arg.Any<string>()).Returns(new ValueTask<bool>(true));
         storage.ReadIndexAsync(Arg.Any<EntityTagHeaderValue?>(), Arg.Any<DateTimeOffset?>(), Arg.Any<CancellationToken>())
@@ -394,7 +394,7 @@ public class NoteContentRepositoryTests {
     public async Task DeleteAsync_ReturnsFalseWhenLocalizedDeleteFails() {
         // Arrange
         NoteContent article = ContentFaker.CreateNote(40);
-        IR2Storage storage = CreateStorage();
+        IR2Storage<NoteContent> storage = CreateStorage();
         storage.DeleteLocalizedFilesAsync(article.MarkdownFileName).Returns(Task.FromResult(false));
         storage.ReadIndexAsync(Arg.Any<EntityTagHeaderValue?>(), Arg.Any<DateTimeOffset?>(), Arg.Any<CancellationToken>())
             .Returns(Task.FromResult(new R2ReadResult(HttpStatusCode.OK, JsonSerializer.Serialize(new[] { article }), null, null)));

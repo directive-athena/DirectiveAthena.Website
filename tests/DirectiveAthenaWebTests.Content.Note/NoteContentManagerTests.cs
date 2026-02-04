@@ -2,7 +2,6 @@
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
 using DirectiveAthenaWeb.Content.Note;
-using DirectiveAthenaWeb.Content.Note.Services;
 using DirectiveAthenaWeb.Services.Localization;
 using DirectiveAthenaWeb.Services.R2Storage;
 using NSubstitute;
@@ -21,25 +20,24 @@ public class NoteContentManagerTests {
     //     return factory;
     // }
 
-    private static NoteContentManager CreateManager(
+    private static INoteContentManager CreateManager(
         ILocalizationProvider localizationProvider,
-        IR2Storage? storage = null
+        IR2Storage<NoteContent>? storage = null
     ) {
-        storage ??= Substitute.For<IR2Storage>();
+        storage ??= Substitute.For<IR2Storage<NoteContent>>();
 
         var services = new ServiceCollection();
         services.AddLogging();
         services.AddSingleton(localizationProvider);
 
         var factory = Substitute.For<IR2StorageFactory>();
-        factory.ForCategory(Arg.Any<string>()).Returns(storage);
         factory.ForCategory<NoteContent>().Returns(storage);
         services.AddSingleton(factory);
 
         services.AddNoteContent();
 
         ServiceProvider provider = services.BuildServiceProvider();
-        return new NoteContentManager(localizationProvider, provider);
+        return provider.GetRequiredService<INoteContentManager>();
     }
 
     // -----------------------------------------------------------------------------------------------------------------
@@ -50,7 +48,7 @@ public class NoteContentManagerTests {
         // Arrange
         NoteContent article = ContentFaker.CreateNote(100, includeNl: false);
         ILocalizationProvider localizationProvider = TestLocalization.CreateLocalizationProvider("nl");
-        NoteContentManager manager = CreateManager(localizationProvider);
+        INoteContentManager manager = CreateManager(localizationProvider);
 
         // Act
         string result = manager.GetLocalizedTitle(article);
@@ -64,7 +62,7 @@ public class NoteContentManagerTests {
         // Arrange
         NoteContent article = ContentFaker.CreateNote(101, includeNl: false);
         ILocalizationProvider localizationProvider = TestLocalization.CreateLocalizationProvider("nl");
-        NoteContentManager manager = CreateManager(localizationProvider);
+        INoteContentManager manager = CreateManager(localizationProvider);
 
         // Act
         string result = manager.GetLocalizedSummary(article);
@@ -78,10 +76,10 @@ public class NoteContentManagerTests {
         // Arrange
         NoteContent article = ContentFaker.CreateNote(102);
         ILocalizationProvider localizationProvider = TestLocalization.CreateLocalizationProvider("nl");
-        var storage = Substitute.For<IR2Storage>();
+        var storage = Substitute.For<IR2Storage<NoteContent>>();
         storage.GetMarkdownContentPath(Arg.Any<string>(), Arg.Any<string>())
             .Returns(call => $"content/notes/{call.ArgAt<string>(0)}/{call.ArgAt<string>(1)}");
-        NoteContentManager manager = CreateManager(localizationProvider, storage);
+        INoteContentManager manager = CreateManager(localizationProvider, storage);
 
         // Act
         string result = manager.GetLocalizedFilePath(article);
@@ -93,10 +91,10 @@ public class NoteContentManagerTests {
     [Test]
     public async Task GetMarkdownContentAsync_ReturnsEmptyOnFailure() {
         // Arrange
-        var storage = Substitute.For<IR2Storage>();
+        var storage = Substitute.For<IR2Storage<NoteContent>>();
         storage.ReadFileAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns(new ValueTask<string?>((string?)null));
-        NoteContentManager manager = CreateManager(TestLocalization.CreateLocalizationProvider(), storage);
+        INoteContentManager manager = CreateManager(TestLocalization.CreateLocalizationProvider(), storage);
         NoteContent article = ContentFaker.CreateNote(103);
 
         // Act
@@ -110,7 +108,7 @@ public class NoteContentManagerTests {
     public async Task NewWriting_PopulatesLocalizedFields() {
         // Arrange
         ILocalizationProvider localizationProvider = TestLocalization.CreateLocalizationProvider();
-        NoteContentManager manager = CreateManager(localizationProvider);
+        INoteContentManager manager = CreateManager(localizationProvider);
 
         // Act
         NoteContent article = manager.Create();
@@ -133,7 +131,7 @@ public class NoteContentManagerTests {
             }
         ];
 
-        NoteContentManager manager = CreateManager(TestLocalization.CreateLocalizationProvider());
+        INoteContentManager manager = CreateManager(TestLocalization.CreateLocalizationProvider());
 
         // Act
         bool result = manager.Validate(notes, out string? error);
@@ -152,7 +150,7 @@ public class NoteContentManagerTests {
         ];
         notes[1].Id = notes[0].Id;
 
-        NoteContentManager manager = CreateManager(TestLocalization.CreateLocalizationProvider());
+        INoteContentManager manager = CreateManager(TestLocalization.CreateLocalizationProvider());
 
         // Act
         bool result = manager.Validate(notes, out string? error);
@@ -168,7 +166,7 @@ public class NoteContentManagerTests {
         NoteContent article = ContentFaker.CreateNote(200, includeNl: false);
         NoteContent[] notes = [article];
 
-        NoteContentManager manager = CreateManager(TestLocalization.CreateLocalizationProvider());
+        INoteContentManager manager = CreateManager(TestLocalization.CreateLocalizationProvider());
 
         // Act
         bool result = manager.Validate(notes, out string? error);
@@ -185,7 +183,7 @@ public class NoteContentManagerTests {
         article.Summary.Remove("nl");
         NoteContent[] notes = [article];
 
-        NoteContentManager manager = CreateManager(TestLocalization.CreateLocalizationProvider());
+        INoteContentManager manager = CreateManager(TestLocalization.CreateLocalizationProvider());
 
         // Act
         bool result = manager.Validate(notes, out string? error);
