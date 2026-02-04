@@ -5,7 +5,6 @@ using DirectiveAthenaWeb.Content.Faq;
 using DirectiveAthenaWeb.Content.Faq.Services;
 using DirectiveAthenaWeb.Services.ContentStorage;
 using DirectiveAthenaWeb.Services.Localization;
-using Microsoft.Extensions.Logging;
 using NSubstitute;
 using DirectiveAthenaWebTests.Helpers;
 
@@ -14,22 +13,17 @@ namespace DirectiveAthenaWebTests.Content.Faq;
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
 public class FaqContentManagerTests {
-    private static IContentStorageFactory CreateStorageFactory(IContentStorage storage) {
-        var factory = Substitute.For<IContentStorageFactory>();
-        factory.ForCategory("faq").Returns(storage);
-        factory.ForCategory<FaqContent>().Returns(storage);
-        return factory;
-    }
+    // private static IContentStorageFactory CreateStorageFactory(IContentStorage storage) {
+    //     var factory = Substitute.For<IContentStorageFactory>();
+    //     factory.ForCategory("faq").Returns(storage);
+    //     factory.ForCategory<FaqContent>().Returns(storage);
+    //     return factory;
+    // }
 
     private static FaqContentManager CreateManager(
-        ILocalizationProvider localizationProvider,
-        IContentStorage? storage = null
+        ILocalizationProvider localizationProvider
     ) {
-        storage ??= Substitute.For<IContentStorage>();
-        var logger = Substitute.For<ILogger<FaqContentManager>>();
-        var manager = new FaqContentManager(localizationProvider, CreateStorageFactory(storage), logger);
-        manager.SingleValidator = new FaqContentValidator(localizationProvider);
-        manager.MultipleValidator = new FaqContentCollectionValidator(manager.SingleValidator);
+        var manager = new FaqContentManager(localizationProvider, Substitute.For<IServiceProvider>());
         return manager;
     }
 
@@ -69,7 +63,7 @@ public class FaqContentManagerTests {
         var storage = Substitute.For<IContentStorage>();
         storage.GetMarkdownContentPath(Arg.Any<string>(), Arg.Any<string>())
             .Returns(call => $"content/worldrules/{call.ArgAt<string>(0)}/{call.ArgAt<string>(1)}");
-        FaqContentManager manager = CreateManager(localizationProvider, storage);
+        FaqContentManager manager = CreateManager(localizationProvider);
 
         // Act
         string result = manager.GetLocalizedFilePath(rule);
@@ -84,7 +78,7 @@ public class FaqContentManagerTests {
         var storage = Substitute.For<IContentStorage>();
         storage.ReadFileAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns(new ValueTask<string?>((string?)null));
-        FaqContentManager manager = CreateManager(TestLocalization.CreateLocalizationProvider(), storage);
+        FaqContentManager manager = CreateManager(TestLocalization.CreateLocalizationProvider());
         FaqContent rule = ContentFaker.CreateFaq(4);
 
         // Act
@@ -138,7 +132,7 @@ public class FaqContentManagerTests {
         FaqContent rule = ContentFaker.CreateFaq(20);
         var storage = Substitute.For<IContentStorage>();
         ILocalizationProvider localizationProvider = TestLocalization.CreateLocalizationProvider();
-        FaqContentManager manager = CreateManager(localizationProvider, storage);
+        FaqContentManager manager = CreateManager(localizationProvider);
 
         // Act
         (Dictionary<string, string> Stubs, bool WroteAll) result = await manager.GenerateStubsAsync(rule, writeToDisk: false);
@@ -160,7 +154,7 @@ public class FaqContentManagerTests {
         storage.GetMarkdownDiskPath(Arg.Any<string>(), Arg.Any<string>())
             .Returns(call => $"{call.ArgAt<string>(0)}/{call.ArgAt<string>(1)}");
 
-        FaqContentManager manager = CreateManager(localizationProvider, storage);
+        FaqContentManager manager = CreateManager(localizationProvider);
 
         // Act
         (Dictionary<string, string> Stubs, bool WroteAll) result = await manager.GenerateStubsAsync(rule, writeToDisk: true);

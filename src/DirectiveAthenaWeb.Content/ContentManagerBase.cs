@@ -5,7 +5,7 @@ using DirectiveAthenaWeb.Services.Content;
 using DirectiveAthenaWeb.Services.ContentStorage;
 using FluentValidation;
 using FluentValidation.Results;
-using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace DirectiveAthenaWeb.Content;
@@ -13,14 +13,12 @@ namespace DirectiveAthenaWeb.Content;
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
-public abstract class ContentManagerBase<TContent>(
-    IContentStorageFactory storageFactory,
-    ILogger<ContentManagerBase<TContent>> logger
-) : IContentManager<TContent> where TContent : ContentBase, IContent {
-    protected readonly IContentStorage Storage = storageFactory.ForCategory<TContent>();
-    
-    [Inject] public IValidator<TContent> SingleValidator { get; set; } = null!;
-    [Inject] public IValidator<IEnumerable<TContent>> MultipleValidator { get; set; } = null!;
+public abstract class ContentManagerBase<TContent>(IServiceProvider provider) : IContentManager<TContent> where TContent : ContentBase, IContent {
+    protected ILogger<ContentManagerBase<TContent>> Logger { get; } = provider.GetRequiredService<ILogger<ContentManagerBase<TContent>>>();
+    protected readonly IContentStorage Storage = provider.GetRequiredService<IContentStorageFactory>().ForCategory<TContent>();
+
+    private IValidator<TContent> SingleValidator { get; } = provider.GetRequiredService<IValidator<TContent>>();
+    private IValidator<IEnumerable<TContent>> MultipleValidator { get; } = provider.GetRequiredService<IValidator<IEnumerable<TContent>>>();
     
     // -----------------------------------------------------------------------------------------------------------------
     // Methods
@@ -35,7 +33,7 @@ public abstract class ContentManagerBase<TContent>(
         }
 
         errorMessage = result.Errors.First().ErrorMessage;
-        logger.Warning("World rule validation failed: {Error}.", errorMessage);
+        Logger.Warning("World rule validation failed: {Error}.", errorMessage);
         return false;
     }
     
@@ -47,18 +45,18 @@ public abstract class ContentManagerBase<TContent>(
         }
 
         errorMessage = result.Errors.First().ErrorMessage;
-        logger.Warning("World rule validation failed: {Error}.", errorMessage);
+        Logger.Warning("World rule validation failed: {Error}.", errorMessage);
         return false;
     }
 
     public async Task<string> GetMarkdownContentAsync(TContent rule, string locale, CancellationToken ct = default) {
         try {
             string path = Storage.GetMarkdownDiskPath(locale, rule.MarkdownFileName);
-            logger.Debug("Fetching markdown for world rule {Id} at {Path}.", rule.Id, path);
+            Logger.Debug("Fetching markdown for world rule {Id} at {Path}.", rule.Id, path);
             return await Storage.ReadFileAsync(path, ct) ?? string.Empty;
         }
         catch (Exception ex) {
-            logger.Warning(ex, "Failed to fetch markdown for world rule {Id} ({Locale}).", rule.Id, locale);
+            Logger.Warning(ex, "Failed to fetch markdown for world rule {Id} ({Locale}).", rule.Id, locale);
             return string.Empty;
         }
     }
@@ -66,11 +64,11 @@ public abstract class ContentManagerBase<TContent>(
     public async Task<bool> WriteMarkdownContentAsync(TContent rule, string locale, string content, CancellationToken ct = default) {
         try {
             string path = Storage.GetMarkdownDiskPath(locale, rule.MarkdownFileName);
-            logger.Debug("Fetching markdown for world rule {Id} at {Path}.", rule.Id, path);
+            Logger.Debug("Fetching markdown for world rule {Id} at {Path}.", rule.Id, path);
             return await Storage.WriteFileAsync(path, content, ct);
         }
         catch (Exception ex) {
-            logger.Warning(ex, "Failed to fetch markdown for world rule {Id} ({Locale}).", rule.Id, locale);
+            Logger.Warning(ex, "Failed to fetch markdown for world rule {Id} ({Locale}).", rule.Id, locale);
             return false;
         }
     }

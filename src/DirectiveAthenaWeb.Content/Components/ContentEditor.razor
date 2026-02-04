@@ -19,7 +19,7 @@
 @inject IStringLocalizer<Editor> Localizer
 @inject IContentManager<TContent> ContentManager
 
-@typeparam TContent where TContent : DirectiveAthenaWeb.Content.ContentBase
+@typeparam TContent where TContent : ContentBase
 @inherits WebsiteComponentBase
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Html *@
@@ -56,7 +56,8 @@
                     <ContentEditorItem TContent="@TContent"
                                        Content="SelectedItem"
                                        Fields="@Fields"
-                                       LocalizedFields="@LocalizedFields"/>
+                                       LocalizedFields="@LocalizedFields"
+                                       OnContentChanged="@OnContentChangedAsync"/>
                 </MudItem>
             }
         </MudGrid>
@@ -126,5 +127,10 @@
 
     private async Task DownloadFileAsync(string fileName, string content) {
         await WebJs.DownloadFileAsync(fileName, content);
+    }
+    
+    private async Task OnContentChangedAsync() {
+        Items = await Repository.GetAllAsync(BaseConfig.AddEnvironmentFlags());
+        await InvokeAsync(StateHasChanged);
     }
 }

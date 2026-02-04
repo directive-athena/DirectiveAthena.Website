@@ -5,7 +5,6 @@ using DirectiveAthenaWeb.Content.Note;
 using DirectiveAthenaWeb.Content.Note.Services;
 using DirectiveAthenaWeb.Services.ContentStorage;
 using DirectiveAthenaWeb.Services.Localization;
-using Microsoft.Extensions.Logging;
 using NSubstitute;
 using DirectiveAthenaWebTests.Helpers;
 
@@ -14,22 +13,17 @@ namespace DirectiveAthenaWebTests.Content.Note;
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
 public class NoteContentManagerTests {
-    private static IContentStorageFactory CreateStorageFactory(IContentStorage storage) {
-        var factory = Substitute.For<IContentStorageFactory>();
-        factory.ForCategory("note").Returns(storage);
-        factory.ForCategory<NoteContent>().Returns(storage);
-        return factory;
-    }
+    // private static IContentStorageFactory CreateStorageFactory(IContentStorage storage) {
+    //     var factory = Substitute.For<IContentStorageFactory>();
+    //     factory.ForCategory("note").Returns(storage);
+    //     factory.ForCategory<NoteContent>().Returns(storage);
+    //     return factory;
+    // }
 
     private static NoteContentManager CreateManager(
-        ILocalizationProvider localizationProvider,
-        IContentStorage? storage = null
+        ILocalizationProvider localizationProvider
     ) {
-        storage ??= Substitute.For<IContentStorage>();
-        var logger = Substitute.For<ILogger<NoteContentManager>>();
-        var manager = new NoteContentManager(localizationProvider, CreateStorageFactory(storage), logger);
-        manager.SingleValidator = new NoteContentValidator(localizationProvider);
-        manager.MultipleValidator = new NoteContentCollectionValidator(manager.SingleValidator);
+        var manager = new NoteContentManager(localizationProvider, Substitute.For<IServiceProvider>());
         return manager;
     }
 
@@ -72,7 +66,7 @@ public class NoteContentManagerTests {
         var storage = Substitute.For<IContentStorage>();
         storage.GetMarkdownContentPath(Arg.Any<string>(), Arg.Any<string>())
             .Returns(call => $"content/notes/{call.ArgAt<string>(0)}/{call.ArgAt<string>(1)}");
-        NoteContentManager manager = CreateManager(localizationProvider, storage);
+        NoteContentManager manager = CreateManager(localizationProvider);
 
         // Act
         string result = manager.GetLocalizedFilePath(article);
@@ -87,7 +81,7 @@ public class NoteContentManagerTests {
         var storage = Substitute.For<IContentStorage>();
         storage.ReadFileAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns(new ValueTask<string?>((string?)null));
-        NoteContentManager manager = CreateManager(TestLocalization.CreateLocalizationProvider(), storage);
+        NoteContentManager manager = CreateManager(TestLocalization.CreateLocalizationProvider());
         NoteContent article = ContentFaker.CreateNote(103);
 
         // Act
@@ -191,7 +185,7 @@ public class NoteContentManagerTests {
         // Arrange
         NoteContent article = ContentFaker.CreateNote(120);
         var storage = Substitute.For<IContentStorage>();
-        NoteContentManager manager = CreateManager(TestLocalization.CreateLocalizationProvider(), storage);
+        NoteContentManager manager = CreateManager(TestLocalization.CreateLocalizationProvider());
 
         // Act
         (Dictionary<string, string> Stubs, bool WroteAll) result = await manager.GenerateStubsAsync(article, writeToDisk: false);
@@ -212,7 +206,7 @@ public class NoteContentManagerTests {
         storage.GetMarkdownDiskPath(Arg.Any<string>(), Arg.Any<string>())
             .Returns(call => $"{call.ArgAt<string>(0)}/{call.ArgAt<string>(1)}");
 
-        NoteContentManager manager = CreateManager(TestLocalization.CreateLocalizationProvider(), storage);
+        NoteContentManager manager = CreateManager(TestLocalization.CreateLocalizationProvider());
 
         // Act
         (Dictionary<string, string> Stubs, bool WroteAll) result = await manager.GenerateStubsAsync(article, writeToDisk: true);

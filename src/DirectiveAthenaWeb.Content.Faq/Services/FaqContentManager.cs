@@ -3,7 +3,6 @@
 // ---------------------------------------------------------------------------------------------------------------------
 using CodeOfChaos.Extensions.DependencyInjection;
 using DirectiveAthenaWeb.Services.Content;
-using DirectiveAthenaWeb.Services.ContentStorage;
 using DirectiveAthenaWeb.Services.Localization;
 using Microsoft.Extensions.Logging;
 
@@ -15,9 +14,8 @@ namespace DirectiveAthenaWeb.Content.Faq.Services;
 [InjectableScoped<IContentManager<FaqContent>>]
 internal class FaqContentManager(
     ILocalizationProvider localizationProvider,
-    IContentStorageFactory storageFactory,
-    ILogger<FaqContentManager> logger
-) : ContentManagerBase<FaqContent>(storageFactory, logger), IFaqContentManager {
+    IServiceProvider provider
+) : ContentManagerBase<FaqContent>(provider), IFaqContentManager {
 
     public string GetLocalizedQuestion(FaqContent rule)
         => GetLocalizedValue(rule.Question);
@@ -48,7 +46,7 @@ internal class FaqContentManager(
             LastModifiedAt = now,
             InternalTitle = internalTitle ?? string.Empty
         };
-        logger.Information("Created new world rule stub {Id}.", rule.Id);
+        Logger.Information("Created new world rule stub {Id}.", rule.Id);
         return rule;
     }
 
@@ -59,7 +57,7 @@ internal class FaqContentManager(
             c => $"# {rule.Question.GetValueOrDefault(c.Code)}\n\n{rule.Answer.GetValueOrDefault(c.Code)}");
 
         if (!writeToDisk) {
-            logger.Debug("Generated world rule stubs for {Id} without writing to disk.", rule.Id);
+            Logger.Debug("Generated world rule stubs for {Id} without writing to disk.", rule.Id);
             return (stubs, false);
         }
 
@@ -71,12 +69,12 @@ internal class FaqContentManager(
             }
         }
 
-        logger.Information("Generated and wrote world rule stubs for {Id} {Result}.", rule.Id, wroteAll ? "succeeded" : "failed");
+        Logger.Information("Generated and wrote world rule stubs for {Id} {Result}.", rule.Id, wroteAll ? "succeeded" : "failed");
         return (stubs, wroteAll);
     }
 
     public async Task EnsureResxAsync(CancellationToken ct = default) {
-        logger.Debug("World rules do not use resx initialization.");
+        Logger.Debug("World rules do not use resx initialization.");
         await Task.CompletedTask;
     }
 

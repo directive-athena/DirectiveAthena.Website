@@ -132,6 +132,7 @@
             Content.LastModifiedAt = now;
 
             bool softDeleted = await Repository.SoftDeleteByIdAsync(Content.Id);
+            if (softDeleted) await Repository.SaveAsync();
             Snackbar.Add(
                 softDeleted ? Localizer[Editor.DeleteItemSoftSuccess] : Localizer[Editor.DeleteItemSoftFailed],
                 softDeleted ? Severity.Success : Severity.Warning);
@@ -140,6 +141,7 @@
         }
 
         bool success = await Repository.HardDeleteByIdAsync(Content.Id);
+        if (success) await Repository.SaveAsync();
         Snackbar.Add(
             success ? Localizer[Editor.DeleteItemHardSuccess] : Localizer[Editor.DeleteItemHardFailed],
             success ? Severity.Success : Severity.Warning);
@@ -172,6 +174,8 @@
     }
 
     private async Task OnInputChangedAsync(string obj) {
+        if (Content.InternalTitle.Equals(obj, StringComparison.Ordinal)) return;
+        
         Content.InternalTitle = obj;
         await OnSaveChangesAsync();
     }

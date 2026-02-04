@@ -91,7 +91,11 @@ public abstract class ContentRepositoryBase<T>(IContentStorage contentStorage, I
             return false;
         }
 
-        Items.Remove(id, out _);
+        if (!Items.TryRemove(id, out _)) {
+            logger.Warning("{ContentType} {Id} not found for deletion.", typeof(T).Name, id);
+            return false;
+        }
+        
         logger.Information("Deleted {ContentType} {Id}", typeof(T).Name, id);
         return true;
     }
