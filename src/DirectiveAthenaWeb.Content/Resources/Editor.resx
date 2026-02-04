@@ -193,5 +193,26 @@
     <data name="UniqueId" xml:space="preserve">
         <value>Unique ID</value>
     </data>
+    <data name="DevContentLabel" xml:space="preserve">
+        <value>Dev Content (Only show up during development)</value>
+    </data>
+    <data name="ListDevContent" xml:space="preserve">
+        <value>DevContent</value>
+    </data>
+    <data name="InternalTitle" xml:space="preserve">
+        <value>Internal Title</value>
+    </data>
+    <data name="HardDeleteItemButton" xml:space="preserve">
+        <value>Permanently Delete</value>
+    </data>
+    <data name="RestoreItemButton" xml:space="preserve">
+        <value>Restore</value>
+    </data>
+    <data name="RestoreItemFailed" xml:space="preserve">
+        <value>Failed to restore the item</value>
+    </data>
+    <data name="RestoreItemSuccess" xml:space="preserve">
+        <value>Item has been restored</value>
+    </data>
 </root>
 

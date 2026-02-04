@@ -1,10 +1,13 @@
-﻿// ---------------------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
-using JetBrains.Annotations;
+using DirectiveAthenaWeb.Content;
 
-namespace DirectiveAthenaWeb.Services.Content;
+namespace DirectiveAthenaWeb.Services.R2Storage;
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
-[UsedImplicitly] public record ProxyUploadRequest(string Key, string Content, string ContentType);
+public interface IContentStorageFactory {
+    IContentStorage ForCategory(string category);
+    IContentStorage ForCategory<TContent>() where TContent : IContent;
+}

@@ -2,7 +2,6 @@
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
 using CodeOfChaos.Extensions.DependencyInjection;
-using DirectiveAthenaWeb.Services.Content;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 
@@ -20,7 +19,7 @@ public class ContentEditorProvider(IServiceProvider provider) : IContentEditorPr
     // -----------------------------------------------------------------------------------------------------------------
     public static void RegisterAtTagsEditor<TContent>() where TContent : IContent {
         var normalizedFunc = new Func<IServiceProvider, Task<IEnumerable<IContent>>>(static async provider => {
-            const QueryConfig config = QueryConfig.WithHidden | QueryConfig.WithSoftDeleted;
+            const QueryConfig config = QueryConfig.WithHidden | QueryConfig.WithSoftDeleted | QueryConfig.WithDevContent;
             
             var repo = provider.GetRequiredService<IContentRepository<TContent>>();
             TContent[] tags = await repo.GetAllAsync(config);

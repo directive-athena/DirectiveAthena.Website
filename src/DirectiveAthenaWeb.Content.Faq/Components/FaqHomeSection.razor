@@ -4,6 +4,7 @@
 @using DirectiveAthenaWeb.Content.Faq
 @using DirectiveAthenaWeb.Content.Faq.Resources
 @using DirectiveAthenaWeb.Content.Resources
+@using DirectiveAthenaWeb.Services.Client
 @using Microsoft.Extensions.Localization
 
 @namespace DirectiveAthenaWeb.Content.Faq.Components
@@ -15,6 +16,7 @@
 @inject IStringLocalizer<Faq> LocalizerShared
 @inject IStringLocalizer<Tags> LocalizerTags
 @inject NavigationManager NavigationManager
+@inject IClientConfigFactory ClientConfigFactory
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Html
 @* ------------------------------------------------------------------------------------------------------------------ *@
@@ -104,7 +106,10 @@
     // Methods
     // -----------------------------------------------------------------------------------------------------------------
     protected override async Task OnInitializedAsync() {
-        IEnumerable<FaqContent> rules = await FaqRepository.GetAllAsync();
+        ClientConfig clientConfig = await ClientConfigFactory.CreateAsync();
+        QueryConfig config = QueryConfigExtensions.AddClientConfigFlags(clientConfig);
+        
+        IEnumerable<FaqContent> rules = await FaqRepository.GetAllAsync(config);
         Faqs = rules
             .Where(rule => rule.ShowOnHomepage)
             .OrderByDescending(rule => rule.LastModifiedAt)

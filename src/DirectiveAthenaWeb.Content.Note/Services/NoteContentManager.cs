@@ -2,8 +2,6 @@
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
 using CodeOfChaos.Extensions.DependencyInjection;
-using DirectiveAthenaWeb.Services.Content;
-using DirectiveAthenaWeb.Services.ContentStorage;
 using DirectiveAthenaWeb.Services.Localization;
 using Microsoft.Extensions.Logging;
 
@@ -15,10 +13,8 @@ namespace DirectiveAthenaWeb.Content.Note.Services;
 [InjectableScoped<IContentManager<NoteContent>>]
 internal class NoteContentManager(
     ILocalizationProvider localizationProvider,
-    IContentStorageFactory storageFactory,
-    ILogger<NoteContentManager> logger
-) : ContentManagerBase<NoteContent>(storageFactory, logger), INoteContentManager {
-    private readonly IContentStorage _storage = storageFactory.ForCategory("note");
+    IServiceProvider provider
+) : ContentManagerBase<NoteContent>(provider), INoteContentManager {
 
     public string GetLocalizedTitle(NoteContent article)
         => GetLocalizedValue(article.Title);
@@ -35,25 +31,25 @@ internal class NoteContentManager(
 
     public string GetLocalizedFilePath(NoteContent article) {
         LocalizationInfo localization = localizationProvider.GetCurrentLocalization();
-        return _storage.GetMarkdownContentPath(localization.Code, article.MarkdownFileName);
+        return Storage.GetMarkdownContentPath(localization.Code, article.MarkdownFileName);
     }
 
     public async Task<string> GetRawMarkdownContentAsync(NoteContent article, string locale, CancellationToken ct = default) {
         try {
-            string path = _storage.GetMarkdownDiskPath(locale, article.MarkdownFileName);
-            logger.Debug("Fetching markdown for article {Id} at {Path}.", article.Id, path);
-            return await _storage.ReadFileAsync(path, ct) ?? string.Empty;
+            string path = Storage.GetMarkdownDiskPath(locale, article.MarkdownFileName);
+            Logger.Debug("Fetching markdown for article {Id} at {Path}.", article.Id, path);
+            return await Storage.ReadFileAsync(path, ct) ?? string.Empty;
         }
         catch (OperationCanceledException) when (ct.IsCancellationRequested) {
-            logger.Debug("Markdown fetch canceled for article {Id} ({Locale}).", article.Id, locale);
+            Logger.Debug("Markdown fetch canceled for article {Id} ({Locale}).", article.Id, locale);
             return string.Empty;
         }
         catch (TaskCanceledException) {
-            logger.Warning("Markdown fetch timed out for article {Id} ({Locale}).", article.Id, locale);
+            Logger.Warning("Markdown fetch timed out for article {Id} ({Locale}).", article.Id, locale);
             return string.Empty;
         }
         catch (Exception ex) {
-            logger.Warning(ex, "Failed to fetch markdown for article {Id} ({Locale}).", article.Id, locale);
+            Logger.Warning(ex, "Failed to fetch markdown for article {Id} ({Locale}).", article.Id, locale);
             return string.Empty;
         }
     }
@@ -75,7 +71,7 @@ internal class NoteContentManager(
             LastModifiedAt = now,
             InternalTitle = internalTitle ?? string.Empty
         };
-        logger.Information("Created new article stub {Id}.", article.Id);
+        Logger.Information("Created new article stub {Id}.", article.Id);
         return article;
     }
    
@@ -87,25 +83,25 @@ internal class NoteContentManager(
             c => $"# {article.Title.GetValueOrDefault(c.Code)}");
 
         if (!writeToDisk) {
-            logger.Debug("Generated article stubs for {Id} without writing to disk.", article.Id);
+            Logger.Debug("Generated article stubs for {Id} without writing to disk.", article.Id);
             return (stubs, false);
         }
 
         bool wroteAll = true;
         foreach (KeyValuePair<string, string> stub in stubs) {
-            string path = _storage.GetMarkdownDiskPath(stub.Key, article.MarkdownFileName);
-            if (!await _storage.WriteFileAsync(path, stub.Value, ct)) {
+            string path = Storage.GetMarkdownDiskPath(stub.Key, article.MarkdownFileName);
+            if (!await Storage.WriteFileAsync(path, stub.Value, ct)) {
                 wroteAll = false;
             }
         }
 
-        logger.Information("Generated and wrote article stubs for {Id} {Result}.", article.Id, wroteAll ? "succeeded" : "failed");
+        Logger.Information("Generated and wrote article stubs for {Id} {Result}.", article.Id, wroteAll ? "succeeded" : "failed");
         return (stubs, wroteAll);
     }
 
     public async Task EnsureResxAsync(CancellationToken ct = default) {
         _ = ct;
-        logger.Debug("Resx generation is disabled in R2-only mode.");
+        Logger.Debug("Resx generation is disabled in R2-only mode.");
         await Task.CompletedTask;
     }
 }

@@ -25,7 +25,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\DirectiveAthenaWeb.Services.Contact\DirectiveAthenaWeb.Services.Contact.csproj" />
-        <ProjectReference Include="..\DirectiveAthenaWeb.Services.Content\DirectiveAthenaWeb.Services.Content.csproj" />
+        <ProjectReference Include="..\DirectiveAthenaWeb.Services.R2Storage\DirectiveAthenaWeb.Services.R2Storage.csproj" />
         <ProjectReference Include="..\DirectiveAthenaWeb.Services.Js\DirectiveAthenaWeb.Services.Js.csproj"/>
         <ProjectReference Include="..\DirectiveAthenaWeb.Services.Localization\DirectiveAthenaWeb.Services.Localization.csproj"/>
         <ProjectReference Include="..\DirectiveAthenaWeb.Shared\DirectiveAthenaWeb.Shared.csproj"/>

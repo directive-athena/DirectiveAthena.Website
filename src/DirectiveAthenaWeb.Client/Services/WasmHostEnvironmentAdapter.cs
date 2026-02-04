@@ -9,16 +9,9 @@ namespace DirectiveAthenaWeb.Client.Services;
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
-internal sealed class WasmHostEnvironmentAdapter : IHostEnvironment {
-    public WasmHostEnvironmentAdapter(IWebAssemblyHostEnvironment wasmEnvironment) {
-        EnvironmentName = wasmEnvironment.Environment;
-        ApplicationName = "DirectiveAthenaWeb";
-        ContentRootPath = wasmEnvironment.BaseAddress;
-        ContentRootFileProvider = new NullFileProvider();
-    }
-
-    public string EnvironmentName { get; set; }
-    public string ApplicationName { get; set; }
-    public string ContentRootPath { get; set; }
-    public IFileProvider ContentRootFileProvider { get; set; }
+internal sealed class WasmHostEnvironmentAdapter(IWebAssemblyHostEnvironment wasmEnvironment) : IHostEnvironment {
+    public string EnvironmentName { get; set; } = wasmEnvironment.Environment;
+    public string ApplicationName { get; set; } = "DirectiveAthenaWeb";
+    public string ContentRootPath { get; set; } = wasmEnvironment.BaseAddress;
+    public IFileProvider ContentRootFileProvider { get; set; } = new NullFileProvider();
 }

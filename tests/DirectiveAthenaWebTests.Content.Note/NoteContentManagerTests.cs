@@ -3,34 +3,43 @@
 // ---------------------------------------------------------------------------------------------------------------------
 using DirectiveAthenaWeb.Content.Note;
 using DirectiveAthenaWeb.Content.Note.Services;
-using DirectiveAthenaWeb.Services.ContentStorage;
 using DirectiveAthenaWeb.Services.Localization;
-using Microsoft.Extensions.Logging;
+using DirectiveAthenaWeb.Services.R2Storage;
 using NSubstitute;
 using DirectiveAthenaWebTests.Helpers;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace DirectiveAthenaWebTests.Content.Note;
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
 public class NoteContentManagerTests {
-    private static IContentStorageFactory CreateStorageFactory(IContentStorage storage) {
-        var factory = Substitute.For<IContentStorageFactory>();
-        factory.ForCategory("note").Returns(storage);
-        factory.ForCategory<NoteContent>().Returns(storage);
-        return factory;
-    }
+    // private static IContentStorageFactory CreateStorageFactory(IContentStorage storage) {
+    //     var factory = Substitute.For<IContentStorageFactory>();
+    //     factory.ForCategory("note").Returns(storage);
+    //     factory.ForCategory<NoteContent>().Returns(storage);
+    //     return factory;
+    // }
 
     private static NoteContentManager CreateManager(
         ILocalizationProvider localizationProvider,
         IContentStorage? storage = null
     ) {
         storage ??= Substitute.For<IContentStorage>();
-        var logger = Substitute.For<ILogger<NoteContentManager>>();
-        var manager = new NoteContentManager(localizationProvider, CreateStorageFactory(storage), logger);
-        manager.SingleValidator = new NoteContentValidator(localizationProvider);
-        manager.MultipleValidator = new NoteContentCollectionValidator(manager.SingleValidator);
-        return manager;
+
+        var services = new ServiceCollection();
+        services.AddLogging();
+        services.AddSingleton(localizationProvider);
+
+        var factory = Substitute.For<IContentStorageFactory>();
+        factory.ForCategory(Arg.Any<string>()).Returns(storage);
+        factory.ForCategory<NoteContent>().Returns(storage);
+        services.AddSingleton(factory);
+
+        services.AddNoteContent();
+
+        ServiceProvider provider = services.BuildServiceProvider();
+        return new NoteContentManager(localizationProvider, provider);
     }
 
     // -----------------------------------------------------------------------------------------------------------------

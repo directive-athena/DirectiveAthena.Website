@@ -8,7 +8,7 @@
 
             "src\\DirectiveAthenaWeb.Services\\DirectiveAthenaWeb.Services.csproj",
             "src\\DirectiveAthenaWeb.Services.Contact\\DirectiveAthenaWeb.Services.Contact.csproj",
-            "src\\DirectiveAthenaWeb.Services.Content\\DirectiveAthenaWeb.Services.Content.csproj",
+            "src\\DirectiveAthenaWeb.Services.R2Storage\\DirectiveAthenaWeb.Services.R2Storage.csproj",
             "src\\DirectiveAthenaWeb.Services.Js\\DirectiveAthenaWeb.Services.Js.csproj",
             "src\\DirectiveAthenaWeb.Services.Localization\\DirectiveAthenaWeb.Services.Localization.csproj",
 

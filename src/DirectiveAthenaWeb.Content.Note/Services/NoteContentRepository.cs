@@ -2,8 +2,7 @@
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
 using CodeOfChaos.Extensions.DependencyInjection;
-using DirectiveAthenaWeb.Services.Content;
-using DirectiveAthenaWeb.Services.ContentStorage;
+using DirectiveAthenaWeb.Services.R2Storage;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 

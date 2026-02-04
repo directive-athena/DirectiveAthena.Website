@@ -1,7 +1,7 @@
 // ---------------------------------------------------------------------------------------------------------------------
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
-namespace DirectiveAthenaWeb.Services.Content;
+namespace DirectiveAthenaWeb.Content;
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
@@ -10,6 +10,7 @@ public interface IContentRepository<T> where T : IContent {
     ValueTask<T?> GetByIdAsync(Guid id, QueryConfig config = default, CancellationToken ct = default);
     ValueTask<bool> SoftDeleteByIdAsync(Guid id, CancellationToken ct = default);
     ValueTask<bool> HardDeleteByIdAsync(Guid id, CancellationToken ct = default);
+    ValueTask<bool> RestoreByIdAsync(Guid id, CancellationToken ct = default);
 
     ValueTask<bool> AddOrUpdateAsync(T item, CancellationToken ct = default);
     ValueTask<bool> AddOrUpdateRangeAsync(IEnumerable<T> items, CancellationToken ct = default);

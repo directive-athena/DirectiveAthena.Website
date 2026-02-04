@@ -8,6 +8,7 @@
       "applicationUrl": "https://localhost:7129",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
+        "INFINILORE_INCLUDE_DEVCONTENT": "true",
         "DOTNET_SYSTEM_CONSOLE_ALLOW_ANSI_COLOR_REDIRECTION": "1"
       }
     }

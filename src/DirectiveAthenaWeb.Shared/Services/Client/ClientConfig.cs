@@ -1,13 +1,11 @@
-// ---------------------------------------------------------------------------------------------------------------------
+﻿// ---------------------------------------------------------------------------------------------------------------------
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
-namespace DirectiveAthenaWeb.Services.ContentStorage;
+namespace DirectiveAthenaWeb.Services.Client;
+
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
-public interface IR2StatusTracker {
-    bool IsFallbackActive { get; }
-    string? LastError { get; }
-    event Action? StatusChanged;
-    void ActivateFallback(string? message);
+public record ClientConfig {
+    public bool IncludeDevContent { get; init; }
 }

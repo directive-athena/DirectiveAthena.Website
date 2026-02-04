@@ -4,7 +4,10 @@
 @using DirectiveAthenaWeb.Content.Note
 @using Microsoft.Extensions.Localization
 @using DirectiveAthenaWeb.Client.Resources
+@using DirectiveAthenaWeb.Content
 @using DirectiveAthenaWeb.Content.Resources
+
+@using DirectiveAthenaWeb.Services.Client
 
 @namespace DirectiveAthenaWeb.Client.Pages
 @* ------------------------------------------------------------------------------------------------------------------ *@
@@ -17,6 +20,7 @@
 @inject NavigationManager NavigationManager
 @inject IStringLocalizer<Client> LocalizerShared
 @inject IStringLocalizer<Tags> LocalizerTags
+@inject IClientConfigFactory ClientConfigFactory
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Html
 @* ------------------------------------------------------------------------------------------------------------------ *@
@@ -40,7 +44,7 @@
                 foreach (string tag in _posts.SelectMany(p => p.Tags).Distinct()) {
                     <MudChip T="string" Variant="@(_selectedTag == tag ? Variant.Filled : Variant.Outlined)"
                              Color="Color.Secondary"
-                             OnClick="@(() => FilterByTag(tag))">@LocalizerTags[tag])
+                             OnClick="@(() => FilterByTag(tag))">@LocalizerTags[tag]
                     </MudChip>
                 }
             }
@@ -96,7 +100,10 @@
     private string? _selectedTag;
 
     protected override async Task OnInitializedAsync() {
-        IEnumerable<NoteContent> posts = await NoteRepository.GetAllAsync();
+        ClientConfig clientConfig = await ClientConfigFactory.CreateAsync();
+        QueryConfig config = QueryConfigExtensions.AddClientConfigFlags(clientConfig);
+        
+        IEnumerable<NoteContent> posts = await NoteRepository.GetAllAsync(config);
         _posts = posts.ToArray();
     }
 

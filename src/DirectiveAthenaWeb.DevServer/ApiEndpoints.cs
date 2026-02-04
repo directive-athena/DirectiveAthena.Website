@@ -1,8 +1,7 @@
 ﻿// ---------------------------------------------------------------------------------------------------------------------
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
-using DirectiveAthenaWeb.Services.Content;
-using DirectiveAthenaWeb.Services.ContentStorage;
+using DirectiveAthenaWeb.Services.R2Storage;
 using Microsoft.Extensions.Options;
 using Minio;
 using Minio.DataModel.Args;

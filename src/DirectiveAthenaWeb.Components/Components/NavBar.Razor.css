@@ -1,0 +1,31 @@
+.appbar-center-logo { position: relative; }
+
+.appbar-logo-wrapper {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    z-index: 1;
+
+    /* animation */
+    transition: opacity 180ms ease, transform 180ms ease, visibility 0ms linear 180ms;
+    will-change: opacity, transform;
+}
+
+.appbar-logo-wrapper.is-hidden {
+    opacity: 0;
+    visibility: hidden;
+    transform: translate(-50%, -60%); /* slight slide from above */
+}
+
+.appbar-logo-wrapper.is-visible {
+    opacity: 1;
+    visibility: visible;
+    transform: translate(-50%, -50%);
+    transition: opacity 180ms ease, transform 180ms ease, visibility 0ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .appbar-logo-wrapper { transition: none; }
+}

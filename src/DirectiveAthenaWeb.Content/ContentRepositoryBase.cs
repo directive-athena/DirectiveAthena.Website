@@ -1,8 +1,7 @@
 // ---------------------------------------------------------------------------------------------------------------------
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
-using DirectiveAthenaWeb.Services.Content;
-using DirectiveAthenaWeb.Services.ContentStorage;
+using DirectiveAthenaWeb.Services.R2Storage;
 using Microsoft.Extensions.Logging;
 using System.Collections.Concurrent;
 using System.Net;
@@ -91,8 +90,32 @@ public abstract class ContentRepositoryBase<T>(IContentStorage contentStorage, I
             return false;
         }
 
-        Items.Remove(id, out _);
+        if (!Items.TryRemove(id, out _)) {
+            logger.Warning("{ContentType} {Id} not found for deletion.", typeof(T).Name, id);
+            return false;
+        }
+        
         logger.Information("Deleted {ContentType} {Id}", typeof(T).Name, id);
+        return true;
+    }
+    
+    public async ValueTask<bool> RestoreByIdAsync(Guid id, CancellationToken ct = default) {
+        await EnsureDataIsLoadedAsync(ct);
+        
+        if (!Items.TryGetValue(id, out T? item)) {
+            logger.Warning("{ContentType} {Id} not found for soft deletion.", typeof(T).Name, id);
+            return false;
+        }
+        
+        if (!item.IsSoftDeleted) {
+            logger.Debug("{ContentType} {Id} already restored.", typeof(T).Name, id);
+            return true;
+        }
+
+        item.SoftDeletedAt = DateTime.MinValue;
+        item.LastModifiedAt = DateTime.UtcNow;
+
+        logger.Information("Restored {ContentType} {Id}", typeof(T).Name, id);
         return true;
     }
     
@@ -154,10 +177,13 @@ public abstract class ContentRepositoryBase<T>(IContentStorage contentStorage, I
     // -----------------------------------------------------------------------------------------------------------------
     private static IEnumerable<T> GetConfiguredQuery(IEnumerable<T> data, QueryConfig config) {
         IEnumerable<T> query = data;
-
+        
+        // Filters work because they go from a complete dataset to a smaller subset
+        //      Meaning that we can't "add" by the filter, because that would make the filters not behave like expected
         if (!config.HasFlagFast(QueryConfig.WithHidden)) query = query.Where(item => !item.IsHidden);
         if (!config.HasFlagFast(QueryConfig.WithSoftDeleted)) query = query.Where(item => !item.IsSoftDeleted);
-
+        if (!config.HasFlagFast(QueryConfig.WithDevContent)) query = query.Where(item => !item.IsDevContent);
+        
         bool sortByCreated = config.HasFlagFast(QueryConfig.SortByCreatedAt);
         bool sortByModified = config.HasFlagFast(QueryConfig.SortByModifiedAt);
         bool sortByInternalTitle = config.HasFlagFast(QueryConfig.SortByInternalTitle);
@@ -183,7 +209,7 @@ public abstract class ContentRepositoryBase<T>(IContentStorage contentStorage, I
             (false, false, false, true)  => query.OrderByDescending(i => i.Id),
         };
         
-        // Always stable tie-break (especially important when many keys are equal)
+        // Always stable tie-break
         ordered = reversed
             ? ordered.ThenByDescending(i => i.Id)
             : ordered.ThenBy(i => i.Id);

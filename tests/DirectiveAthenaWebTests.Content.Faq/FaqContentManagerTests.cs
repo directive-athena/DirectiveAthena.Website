@@ -3,34 +3,43 @@
 // ---------------------------------------------------------------------------------------------------------------------
 using DirectiveAthenaWeb.Content.Faq;
 using DirectiveAthenaWeb.Content.Faq.Services;
-using DirectiveAthenaWeb.Services.ContentStorage;
 using DirectiveAthenaWeb.Services.Localization;
-using Microsoft.Extensions.Logging;
+using DirectiveAthenaWeb.Services.R2Storage;
 using NSubstitute;
 using DirectiveAthenaWebTests.Helpers;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace DirectiveAthenaWebTests.Content.Faq;
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
 public class FaqContentManagerTests {
-    private static IContentStorageFactory CreateStorageFactory(IContentStorage storage) {
-        var factory = Substitute.For<IContentStorageFactory>();
-        factory.ForCategory("faq").Returns(storage);
-        factory.ForCategory<FaqContent>().Returns(storage);
-        return factory;
-    }
+    // private static IContentStorageFactory CreateStorageFactory(IContentStorage storage) {
+    //     var factory = Substitute.For<IContentStorageFactory>();
+    //     factory.ForCategory("faq").Returns(storage);
+    //     factory.ForCategory<FaqContent>().Returns(storage);
+    //     return factory;
+    // }
 
     private static FaqContentManager CreateManager(
         ILocalizationProvider localizationProvider,
         IContentStorage? storage = null
     ) {
         storage ??= Substitute.For<IContentStorage>();
-        var logger = Substitute.For<ILogger<FaqContentManager>>();
-        var manager = new FaqContentManager(localizationProvider, CreateStorageFactory(storage), logger);
-        manager.SingleValidator = new FaqContentValidator(localizationProvider);
-        manager.MultipleValidator = new FaqContentCollectionValidator(manager.SingleValidator);
-        return manager;
+
+        var services = new ServiceCollection();
+        services.AddLogging();
+        services.AddSingleton(localizationProvider);
+
+        var factory = Substitute.For<IContentStorageFactory>();
+        factory.ForCategory(Arg.Any<string>()).Returns(storage);
+        factory.ForCategory<FaqContent>().Returns(storage);
+        services.AddSingleton(factory);
+
+        services.AddFaqContent();
+
+        ServiceProvider provider = services.BuildServiceProvider();
+        return new FaqContentManager(localizationProvider, provider);
     }
 
     [Test]

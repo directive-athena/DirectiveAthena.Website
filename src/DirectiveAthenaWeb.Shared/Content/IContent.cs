@@ -1,7 +1,7 @@
 ﻿// ---------------------------------------------------------------------------------------------------------------------
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
-namespace DirectiveAthenaWeb.Services.Content;
+namespace DirectiveAthenaWeb.Content;
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
@@ -17,6 +17,7 @@ public interface IContent {
     DateTime CreatedAt { get; }
     DateTime LastModifiedAt { get; }
     
+    bool IsDevContent { get; }
     bool IsHidden { get; }
     bool IsSoftDeleted { get; }
     string MarkdownFileName { get; }
