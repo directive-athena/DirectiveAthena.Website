@@ -56,6 +56,9 @@ public class Editor {
     public const string SaveItemButton = "SaveItemButton";
     public const string DeleteItemButton = "DeleteItemButton";
     public const string HardDeleteItemButton = "HardDeleteItemButton";
+    public const string RestoreItemButton = "RestoreItemButton";
+    public const string RestoreItemFailed = "RestoreItemFailed";
+    public const string RestoreItemSuccess = "RestoreItemSuccess";
     
     public const string InternalTitle = "InternalTitle";
 }

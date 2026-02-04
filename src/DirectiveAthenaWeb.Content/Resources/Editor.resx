@@ -205,5 +205,14 @@
     <data name="HardDeleteItemButton" xml:space="preserve">
         <value>Permanently Delete</value>
     </data>
+    <data name="RestoreItemButton" xml:space="preserve">
+        <value>Restore</value>
+    </data>
+    <data name="RestoreItemFailed" xml:space="preserve">
+        <value>Failed to restore the item</value>
+    </data>
+    <data name="RestoreItemSuccess" xml:space="preserve">
+        <value>Item has been restored</value>
+    </data>
 </root>
 

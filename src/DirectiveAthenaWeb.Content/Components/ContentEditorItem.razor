@@ -33,6 +33,7 @@
                            OnClick="@OnSaveChangesAsync">
                     @Localizer[Editor.SaveItemButton]
                 </MudButton>
+                
                 @if (!Content.IsSoftDeleted) {
                     <MudButton Variant="Variant.Outlined" Color="Color.Error" StartIcon="@Icons.Material.Filled.Delete"
                                OnClick="@SoftDeleteContentAsync">
@@ -40,7 +41,12 @@
                     </MudButton>
                 }
                 else {
-                    <MudButton Variant="Variant.Filled" Color="Color.Error" StartIcon="@Icons.Material.Filled.Delete"
+                    <MudButton Size="Size.Small" Variant="Variant.Outlined" Color="Color.Warning" StartIcon="@Icons.Material.Filled.Restore"
+                               OnClick="@RestoreContentAsync">
+                        @Localizer[Editor.RestoreItemButton]
+                    </MudButton>
+                    
+                    <MudButton Size="Size.Small" Variant="Variant.Filled" Color="Color.Error" StartIcon="@Icons.Material.Filled.Delete"
                                OnClick="@HardDeleteContentAsync">
                         @Localizer[Editor.HardDeleteItemButton]
                     </MudButton>
@@ -78,17 +84,13 @@
                         foreach (LocalizationInfo culture in LocalizationProvider.GetSupportedLocalizations()) {
                             <MudItem xs="12">
                                 <MudDivider Class="my-4"/>
-                                <MudText Typo="Typo.subtitle1" Color="Color.Primary">@culture.DisplayName (@culture.Code)
+                                <MudText Typo="Typo.subtitle1" Color="Color.Primary">
+                                    @culture.DisplayName (@culture.Code)
                                 </MudText>
                                 @LocalizedFields((Content, culture))
                             </MudItem>
                         }
                     }
-                    <MudTextField Value="@Content.MarkdownFileName"
-                                  Label="@Localizer[Editor.MarkdownFileLabel, Content.MarkdownFileName]"
-                                  Required="true" ReadOnly="true"
-                                  HelperText="@Localizer[Editor.MarkdownFileHelper]"/>
-
                 </MudStack>
 
                 <ContentEditorItemTags TContent="@TContent" OnTagsChanged="OnSaveChangesAsync"/>
@@ -143,6 +145,19 @@
         Snackbar.Add(Localizer[Editor.DeleteItemSoftSuccess], Severity.Success);
         await Repository.SaveAsync();
         await OnContentChanged.InvokeAsync();
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task RestoreContentAsync() {
+        if (!await Repository.RestoreByIdAsync(Content.Id)) {
+            Snackbar.Add(Localizer[Editor.RestoreItemFailed], Severity.Warning);
+            return;
+        }
+        
+        Snackbar.Add(Localizer[Editor.RestoreItemSuccess], Severity.Success);
+        await Repository.SaveAsync();
+        await OnContentChanged.InvokeAsync();
+        await InvokeAsync(StateHasChanged);
     }
     
     private async Task HardDeleteContentAsync() {

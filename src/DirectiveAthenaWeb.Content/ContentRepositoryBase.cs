@@ -100,6 +100,26 @@ public abstract class ContentRepositoryBase<T>(IContentStorage contentStorage, I
         return true;
     }
     
+    public async ValueTask<bool> RestoreByIdAsync(Guid id, CancellationToken ct = default) {
+        await EnsureDataIsLoadedAsync(ct);
+        
+        if (!Items.TryGetValue(id, out T? item)) {
+            logger.Warning("{ContentType} {Id} not found for soft deletion.", typeof(T).Name, id);
+            return false;
+        }
+        
+        if (!item.IsSoftDeleted) {
+            logger.Debug("{ContentType} {Id} already restored.", typeof(T).Name, id);
+            return true;
+        }
+
+        item.SoftDeletedAt = DateTime.MinValue;
+        item.LastModifiedAt = DateTime.UtcNow;
+
+        logger.Information("Restored {ContentType} {Id}", typeof(T).Name, id);
+        return true;
+    }
+    
     public async ValueTask<bool> AddOrUpdateAsync(T item, CancellationToken ct = default) {
         await EnsureDataIsLoadedAsync(ct);
         
