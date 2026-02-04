@@ -3,6 +3,7 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @using DirectiveAthenaWeb.Content.Note
 @using DirectiveAthenaWeb.Content.Note.Resources
+@using DirectiveAthenaWeb.Services.Client
 @using DirectiveAthenaWeb.Services.Content
 @using Microsoft.Extensions.Localization
 
@@ -16,6 +17,8 @@
 @inject INoteContentManager NoteManager
 @inject NavigationManager Nav
 @inject IStringLocalizer<Note> Localizer
+@inject IClientConfigFactory ClientConfigFactory
+
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Html
 @* ------------------------------------------------------------------------------------------------------------------ *@
@@ -150,7 +153,10 @@
     // Methods
     // -----------------------------------------------------------------------------------------------------------------
     protected override async Task OnInitializedAsync() {
-        NoteContent[] posts = await NoteRepository.GetAllAsync(QueryConfig.None.AddEnvironmentFlags());
+        ClientConfig clientConfig = await ClientConfigFactory.CreateAsync();
+        QueryConfig config = QueryConfigExtensions.AddClientConfigFlags(clientConfig);
+        
+        NoteContent[] posts = await NoteRepository.GetAllAsync(config);
 
         HighlightedPost = posts.FirstOrDefault();
         RemainingPosts = posts.Skip(1).Take(3);

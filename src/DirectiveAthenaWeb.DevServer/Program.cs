@@ -4,6 +4,7 @@
 using DirectiveAthenaWeb.Content;
 using DirectiveAthenaWeb.Services;
 using DirectiveAthenaWeb.Services.Contact;
+using DirectiveAthenaWeb.Services.Content;
 using DirectiveAthenaWeb.Services.ContentStorage;
 using DirectiveAthenaWeb.Services.Localization;
 using MudBlazor.Services;
@@ -59,6 +60,13 @@ public static class Program {
 
         app.MapPost("/upload", ApiEndpoints.HandleUpload);
         app.MapPost("/delete", ApiEndpoints.HandleDelete);
+        
+        app.MapGet("/_config/client", (IConfiguration config) => {
+            // Env vars are already part of IConfiguration by default.
+            bool includeDevContent = config.GetValue<bool>("INFINILORE_INCLUDE_DEVCONTENT");
+            return Results.Ok(new { includeDevContent });
+        });
+        
 
         app.MapRazorComponents<AdminApp>()
             .AddInteractiveServerRenderMode();

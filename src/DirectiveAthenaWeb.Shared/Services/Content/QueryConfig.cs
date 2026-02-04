@@ -1,6 +1,8 @@
 ﻿// ---------------------------------------------------------------------------------------------------------------------
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
+using DirectiveAthenaWeb.Services.Client;
+
 namespace DirectiveAthenaWeb.Services.Content;
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
@@ -20,6 +22,10 @@ public enum QueryConfig {
 }
 
 public static class QueryConfigExtensions {
+    public static QueryConfig AddClientConfigFlags(ClientConfig clientConfig) {
+        return QueryConfig.None.AddClientConfigFlags(clientConfig);
+    }
+    
     extension(QueryConfig value) {
         public bool HasFlagFast(QueryConfig flag) 
             => (value & flag) != 0;
@@ -29,6 +35,12 @@ public static class QueryConfigExtensions {
             
             if (envVar is null || !bool.TryParse(envVar, out bool includeDevContent) || !includeDevContent) return value;
             return value | QueryConfig.WithDevContent;
+        }
+        
+        public QueryConfig AddClientConfigFlags(ClientConfig clientConfig) {
+            if (clientConfig.IncludeDevContent) value |= QueryConfig.WithDevContent;
+            
+            return value;
         }
     }
 

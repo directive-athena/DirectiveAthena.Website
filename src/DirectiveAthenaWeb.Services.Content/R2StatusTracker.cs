@@ -1,11 +1,15 @@
 // ---------------------------------------------------------------------------------------------------------------------
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
-namespace DirectiveAthenaWeb.Services.ContentStorage;
+using CodeOfChaos.Extensions.DependencyInjection;
+using DirectiveAthenaWeb.Services.ContentStorage;
+
+namespace DirectiveAthenaWeb.Services.Content;
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
-public sealed class R2StatusTracker : IR2StatusTracker {
+[InjectableSingleton<IR2StatusTracker>]
+public class R2StatusTracker : IR2StatusTracker {
     private int _isFallbackActive;
     public bool IsFallbackActive => Volatile.Read(ref _isFallbackActive) == 1;
     

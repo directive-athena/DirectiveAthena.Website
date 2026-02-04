@@ -28,9 +28,13 @@ public static class Program {
         builder.RootComponents.Add<App>("#app");
         builder.RootComponents.Add<HeadOutlet>("head::after");
 
+        builder.Services.AddHttpClient("Server", client => {
+            client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress);
+        });
         builder.Services.AddScoped(_ => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
         builder.Services.AddSingleton<IHostEnvironment>(_ => new WasmHostEnvironmentAdapter(builder.HostEnvironment));
-        builder.Services.AddSingleton<IR2StatusTracker, R2StatusTracker>();
+        builder.Services.RegisterServicesFromDirectiveAthenaWebClient();
+        
         builder.Services.AddMudServices();
         builder.Services.AddLocalization();
 
