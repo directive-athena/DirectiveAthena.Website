@@ -8,6 +8,7 @@ using System.Net;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization.Metadata;
 
 namespace DirectiveAthenaWeb.Content;
 // ---------------------------------------------------------------------------------------------------------------------
@@ -28,11 +29,7 @@ public abstract class ContentRepositoryBase<T>(IContentStorage contentStorage, I
     private readonly TimeSpan CacheRefreshWindow = TimeSpan.FromMinutes(5);
     #endif
 
-    private readonly JsonSerializerOptions _jsonReadOptions = new(JsonSerializerDefaults.Web);
-    private readonly JsonSerializerOptions _jsonWriteOptions = new() {
-        WriteIndented = true,
-        PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-    };
+    protected abstract JsonTypeInfo<T[]> ContentListTypeInfo { get; }
 
     // -----------------------------------------------------------------------------------------------------------------
     // CRUD Methods
@@ -168,7 +165,7 @@ public abstract class ContentRepositoryBase<T>(IContentStorage contentStorage, I
             .ToArray();
 
         await using MemoryStream stream = new();
-        await JsonSerializer.SerializeAsync(stream, itemList, _jsonWriteOptions, ct);
+        await JsonSerializer.SerializeAsync(stream, itemList, ContentListTypeInfo, ct);
         return Encoding.UTF8.GetString(stream.ToArray());
     }
 
@@ -267,7 +264,7 @@ public abstract class ContentRepositoryBase<T>(IContentStorage contentStorage, I
             }
 
             T[] items = response.Content.IsNotNullOrWhiteSpace()
-                ? JsonSerializer.Deserialize<T[]>(response.Content, _jsonReadOptions) ?? Array.Empty<T>()
+                ? JsonSerializer.Deserialize(response.Content, ContentListTypeInfo) ?? Array.Empty<T>()
                 : Array.Empty<T>();
 
             NormalizeMissingTimestamps(items, DateTime.UtcNow);
