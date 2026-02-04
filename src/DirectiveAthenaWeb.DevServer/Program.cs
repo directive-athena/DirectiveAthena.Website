@@ -27,7 +27,6 @@ public static class Program {
             .AddInteractiveServerComponents();
         builder.Services.AddHttpClient();
         builder.Services.AddScoped(sp => sp.GetRequiredService<IHttpClientFactory>().CreateClient());
-        builder.Services.AddSingleton<IR2StatusTracker, R2StatusTracker>();
         
         builder.Services.AddCors(options => {
             options.AddDefaultPolicy(policy => policy
