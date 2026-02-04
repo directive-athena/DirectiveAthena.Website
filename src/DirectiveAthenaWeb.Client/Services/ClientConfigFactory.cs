@@ -3,7 +3,9 @@
 // ---------------------------------------------------------------------------------------------------------------------
 using CodeOfChaos.Extensions.DependencyInjection;
 using DirectiveAthenaWeb.Services.Client;
+#if DEBUG
 using System.Net.Http.Json;
+#endif
 
 namespace DirectiveAthenaWeb.Client.Services;
 // ---------------------------------------------------------------------------------------------------------------------
@@ -16,10 +18,10 @@ public class ClientConfigFactory(IHttpClientFactory clientFactory, ILogger<Clien
     // -----------------------------------------------------------------------------------------------------------------
     // Methods
     // -----------------------------------------------------------------------------------------------------------------
+    #if DEBUG
     public async ValueTask<ClientConfig> CreateAsync() {
         if (_config is not null) return _config;
         
-        #if DEBUG
         var cts = new CancellationTokenSource(TimeSpan.FromSeconds(5));
         CancellationToken token = cts.Token;
 
@@ -38,9 +40,12 @@ public class ClientConfigFactory(IHttpClientFactory clientFactory, ILogger<Clien
             logger.Error(e, "Failed to fetch client config");
             return _config = new ClientConfig();
         }
-        #else
-        // In release mode there is no server to contact
-        return new ClientConfig();
-        #endif
     }
+    #else
+    public ValueTask<ClientConfig> CreateAsync() {
+        _ = clientFactory;
+        _ = logger;
+        return ValueTask.FromResult(_config ??= new ClientConfig());
+    }
+    #endif
 }
