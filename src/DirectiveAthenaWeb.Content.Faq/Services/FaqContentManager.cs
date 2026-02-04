@@ -3,6 +3,8 @@
 // ---------------------------------------------------------------------------------------------------------------------
 using CodeOfChaos.Extensions.DependencyInjection;
 using DirectiveAthenaWeb.Services.Localization;
+using DirectiveAthenaWeb.Services.R2Storage;
+using FluentValidation;
 using Microsoft.Extensions.Logging;
 
 namespace DirectiveAthenaWeb.Content.Faq.Services;
@@ -13,19 +15,21 @@ namespace DirectiveAthenaWeb.Content.Faq.Services;
 [InjectableScoped<IContentManager<FaqContent>>]
 internal class FaqContentManager(
     ILocalizationProvider localizationProvider,
-    IServiceProvider provider
-) : ContentManagerBase<FaqContent>(provider), IFaqContentManager {
-
+    IR2Storage<FaqContent> storage,
+    IValidator<FaqContent> singleValidator,
+    IValidator<IEnumerable<FaqContent>> multipleValidator,
+    ILogger<ContentManagerBase<FaqContent>> logger
+) : ContentManagerBase<FaqContent>(storage, singleValidator, multipleValidator, logger), IFaqContentManager {
+    private readonly ILogger<ContentManagerBase<FaqContent>> _logger = logger;
+    
+    // -----------------------------------------------------------------------------------------------------------------
+    // Methods
+    // -----------------------------------------------------------------------------------------------------------------
     public string GetLocalizedQuestion(FaqContent rule)
         => GetLocalizedValue(rule.Question);
 
     public string GetLocalizedAnswer(FaqContent rule)
         => GetLocalizedValue(rule.Answer);
-
-    public string GetLocalizedFilePath(FaqContent rule) {
-        LocalizationInfo localization = localizationProvider.GetCurrentLocalization();
-        return Storage.GetMarkdownContentPath(localization.Code, rule.MarkdownFileName);
-    }
     
     public override FaqContent Create(Guid id = default, string? internalTitle = null) {
         if (id == Guid.Empty) id = Guid.CreateVersion7();
@@ -45,36 +49,8 @@ internal class FaqContentManager(
             LastModifiedAt = now,
             InternalTitle = internalTitle ?? string.Empty
         };
-        Logger.Information("Created new world rule stub {Id}.", rule.Id);
+        _logger.Information("Created new world rule stub {Id}.", rule.Id);
         return rule;
-    }
-
-    public async Task<(Dictionary<string, string> Stubs, bool WroteAll)> GenerateStubsAsync(FaqContent rule, bool writeToDisk = false, CancellationToken ct = default) {
-        IReadOnlyCollection<LocalizationInfo> locals = localizationProvider.GetSupportedLocalizations();
-        Dictionary<string, string> stubs = locals.ToDictionary(
-            c => c.Code,
-            c => $"# {rule.Question.GetValueOrDefault(c.Code)}\n\n{rule.Answer.GetValueOrDefault(c.Code)}");
-
-        if (!writeToDisk) {
-            Logger.Debug("Generated world rule stubs for {Id} without writing to disk.", rule.Id);
-            return (stubs, false);
-        }
-
-        bool wroteAll = true;
-        foreach (KeyValuePair<string, string> stub in stubs) {
-            string path = Storage.GetMarkdownDiskPath(stub.Key, rule.MarkdownFileName);
-            if (!await Storage.WriteFileAsync(path, stub.Value, ct)) {
-                wroteAll = false;
-            }
-        }
-
-        Logger.Information("Generated and wrote world rule stubs for {Id} {Result}.", rule.Id, wroteAll ? "succeeded" : "failed");
-        return (stubs, wroteAll);
-    }
-
-    public async Task EnsureResxAsync(CancellationToken ct = default) {
-        Logger.Debug("World rules do not use resx initialization.");
-        await Task.CompletedTask;
     }
 
     private string GetLocalizedValue(Dictionary<string, string> values) {

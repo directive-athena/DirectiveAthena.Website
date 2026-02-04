@@ -19,7 +19,7 @@ public static class ServiceCollectionExtensions {
         [UsedImplicitly] public IServiceCollection AddNoteContent() {
             services.RegisterServicesFromDirectiveAthenaWebContentNote();
 
-            services.AddContentStorage<NoteContent>("note");
+            services.AddR2Storage<NoteContent>("note");
             
             ContentEditorProvider.RegisterAtContentEditor<NoteContentEditor, IStringLocalizer<Note>>(
                 localizer => localizer[Note.ContentManagerTabWritings],

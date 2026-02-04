@@ -14,10 +14,10 @@ namespace DirectiveAthenaWeb.Content;
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
-public abstract class ContentRepositoryBase<T>(IContentStorage contentStorage, ILogger logger) : IContentRepository<T>
-    where T : ContentBase, IContent {
+public abstract class ContentRepositoryBase<TContent>(IR2Storage<TContent> contentStorage, ILogger logger) : IContentRepository<TContent>
+    where TContent : ContentBase, IContent {
     
-    private ConcurrentDictionary<Guid, T> Items { get; set; } = [];
+    private ConcurrentDictionary<Guid, TContent> Items { get; set; } = [];
     private bool _isFirstTimeLoaded; // TODO needs a semaphoreslim
     
     private EntityTagHeaderValue? _etag;
@@ -29,40 +29,40 @@ public abstract class ContentRepositoryBase<T>(IContentStorage contentStorage, I
     private readonly TimeSpan CacheRefreshWindow = TimeSpan.FromMinutes(5);
     #endif
 
-    protected abstract JsonTypeInfo<T[]> ContentListTypeInfo { get; }
+    protected abstract JsonTypeInfo<TContent[]> ContentListTypeInfo { get; }
 
     // -----------------------------------------------------------------------------------------------------------------
     // CRUD Methods
     // -----------------------------------------------------------------------------------------------------------------
     #region CRUD Methods
-    public async ValueTask<T[]> GetAllAsync(QueryConfig config = default, CancellationToken ct = default) {
+    public async ValueTask<TContent[]> GetAllAsync(QueryConfig config = default, CancellationToken ct = default) {
         await EnsureDataIsLoadedAsync(ct);
 
-        IEnumerable<T> query = GetConfiguredQuery(Items.Values, config);
-        T[] results = query.ToArray();
+        IEnumerable<TContent> query = GetConfiguredQuery(Items.Values, config);
+        TContent[] results = query.ToArray();
         return results;
     }
 
-    public async ValueTask<T?> GetByIdAsync(Guid id, QueryConfig config = default, CancellationToken ct = default) {
+    public async ValueTask<TContent?> GetByIdAsync(Guid id, QueryConfig config = default, CancellationToken ct = default) {
         await EnsureDataIsLoadedAsync(ct);
 
-        T? item = Items.GetValueOrDefault(id);
+        TContent? item = Items.GetValueOrDefault(id);
         if (item is null) return null;
 
-        IEnumerable<T> query = GetConfiguredQuery([item], config);
+        IEnumerable<TContent> query = GetConfiguredQuery([item], config);
         return query.FirstOrDefault();
     }
 
     public async ValueTask<bool> SoftDeleteByIdAsync(Guid id, CancellationToken ct = default) {
         await EnsureDataIsLoadedAsync(ct);
 
-        if (!Items.TryGetValue(id, out T? item)) {
-            logger.Warning("{ContentType} {Id} not found for soft deletion.", typeof(T).Name, id);
+        if (!Items.TryGetValue(id, out TContent? item)) {
+            logger.Warning("{ContentType} {Id} not found for soft deletion.", typeof(TContent).Name, id);
             return false;
         }
 
         if (item.IsSoftDeleted) {
-            logger.Debug("{ContentType} {Id} already soft deleted.", typeof(T).Name, id);
+            logger.Debug("{ContentType} {Id} already soft deleted.", typeof(TContent).Name, id);
             return true;
         }
 
@@ -70,78 +70,78 @@ public abstract class ContentRepositoryBase<T>(IContentStorage contentStorage, I
         item.SoftDeletedAt = now;
         item.LastModifiedAt = now;
 
-        logger.Information("Soft deleted {ContentType} {Id}", typeof(T).Name, id);
+        logger.Information("Soft deleted {ContentType} {Id}", typeof(TContent).Name, id);
         return true;
     }
 
     public async ValueTask<bool> HardDeleteByIdAsync(Guid id, CancellationToken ct = default) {
         await EnsureDataIsLoadedAsync(ct);
-        if (!Items.TryGetValue(id, out T? item)) {
-            logger.Warning("{ContentType} {Id} not found for deletion.", typeof(T).Name, id);
+        if (!Items.TryGetValue(id, out TContent? item)) {
+            logger.Warning("{ContentType} {Id} not found for deletion.", typeof(TContent).Name, id);
             return false;
         }
 
         bool allDeleted = await contentStorage.DeleteLocalizedFilesAsync(item.MarkdownFileName, ct);
         if (!allDeleted) {
-            logger.Warning("Failed to delete localized files for {ContentType} {Id}.", typeof(T).Name, id);
+            logger.Warning("Failed to delete localized files for {ContentType} {Id}.", typeof(TContent).Name, id);
             return false;
         }
 
         if (!Items.TryRemove(id, out _)) {
-            logger.Warning("{ContentType} {Id} not found for deletion.", typeof(T).Name, id);
+            logger.Warning("{ContentType} {Id} not found for deletion.", typeof(TContent).Name, id);
             return false;
         }
         
-        logger.Information("Deleted {ContentType} {Id}", typeof(T).Name, id);
+        logger.Information("Deleted {ContentType} {Id}", typeof(TContent).Name, id);
         return true;
     }
     
     public async ValueTask<bool> RestoreByIdAsync(Guid id, CancellationToken ct = default) {
         await EnsureDataIsLoadedAsync(ct);
         
-        if (!Items.TryGetValue(id, out T? item)) {
-            logger.Warning("{ContentType} {Id} not found for soft deletion.", typeof(T).Name, id);
+        if (!Items.TryGetValue(id, out TContent? item)) {
+            logger.Warning("{ContentType} {Id} not found for soft deletion.", typeof(TContent).Name, id);
             return false;
         }
         
         if (!item.IsSoftDeleted) {
-            logger.Debug("{ContentType} {Id} already restored.", typeof(T).Name, id);
+            logger.Debug("{ContentType} {Id} already restored.", typeof(TContent).Name, id);
             return true;
         }
 
         item.SoftDeletedAt = DateTime.MinValue;
         item.LastModifiedAt = DateTime.UtcNow;
 
-        logger.Information("Restored {ContentType} {Id}", typeof(T).Name, id);
+        logger.Information("Restored {ContentType} {Id}", typeof(TContent).Name, id);
         return true;
     }
     
-    public async ValueTask<bool> AddOrUpdateAsync(T item, CancellationToken ct = default) {
+    public async ValueTask<bool> AddOrUpdateAsync(TContent item, CancellationToken ct = default) {
         await EnsureDataIsLoadedAsync(ct);
         
         try {
             item.LastModifiedAt = DateTime.UtcNow;
             Items.AddOrUpdate(item.Id, item, (_, _) => item);
-            logger.Information("Added or updated {ContentType} {Id}", typeof(T).Name, item.Id);
+            logger.Information("Added or updated {ContentType} {Id}", typeof(TContent).Name, item.Id);
             return true;
         }
         catch (Exception e) {
-            logger.Error(e, "Failed to add or update {ContentType} {Id}", typeof(T).Name, item.Id);
+            logger.Error(e, "Failed to add or update {ContentType} {Id}", typeof(TContent).Name, item.Id);
             return false;
         }
     }
-    public async ValueTask<bool> AddOrUpdateRangeAsync(IEnumerable<T> items, CancellationToken ct = default) {
+    public async ValueTask<bool> AddOrUpdateRangeAsync(IEnumerable<TContent> items, CancellationToken ct = default) {
         await EnsureDataIsLoadedAsync(ct);
 
         bool state = true;
-        foreach (T item in items) {
+        foreach (TContent item in items) {
             try {
                 item.LastModifiedAt = DateTime.UtcNow;
                 Items.AddOrUpdate(item.Id, item, (_, _) => item);
-                logger.Information("Added or updated {ContentType} {Id}", typeof(T).Name, item.Id);
+                logger.Information("Added or updated {ContentType} {Id}", typeof(TContent).Name, item.Id);
             }
             catch (Exception e) {
-                logger.Error(e, "Failed to add or update {ContentType} {Id}", typeof(T).Name, item.Id);
+                logger.Error(e, "Failed to add or update {ContentType} {Id}", typeof(TContent).Name, item.Id);
                 state = false;
             }
         }
@@ -160,7 +160,7 @@ public abstract class ContentRepositoryBase<T>(IContentStorage contentStorage, I
     public async ValueTask<string> GetAsJsonStringAsync(CancellationToken ct = default) {
         await EnsureDataIsLoadedAsync(ct);
 
-        T[] itemList = Items.Values
+        TContent[] itemList = Items.Values
             .OrderBy(item => item.Id)
             .ToArray();
 
@@ -172,8 +172,8 @@ public abstract class ContentRepositoryBase<T>(IContentStorage contentStorage, I
     // -----------------------------------------------------------------------------------------------------------------
     // Methods
     // -----------------------------------------------------------------------------------------------------------------
-    private static IEnumerable<T> GetConfiguredQuery(IEnumerable<T> data, QueryConfig config) {
-        IEnumerable<T> query = data;
+    private static IEnumerable<TContent> GetConfiguredQuery(IEnumerable<TContent> data, QueryConfig config) {
+        IEnumerable<TContent> query = data;
         
         // Filters work because they go from a complete dataset to a smaller subset
         //      Meaning that we can't "add" by the filter, because that would make the filters not behave like expected
@@ -186,7 +186,7 @@ public abstract class ContentRepositoryBase<T>(IContentStorage contentStorage, I
         bool sortByInternalTitle = config.HasFlagFast(QueryConfig.SortByInternalTitle);
         bool reversed = config.HasFlagFast(QueryConfig.Reversed);
 
-        IOrderedEnumerable<T> ordered = (sortByCreated, sortByModified, sortByInternalTitle, reversed) switch {
+        IOrderedEnumerable<TContent> ordered = (sortByCreated, sortByModified, sortByInternalTitle, reversed) switch {
             // Both timestamps: use a compound key.
             (true,  true,  _,     false) => query.OrderBy(i => i.LastModifiedAt).ThenBy(i => i.CreatedAt),
             (true,  true,  _,     true)  => query.OrderByDescending(i => i.LastModifiedAt).ThenByDescending(i => i.CreatedAt),
@@ -233,18 +233,18 @@ public abstract class ContentRepositoryBase<T>(IContentStorage contentStorage, I
             else shouldRefresh = now - _lastRefreshUtc.Value > window;
 
             if (_isFirstTimeLoaded && !shouldRefresh) {
-                logger.Debug("{ContentType} cache was refreshed by another caller.", typeof(T).Name);
+                logger.Debug("{ContentType} cache was refreshed by another caller.", typeof(TContent).Name);
                 return;
             }
 
-            ContentReadResult response = await contentStorage.ReadIndexAsync(_etag, _lastModifiedUtc, ct);
+            R2ReadResult response = await contentStorage.ReadIndexAsync(_etag, _lastModifiedUtc, ct);
 
             // ReSharper disable once SwitchStatementHandlesSomeKnownEnumValuesWithDefault
             switch (response.StatusCode) {
                 case HttpStatusCode.OK: break;
 
                 case HttpStatusCode.NotFound:
-                    logger.Warning("{ContentType} index not found at {Path}; treating as empty dataset.", typeof(T).Name, contentStorage.IndexContentPath);
+                    logger.Warning("{ContentType} index not found at {Path}; treating as empty dataset.", typeof(TContent).Name, contentStorage.IndexContentPath);
                     SetItemsToFaultedState();
                     return;
 
@@ -252,37 +252,37 @@ public abstract class ContentRepositoryBase<T>(IContentStorage contentStorage, I
                     _lastRefreshUtc = now;
                     if (response.ETag is not null) _etag = response.ETag;
                     if (response.LastModifiedUtc is not null) _lastModifiedUtc = response.LastModifiedUtc;
-                    logger.Debug("{ContentType} cache not modified; updated refresh markers.", typeof(T).Name);
+                    logger.Debug("{ContentType} cache not modified; updated refresh markers.", typeof(TContent).Name);
                     return;
                 }
 
                 default: {
-                    logger.Warning("Failed to load {ContentType} index: {StatusCode}.", typeof(T).Name, response.StatusCode);
+                    logger.Warning("Failed to load {ContentType} index: {StatusCode}.", typeof(TContent).Name, response.StatusCode);
                     SetItemsToFaultedState();
                     return;
                 }
             }
 
-            T[] items = response.Content.IsNotNullOrWhiteSpace()
-                ? JsonSerializer.Deserialize(response.Content, ContentListTypeInfo) ?? Array.Empty<T>()
-                : Array.Empty<T>();
+            TContent[] items = response.Content.IsNotNullOrWhiteSpace()
+                ? JsonSerializer.Deserialize(response.Content, ContentListTypeInfo) ?? Array.Empty<TContent>()
+                : Array.Empty<TContent>();
 
             NormalizeMissingTimestamps(items, DateTime.UtcNow);
-            Items = new ConcurrentDictionary<Guid, T>(items.ToDictionary(item => item.Id, item => item));
+            Items = new ConcurrentDictionary<Guid, TContent>(items.ToDictionary(item => item.Id, item => item));
             _isFirstTimeLoaded = true;
             _etag = response.ETag;
             _lastModifiedUtc = response.LastModifiedUtc;
             _lastRefreshUtc = now;
-            logger.Information("Loaded {Count} {ContentType} items into cache.", Items.Count, typeof(T).Name);
+            logger.Information("Loaded {Count} {ContentType} items into cache.", Items.Count, typeof(TContent).Name);
         }
         catch (Exception ex) {
-            logger.Error(ex, "Failed to refresh {ContentType} cache; clearing any cached data.", typeof(T).Name);
+            logger.Error(ex, "Failed to refresh {ContentType} cache; clearing any cached data.", typeof(TContent).Name);
             SetItemsToFaultedState();
         }
     }
 
-    private static void NormalizeMissingTimestamps(T[] items, DateTime nowUtc) {
-        foreach (T item in items) {
+    private static void NormalizeMissingTimestamps(TContent[] items, DateTime nowUtc) {
+        foreach (TContent item in items) {
             if (item.CreatedAt == default) {
                 item.CreatedAt = nowUtc;
             }

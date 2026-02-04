@@ -2,7 +2,6 @@
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
 using DirectiveAthenaWeb.Content.Note;
-using DirectiveAthenaWeb.Content.Note.Services;
 using DirectiveAthenaWeb.Services.Localization;
 using DirectiveAthenaWeb.Services.R2Storage;
 using NSubstitute;
@@ -21,25 +20,24 @@ public class NoteContentManagerTests {
     //     return factory;
     // }
 
-    private static NoteContentManager CreateManager(
+    private static INoteContentManager CreateManager(
         ILocalizationProvider localizationProvider,
-        IContentStorage? storage = null
+        IR2Storage<NoteContent>? storage = null
     ) {
-        storage ??= Substitute.For<IContentStorage>();
+        storage ??= Substitute.For<IR2Storage<NoteContent>>();
 
         var services = new ServiceCollection();
         services.AddLogging();
         services.AddSingleton(localizationProvider);
 
-        var factory = Substitute.For<IContentStorageFactory>();
-        factory.ForCategory(Arg.Any<string>()).Returns(storage);
+        var factory = Substitute.For<IR2StorageFactory>();
         factory.ForCategory<NoteContent>().Returns(storage);
         services.AddSingleton(factory);
 
         services.AddNoteContent();
 
         ServiceProvider provider = services.BuildServiceProvider();
-        return new NoteContentManager(localizationProvider, provider);
+        return provider.GetRequiredService<INoteContentManager>();
     }
 
     // -----------------------------------------------------------------------------------------------------------------
@@ -50,7 +48,7 @@ public class NoteContentManagerTests {
         // Arrange
         NoteContent article = ContentFaker.CreateNote(100, includeNl: false);
         ILocalizationProvider localizationProvider = TestLocalization.CreateLocalizationProvider("nl");
-        NoteContentManager manager = CreateManager(localizationProvider);
+        INoteContentManager manager = CreateManager(localizationProvider);
 
         // Act
         string result = manager.GetLocalizedTitle(article);
@@ -64,7 +62,7 @@ public class NoteContentManagerTests {
         // Arrange
         NoteContent article = ContentFaker.CreateNote(101, includeNl: false);
         ILocalizationProvider localizationProvider = TestLocalization.CreateLocalizationProvider("nl");
-        NoteContentManager manager = CreateManager(localizationProvider);
+        INoteContentManager manager = CreateManager(localizationProvider);
 
         // Act
         string result = manager.GetLocalizedSummary(article);
@@ -78,10 +76,10 @@ public class NoteContentManagerTests {
         // Arrange
         NoteContent article = ContentFaker.CreateNote(102);
         ILocalizationProvider localizationProvider = TestLocalization.CreateLocalizationProvider("nl");
-        var storage = Substitute.For<IContentStorage>();
+        var storage = Substitute.For<IR2Storage<NoteContent>>();
         storage.GetMarkdownContentPath(Arg.Any<string>(), Arg.Any<string>())
             .Returns(call => $"content/notes/{call.ArgAt<string>(0)}/{call.ArgAt<string>(1)}");
-        NoteContentManager manager = CreateManager(localizationProvider, storage);
+        INoteContentManager manager = CreateManager(localizationProvider, storage);
 
         // Act
         string result = manager.GetLocalizedFilePath(article);
@@ -91,16 +89,16 @@ public class NoteContentManagerTests {
     }
 
     [Test]
-    public async Task GetRawMarkdownContentAsync_ReturnsEmptyOnFailure() {
+    public async Task GetMarkdownContentAsync_ReturnsEmptyOnFailure() {
         // Arrange
-        var storage = Substitute.For<IContentStorage>();
+        var storage = Substitute.For<IR2Storage<NoteContent>>();
         storage.ReadFileAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns(new ValueTask<string?>((string?)null));
-        NoteContentManager manager = CreateManager(TestLocalization.CreateLocalizationProvider(), storage);
+        INoteContentManager manager = CreateManager(TestLocalization.CreateLocalizationProvider(), storage);
         NoteContent article = ContentFaker.CreateNote(103);
 
         // Act
-        string result = await manager.GetRawMarkdownContentAsync(article, "en");
+        string result = await manager.GetMarkdownContentAsync(article, "en");
 
         // Assert
         await Assert.That(result).IsEmpty();
@@ -110,7 +108,7 @@ public class NoteContentManagerTests {
     public async Task NewWriting_PopulatesLocalizedFields() {
         // Arrange
         ILocalizationProvider localizationProvider = TestLocalization.CreateLocalizationProvider();
-        NoteContentManager manager = CreateManager(localizationProvider);
+        INoteContentManager manager = CreateManager(localizationProvider);
 
         // Act
         NoteContent article = manager.Create();
@@ -133,7 +131,7 @@ public class NoteContentManagerTests {
             }
         ];
 
-        NoteContentManager manager = CreateManager(TestLocalization.CreateLocalizationProvider());
+        INoteContentManager manager = CreateManager(TestLocalization.CreateLocalizationProvider());
 
         // Act
         bool result = manager.Validate(notes, out string? error);
@@ -152,7 +150,7 @@ public class NoteContentManagerTests {
         ];
         notes[1].Id = notes[0].Id;
 
-        NoteContentManager manager = CreateManager(TestLocalization.CreateLocalizationProvider());
+        INoteContentManager manager = CreateManager(TestLocalization.CreateLocalizationProvider());
 
         // Act
         bool result = manager.Validate(notes, out string? error);
@@ -168,7 +166,7 @@ public class NoteContentManagerTests {
         NoteContent article = ContentFaker.CreateNote(200, includeNl: false);
         NoteContent[] notes = [article];
 
-        NoteContentManager manager = CreateManager(TestLocalization.CreateLocalizationProvider());
+        INoteContentManager manager = CreateManager(TestLocalization.CreateLocalizationProvider());
 
         // Act
         bool result = manager.Validate(notes, out string? error);
@@ -185,7 +183,7 @@ public class NoteContentManagerTests {
         article.Summary.Remove("nl");
         NoteContent[] notes = [article];
 
-        NoteContentManager manager = CreateManager(TestLocalization.CreateLocalizationProvider());
+        INoteContentManager manager = CreateManager(TestLocalization.CreateLocalizationProvider());
 
         // Act
         bool result = manager.Validate(notes, out string? error);
@@ -193,46 +191,6 @@ public class NoteContentManagerTests {
         // Assert
         await Assert.That(result).IsFalse();
         await Assert.That(error).IsEqualTo("Some posts have missing summaries for one or more cultures!");
-    }
-
-    [Test]
-    public async Task GenerateStubsAsync_ReturnsStubsForAllCultures() {
-        // Arrange
-        NoteContent article = ContentFaker.CreateNote(120);
-        var storage = Substitute.For<IContentStorage>();
-        NoteContentManager manager = CreateManager(TestLocalization.CreateLocalizationProvider(), storage);
-
-        // Act
-        (Dictionary<string, string> Stubs, bool WroteAll) result = await manager.GenerateStubsAsync(article, writeToDisk: false);
-
-        // Assert
-        await Assert.That(result.Stubs.Count).IsEqualTo(TestLocalization.DefaultLocalizations().Count);
-        await Assert.That(result.WroteAll).IsFalse();
-        await storage.DidNotReceiveWithAnyArgs().WriteFileAsync(null!, null!);
-    }
-
-    [Test]
-    public async Task GenerateStubsAsync_WritesWhenRequested() {
-        // Arrange
-        NoteContent article = ContentFaker.CreateNote(121);
-        var storage = Substitute.For<IContentStorage>();
-        storage.WriteFileAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
-            .Returns(new ValueTask<bool>(true));
-        storage.GetMarkdownDiskPath(Arg.Any<string>(), Arg.Any<string>())
-            .Returns(call => $"{call.ArgAt<string>(0)}/{call.ArgAt<string>(1)}");
-
-        NoteContentManager manager = CreateManager(TestLocalization.CreateLocalizationProvider(), storage);
-
-        // Act
-        (Dictionary<string, string> Stubs, bool WroteAll) result = await manager.GenerateStubsAsync(article, writeToDisk: true);
-
-        // Assert
-        await Assert.That(result.Stubs.Count).IsEqualTo(TestLocalization.DefaultLocalizations().Count);
-        await Assert.That(result.WroteAll).IsTrue();
-        foreach (LocalizationInfo localization in TestLocalization.DefaultLocalizations()) {
-            string path = storage.GetMarkdownDiskPath(localization.Code, article.MarkdownFileName);
-            await storage.Received(1).WriteFileAsync(path, Arg.Any<string>(), Arg.Any<CancellationToken>());
-        }
     }
 
 }

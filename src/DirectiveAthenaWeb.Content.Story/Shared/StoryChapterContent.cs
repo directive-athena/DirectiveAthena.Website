@@ -1,11 +1,11 @@
 ﻿// ---------------------------------------------------------------------------------------------------------------------
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
-namespace DirectiveAthenaWeb.Content.Faq;
+namespace DirectiveAthenaWeb.Content.Story;
+
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
-public interface IFaqContentManager : IContentManager<FaqContent> {
-    string GetLocalizedQuestion(FaqContent rule);
-    string GetLocalizedAnswer(FaqContent rule);
+public class StoryChapterContent : ContentBase {
+    public Dictionary<string, string> Title { get; set; } = new();
 }

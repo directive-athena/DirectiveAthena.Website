@@ -1,6 +1,7 @@
 // ---------------------------------------------------------------------------------------------------------------------
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
+using DirectiveAthenaWeb.Content;
 using DirectiveAthenaWeb.Services.Localization;
 using Microsoft.Extensions.Logging;
 using Minio;
@@ -15,7 +16,7 @@ namespace DirectiveAthenaWeb.Services.R2Storage;
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
-public class R2ContentStorage(
+public class R2ContentStorage<TContent>(
     ILocalizationProvider localizationProvider,
     R2StorageOptions options,
     string categoryFolder,
@@ -25,7 +26,7 @@ public class R2ContentStorage(
     ILogger logger,
     bool allowInMemoryFallback,
     IR2StatusTracker? statusTracker = null
-) : IContentStorage {
+) : IR2Storage<TContent> where TContent : IContent {
     private readonly bool _canWrite = options.CanWrite;
     private readonly Uri? _proxyUploadEndpoint = BuildProxyEndpoint(options.ProxyEndpoint, "upload");
     private readonly Uri? _proxyDeleteEndpoint = BuildProxyEndpoint(options.ProxyEndpoint, "delete");
@@ -37,7 +38,7 @@ public class R2ContentStorage(
     // -----------------------------------------------------------------------------------------------------------------
     // File Access
     // -----------------------------------------------------------------------------------------------------------------
-    public async Task<ContentReadResult> ReadIndexAsync(EntityTagHeaderValue? etag, DateTimeOffset? lastModifiedUtc, CancellationToken ct = default) {
+    public async Task<R2ReadResult> ReadIndexAsync(EntityTagHeaderValue? etag, DateTimeOffset? lastModifiedUtc, CancellationToken ct = default) {
         if (_useInMemoryFallback) {
             return ReadIndexFromMemory(etag, lastModifiedUtc);
         }
@@ -56,7 +57,7 @@ public class R2ContentStorage(
                 StoreInMemory(GetIndexDiskPath(), content, response.Headers.ETag, response.Content.Headers.LastModified);
             }
 
-            return new ContentReadResult(
+            return new R2ReadResult(
                 response.StatusCode,
                 content,
                 response.Headers.ETag,
@@ -69,7 +70,7 @@ public class R2ContentStorage(
         }
         catch (Exception ex) when (IsConnectionFailure(ex, ct)) {
             logger.Error(ex, "Failed to reach R2 while reading {Path}.", IndexContentPath);
-            return new ContentReadResult(HttpStatusCode.ServiceUnavailable, null, null, null);
+            return new R2ReadResult(HttpStatusCode.ServiceUnavailable, null, null, null);
         }
     }
 
@@ -307,10 +308,10 @@ public class R2ContentStorage(
         => ex is HttpRequestException
            || (ex is TaskCanceledException && !ct.IsCancellationRequested);
 
-    private ContentReadResult ReadIndexFromMemory(EntityTagHeaderValue? etag, DateTimeOffset? lastModifiedUtc) {
+    private R2ReadResult ReadIndexFromMemory(EntityTagHeaderValue? etag, DateTimeOffset? lastModifiedUtc) {
         string key = NormalizeKey(GetIndexDiskPath());
         if (!_inMemoryFiles.TryGetValue(key, out InMemoryFile? file)) {
-            return new ContentReadResult(HttpStatusCode.NotFound, null, null, null);
+            return new R2ReadResult(HttpStatusCode.NotFound, null, null, null);
         }
 
         bool isNotModified = false;
@@ -322,8 +323,8 @@ public class R2ContentStorage(
         }
 
         return isNotModified
-            ? new ContentReadResult(HttpStatusCode.NotModified, null, file.ETag, file.LastModifiedUtc)
-            : new ContentReadResult(HttpStatusCode.OK, file.Content, file.ETag, file.LastModifiedUtc);
+            ? new R2ReadResult(HttpStatusCode.NotModified, null, file.ETag, file.LastModifiedUtc)
+            : new R2ReadResult(HttpStatusCode.OK, file.Content, file.ETag, file.LastModifiedUtc);
     }
 
     private string? ReadFromMemory(string relativePath) {

@@ -1,6 +1,7 @@
 ﻿// ---------------------------------------------------------------------------------------------------------------------
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
+using DirectiveAthenaWeb.Content.Note;
 using DirectiveAthenaWeb.Services.R2Storage;
 using System.Net;
 using System.Text;
@@ -27,7 +28,7 @@ public class R2ContentStorageTests {
         PublicBaseUrl = "https://cdn.example.com/"
     };
 
-    private static R2ContentStorage CreateStorage(
+    private static R2ContentStorage<NoteContent> CreateStorage(
         R2StorageOptions options,
         IMinioClient? minioClient,
         ILocalizationProvider? localizationProvider = null,
@@ -39,7 +40,7 @@ public class R2ContentStorageTests {
         localizationProvider ??= TestLocalization.CreateLocalizationProviderForCodes("en");
         var logger = Substitute.For<ILogger>();
         httpClient ??= new HttpClient(new TestHttpMessageHandler(_ => new HttpResponseMessage(HttpStatusCode.OK)));
-        return new R2ContentStorage(localizationProvider, options, categoryFolder, new Uri(publicBaseUrl), httpClient, minioClient, logger, allowInMemoryFallback);
+        return new R2ContentStorage<NoteContent>(localizationProvider, options, categoryFolder, new Uri(publicBaseUrl), httpClient, minioClient, logger, allowInMemoryFallback);
     }
 
     private static T? GetPrivateFieldValue<T>(object instance, string fieldName) {
@@ -72,7 +73,7 @@ public class R2ContentStorageTests {
             BucketName = "bucket"
         };
         var minioClient = Substitute.For<IMinioClient>();
-        R2ContentStorage storage = CreateStorage(options, minioClient);
+        R2ContentStorage<NoteContent> storage = CreateStorage(options, minioClient);
 
         // Act
         bool result = await storage.WriteFileAsync("content/notes/index.json", "{}");
@@ -85,7 +86,7 @@ public class R2ContentStorageTests {
     [Test]
     public async Task WriteFileAsync_ReturnsFalseWhenClientMissing() {
         // Arrange
-        R2ContentStorage storage = CreateStorage(WriteEnabledOptions(), null);
+        R2ContentStorage<NoteContent> storage = CreateStorage(WriteEnabledOptions(), null);
 
         // Act
         bool result = await storage.WriteFileAsync("content/notes/index.json", "{}");
@@ -102,7 +103,7 @@ public class R2ContentStorageTests {
         minioClient.PutObjectAsync(Arg.Do<PutObjectArgs>(request => captured = request), Arg.Any<CancellationToken>())
             .Returns(Task.FromResult(new PutObjectResponse(HttpStatusCode.OK, "etag", new Dictionary<string, string>(), 0, "")));
 
-        R2ContentStorage storage = CreateStorage(WriteEnabledOptions(), minioClient);
+        R2ContentStorage<NoteContent> storage = CreateStorage(WriteEnabledOptions(), minioClient);
 
         // Act
         bool result = await storage.WriteFileAsync("/content/notes/index.json", "{ \"ok\": true }");
@@ -123,7 +124,7 @@ public class R2ContentStorageTests {
         minioClient.PutObjectAsync(Arg.Do<PutObjectArgs>(request => captured = request), Arg.Any<CancellationToken>())
             .Returns(Task.FromResult(new PutObjectResponse(HttpStatusCode.OK, "etag", new Dictionary<string, string>(), 0, "")));
 
-        R2ContentStorage storage = CreateStorage(WriteEnabledOptions(), minioClient);
+        R2ContentStorage<NoteContent> storage = CreateStorage(WriteEnabledOptions(), minioClient);
 
         // Act
         bool result = await storage.WriteFileAsync("content/notes/en/post.md", "# Title");
@@ -148,7 +149,7 @@ public class R2ContentStorageTests {
             .Returns(Task.CompletedTask);
 
         ILocalizationProvider localizationProvider = TestLocalization.CreateLocalizationProviderForCodes("en", "nl");
-        R2ContentStorage storage = CreateStorage(WriteEnabledOptions(), minioClient, localizationProvider);
+        R2ContentStorage<NoteContent> storage = CreateStorage(WriteEnabledOptions(), minioClient, localizationProvider);
 
         // Act
         bool result = await storage.DeleteLocalizedFilesAsync("post.md");
@@ -176,7 +177,7 @@ public class R2ContentStorageTests {
             .Returns(Task.CompletedTask);
 
         ILocalizationProvider localizationProvider = TestLocalization.CreateLocalizationProviderForCodes("en", "nl");
-        R2ContentStorage storage = CreateStorage(WriteEnabledOptions(), minioClient, localizationProvider);
+        R2ContentStorage<NoteContent> storage = CreateStorage(WriteEnabledOptions(), minioClient, localizationProvider);
 
         // Act
         bool result = await storage.DeleteLocalizedFilesAsync("post.md");

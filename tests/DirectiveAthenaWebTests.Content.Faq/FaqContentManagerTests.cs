@@ -2,7 +2,6 @@
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
 using DirectiveAthenaWeb.Content.Faq;
-using DirectiveAthenaWeb.Content.Faq.Services;
 using DirectiveAthenaWeb.Services.Localization;
 using DirectiveAthenaWeb.Services.R2Storage;
 using NSubstitute;
@@ -21,25 +20,24 @@ public class FaqContentManagerTests {
     //     return factory;
     // }
 
-    private static FaqContentManager CreateManager(
+    private static IFaqContentManager CreateManager(
         ILocalizationProvider localizationProvider,
-        IContentStorage? storage = null
+        IR2Storage<FaqContent>? storage = null
     ) {
-        storage ??= Substitute.For<IContentStorage>();
+        storage ??= Substitute.For<IR2Storage<FaqContent>>();
 
         var services = new ServiceCollection();
         services.AddLogging();
         services.AddSingleton(localizationProvider);
 
-        var factory = Substitute.For<IContentStorageFactory>();
-        factory.ForCategory(Arg.Any<string>()).Returns(storage);
+        var factory = Substitute.For<IR2StorageFactory>();
         factory.ForCategory<FaqContent>().Returns(storage);
         services.AddSingleton(factory);
 
         services.AddFaqContent();
 
         ServiceProvider provider = services.BuildServiceProvider();
-        return new FaqContentManager(localizationProvider, provider);
+        return provider.GetRequiredService<IFaqContentManager>();
     }
 
     [Test]
@@ -47,7 +45,7 @@ public class FaqContentManagerTests {
         // Arrange
         FaqContent rule = ContentFaker.CreateFaq(1, includeNl: false);
         ILocalizationProvider localizationProvider = TestLocalization.CreateLocalizationProvider("nl");
-        FaqContentManager manager = CreateManager(localizationProvider);
+        IFaqContentManager manager = CreateManager(localizationProvider);
 
         // Act
         string result = manager.GetLocalizedQuestion(rule);
@@ -61,7 +59,7 @@ public class FaqContentManagerTests {
         // Arrange
         FaqContent rule = ContentFaker.CreateFaq(2, includeNl: false);
         ILocalizationProvider localizationProvider = TestLocalization.CreateLocalizationProvider("nl");
-        FaqContentManager manager = CreateManager(localizationProvider);
+        IFaqContentManager manager = CreateManager(localizationProvider);
 
         // Act
         string result = manager.GetLocalizedAnswer(rule);
@@ -71,29 +69,12 @@ public class FaqContentManagerTests {
     }
 
     [Test]
-    public async Task GetLocalizedFilePath_UsesCurrentLocalization() {
-        // Arrange
-        FaqContent rule = ContentFaker.CreateFaq(3);
-        ILocalizationProvider localizationProvider = TestLocalization.CreateLocalizationProvider("nl");
-        var storage = Substitute.For<IContentStorage>();
-        storage.GetMarkdownContentPath(Arg.Any<string>(), Arg.Any<string>())
-            .Returns(call => $"content/worldrules/{call.ArgAt<string>(0)}/{call.ArgAt<string>(1)}");
-        FaqContentManager manager = CreateManager(localizationProvider, storage);
-
-        // Act
-        string result = manager.GetLocalizedFilePath(rule);
-
-        // Assert
-        await Assert.That(result).IsEqualTo($"content/worldrules/nl/{rule.MarkdownFileName}");
-    }
-
-    [Test]
     public async Task GetRawMarkdownContentAsync_ReturnsEmptyOnFailure() {
         // Arrange
-        var storage = Substitute.For<IContentStorage>();
+        var storage = Substitute.For<IR2Storage<FaqContent>>();
         storage.ReadFileAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns(new ValueTask<string?>((string?)null));
-        FaqContentManager manager = CreateManager(TestLocalization.CreateLocalizationProvider(), storage);
+        IFaqContentManager manager = CreateManager(TestLocalization.CreateLocalizationProvider(), storage);
         FaqContent rule = ContentFaker.CreateFaq(4);
 
         // Act
@@ -107,7 +88,7 @@ public class FaqContentManagerTests {
     public async Task NewRule_PopulatesLocalizedFields() {
         // Arrange
         ILocalizationProvider localizationProvider = TestLocalization.CreateLocalizationProvider();
-        FaqContentManager manager = CreateManager(localizationProvider);
+        IFaqContentManager manager = CreateManager(localizationProvider);
 
         // Act
         FaqContent rule = manager.Create();
@@ -131,7 +112,7 @@ public class FaqContentManagerTests {
         rules[0].Id = sharedId;
         rules[1].Id = sharedId;
 
-        FaqContentManager manager = CreateManager(TestLocalization.CreateLocalizationProvider());
+        IFaqContentManager manager = CreateManager(TestLocalization.CreateLocalizationProvider());
 
         // Act
         bool result = manager.Validate(rules, out string? error);
@@ -139,47 +120,5 @@ public class FaqContentManagerTests {
         // Assert
         await Assert.That(result).IsFalse();
         await Assert.That(error).IsEqualTo("Duplicate IDs found!");
-    }
-
-    [Test]
-    public async Task GenerateStubsAsync_ReturnsStubsForAllCultures() {
-        // Arrange
-        FaqContent rule = ContentFaker.CreateFaq(20);
-        var storage = Substitute.For<IContentStorage>();
-        ILocalizationProvider localizationProvider = TestLocalization.CreateLocalizationProvider();
-        FaqContentManager manager = CreateManager(localizationProvider, storage);
-
-        // Act
-        (Dictionary<string, string> Stubs, bool WroteAll) result = await manager.GenerateStubsAsync(rule, writeToDisk: false);
-
-        // Assert
-        await Assert.That(result.Stubs.Count).IsEqualTo(localizationProvider.GetSupportedLocalizations().Count);
-        await Assert.That(result.WroteAll).IsFalse();
-        await storage.DidNotReceiveWithAnyArgs().WriteFileAsync(null!, null!);
-    }
-
-    [Test]
-    public async Task GenerateStubsAsync_WritesWhenRequested() {
-        // Arrange
-        FaqContent rule = ContentFaker.CreateFaq(21);
-        var storage = Substitute.For<IContentStorage>();
-        ILocalizationProvider localizationProvider = TestLocalization.CreateLocalizationProvider();
-        storage.WriteFileAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
-            .Returns(new ValueTask<bool>(true));
-        storage.GetMarkdownDiskPath(Arg.Any<string>(), Arg.Any<string>())
-            .Returns(call => $"{call.ArgAt<string>(0)}/{call.ArgAt<string>(1)}");
-
-        FaqContentManager manager = CreateManager(localizationProvider, storage);
-
-        // Act
-        (Dictionary<string, string> Stubs, bool WroteAll) result = await manager.GenerateStubsAsync(rule, writeToDisk: true);
-
-        // Assert
-        await Assert.That(result.Stubs.Count).IsEqualTo(localizationProvider.GetSupportedLocalizations().Count);
-        await Assert.That(result.WroteAll).IsTrue();
-        foreach (LocalizationInfo localization in localizationProvider.GetSupportedLocalizations()) {
-            string path = storage.GetMarkdownDiskPath(localization.Code, rule.MarkdownFileName);
-            await storage.Received(1).WriteFileAsync(path, Arg.Any<string>(), Arg.Any<CancellationToken>());
-        }
     }
 }
