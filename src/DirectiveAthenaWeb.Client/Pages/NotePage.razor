@@ -5,6 +5,8 @@
 @using System.Text.RegularExpressions
 @using DirectiveAthenaWeb.Client.Resources
 @using DirectiveAthenaWeb.Content.Resources
+@using DirectiveAthenaWeb.Services.Client
+@using DirectiveAthenaWeb.Services.Content
 @using InfiniBlazor.Markdown
 @using Microsoft.Extensions.Localization
 
@@ -21,6 +23,7 @@
 @inject IDirectiveAthenaWebJs WebJs
 @inject IStringLocalizer<Client> LocalizerShared
 @inject IStringLocalizer<Tags> LocalizerTags
+@inject IClientConfigFactory ClientConfigFactory
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Html
 @* ------------------------------------------------------------------------------------------------------------------ *@
@@ -33,12 +36,12 @@
                    Class="mb-12">@LocalizerShared[Client.WritingsDetailBack]
         </MudButton>
 
-        @if (_loading) {
+        @if (_loading || _currentPost is null) {
             <div class="d-flex justify-center py-12">
                 <MudProgressCircular Color="Color.Secondary" Indeterminate="true" Size="Size.Large"/>
             </div>
         }
-        else if (_error || _currentPost is null) {
+        else if (_error) {
             <MudAlert Severity="Severity.Error" Variant="Variant.Filled"
                       Class="card-glass">@LocalizerShared[Client.WritingsDetailError]
             </MudAlert>
@@ -123,6 +126,9 @@
     private string _shareBlueskyUrl = "";
     private string _shareRedditUrl = "";
 
+    // -----------------------------------------------------------------------------------------------------------------
+    // Methods
+    // -----------------------------------------------------------------------------------------------------------------
     protected override async Task OnParametersSetAsync() {
         if (Id.HasValue) {
             await LoadPost(Id.Value);
@@ -130,9 +136,12 @@
     }
 
     private async Task LoadPost(Guid id) {
+        ClientConfig clientConfig = await ClientConfigFactory.CreateAsync();
+        QueryConfig config = QueryConfigExtensions.AddClientConfigFlags(clientConfig);
+        
         _loading = true;
         _error = false;
-        _currentPost = await NoteRepository.GetByIdAsync(id);
+        _currentPost = await NoteRepository.GetByIdAsync(id, config);
 
         if (_currentPost is null) {
             NavigationManager.NavigateTo("/not-found");
