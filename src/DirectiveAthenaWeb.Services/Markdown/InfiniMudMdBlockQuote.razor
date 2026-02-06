@@ -12,9 +12,19 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Html
 @* ------------------------------------------------------------------------------------------------------------------ *@
-<MudPaper Elevation="0" Class="pl-4 border-l-4 border-solid mud-border-primary mud-bg-alpha-10 rounded-r my-4">
+<MudPaper Class="mud-blockquote" Elevation="0">
     @RenderChildContent()
 </MudPaper>
+
+<style>
+    .mud-blockquote {
+        padding: 0 6px;
+        border-radius: 0;
+        border-left: 4px solid var(--mud-palette-primary);
+        background-color: var(--mud-palette-background-grey);
+    }
+</style>
+
 
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Code
