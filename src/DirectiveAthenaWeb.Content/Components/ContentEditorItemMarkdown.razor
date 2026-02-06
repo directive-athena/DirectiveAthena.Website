@@ -102,6 +102,13 @@
         await LoadContentAsync();
     }
 
+    protected override async  Task OnParametersSetAsync() {
+        await base.OnParametersSetAsync();
+        
+        _selectedLocale = LocalizationProvider.DefaultLocalization.Code;
+        await LoadContentAsync();
+    }
+
     private async Task DownloadMarkdown() {
         if (Content.MarkdownFileName.IsNullOrWhiteSpace()) return;
 
