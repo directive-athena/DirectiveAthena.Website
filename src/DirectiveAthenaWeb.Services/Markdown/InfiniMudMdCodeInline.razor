@@ -12,7 +12,7 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Html
 @* ------------------------------------------------------------------------------------------------------------------ *@
-<MudText Typo="Typo.body2" Inline="true"
+<MudText Typo="Typo.body1" Inline="true"
          Style="font-family: monospace; background-color: rgba(0,0,0,0.05); padding: 2px 4px; border-radius: 4px;">
     @{ Span<char> span = stackalloc char[SyntaxNode.Content.Length]; }
     @if (SyntaxNode.TryGetContentWithoutEscapedBackTicks(span, out int length)) {

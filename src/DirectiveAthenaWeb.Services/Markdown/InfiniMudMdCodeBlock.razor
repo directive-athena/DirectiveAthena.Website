@@ -12,9 +12,44 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Html
 @* ------------------------------------------------------------------------------------------------------------------ *@
-<MudPaper Elevation="0" Class="pa-4 mud-bg-alpha-5 rounded my-4 overflow-x-auto">
-    <code style="white-space: pre;">@SyntaxNode.Content.TrimEnd()</code>
+<MudPaper Class="mud-codeblock" Elevation="0" Square="true">
+    @if (!string.IsNullOrWhiteSpace(SyntaxNode.Language))
+    {
+        <div class="mud-codeblock-lang">@SyntaxNode.Language</div>
+    }
+    <pre><code>@SyntaxNode.Content.TrimEnd()</code></pre>
 </MudPaper>
+
+<style>
+    .mud-codeblock {
+        margin: 12px 0;
+        background-color: var(--mud-palette-background-grey);
+        border: 1px solid var(--mud-palette-divider);
+    }
+
+    .mud-codeblock pre {
+        margin: 0;
+        padding: 12px 16px;
+        overflow-x: auto;
+    }
+
+    .mud-codeblock code {
+        font-family: var(--mud-typography-default-family-monospace);
+        font-size: 0.875rem;
+        line-height: 1.5;
+    }
+
+    .mud-codeblock-lang {
+        padding: 4px 12px;
+        border-bottom: 1px solid var(--mud-palette-divider);
+        font-size: 0.75rem;
+        font-family: var(--mud-typography-default-family-monospace);
+        color: var(--mud-palette-text-secondary);
+        background-color: var(--mud-palette-background);
+        text-transform: lowercase;
+    }
+
+</style>
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Code
 @* ------------------------------------------------------------------------------------------------------------------ *@

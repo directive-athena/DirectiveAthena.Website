@@ -13,17 +13,19 @@
 @* Html
 @* ------------------------------------------------------------------------------------------------------------------ *@
 <MudAlert Severity="@GetSeverity()" Variant="Variant.Outlined" Class="my-4">
-    <MudText Typo="Typo.subtitle2" Class="fw-bold">
+    <MudText Typo="Typo.h4" Class="fw-bold">
         @if (SyntaxNode.TryGetTitleNode(out CalloutTitleMdSyntaxNode? titleNode)) {
             @ComponentConverter.RenderChildComponents(titleNode)
         }
         else {
-            @SyntaxNode.CalloutType
+            @SyntaxNode.CalloutType?.ToLower()
         }
     </MudText>
+    <MudText Typo="Typo.body1">
     @if (SyntaxNode.TryGetBodyNode(out CalloutBodyMdSyntaxNode? bodyNode)) {
         @ComponentConverter.RenderChildComponents(bodyNode)
     }
+    </MudText>
 </MudAlert>
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Code
