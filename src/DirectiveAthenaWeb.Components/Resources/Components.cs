@@ -20,17 +20,6 @@ public class Components {
     public const string HomeLiveSubtitle = "HomeLiveSubtitle";
     public const string HomeLiveTitle = "HomeLiveTitle";
     public const string HomeWritingsEmpty = "HomeWritingsEmpty";
-    public const string MarkdownEditorContent = "MarkdownEditorContent";
-    public const string MarkdownEditorCopy = "MarkdownEditorCopy";
-    public const string MarkdownEditorDownload = "MarkdownEditorDownload";
-    public const string MarkdownEditorEditing = "MarkdownEditorEditing";
-    public const string MarkdownEditorLocale = "MarkdownEditorLocale";
-    public const string MarkdownEditorReload = "MarkdownEditorReload";
-    public const string MarkdownEditorSave = "MarkdownEditorSave";
-    public const string MarkdownEditorSaveFailed = "MarkdownEditorSaveFailed";
-    public const string MarkdownEditorSaveSuccess = "MarkdownEditorSaveSuccess";
-    public const string MarkdownEditorSelectItem = "MarkdownEditorSelectItem";
-    public const string MarkdownEditorTitle = "MarkdownEditorTitle";
     public const string NavContact = "NavContact";
     public const string NavContentManager = "NavContentManager";
     public const string NavFaq = "NavFaq";

@@ -65,7 +65,7 @@
         <value>Directive Athena</value>
     </data>
     <data name="FooterCopyright" xml:space="preserve">
-        <value>© {0} Anna Sas. Built with Blazor &amp; MudBlazor.</value>
+        <value>© {0} Anna Sas - Using MudBlazor and InfiniBlazor</value>
     </data>
     <data name="FooterDescription" xml:space="preserve">
         <value>A project made by Anna Sas to show her take on a science fiction setting where there is no good or bad outcome. Just History, marching on.</value>
@@ -80,7 +80,7 @@
         <value>Explore Directive Athena</value>
     </data>
     <data name="HomeHeroRead" xml:space="preserve">
-        <value>Read the Writings</value>
+        <value>Read Writings</value>
     </data>
     <data name="HomeHeroSubtitle" xml:space="preserve">
         <value>A science fiction project where technology and scheming politics reign.</value>
@@ -99,39 +99,6 @@
     </data>
     <data name="HomeWritingsEmpty" xml:space="preserve">
         <value>No dispatches currently available. Check back soon for updates from the frontier.</value>
-    </data>
-    <data name="MarkdownEditorContent" xml:space="preserve">
-        <value>Markdown Content</value>
-    </data>
-    <data name="MarkdownEditorCopy" xml:space="preserve">
-        <value>Copy to Clipboard</value>
-    </data>
-    <data name="MarkdownEditorDownload" xml:space="preserve">
-        <value>Download Markdown</value>
-    </data>
-    <data name="MarkdownEditorEditing" xml:space="preserve">
-        <value>Editing: {0}/{1}</value>
-    </data>
-    <data name="MarkdownEditorLocale" xml:space="preserve">
-        <value>Locale</value>
-    </data>
-    <data name="MarkdownEditorReload" xml:space="preserve">
-        <value>Reload Original</value>
-    </data>
-    <data name="MarkdownEditorSave" xml:space="preserve">
-        <value>Save to R2</value>
-    </data>
-    <data name="MarkdownEditorSaveFailed" xml:space="preserve">
-        <value>Failed to save markdown file.</value>
-    </data>
-    <data name="MarkdownEditorSaveSuccess" xml:space="preserve">
-        <value>Saved {0}/{1} to R2!</value>
-    </data>
-    <data name="MarkdownEditorSelectItem" xml:space="preserve">
-        <value>Select an item to edit its markdown.</value>
-    </data>
-    <data name="MarkdownEditorTitle" xml:space="preserve">
-        <value>Markdown Editor</value>
     </data>
     <data name="NavContact" xml:space="preserve">
         <value>Contact</value>

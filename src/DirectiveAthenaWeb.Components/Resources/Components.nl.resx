@@ -65,7 +65,7 @@
         <value>Directive Athena</value>
     </data>
     <data name="FooterCopyright" xml:space="preserve">
-        <value>© {0} Anna Sas. Gebouwd met Blazor &amp; MudBlazor.</value>
+        <value>© {0} Anna Sas. Gebouwd met MudBlazor en InfiniBlazor</value>
     </data>
     <data name="FooterDescription" xml:space="preserve">
         <value>Een project van Anna Sas om haar visie te laten zien op een sciencefictionwereld waarin er geen goede of slechte uitkomsten zijn. Alleen geschiedenis, die voortschrijdt.</value>
@@ -99,39 +99,6 @@
     </data>
     <data name="HomeWritingsEmpty" xml:space="preserve">
         <value>Momenteel geen berichten beschikbaar. Kom later terug voor updates van het front.</value>
-    </data>
-    <data name="MarkdownEditorContent" xml:space="preserve">
-        <value>Markdown-inhoud</value>
-    </data>
-    <data name="MarkdownEditorCopy" xml:space="preserve">
-        <value>Kopieren naar klembord</value>
-    </data>
-    <data name="MarkdownEditorDownload" xml:space="preserve">
-        <value>Markdown downloaden</value>
-    </data>
-    <data name="MarkdownEditorEditing" xml:space="preserve">
-        <value>Bewerken: {0}/{1}</value>
-    </data>
-    <data name="MarkdownEditorLocale" xml:space="preserve">
-        <value>Taal</value>
-    </data>
-    <data name="MarkdownEditorReload" xml:space="preserve">
-        <value>Origineel opnieuw laden</value>
-    </data>
-    <data name="MarkdownEditorSave" xml:space="preserve">
-        <value>Opslaan in R2</value>
-    </data>
-    <data name="MarkdownEditorSaveFailed" xml:space="preserve">
-        <value>Markdown-bestand opslaan mislukt.</value>
-    </data>
-    <data name="MarkdownEditorSaveSuccess" xml:space="preserve">
-        <value>{0}/{1} opgeslagen in R2!</value>
-    </data>
-    <data name="MarkdownEditorSelectItem" xml:space="preserve">
-        <value>Selecteer een item om de markdown te bewerken.</value>
-    </data>
-    <data name="MarkdownEditorTitle" xml:space="preserve">
-        <value>Markdown-editor</value>
     </data>
     <data name="NavContact" xml:space="preserve">
         <value>Contact</value>

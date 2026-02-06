@@ -130,15 +130,6 @@
     <data name="MarkdownFileButtonSave" xml:space="preserve">
         <value>Save file</value>
     </data>
-    <data name="MarkdownFileHelper" xml:space="preserve">
-        <value>Filename matches GUID and cannot be changed.</value>
-    </data>
-    <data name="MarkdownFileLabel" xml:space="preserve">
-        <value>Markdown Filename (e.g. {0})</value>
-    </data>
-    <data name="MarkdownFileLabelContent" xml:space="preserve">
-        <value>Markdown Content</value>
-    </data>
     <data name="MarkdownFileLabelLocale" xml:space="preserve">
         <value>Locale</value>
     </data>
