@@ -13,27 +13,35 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Html
 @* ------------------------------------------------------------------------------------------------------------------ *@
-<section id="live" class="py-24" style="background: rgba(100, 65, 165, 0.1);">
-    <MudContainer MaxWidth="MaxWidth.Large">
-        <div class="text-center mb-12">
+<MudContainer MaxWidth="MaxWidth.Large">
+    <MudStack Spacing="4">
+        <MudItem>
             <MudText Typo="Typo.h2" Class="mb-4">@Localizer[Components.HomeLiveTitle]</MudText>
-            <MudText Typo="Typo.body1" Class="text-secondary opacity-70">@Localizer[Components.HomeLiveSubtitle]</MudText>
-        </div>
-        <div class="twitch-wrapper">
-            <div class="twitch-container card-glass twitch-aspect-ratio">
+            <MudStack Row>
+
+                <MudText Typo="Typo.body1"
+                         Class="text-secondary opacity-70">@Localizer[Components.HomeLiveSubtitle]</MudText>
+                <MudSpacer/>
+                <MudButton Variant="Variant.Text" Color="Color.Secondary" EndIcon="@Icons.Material.Filled.OpenInNew"
+                           Href="https://twitch.tv/AnnaSasDev"
+                           Target="_blank">@Localizer[Components.HomeLiveFollow]</MudButton>
+            </MudStack>
+        </MudItem>
+        <MudItem>
+            <div class="twitch-container card-glass twitch-aspect-ratio no-hover">
                 <iframe
                     src="https://player.twitch.tv/?channel=AnnaSasDev&parent=@HostName&muted=true&autoplay=false"
                     loading="lazy"
                     allowfullscreen="allowfullscreen">
                 </iframe>
             </div>
-        </div>
-        <div class="mt-8 text-center">
-            <MudButton Variant="Variant.Text" Color="Color.Secondary" EndIcon="@Icons.Material.Filled.OpenInNew"
-                       Href="https://twitch.tv/AnnaSasDev" Target="_blank">@Localizer[Components.HomeLiveFollow]</MudButton>
-        </div>
-    </MudContainer>
-</section>
+        </MudItem>
+    </MudStack>
+</MudContainer>
+
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Code
+@* ------------------------------------------------------------------------------------------------------------------ *@
 
 @code {
     private string HostName { get; set; } = "localhost";
