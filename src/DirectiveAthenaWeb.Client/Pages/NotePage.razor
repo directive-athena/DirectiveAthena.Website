@@ -33,7 +33,7 @@
     <MudContainer MaxWidth="MaxWidth.Large">
         @* Detail View *@
         <MudButton StartIcon="@Icons.Material.Filled.ArrowBack" Color="Color.Secondary" OnClick="@BackToList"
-                   Class="mb-12">@LocalizerShared[Client.WritingsDetailBack]
+                   Class="mb-2">@LocalizerShared[Client.WritingsDetailBack]
         </MudButton>
 
         @if (_loading || _currentPost is null) {
@@ -48,54 +48,59 @@
         }
         else {
             <article class="fade-in mx-auto" style="max-width: 800px;">
-                <div class="d-flex align-center flex-wrap gap-4 mb-2">
-                    <MudText Typo="Typo.caption" Color="Color.Secondary"
-                             Style="letter-spacing: 0.2em; text-transform: uppercase;">@FormatDate(_currentPost.CreatedAt)</MudText>
-                    @if (HasDate(_currentPost.LastModifiedAt)) {
+                <MudPaper elevation="12" Style="padding: 12px 24px; border-radius: 24px; margin-bottom: 24px;">
+                    <div class="d-flex align-center flex-wrap gap-4 mb-2">
+                        <MudText Typo="Typo.caption" Color="Color.Secondary"
+                                 Style="letter-spacing: 0.2em; text-transform: uppercase;">@FormatDate(_currentPost.CreatedAt)</MudText>
+                        @if (HasDate(_currentPost.LastModifiedAt)) {
+                            <MudText Typo="Typo.caption" Class="opacity-60">
+                                @LocalizerShared[Client.FaqUpdated, FormatDate(_currentPost.LastModifiedAt)]
+                            </MudText>
+                        }
                         <MudText Typo="Typo.caption" Class="opacity-60">
-                            @LocalizerShared[Client.FaqUpdated, FormatDate(_currentPost.LastModifiedAt)]
+                            @LocalizerShared[Client.WritingsDetailReadTime, _readTimeMinutes]
                         </MudText>
-                    }
-                    <MudText Typo="Typo.caption" Class="opacity-60">
-                        @LocalizerShared[Client.WritingsDetailReadTime, _readTimeMinutes]
-                    </MudText>
-                    <MudButton Variant="Variant.Text" Color="Color.Secondary" Size="Size.Small"
-                               StartIcon="@(_isLinkCopied ? Icons.Material.Filled.Check : Icons.Material.Filled.ContentCopy)"
-                               OnClick="@CopyLinkAsync" Disabled="@_isCopyInProgress"
-                               Class="pa-0">
-                        @(_isLinkCopied
-                            ? LocalizerShared[Client.WritingsDetailLinkCopied]
-                            : LocalizerShared[Client.WritingsDetailCopyLink])
-                    </MudButton>
-                    <MudSpacer/>
-                    <div class="d-flex align-center gap-2">
-                        <MudText Typo="Typo.caption"
-                                 Class="opacity-60">@LocalizerShared[Client.WritingsDetailShareLabel]</MudText>
-                        <MudTooltip Text="@LocalizerShared[Client.WritingsDetailShareTwitter]">
-                            <MudIconButton Icon="@Icons.Custom.Brands.X" Color="Color.Secondary" Size="Size.Small"
-                                           Href="@_shareTwitterUrl" Target="_blank"/>
-                        </MudTooltip>
-                        <MudTooltip Text="@LocalizerShared[Client.WritingsDetailShareBluesky]">
-                            <MudIconButton Icon="@CustomIcons.Bluesky" Color="Color.Secondary" Size="Size.Small"
-                                           Href="@_shareBlueskyUrl" Target="_blank"/>
-                        </MudTooltip>
-                        <MudTooltip Text="@LocalizerShared[Client.WritingsDetailShareReddit]">
-                            <MudIconButton Icon="@Icons.Custom.Brands.Reddit" Color="Color.Secondary" Size="Size.Small"
-                                           Href="@_shareRedditUrl" Target="_blank"/>
-                        </MudTooltip>
+                        <MudButton Variant="Variant.Text" Color="Color.Secondary" Size="Size.Small"
+                                   StartIcon="@(_isLinkCopied ? Icons.Material.Filled.Check : Icons.Material.Filled.ContentCopy)"
+                                   OnClick="@CopyLinkAsync" Disabled="@_isCopyInProgress"
+                                   Class="pa-0">
+                            @(_isLinkCopied
+                                ? LocalizerShared[Client.WritingsDetailLinkCopied]
+                                : LocalizerShared[Client.WritingsDetailCopyLink])
+                        </MudButton>
+                        <MudSpacer/>
+                        <div class="d-flex align-center gap-2">
+                            <MudText Typo="Typo.caption"
+                                     Class="opacity-60">@LocalizerShared[Client.WritingsDetailShareLabel]</MudText>
+                            <MudTooltip Text="@LocalizerShared[Client.WritingsDetailShareTwitter]">
+                                <MudIconButton Icon="@Icons.Custom.Brands.X" Color="Color.Secondary" Size="Size.Small"
+                                               Href="@_shareTwitterUrl" Target="_blank"/>
+                            </MudTooltip>
+                            <MudTooltip Text="@LocalizerShared[Client.WritingsDetailShareBluesky]">
+                                <MudIconButton Icon="@CustomIcons.Bluesky" Color="Color.Secondary" Size="Size.Small"
+                                               Href="@_shareBlueskyUrl" Target="_blank"/>
+                            </MudTooltip>
+                            <MudTooltip Text="@LocalizerShared[Client.WritingsDetailShareReddit]">
+                                <MudIconButton Icon="@Icons.Custom.Brands.Reddit" Color="Color.Secondary"
+                                               Size="Size.Small"
+                                               Href="@_shareRedditUrl" Target="_blank"/>
+                            </MudTooltip>
+                        </div>
                     </div>
-                </div>
-                <MudText Typo="Typo.h2"
-                         Class="mb-8 SpaceGrotesk">@NoteManager.GetLocalizedTitle(_currentPost)</MudText>
-                <div class="d-flex gap-2 mb-8">
-                    @foreach (string tag in _currentPost.Tags) {
-                        <MudChip T="string" Size="Size.Small" Color="Color.Secondary"
-                                 Variant="Variant.Outlined">@LocalizerTags[tag]</MudChip>
-                    }
-                </div>
-                <div class="markdown-content">
+                    
+                    <MudText Typo="Typo.h2"
+                             Class="mb-4 SpaceGrotesk">@NoteManager.GetLocalizedTitle(_currentPost)</MudText>
+                    <div class="d-flex gap-2">
+                        @foreach (string tag in _currentPost.Tags) {
+                            <MudChip T="string" Size="Size.Small" Color="Color.Secondary"
+                                     Variant="Variant.Outlined">@LocalizerTags[tag]</MudChip>
+                        }
+                    </div>
+                </MudPaper>
+
+                <MudPaper elevation="12" Style="padding: 12px;">
                     <InfiniMarkdownPreview Content="@_markdown"/>
-                </div>
+                </MudPaper>
             </article>
 
             <MudDivider Class="my-16 opacity-10"/>
@@ -138,7 +143,7 @@
     private async Task LoadPost(Guid id) {
         ClientConfig clientConfig = await ClientConfigFactory.CreateAsync();
         QueryConfig config = QueryConfigExtensions.AddClientConfigFlags(clientConfig);
-        
+
         _loading = true;
         _error = false;
         _currentPost = await NoteRepository.GetByIdAsync(id, config);
