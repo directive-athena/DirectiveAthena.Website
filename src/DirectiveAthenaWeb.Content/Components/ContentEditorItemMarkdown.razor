@@ -66,12 +66,14 @@
         <MudProgressCircular Color="Color.Secondary" Indeterminate="true" Size="Size.Large"/>
     }
     else {
-        <InfiniMarkdownEditor @bind-EditorContext="Context" @bind-RenderContext="RenderContext">
-            <ToolbarBottom>
-                <InfiniMdEditorToolNodeCounter/>
-                <InfiniMdEditorToolWordCounter/>
-            </ToolbarBottom>
-        </InfiniMarkdownEditor>
+        <MudPaper Elevation="0" MinHeight="640px" Class="d-flex flex-column ">
+            <InfiniMarkdownEditor Class="grow" @bind-EditorContext="Context" @bind-RenderContext="RenderContext">
+                <ToolbarBottom>
+                    <InfiniMdEditorToolNodeCounter/>
+                    <InfiniMdEditorToolWordCounter/>
+                </ToolbarBottom>
+            </InfiniMarkdownEditor>
+        </MudPaper>
     }
 
 </MudStack>
