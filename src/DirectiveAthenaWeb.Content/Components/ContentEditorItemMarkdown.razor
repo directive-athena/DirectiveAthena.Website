@@ -6,6 +6,9 @@
 @using DirectiveAthenaWeb.Content.Resources
 @using DirectiveAthenaWeb.Services.Js
 @using DirectiveAthenaWeb.Services.Localization
+@using InfiniBlazor.Markdown
+@using InfiniBlazor.Markdown.EditorTools
+@using InfiniBlazor.Markdown.Parsers.Blazor
 @using Microsoft.Extensions.Localization
 @using Microsoft.Extensions.Logging
 @using MudBlazor
@@ -51,11 +54,6 @@
                    StartIcon="@Icons.Material.Filled.Download">
             @EditorLocalizer[Editor.MarkdownFileButtonDownload]
         </MudButton>
-        @* TODO Implement the copy button *@
-        @* <MudButton Variant="Variant.Outlined" Color="Color.Info" OnClick="@CopyToClipboard" Disabled="@_isLoadingContent" *@
-        @*            StartIcon="@Icons.Material.Filled.ContentCopy"> *@
-        @*     @EditorLocalizer[Editor.MarkdownEditorCopy] *@
-        @* </MudButton> *@
         <MudButton Size="Size.Small" Variant="Variant.Text" Color="Color.Default" OnClick="@LoadContentAsync" Disabled="@_isLoadingContent"
                    StartIcon="@Icons.Material.Filled.Refresh">
             @EditorLocalizer[Editor.MarkdownFileButtonReload]
@@ -68,9 +66,12 @@
         <MudProgressCircular Color="Color.Secondary" Indeterminate="true" Size="Size.Large"/>
     }
     else {
-        <MudTextField T="string" Value="@_content" ValueChanged="@OnContentChangedAsync" Immediate="false"
-                      Label="@EditorLocalizer[Editor.MarkdownFileLabelContent]"
-                      Lines="16" Variant="Variant.Outlined"/>
+        <InfiniMarkdownEditor @bind-EditorContext="Context" @bind-RenderContext="RenderContext">
+            <ToolbarBottom>
+                <InfiniMdEditorToolNodeCounter/>
+                <InfiniMdEditorToolWordCounter/>
+            </ToolbarBottom>
+        </InfiniMarkdownEditor>
     }
 
 </MudStack>
@@ -83,9 +84,11 @@
     [CascadingParameter] public TContent Content { get; set; } = null!;
     [Parameter] public EventCallback OnFileChanged { get; set; }
 
-    private string _content = string.Empty;
     private string _selectedLocale = string.Empty;
     private bool _isLoadingContent;
+    
+    public MdEditorContext Context = new();
+    public MdRenderContext RenderContext = MdRenderContext.Interactive;
 
     // -----------------------------------------------------------------------------------------------------------------
     // Methods
@@ -101,12 +104,7 @@
         if (Content.MarkdownFileName.IsNullOrWhiteSpace()) return;
 
         string path = $"{_selectedLocale}/{Content.MarkdownFileName}";
-        await WebJs.DownloadFileAsync(path, _content);
-    }
-
-    private Task OnContentChangedAsync(string value) {
-        _content = value;
-        return Task.CompletedTask;
+        await WebJs.DownloadFileAsync(path, Context.Content);
     }
 
     private async Task OnLocaleChangedAsync(string newLocale) {
@@ -119,7 +117,7 @@
     private async Task SaveContentAsync() {
         var cts = new CancellationTokenSource(TimeSpan.FromSeconds(5));
         try {
-            await ContentManager.WriteMarkdownContentAsync(Content, _selectedLocale, _content, cts.Token);
+            await ContentManager.WriteMarkdownContentAsync(Content, _selectedLocale, Context.Content, cts.Token);
             Snackbar.Add(EditorLocalizer[Editor.SaveItemSuccess], Severity.Success);
         }
         catch (Exception e) {
@@ -134,7 +132,7 @@
         _isLoadingContent = true;
         await InvokeAsync(StateHasChanged);
 
-        _content = await ContentManager.GetMarkdownContentAsync(Content, _selectedLocale, cts.Token);
+        Context.Content = await ContentManager.GetMarkdownContentAsync(Content, _selectedLocale, cts.Token);
 
         _isLoadingContent = false;
         await InvokeAsync(StateHasChanged);
