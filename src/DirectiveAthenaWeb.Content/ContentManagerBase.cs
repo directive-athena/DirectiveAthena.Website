@@ -84,6 +84,11 @@ public abstract class ContentManagerBase<TContent>(
 
     protected string GetLocalizedValue(LocalizedDataHolder values) {
         LocalizationInfo localization = LocalizationProvider.GetCurrentLocalization();
-        return values.GetWithFallback(localization.Code, LocalizationProvider.DefaultLocalization.Code);
+        string code = localization.Code;
+        string fallback = LocalizationProvider.DefaultLocalization.Code;
+        
+        // ReSharper disable once ConvertIfStatementToReturnStatement
+        if (!values.TryGetWithFallback(code, fallback, out string? value)) return string.Empty;
+        return value;
     }
 }

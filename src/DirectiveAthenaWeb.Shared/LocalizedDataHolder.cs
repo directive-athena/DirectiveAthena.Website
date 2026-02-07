@@ -2,6 +2,7 @@
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
 using System.Collections.Concurrent;
+using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Serialization;
 
 namespace DirectiveAthenaWeb;
@@ -33,11 +34,8 @@ public class LocalizedDataHolder {
     // Methods
     // -----------------------------------------------------------------------------------------------------------------
 
-    public string GetWithFallback(string code, string fallback = "en") {
-        if (_values.TryGetValue(code, out string? v)) return v;
-        return _values.TryGetValue(fallback, out string? f) ? f : string.Empty;
-
-    }
+    public bool TryGetWithFallback(string code, string fallback, [NotNullWhen(true)] out string? value)
+        => _values.TryGetValue(code, out value) || _values.TryGetValue(fallback, out value);
 
     public void Set(string code, string value) {
         _values[code] = value;
@@ -46,5 +44,14 @@ public class LocalizedDataHolder {
         _values.TryRemove(code, out _);
     }
     
-    public static LocalizedDataHolder FromDictionary(Dictionary<string, string> dict) => new(dict);
+    public static LocalizedDataHolder FromDictionary(Dictionary<string, string> dict) {
+        ArgumentNullException.ThrowIfNull(dict);
+
+        var holder = new LocalizedDataHolder();
+        foreach ((string key, string value) in dict) {
+            holder._values.TryAdd(key, value);
+        }
+
+        return holder;
+    }
 }

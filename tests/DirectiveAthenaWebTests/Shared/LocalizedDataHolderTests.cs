@@ -41,8 +41,10 @@ public class LocalizedDataHolderTests {
 
         // Assert
         await Assert.That(holder).IsNotNull();
-        await Assert.That(holder!.GetWithFallback("en")).IsEqualTo("Hello");
-        await Assert.That(holder.GetWithFallback("DE")).IsEqualTo("Hallo");
+        await Assert.That(holder!.TryGetWithFallback("en", "en", out string? enValue)).IsTrue();
+        await Assert.That(enValue).IsEqualTo("Hello");
+        await Assert.That(holder.TryGetWithFallback("DE", "en", out string? deValue)).IsTrue();
+        await Assert.That(deValue).IsEqualTo("Hallo");
         await Assert.That(holder.Values.Count).IsEqualTo(2);
     }
 
@@ -59,8 +61,10 @@ public class LocalizedDataHolderTests {
 
         // Assert
         await Assert.That(roundTrip).IsNotNull();
-        await Assert.That(roundTrip!.GetWithFallback("en")).IsEqualTo("Hello");
-        await Assert.That(roundTrip.GetWithFallback("nl")).IsEqualTo("Hallo");
+        await Assert.That(roundTrip!.TryGetWithFallback("en", "en", out string? enValue)).IsTrue();
+        await Assert.That(enValue).IsEqualTo("Hello");
+        await Assert.That(roundTrip.TryGetWithFallback("nl", "en", out string? nlValue)).IsTrue();
+        await Assert.That(nlValue).IsEqualTo("Hallo");
         await Assert.That(roundTrip.Values.Count).IsEqualTo(2);
     }
 }
