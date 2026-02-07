@@ -12,18 +12,22 @@ namespace DirectiveAthenaWeb.Client.Services;
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
 [InjectableScoped<IClientConfigFactory>]
-public class ClientConfigFactory(IHttpClientFactory clientFactory, ILogger<ClientConfigFactory> logger) : IClientConfigFactory{
+public class ClientConfigFactory(IHttpClientFactory clientFactory, ILogger<ClientConfigFactory> logger) : IClientConfigFactory {
     private ClientConfig? _config;
-    
+
     // -----------------------------------------------------------------------------------------------------------------
     // Methods
     // -----------------------------------------------------------------------------------------------------------------
     #if DEBUG
-    public async ValueTask<ClientConfig> CreateAsync() {
+    public async ValueTask<ClientConfig> CreateAsync(CancellationToken ct = default) {
         if (_config is not null) return _config;
-        
-        var cts = new CancellationTokenSource(TimeSpan.FromSeconds(5));
-        CancellationToken token = cts.Token;
+
+        CancellationToken token;
+        if (ct == CancellationToken.None) {
+            var cts = new CancellationTokenSource(TimeSpan.FromSeconds(5));
+            token = cts.Token;
+        }
+        else token = ct;
 
         try {
             HttpClient client = clientFactory.CreateClient("Server");
@@ -42,7 +46,7 @@ public class ClientConfigFactory(IHttpClientFactory clientFactory, ILogger<Clien
         }
     }
     #else
-    public ValueTask<ClientConfig> CreateAsync() {
+    public ValueTask<ClientConfig> CreateAsync(CancellationToken ct = default) {
         _ = clientFactory;
         _ = logger;
         return ValueTask.FromResult(_config ??= new ClientConfig());

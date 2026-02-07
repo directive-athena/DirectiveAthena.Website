@@ -2,6 +2,7 @@
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
 using Bogus;
+using DirectiveAthenaWeb;
 using DirectiveAthenaWeb.Content.Faq;
 using DirectiveAthenaWeb.Content.Note;
 
@@ -40,19 +41,19 @@ public static class ContentFaker {
         var faker = new Faker { Random = new Randomizer(seed) };
         var faq = new FaqContent {
             Id = faker.Random.Guid(),
-            Question = new Dictionary<string, string> {
+            Question = new LocalizedDataHolder {
                 ["en"] = $"Question {seed}"
             },
-            Answer = new Dictionary<string, string> {
+            Answer = new LocalizedDataHolder {
                 ["en"] = $"Answer {seed}"
             },
             InternalTitle = string.Empty
         };
 
-        if (includeNl) {
-            faq.Question["nl"] = $"Vraag {seed}";
-            faq.Answer["nl"] = $"Antwoord {seed}";
-        }
+        if (!includeNl) return faq;
+
+        faq.Question["nl"] = $"Vraag {seed}";
+        faq.Answer["nl"] = $"Antwoord {seed}";
 
         return faq;
     }

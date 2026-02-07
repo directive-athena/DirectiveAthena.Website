@@ -19,7 +19,7 @@ internal class FaqContentManager(
     IValidator<FaqContent> singleValidator,
     IValidator<IEnumerable<FaqContent>> multipleValidator,
     ILogger<ContentManagerBase<FaqContent>> logger
-) : ContentManagerBase<FaqContent>(storage, singleValidator, multipleValidator, logger), IFaqContentManager {
+) : ContentManagerBase<FaqContent>(localizationProvider, storage, singleValidator, multipleValidator, logger), IFaqContentManager {
     private readonly ILogger<ContentManagerBase<FaqContent>> _logger = logger;
     
     // -----------------------------------------------------------------------------------------------------------------
@@ -34,15 +34,12 @@ internal class FaqContentManager(
     public override FaqContent Create(Guid id = default, string? internalTitle = null) {
         if (id == Guid.Empty) id = Guid.CreateVersion7();
         DateTime now = DateTime.UtcNow;
-        IReadOnlyCollection<LocalizationInfo> locals = localizationProvider.GetSupportedLocalizations();
-
-        Dictionary<string, string> questions = locals.ToDictionary(c => c.Code, _ => "New Rule");
-        Dictionary<string, string> answers = locals.ToDictionary(c => c.Code, c => $"{c.DisplayName} - Answer here");
-
+        IReadOnlyCollection<LocalizationInfo> locals = LocalizationProvider.GetSupportedLocalizations();
+        
         var rule = new FaqContent {
             Id = id,
-            Question = questions,
-            Answer = answers,
+            Question = LocalizedDataHolder.FromDictionary(locals.ToDictionary(c => c.Code, _ => "New Rule")),
+            Answer = LocalizedDataHolder.FromDictionary(locals.ToDictionary(c => c.Code, c => $"{c.DisplayName} - Answer here")),
             Tags = [
             ],
             CreatedAt = now,
@@ -51,12 +48,5 @@ internal class FaqContentManager(
         };
         _logger.Information("Created new world rule stub {Id}.", rule.Id);
         return rule;
-    }
-
-    private string GetLocalizedValue(Dictionary<string, string> values) {
-        LocalizationInfo localization = localizationProvider.GetCurrentLocalization();
-        return !values.TryGetValue(localization.Code, out string? value)
-            ? values.GetValueOrDefault(localizationProvider.DefaultLocalization.Code, string.Empty)
-            : value;
     }
 }

@@ -1,6 +1,7 @@
 ﻿// ---------------------------------------------------------------------------------------------------------------------
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
+using DirectiveAthenaWeb.Services.Localization;
 using DirectiveAthenaWeb.Services.R2Storage;
 using FluentValidation;
 using FluentValidation.Results;
@@ -12,11 +13,15 @@ namespace DirectiveAthenaWeb.Content;
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
 public abstract class ContentManagerBase<TContent>(
+    ILocalizationProvider localizationProvider,
     IR2Storage<TContent> storage,
     IValidator<TContent> singleValidator,
     IValidator<IEnumerable<TContent>> multipleValidator,
     ILogger<ContentManagerBase<TContent>> logger
 ) : IContentManager<TContent> where TContent : ContentBase, IContent {
+    protected ILocalizationProvider LocalizationProvider { get; } = localizationProvider;
+    protected IR2Storage<TContent> Storage { get; } = storage;
+    protected ILogger<ContentManagerBase<TContent>> Logger { get; } = logger;
     
     // -----------------------------------------------------------------------------------------------------------------
     // Methods
@@ -31,7 +36,7 @@ public abstract class ContentManagerBase<TContent>(
         }
 
         errorMessage = result.Errors.First().ErrorMessage;
-        logger.Warning("World rule validation failed: {Error}.", errorMessage);
+        Logger.Warning("World rule validation failed: {Error}.", errorMessage);
         return false;
     }
     
@@ -43,31 +48,42 @@ public abstract class ContentManagerBase<TContent>(
         }
 
         errorMessage = result.Errors.First().ErrorMessage;
-        logger.Warning("World rule validation failed: {Error}.", errorMessage);
+        Logger.Warning("World rule validation failed: {Error}.", errorMessage);
         return false;
     }
 
     public async Task<string> GetMarkdownContentAsync(TContent rule, string locale, CancellationToken ct = default) {
         try {
-            string path = storage.GetMarkdownDiskPath(locale, rule.MarkdownFileName);
-            logger.Debug("Fetching markdown for world rule {Id} at {Path}.", rule.Id, path);
-            return await storage.ReadFileAsync(path, ct) ?? string.Empty;
+            string path = Storage.GetMarkdownDiskPath(locale, rule.MarkdownFileName);
+            Logger.Debug("Fetching markdown for world rule {Id} at {Path}.", rule.Id, path);
+            return await Storage.ReadFileAsync(path, ct) ?? string.Empty;
         }
         catch (Exception ex) {
-            logger.Warning(ex, "Failed to fetch markdown for world rule {Id} ({Locale}).", rule.Id, locale);
+            Logger.Warning(ex, "Failed to fetch markdown for world rule {Id} ({Locale}).", rule.Id, locale);
             return string.Empty;
         }
     }
     
     public async Task<bool> WriteMarkdownContentAsync(TContent rule, string locale, string content, CancellationToken ct = default) {
         try {
-            string path = storage.GetMarkdownDiskPath(locale, rule.MarkdownFileName);
-            logger.Debug("Fetching markdown for world rule {Id} at {Path}.", rule.Id, path);
-            return await storage.WriteFileAsync(path, content, ct);
+            string path = Storage.GetMarkdownDiskPath(locale, rule.MarkdownFileName);
+            Logger.Debug("Fetching markdown for world rule {Id} at {Path}.", rule.Id, path);
+            return await Storage.WriteFileAsync(path, content, ct);
         }
         catch (Exception ex) {
-            logger.Warning(ex, "Failed to fetch markdown for world rule {Id} ({Locale}).", rule.Id, locale);
+            Logger.Warning(ex, "Failed to fetch markdown for world rule {Id} ({Locale}).", rule.Id, locale);
             return false;
         }
+    }
+    
+    public string GetLocalizedTitle(TContent content)
+        => GetLocalizedValue(content.LocalizedTitles);
+
+    public string GetLocalizedSummary(TContent content)
+        => GetLocalizedValue(content.LocalizedSummaries);
+
+    protected string GetLocalizedValue(LocalizedDataHolder values) {
+        LocalizationInfo localization = LocalizationProvider.GetCurrentLocalization();
+        return values.GetWithFallback(localization.Code, LocalizationProvider.DefaultLocalization.Code);
     }
 }

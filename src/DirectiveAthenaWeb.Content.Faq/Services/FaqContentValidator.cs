@@ -38,13 +38,6 @@ internal class FaqContentValidator : AbstractValidator<FaqContent> {
     private bool HasLocalizedAnswers(FaqContent rule)
         => HasLocalizedValues(rule.Answer);
 
-    private bool HasLocalizedValues(Dictionary<string, string> values) {
-        foreach (LocalizationInfo localization in _localizations) {
-            if (!values.TryGetValue(localization.Code, out string? value) || string.IsNullOrWhiteSpace(value)) {
-                return false;
-            }
-        }
-
-        return true;
-    }
+    private bool HasLocalizedValues(LocalizedDataHolder values)
+        => _localizations.All(localization => !values[localization.Code].IsNullOrWhiteSpace());
 }
