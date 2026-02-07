@@ -34,7 +34,7 @@ public class FaqContentManagerTests {
         factory.ForCategory<FaqContent>().Returns(storage);
         services.AddSingleton(factory);
 
-        services.AddFaqContent();
+        services.AddFaqContent(out _);
 
         ServiceProvider provider = services.BuildServiceProvider();
         return provider.GetRequiredService<IFaqContentManager>();

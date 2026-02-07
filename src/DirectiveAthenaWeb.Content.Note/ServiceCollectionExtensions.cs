@@ -8,6 +8,7 @@ using DirectiveAthenaWeb.Content.Note.Resources;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Localization;
 using MudBlazor;
+using System.Reflection;
 
 // ReSharper disable once CheckNamespace
 namespace Microsoft.Extensions.DependencyInjection;
@@ -16,7 +17,7 @@ namespace Microsoft.Extensions.DependencyInjection;
 // ---------------------------------------------------------------------------------------------------------------------
 public static class ServiceCollectionExtensions {
     extension(IServiceCollection services) {
-        [UsedImplicitly] public IServiceCollection AddNoteContent() {
+        [UsedImplicitly] public IServiceCollection AddNoteContent(out Assembly contentAssembly) {
             services.RegisterServicesFromDirectiveAthenaWebContentNote();
 
             services.AddR2Storage<NoteContent>("note");
@@ -28,6 +29,7 @@ public static class ServiceCollectionExtensions {
             
             ContentEditorProvider.RegisterAtTagsEditor<NoteContent>();
 
+            contentAssembly = typeof(ServiceCollectionExtensions).Assembly;
             return services;
         }
     }

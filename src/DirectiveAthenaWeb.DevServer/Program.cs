@@ -7,6 +7,7 @@ using DirectiveAthenaWeb.Services.Contact;
 using DirectiveAthenaWeb.Services.R2Storage;
 using DirectiveAthenaWeb.Services.Localization;
 using MudBlazor.Services;
+using System.Reflection;
 
 namespace DirectiveAthenaWeb.DevServer;
 // ---------------------------------------------------------------------------------------------------------------------
@@ -42,9 +43,9 @@ public static class Program {
         builder.Services.Configure<ContactInfoOptions>(builder.Configuration.GetSection("ContactInfo"));
         builder.Services.Configure<LocalizationOptions>(builder.Configuration.GetSection("Localization"));
         
-        builder.Services.AddNoteContent();
-        builder.Services.AddFaqContent();
-        builder.Services.AddStoryContent();
+        builder.Services.AddNoteContent(out Assembly noteAssembly);
+        builder.Services.AddFaqContent(out Assembly faqAssembly);
+        builder.Services.AddStoryContent(out Assembly storyAssembly);
 
         // -------------------------------------------------------------------------------------------------------------
         // App
@@ -65,9 +66,9 @@ public static class Program {
             return Results.Ok(new { includeDevContent });
         });
         
-
         app.MapRazorComponents<AdminApp>()
-            .AddInteractiveServerRenderMode();
+            .AddInteractiveServerRenderMode()
+            .AddAdditionalAssemblies(noteAssembly, faqAssembly, storyAssembly);
 
         app.MapFallbackToFile("index.html");
         app.Run();

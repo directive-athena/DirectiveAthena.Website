@@ -15,5 +15,7 @@ public class Note {
     public const string HomeWritingsTitle = "HomeWritingsTitle";
     public const string HomeWritingsViewAll = "HomeWritingsViewAll";
     public const string HomeWritingsViewArchive = "HomeWritingsViewArchive";
+
+    public const string ListViewPageTitle = "ListViewPageTitle";
 }
 

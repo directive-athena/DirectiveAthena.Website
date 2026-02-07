@@ -8,6 +8,7 @@ using DirectiveAthenaWeb.Content.Story.Resources;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Localization;
 using MudBlazor;
+using System.Reflection;
 
 // ReSharper disable once CheckNamespace
 namespace Microsoft.Extensions.DependencyInjection;
@@ -16,7 +17,7 @@ namespace Microsoft.Extensions.DependencyInjection;
 // ---------------------------------------------------------------------------------------------------------------------
 public static class ServiceCollectionExtensions {
     extension(IServiceCollection services) {
-        [UsedImplicitly] public IServiceCollection AddStoryContent() {
+        [UsedImplicitly] public IServiceCollection AddStoryContent(out Assembly contentAssembly) {
             services.RegisterServicesFromDirectiveAthenaWebContentStory();
 
             services.AddR2Storage<StoryContent>("story");
@@ -27,7 +28,8 @@ public static class ServiceCollectionExtensions {
             );
 
             ContentEditorProvider.RegisterAtTagsEditor<StoryContent>();
-            
+
+            contentAssembly = typeof(ServiceCollectionExtensions).Assembly;
             return services;
         }
     }

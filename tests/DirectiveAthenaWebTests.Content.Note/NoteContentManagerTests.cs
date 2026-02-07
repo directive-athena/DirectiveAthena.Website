@@ -34,7 +34,7 @@ public class NoteContentManagerTests {
         factory.ForCategory<NoteContent>().Returns(storage);
         services.AddSingleton(factory);
 
-        services.AddNoteContent();
+        services.AddNoteContent(out _);
 
         ServiceProvider provider = services.BuildServiceProvider();
         return provider.GetRequiredService<INoteContentManager>();

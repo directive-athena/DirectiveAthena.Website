@@ -1,7 +1,6 @@
 // ---------------------------------------------------------------------------------------------------------------------
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
-using DirectiveAthenaWeb.Client.Services;
 using DirectiveAthenaWeb.Content;
 using DirectiveAthenaWeb.Services;
 using DirectiveAthenaWeb.Services.Contact;
@@ -11,6 +10,7 @@ using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.Hosting;
 using MudBlazor.Services;
+using System.Reflection;
 
 namespace DirectiveAthenaWeb.Client;
 // ---------------------------------------------------------------------------------------------------------------------
@@ -24,7 +24,7 @@ public static class Program {
         var builder = WebAssemblyHostBuilder.CreateDefault(args);
 
         builder.AddWebsiteLogging();
-
+        
         builder.RootComponents.Add<App>("#app");
         builder.RootComponents.Add<HeadOutlet>("head::after");
 
@@ -33,7 +33,6 @@ public static class Program {
         });
         builder.Services.AddScoped(_ => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
         builder.Services.AddSingleton<IHostEnvironment>(_ => new WasmHostEnvironmentAdapter(builder.HostEnvironment));
-        builder.Services.RegisterServicesFromDirectiveAthenaWebClient();
         
         builder.Services.AddMudServices();
         builder.Services.AddLocalization();
@@ -45,10 +44,14 @@ public static class Program {
         builder.Services.Configure<ContactInfoOptions>(builder.Configuration.GetSection("ContactInfo"));
         builder.Services.Configure<LocalizationOptions>(builder.Configuration.GetSection("Localization"));
         
-        builder.Services.AddNoteContent();
-        builder.Services.AddFaqContent();
-        builder.Services.AddStoryContent();
+        builder.Services.AddNoteContent(out Assembly noteAssembly);
+        builder.Services.AddFaqContent(out Assembly faqAssembly);
+        builder.Services.AddStoryContent(out Assembly storyAssembly);
 
+        builder.Services.AddSingleton(new AdditionalAssembliesProvider {
+            Assemblies = [noteAssembly, faqAssembly, storyAssembly]
+        });
+        
         // -------------------------------------------------------------------------------------------------------------
         // App
         // -------------------------------------------------------------------------------------------------------------

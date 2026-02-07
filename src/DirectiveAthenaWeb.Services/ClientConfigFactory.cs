@@ -3,11 +3,12 @@
 // ---------------------------------------------------------------------------------------------------------------------
 using CodeOfChaos.Extensions.DependencyInjection;
 using DirectiveAthenaWeb.Services.Client;
+using Microsoft.Extensions.Logging;
 #if DEBUG
 using System.Net.Http.Json;
 #endif
 
-namespace DirectiveAthenaWeb.Client.Services;
+namespace DirectiveAthenaWeb.Services;
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------

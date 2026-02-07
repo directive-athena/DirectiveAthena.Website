@@ -24,8 +24,8 @@ public class ServiceCollectionExtensionsTests {
         // Act
         services.AddWebsiteServices();
         
-        services.AddNoteContent();
-        services.AddFaqContent();
+        services.AddNoteContent(out _);
+        services.AddFaqContent(out _);
 
         // Assert
         await Assert.That(services).Any(s => s.ServiceType == typeof(INoteContentManager));

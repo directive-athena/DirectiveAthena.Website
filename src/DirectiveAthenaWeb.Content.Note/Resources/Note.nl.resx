@@ -85,5 +85,8 @@
     <data name="HomeWritingsViewArchive" xml:space="preserve">
         <value>Bekijk Archief</value>
     </data>
+    <data name="ListViewPageTitle" xml:space="preserve">
+        <value>Notities</value>
+    </data>
 </root>
 

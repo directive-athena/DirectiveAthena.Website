@@ -1,25 +1,30 @@
 ﻿@* ------------------------------------------------------------------------------------------------------------------ *@
 @* Imports
 @* ------------------------------------------------------------------------------------------------------------------ *@
-@using DirectiveAthenaWeb.Components.Pages
+@using DirectiveAthenaWeb.Content.Note
+@using Microsoft.Extensions.Localization
+@using DirectiveAthenaWeb.Content.Components
+@using DirectiveAthenaWeb.Content.Note.Resources
 
-@namespace DirectiveAthenaWeb.Client
+@namespace DirectiveAthenaWeb.Client.Pages
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Descriptors
 @* ------------------------------------------------------------------------------------------------------------------ *@
-@inject AdditionalAssembliesProvider AdditionalAssembliesProvider
+@page "/notes"
+
+@inject IStringLocalizer<Note> Localizer
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Html
 @* ------------------------------------------------------------------------------------------------------------------ *@
-<Router AppAssembly="@typeof(App).Assembly" 
-        AdditionalAssemblies="@AdditionalAssembliesProvider.Assemblies"
-        NotFoundPage="typeof(NotFoundPage)">
-    <Found Context="routeData">
-        <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)"/>
-    </Found>
-</Router>
+<PageTitle>@Localizer[Note.ListViewPageTitle]</PageTitle>
 
+<ContentListView TContent="NoteContent">
+    
+</ContentListView>
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Code
 @* ------------------------------------------------------------------------------------------------------------------ *@
 
+@code {
+   
+}
