@@ -42,7 +42,8 @@ internal class NoteContentValidator : AbstractValidator<NoteContent> {
         if (values.Count == 0) return false;
         
         foreach (LocalizationInfo localization in _localizations) {
-            if (values.TryGet(localization.Code, out string? value) && value.IsNullOrWhiteSpace()) return false;
+            if (!values.TryGet(localization.Code, out string? value)) return false;
+            if (value.IsNullOrWhiteSpace()) return false;
         }
 
         return true;
