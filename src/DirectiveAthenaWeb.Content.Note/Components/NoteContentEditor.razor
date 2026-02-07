@@ -19,13 +19,6 @@
     </Fields>
     <LocalizedFields Context="box">
         @{ NoteContent content = box.Item1;LocalizationInfo culture = box.Item2; }
-        <MudTextField Label="Title" Variant="Variant.Filled"
-                      @bind-Value="@content.LocalizedTitles[culture.Code]"
-                      Required="true"
-                      FullWidth="true"/>
-        <MudTextField Label="Summary" Variant="Variant.Filled"
-                      @bind-Value="@content.LocalizedSummaries[culture.Code]"
-                      FullWidth="true"/>
     </LocalizedFields>
 </ContentEditor>
 @* ------------------------------------------------------------------------------------------------------------------ *@

@@ -32,7 +32,7 @@
                            OnClick="@OnSaveChangesAsync">
                     @Localizer[Editor.SaveItemButton]
                 </MudButton>
-                
+
                 @if (!Content.IsSoftDeleted) {
                     <MudButton Variant="Variant.Outlined" Color="Color.Error" StartIcon="@Icons.Material.Filled.Delete"
                                OnClick="@SoftDeleteContentAsync">
@@ -40,12 +40,14 @@
                     </MudButton>
                 }
                 else {
-                    <MudButton Size="Size.Small" Variant="Variant.Outlined" Color="Color.Warning" StartIcon="@Icons.Material.Filled.Restore"
+                    <MudButton Size="Size.Small" Variant="Variant.Outlined" Color="Color.Warning"
+                               StartIcon="@Icons.Material.Filled.Restore"
                                OnClick="@RestoreContentAsync">
                         @Localizer[Editor.RestoreItemButton]
                     </MudButton>
-                    
-                    <MudButton Size="Size.Small" Variant="Variant.Filled" Color="Color.Error" StartIcon="@Icons.Material.Filled.Delete"
+
+                    <MudButton Size="Size.Small" Variant="Variant.Filled" Color="Color.Error"
+                               StartIcon="@Icons.Material.Filled.Delete"
                                OnClick="@HardDeleteContentAsync">
                         @Localizer[Editor.HardDeleteItemButton]
                     </MudButton>
@@ -56,7 +58,8 @@
         <MudTabs Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
             <MudTabPanel Text="Metadata">
                 <MudStack Spacing="8">
-                    <MudTextField T="string" @bind-Value="@Content.InternalTitle" Label="@Localizer[Editor.InternalTitle]" TextChanged="@OnInputChangedAsync"/>
+                    <MudTextField T="string" @bind-Value="@Content.InternalTitle"
+                                  Label="@Localizer[Editor.InternalTitle]" TextChanged="@OnInputChangedAsync"/>
 
                     <MudTextField Value="@Content.Id.ToString("D")" Label="@Localizer[Editor.UniqueId]"
                                   Required="true" ReadOnly="true"
@@ -74,22 +77,38 @@
 
                     <MudSwitch T="bool" Value="@Content.IsDevContent" ValueChanged="@OnDevContentChangedAsync"
                                Label="@Localizer[Editor.DevContentLabel]" Color="Color.Primary"/>
-                    
+
                     @if (Fields is not null) {
+                        <MudText Typo="Typo.h4">
+                            Fields
+                        </MudText>
+                        
                         @Fields(Content)
                     }
 
+                    <MudText Typo="Typo.h4">
+                        Localized Fields
+                    </MudText>
+                    
+                    <MudStack>
                     @if (LocalizedFields is not null) {
                         foreach (LocalizationInfo culture in LocalizationProvider.GetSupportedLocalizations()) {
-                            <MudItem xs="12">
-                                <MudDivider Class="my-4"/>
-                                <MudText Typo="Typo.subtitle1" Color="Color.Primary">
-                                    @culture.DisplayName (@culture.Code)
-                                </MudText>
-                                @LocalizedFields((Content, culture))
-                            </MudItem>
+                            <MudText Typo="Typo.subtitle1" Color="Color.Primary">
+                                @culture.DisplayName
+                            </MudText>
+                            
+                            <MudTextField Label="Title" Variant="Variant.Filled"
+                                          @bind-Value="@Content.LocalizedTitles[culture.Code]"
+                                          Required="true"
+                                          FullWidth="true"/>
+                            <MudTextField Label="Summary" Variant="Variant.Filled"
+                                          @bind-Value="@Content.LocalizedSummaries[culture.Code]"
+                                          FullWidth="true"/>
+                            
+                            @LocalizedFields((Content, culture))
                         }
                     }
+                    </MudStack>
                 </MudStack>
 
                 <ContentEditorItemTags TContent="@TContent" OnTagsChanged="OnSaveChangesAsync"/>
@@ -121,7 +140,7 @@
         Content.LastModifiedAt = now;
         await OnSaveChangesAsync();
     }
-    
+
     private async Task OnDevContentChangedAsync(bool value) {
         DateTime now = DateTime.UtcNow;
         Content.IsDevContent = value;
@@ -140,7 +159,7 @@
             Snackbar.Add(Localizer[Editor.DeleteItemSoftFailed], Severity.Warning);
             return;
         }
-        
+
         Snackbar.Add(Localizer[Editor.DeleteItemSoftSuccess], Severity.Success);
         await Repository.SaveAsync();
         await OnContentChanged.InvokeAsync();
@@ -152,21 +171,21 @@
             Snackbar.Add(Localizer[Editor.RestoreItemFailed], Severity.Warning);
             return;
         }
-        
+
         Snackbar.Add(Localizer[Editor.RestoreItemSuccess], Severity.Success);
         await Repository.SaveAsync();
         await OnContentChanged.InvokeAsync();
         await InvokeAsync(StateHasChanged);
     }
-    
+
     private async Task HardDeleteContentAsync() {
         if (!await WebJs.ConfirmAsync(Localizer[Editor.DeleteItemHardConfirm])) return;
-        
+
         if (!await Repository.HardDeleteByIdAsync(Content.Id)) {
             Snackbar.Add(Localizer[Editor.DeleteItemHardFailed], Severity.Warning);
             return;
         }
-        
+
         Snackbar.Add(Localizer[Editor.DeleteItemHardSuccess], Severity.Success);
         await Repository.SaveAsync();
         await OnContentChanged.InvokeAsync();
@@ -200,7 +219,7 @@
 
     private async Task OnInputChangedAsync(string obj) {
         if (Content.InternalTitle.Equals(obj, StringComparison.Ordinal)) return;
-        
+
         Content.InternalTitle = obj;
         await OnSaveChangesAsync();
     }
