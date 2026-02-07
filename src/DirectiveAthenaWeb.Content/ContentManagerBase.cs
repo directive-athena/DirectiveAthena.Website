@@ -3,8 +3,6 @@
 // ---------------------------------------------------------------------------------------------------------------------
 using DirectiveAthenaWeb.Services.Localization;
 using DirectiveAthenaWeb.Services.R2Storage;
-using FluentValidation;
-using FluentValidation.Results;
 using Microsoft.Extensions.Logging;
 
 namespace DirectiveAthenaWeb.Content;
@@ -15,8 +13,6 @@ namespace DirectiveAthenaWeb.Content;
 public abstract class ContentManagerBase<TContent>(
     ILocalizationProvider localizationProvider,
     IR2Storage<TContent> storage,
-    IValidator<TContent> singleValidator,
-    IValidator<IEnumerable<TContent>> multipleValidator,
     ILogger<ContentManagerBase<TContent>> logger
 ) : IContentManager<TContent> where TContent : ContentBase, IContent {
     protected ILocalizationProvider LocalizationProvider { get; } = localizationProvider;
@@ -27,30 +23,6 @@ public abstract class ContentManagerBase<TContent>(
     // Methods
     // -----------------------------------------------------------------------------------------------------------------
     public abstract TContent Create(Guid id = default, string? internalTitle = null);
-
-    public bool Validate(TContent rule, out string? errorMessage) {
-        ValidationResult? result = singleValidator.Validate(rule);
-        if (result.IsValid) {
-            errorMessage = null;
-            return true;
-        }
-
-        errorMessage = result.Errors.First().ErrorMessage;
-        Logger.Warning("World rule validation failed: {Error}.", errorMessage);
-        return false;
-    }
-    
-    public bool Validate(IEnumerable<TContent> rules, out string? errorMessage) {
-        ValidationResult? result = multipleValidator.Validate(rules);
-        if (result.IsValid) {
-            errorMessage = null;
-            return true;
-        }
-
-        errorMessage = result.Errors.First().ErrorMessage;
-        Logger.Warning("World rule validation failed: {Error}.", errorMessage);
-        return false;
-    }
 
     public async Task<string> GetMarkdownContentAsync(TContent rule, string locale, CancellationToken ct = default) {
         try {
@@ -76,10 +48,10 @@ public abstract class ContentManagerBase<TContent>(
         }
     }
     
-    public string GetLocalizedTitle(TContent content)
+    public virtual string GetLocalizedTitle(TContent content)
         => GetLocalizedValue(content.LocalizedTitles);
 
-    public string GetLocalizedSummary(TContent content)
+    public virtual string GetLocalizedSummary(TContent content)
         => GetLocalizedValue(content.LocalizedSummaries);
 
     protected string GetLocalizedValue(LocalizedDataHolder values) {

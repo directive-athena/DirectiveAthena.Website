@@ -100,25 +100,4 @@ public class FaqContentManagerTests {
         await Assert.That(rule.Id).IsNotEqualTo(Guid.Empty);
         await Assert.That(rule.Tags).IsEmpty();
     }
-
-    [Test]
-    public async Task Validate_RejectsDuplicateIds() {
-        // Arrange
-        var sharedId = Guid.NewGuid();
-        FaqContent[] rules = [
-            ContentFaker.CreateFaq(10),
-            ContentFaker.CreateFaq(11)
-        ];
-        rules[0].Id = sharedId;
-        rules[1].Id = sharedId;
-
-        IFaqContentManager manager = CreateManager(TestLocalization.CreateLocalizationProvider());
-
-        // Act
-        bool result = manager.Validate(rules, out string? error);
-
-        // Assert
-        await Assert.That(result).IsFalse();
-        await Assert.That(error).IsEqualTo("Duplicate IDs found!");
-    }
 }

@@ -4,7 +4,6 @@
 using CodeOfChaos.Extensions.DependencyInjection;
 using DirectiveAthenaWeb.Services.Localization;
 using DirectiveAthenaWeb.Services.R2Storage;
-using FluentValidation;
 using Microsoft.Extensions.Logging;
 
 namespace DirectiveAthenaWeb.Content.Faq.Services;
@@ -16,10 +15,8 @@ namespace DirectiveAthenaWeb.Content.Faq.Services;
 internal class FaqContentManager(
     ILocalizationProvider localizationProvider,
     IR2Storage<FaqContent> storage,
-    IValidator<FaqContent> singleValidator,
-    IValidator<IEnumerable<FaqContent>> multipleValidator,
     ILogger<ContentManagerBase<FaqContent>> logger
-) : ContentManagerBase<FaqContent>(localizationProvider, storage, singleValidator, multipleValidator, logger), IFaqContentManager {
+) : ContentManagerBase<FaqContent>(localizationProvider, storage, logger), IFaqContentManager {
     private readonly ILogger<ContentManagerBase<FaqContent>> _logger = logger;
     
     // -----------------------------------------------------------------------------------------------------------------

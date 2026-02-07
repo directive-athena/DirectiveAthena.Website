@@ -22,6 +22,7 @@ public static class ContentFaker {
             ["en"] = faker.Lorem.Sentence(6)
         };
 
+        // ReSharper disable once InvertIf
         if (includeNl) {
             title["nl"] = faker.Lorem.Sentence(3);
             summary["nl"] = faker.Lorem.Sentence(6);
@@ -29,8 +30,8 @@ public static class ContentFaker {
 
         return new NoteContent {
             Id = id,
-            Title = title,
-            Summary = summary,
+            LocalizedTitles = LocalizedDataHolder.FromDictionary(title),
+            LocalizedSummaries = LocalizedDataHolder.FromDictionary(summary),
             Tags = faker.Lorem.Words(2).ToList(),
             HiddenAt = hidden ? DateTime.UtcNow : DateTime.MinValue,
             InternalTitle = string.Empty

@@ -33,7 +33,9 @@ public class LocalizedDataHolder {
     // -----------------------------------------------------------------------------------------------------------------
     // Methods
     // -----------------------------------------------------------------------------------------------------------------
-
+    public bool TryGet(string code, [NotNullWhen(true)] out string? value) 
+        => _values.TryGetValue(code, out value);
+    
     public bool TryGetWithFallback(string code, string fallback, [NotNullWhen(true)] out string? value)
         => _values.TryGetValue(code, out value) || _values.TryGetValue(fallback, out value);
 

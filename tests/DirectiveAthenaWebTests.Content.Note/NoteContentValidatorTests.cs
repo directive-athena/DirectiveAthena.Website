@@ -48,7 +48,7 @@ public class NoteContentValidatorTests {
         // Arrange
         var validator = new NoteContentValidator(TestLocalization.CreateLocalizationProvider());
         NoteContent article = ContentFaker.CreateNote(302);
-        article.Summary.Remove("nl");
+        article.LocalizedSummaries.Remove("nl");
 
         // Act
         ValidationResult? result = await validator.ValidateAsync(article);

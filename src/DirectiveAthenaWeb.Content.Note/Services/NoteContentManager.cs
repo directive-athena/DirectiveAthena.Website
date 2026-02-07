@@ -4,7 +4,6 @@
 using CodeOfChaos.Extensions.DependencyInjection;
 using DirectiveAthenaWeb.Services.Localization;
 using DirectiveAthenaWeb.Services.R2Storage;
-using FluentValidation;
 using Microsoft.Extensions.Logging;
 
 namespace DirectiveAthenaWeb.Content.Note.Services;
@@ -16,10 +15,8 @@ namespace DirectiveAthenaWeb.Content.Note.Services;
 internal class NoteContentManager(
     ILocalizationProvider localizationProvider,
     IR2Storage<NoteContent> storage,
-    IValidator<NoteContent> singleValidator,
-    IValidator<IEnumerable<NoteContent>> multipleValidator,
     ILogger<ContentManagerBase<NoteContent>> logger
-) : ContentManagerBase<NoteContent>(localizationProvider, storage, singleValidator, multipleValidator, logger), INoteContentManager {
+) : ContentManagerBase<NoteContent>(localizationProvider, storage, logger), INoteContentManager {
     // -----------------------------------------------------------------------------------------------------------------
     // Methods
     // -----------------------------------------------------------------------------------------------------------------
@@ -37,8 +34,8 @@ internal class NoteContentManager(
         Dictionary<string, string> summaries = locals.ToDictionary(c => c.Code, c => $"{c.DisplayName} - Summary here");
         var article = new NoteContent {
             Id = id,
-            Title = titles,
-            Summary = summaries,
+            LocalizedTitles = LocalizedDataHolder.FromDictionary(titles),
+            LocalizedSummaries = LocalizedDataHolder.FromDictionary(summaries),
             Tags = [
             ],
             CreatedAt = now,

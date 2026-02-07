@@ -33,16 +33,16 @@ internal class NoteContentValidator : AbstractValidator<NoteContent> {
     // Methods
     // -----------------------------------------------------------------------------------------------------------------
     private bool HasLocalizedTitles(NoteContent article)
-        => HasLocalizedValues(article.Title);
+        => HasLocalizedValues(article.LocalizedTitles);
 
     private bool HasLocalizedSummaries(NoteContent article)
-        => HasLocalizedValues(article.Summary);
+        => HasLocalizedValues(article.LocalizedSummaries);
 
-    private bool HasLocalizedValues(Dictionary<string, string> values) {
+    private bool HasLocalizedValues(LocalizedDataHolder values) {
+        if (values.Count == 0) return false;
+        
         foreach (LocalizationInfo localization in _localizations) {
-            if (!values.TryGetValue(localization.Code, out string? value) || value.IsNullOrWhiteSpace()) {
-                return false;
-            }
+            if (values.TryGet(localization.Code, out string? value) && value.IsNullOrWhiteSpace()) return false;
         }
 
         return true;
