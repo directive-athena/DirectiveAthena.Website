@@ -10,7 +10,10 @@ namespace DirectiveAthenaWeb;
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
 public sealed class LocalizedDataHolderJsonConverter : JsonConverter<LocalizedDataHolder> {
+    public override bool HandleNull => true;
+
     public override LocalizedDataHolder Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) {
+        if (reader.TokenType == JsonTokenType.Null) return new LocalizedDataHolder();
         if (reader.TokenType != JsonTokenType.StartObject) throw new JsonException("LocalizedDataHolder expects a JSON object.");
 
         var holder = new LocalizedDataHolder();

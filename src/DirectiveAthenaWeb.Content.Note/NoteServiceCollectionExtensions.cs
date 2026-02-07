@@ -2,9 +2,9 @@
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
 using DirectiveAthenaWeb.Content;
-using DirectiveAthenaWeb.Content.Story;
+using DirectiveAthenaWeb.Content.Note;
 using DirectiveAthenaWeb.DevServer.Pages;
-using DirectiveAthenaWeb.Content.Story.Resources;
+using DirectiveAthenaWeb.Content.Note.Resources;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Localization;
 using MudBlazor;
@@ -15,21 +15,21 @@ namespace Microsoft.Extensions.DependencyInjection;
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
-public static class ServiceCollectionExtensions {
+public static class NoteServiceCollectionExtensions {
     extension(IServiceCollection services) {
-        [UsedImplicitly] public IServiceCollection AddStoryContent(out Assembly contentAssembly) {
-            services.RegisterServicesFromDirectiveAthenaWebContentStory();
+        [UsedImplicitly] public IServiceCollection AddNoteContent(out Assembly contentAssembly) {
+            services.RegisterServicesFromDirectiveAthenaWebContentNote();
 
-            services.AddR2Storage<StoryContent>("story");
+            services.AddR2Storage<NoteContent>("note");
             
-            ContentEditorProvider.RegisterAtContentEditor<StoryContentEditor, IStringLocalizer<Story>>(
-                localizer => localizer[Story.ContentManagerTabStory],
-                Icons.Material.Filled.AutoStories
+            ContentEditorProvider.RegisterAtContentEditor<NoteContentEditor, IStringLocalizer<Note>>(
+                localizer => localizer[Note.ContentManagerTabWritings],
+                Icons.Material.Filled.Article
             );
+            
+            ContentEditorProvider.RegisterAtTagsEditor<NoteContent>();
 
-            ContentEditorProvider.RegisterAtTagsEditor<StoryContent>();
-
-            contentAssembly = typeof(ServiceCollectionExtensions).Assembly;
+            contentAssembly = typeof(NoteServiceCollectionExtensions).Assembly;
             return services;
         }
     }

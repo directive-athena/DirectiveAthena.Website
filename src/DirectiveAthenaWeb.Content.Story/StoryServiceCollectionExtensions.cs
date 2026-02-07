@@ -2,9 +2,9 @@
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
 using DirectiveAthenaWeb.Content;
-using DirectiveAthenaWeb.Content.Faq;
+using DirectiveAthenaWeb.Content.Story;
 using DirectiveAthenaWeb.DevServer.Pages;
-using DirectiveAthenaWeb.Content.Faq.Resources;
+using DirectiveAthenaWeb.Content.Story.Resources;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Localization;
 using MudBlazor;
@@ -15,20 +15,21 @@ namespace Microsoft.Extensions.DependencyInjection;
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
-public static class ServiceCollectionExtensions {
+public static class StoryServiceCollectionExtensions {
     extension(IServiceCollection services) {
-        [UsedImplicitly] public IServiceCollection AddFaqContent(out Assembly contentAssembly) {
-            services.RegisterServicesFromDirectiveAthenaWebContentFaq();
+        [UsedImplicitly] public IServiceCollection AddStoryContent(out Assembly contentAssembly) {
+            services.RegisterServicesFromDirectiveAthenaWebContentStory();
 
-            services.AddR2Storage<FaqContent>("faq");
+            services.AddR2Storage<StoryContent>("story");
             
-            ContentEditorProvider.RegisterAtContentEditor<FaqContentEditor, IStringLocalizer<Faq>>(
-                localizer => localizer[Faq.ContentManagerTabFaq],
-                Icons.Material.Filled.Rule
+            ContentEditorProvider.RegisterAtContentEditor<StoryContentEditor, IStringLocalizer<Story>>(
+                localizer => localizer[Story.ContentManagerTabStory],
+                Icons.Material.Filled.AutoStories
             );
-            
-            ContentEditorProvider.RegisterAtTagsEditor<FaqContent>();
-            contentAssembly = typeof(ServiceCollectionExtensions).Assembly;
+
+            ContentEditorProvider.RegisterAtTagsEditor<StoryContent>();
+
+            contentAssembly = typeof(StoryServiceCollectionExtensions).Assembly;
             return services;
         }
     }

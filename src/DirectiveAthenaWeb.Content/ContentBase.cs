@@ -12,8 +12,8 @@ public abstract class ContentBase : IContent {
     public required Guid Id { get; set; }
     public required string InternalTitle { get; set; }
     
-    public LocalizedDataHolder LocalizedTitles { get; init; } = new();
-    public LocalizedDataHolder LocalizedSummaries { get; init; } = new();
+    public LocalizedDataHolder LocalizedTitles { get; set; } = new();
+    public LocalizedDataHolder LocalizedSummaries { get; set; } = new();
     
     [JsonIgnore] private readonly HashSet<string> _tags = [];
     [JsonIgnore] public IReadOnlyCollection<string> Tags {
