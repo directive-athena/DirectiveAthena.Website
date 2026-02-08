@@ -97,8 +97,7 @@
                                  HeaderExtras="HeaderExtras"
                                  MetaExtras="MetaExtras"
                                  BodyExtras="BodyExtras"
-                                 FooterExtras="FooterExtras"
-                                 ShowInternalTitle="ShowInternalTitle"/>
+                                 FooterExtras="FooterExtras"/>
                 </MudItem>
             }
         }
@@ -114,7 +113,6 @@
     [Parameter] public RenderFragment<TContent>? MetaExtras { get; set; }
     [Parameter] public RenderFragment<TContent>? BodyExtras { get; set; }
     [Parameter] public RenderFragment<TContent>? FooterExtras { get; set; }
-    [Parameter] public bool ShowInternalTitle { get; set; }
     [Parameter] public int SkeletonCount { get; set; } = 4;
 
 
