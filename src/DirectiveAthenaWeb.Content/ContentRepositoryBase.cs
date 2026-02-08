@@ -18,15 +18,16 @@ public abstract class ContentRepositoryBase<TContent>(IR2Storage<TContent> conte
     where TContent : ContentBase, IContent {
     
     private ConcurrentDictionary<Guid, TContent> Items { get; set; } = [];
-    private bool _isFirstTimeLoaded; // TODO needs a semaphoreslim
+    private bool _isFirstTimeLoaded;
+    private readonly SemaphoreSlim _loadSemaphore = new(1, 1);
     
     private EntityTagHeaderValue? _etag;
     private DateTimeOffset? _lastModifiedUtc;
     private DateTimeOffset? _lastRefreshUtc;
     #if DEBUG
-    private readonly TimeSpan DevRefreshWindow = TimeSpan.FromSeconds(5);
+    private readonly TimeSpan RefreshWindow = TimeSpan.FromSeconds(5);
     #else
-    private readonly TimeSpan CacheRefreshWindow = TimeSpan.FromMinutes(5);
+    private readonly TimeSpan RefreshWindow = TimeSpan.FromMinutes(15);
     #endif
 
     protected abstract JsonTypeInfo<TContent[]> ContentListTypeInfo { get; }
@@ -217,20 +218,13 @@ public abstract class ContentRepositoryBase<TContent>(IR2Storage<TContent> conte
     }
 
     private async ValueTask EnsureDataIsLoadedAsync(CancellationToken ct) {
+        await _loadSemaphore.WaitAsync(ct);
         try {
             DateTimeOffset now = DateTimeOffset.UtcNow;
 
-            #if DEBUG
-            // ReSharper disable once InlineTemporaryVariable
-            TimeSpan window = DevRefreshWindow;
-            #else
-            // ReSharper disable once InlineTemporaryVariable
-            TimeSpan window = CacheRefreshWindow;
-            #endif
-
             bool shouldRefresh;
             if (!_isFirstTimeLoaded || _lastRefreshUtc is null) shouldRefresh = true;
-            else shouldRefresh = now - _lastRefreshUtc.Value > window;
+            else shouldRefresh = now - _lastRefreshUtc.Value > RefreshWindow;
 
             if (_isFirstTimeLoaded && !shouldRefresh) {
                 logger.Debug("{ContentType} cache was refreshed by another caller.", typeof(TContent).Name);
@@ -278,6 +272,9 @@ public abstract class ContentRepositoryBase<TContent>(IR2Storage<TContent> conte
         catch (Exception ex) {
             logger.Error(ex, "Failed to refresh {ContentType} cache; clearing any cached data.", typeof(TContent).Name);
             SetItemsToFaultedState();
+        }
+        finally {
+            _loadSemaphore.Release();
         }
     }
 
