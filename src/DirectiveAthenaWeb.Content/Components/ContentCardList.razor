@@ -54,16 +54,16 @@
         </MudGrid>
     </MudPaper>
 
-    <MudGrid Spacing="6">
+    <MudStack Spacing="4">
         @if (ContentItems is null) {
             for (int i = 0; i < SkeletonCount; i++) {
-                <MudItem xs="12" md="6">
+                <div>
                     <ContentCardSkeleton/>
-                </MudItem>
+                </div>
             }
         }
         else if (ContentItems.Length == 0) {
-            <MudItem xs="12">
+            <div>
                 <MudCard Class="card-glass pa-8 text-center border-dashed no-hover">
                     <MudStack AlignItems="AlignItems.Center" Spacing="3">
                         <MudIcon Icon="@Icons.Material.Filled.SearchOff" Class="text-secondary" Size="Size.Large"
@@ -74,10 +74,10 @@
                         </MudText>
                     </MudStack>
                 </MudCard>
-            </MudItem>
+            </div>
         }
         else if (VisibleItems.Count == 0) {
-            <MudItem xs="12">
+            <div>
                 <MudCard Class="card-glass pa-8 text-center border-dashed no-hover">
                     <MudStack AlignItems="AlignItems.Center" Spacing="3">
                         <MudIcon Icon="@Icons.Material.Filled.FilterAltOff" Class="text-secondary" Size="Size.Large"
@@ -88,20 +88,20 @@
                         </MudText>
                     </MudStack>
                 </MudCard>
-            </MudItem>
+            </div>
         }
         else {
             foreach (TContent content in VisibleItems) {
-                <MudItem xs="12" md="6">
+                <div>
                     <ContentCard TContent="TContent" Content="@content"
                                  HeaderExtras="HeaderExtras"
                                  MetaExtras="MetaExtras"
                                  BodyExtras="BodyExtras"
                                  FooterExtras="FooterExtras"/>
-                </MudItem>
+                </div>
             }
         }
-    </MudGrid>
+    </MudStack>
 </MudStack>
 
 @* ------------------------------------------------------------------------------------------------------------------ *@

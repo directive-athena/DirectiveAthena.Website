@@ -65,10 +65,10 @@ public static class Program {
             bool includeDevContent = config.GetValue<bool>("INFINILORE_INCLUDE_DEVCONTENT");
             return Results.Ok(new { includeDevContent });
         });
-        
+
         app.MapRazorComponents<AdminApp>()
-            .AddInteractiveServerRenderMode()
-            .AddAdditionalAssemblies(noteAssembly, faqAssembly, storyAssembly);
+            .AddInteractiveServerRenderMode();
+            // .AddAdditionalAssemblies(noteAssembly, faqAssembly, storyAssembly);
 
         app.MapFallbackToFile("index.html");
         app.Run();
