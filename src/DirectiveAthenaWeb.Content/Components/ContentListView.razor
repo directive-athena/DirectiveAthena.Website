@@ -1,9 +1,7 @@
 ﻿@* ------------------------------------------------------------------------------------------------------------------ *@
 @* Imports *@
 @* ------------------------------------------------------------------------------------------------------------------ *@
-@using DirectiveAthenaWeb.Components
 @using DirectiveAthenaWeb.Services.Client
-@using MudBlazor
 
 @namespace DirectiveAthenaWeb.Content.Components
 @* ------------------------------------------------------------------------------------------------------------------ *@
@@ -16,7 +14,8 @@
 @inject IContentManager<TContent> ContentManager
 @inject NavigationManager NavigationManager
 
-@inherits WebsiteComponentBase
+@* ReSharper disable once CheckNamespace *@
+@namespace DirectiveAthenaWeb.Components
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Html *@
 @* ------------------------------------------------------------------------------------------------------------------ *@

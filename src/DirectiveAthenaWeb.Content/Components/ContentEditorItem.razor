@@ -1,15 +1,13 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Imports *@
 @* ------------------------------------------------------------------------------------------------------------------ *@
-@using DirectiveAthenaWeb.Components
 @using DirectiveAthenaWeb.Content.Resources
 @using DirectiveAthenaWeb.Services.Js
 @using DirectiveAthenaWeb.Services.Localization
-@using Microsoft.Extensions.Localization
-@using Microsoft.Extensions.Logging
-@using MudBlazor
+@using Severity = MudBlazor.Severity
 
-@namespace DirectiveAthenaWeb.Content.Components
+@* ReSharper disable once CheckNamespace *@
+@namespace DirectiveAthenaWeb.Components
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Descriptors *@
 @* ------------------------------------------------------------------------------------------------------------------ *@
@@ -18,7 +16,7 @@
 @inject ISnackbar Snackbar
 @inject IStringLocalizer<Editor> Localizer
 
-@typeparam TContent where TContent : ContentBase
+@typeparam TContent where TContent : DirectiveAthenaWeb.Content.ContentBase
 @inherits WebsiteComponentBase
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Html *@
@@ -105,7 +103,7 @@
                                           @bind-Value="@Content.LocalizedSummaries[culture.Code]"
                                           FullWidth="true"/>
                             
-                            @LocalizedFields((Content, culture))
+                            @LocalizedFields(new (Content, culture))
                         }
                     }
                     </MudStack>
@@ -127,7 +125,7 @@
 
 @code {
     [Parameter, EditorRequired] public TContent Content { get; set; } = null!;
-    [Parameter, EditorRequired] public RenderFragment<(TContent, LocalizationInfo)>? LocalizedFields { get; set; }
+    [Parameter, EditorRequired] public RenderFragment<LocalizedFieldContext<TContent>>? LocalizedFields { get; set; }
     [Parameter, EditorRequired] public RenderFragment<TContent>? Fields { get; set; }
     [Parameter] public EventCallback OnContentChanged { get; set; }
 
