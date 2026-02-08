@@ -25,13 +25,13 @@
             <div class="d-flex align-center gap-2">
                 @if (HasStatusBadges) {
                     @if (Content.IsSoftDeleted) {
-                        <MudChip Size="Size.Small" Variant="Variant.Outlined" Color="Color.Error" Label="true">Deleted</MudChip>
+                        <MudChip T="string" Size="Size.Small" Variant="Variant.Outlined" Color="Color.Error" Label="true">Deleted</MudChip>
                     }
                     @if (Content.IsHidden) {
-                        <MudChip Size="Size.Small" Variant="Variant.Outlined" Color="Color.Warning" Label="true">Hidden</MudChip>
+                        <MudChip T="string" Size="Size.Small" Variant="Variant.Outlined" Color="Color.Warning" Label="true">Hidden</MudChip>
                     }
                     @if (Content.IsDevContent) {
-                        <MudChip Size="Size.Small" Variant="Variant.Outlined" Color="Color.Info" Label="true">Dev</MudChip>
+                        <MudChip T="string" Size="Size.Small" Variant="Variant.Outlined" Color="Color.Info" Label="true">Dev</MudChip>
                     }
                 }
                 @if (HeaderExtras is not null) {
@@ -70,7 +70,7 @@
         @if (HasTags) {
             <div class="d-flex flex-wrap gap-2">
                 @foreach (string tag in Content.Tags) {
-                    <MudChip Size="Size.Small" Variant="Variant.Filled" Color="Color.Secondary">@tag</MudChip>
+                    <MudChip T="string" Size="Size.Small" Variant="Variant.Filled" Color="Color.Secondary">@tag</MudChip>
                 }
             </div>
         }

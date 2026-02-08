@@ -64,7 +64,7 @@
                                   HelperText="@Localizer[Editor.IdHelperItem]"/>
                     
                     <MudTextField Value="@Content.Author" Label="@Localizer[Editor.Author]"
-                                  Required="true" ValueChanged="@OnAuthorChangedAsync"/>
+                                  Required="true" TextChanged="@OnAuthorChangedAsync"/>
 
                     <MudTextField Value="@FormatDate(Content.CreatedAt)" Label="@Localizer[Editor.CreatedAtLabel]"
                                   Required="true" ReadOnly="true"/>
@@ -135,8 +135,8 @@
     // -----------------------------------------------------------------------------------------------------------------
     // Methods
     // -----------------------------------------------------------------------------------------------------------------
-    private async Task OnAuthorChangedAsync(string author) {
-        Content.Author = author;
+    private async Task OnAuthorChangedAsync(string? author) {
+        Content.Author = author ?? string.Empty;
         Content.LastModifiedAt = DateTime.UtcNow;
         await OnSaveChangesAsync();
     }
