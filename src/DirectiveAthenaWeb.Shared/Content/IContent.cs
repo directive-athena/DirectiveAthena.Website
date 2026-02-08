@@ -10,6 +10,7 @@ public interface IContent {
     Guid Id { get; }
     
     string InternalTitle { get; }
+    string Author { get; }
     IReadOnlyCollection<string> Tags { get; }
     
     DateTime HiddenAt { get; }

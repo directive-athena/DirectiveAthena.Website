@@ -34,7 +34,8 @@ public static class ContentFaker {
             LocalizedSummaries = LocalizedDataHolder.FromDictionary(summary),
             Tags = faker.Lorem.Words(2).ToList(),
             HiddenAt = hidden ? DateTime.UtcNow : DateTime.MinValue,
-            InternalTitle = string.Empty
+            InternalTitle = string.Empty,
+            Author = "Anna Sas"
         };
     }
 
@@ -48,7 +49,8 @@ public static class ContentFaker {
             Answer = new LocalizedDataHolder {
                 ["en"] = $"Answer {seed}"
             },
-            InternalTitle = string.Empty
+            InternalTitle = string.Empty,
+            Author = "Anna Sas"
         };
 
         if (!includeNl) return faq;

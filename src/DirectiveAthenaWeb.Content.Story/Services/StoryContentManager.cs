@@ -36,6 +36,7 @@ internal class StoryContentManager(
         var article = new StoryContent {
             Id = id,
             Title = titles,
+            Author = "Anna Sas",
             Summary = summaries,
             Tags = [
             ],

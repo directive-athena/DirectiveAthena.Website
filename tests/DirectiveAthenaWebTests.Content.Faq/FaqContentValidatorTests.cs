@@ -23,7 +23,8 @@ public class FaqContentValidatorTests {
             ["en"] = "Answer",
             ["nl"] = "Antwoord"
         },
-        InternalTitle = string.Empty
+        InternalTitle = string.Empty,
+        Author = "Anna Sas",
     };
 
     [Test]

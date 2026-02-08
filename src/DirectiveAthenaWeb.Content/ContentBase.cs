@@ -11,6 +11,7 @@ namespace DirectiveAthenaWeb.Content;
 public abstract class ContentBase : IContent {
     public required Guid Id { get; set; }
     public required string InternalTitle { get; set; }
+    public required string Author { get; set; }
     
     public LocalizedDataHolder LocalizedTitles { get; set; } = new();
     public LocalizedDataHolder LocalizedSummaries { get; set; } = new();

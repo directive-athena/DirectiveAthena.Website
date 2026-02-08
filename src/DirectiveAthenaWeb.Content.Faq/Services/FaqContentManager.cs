@@ -41,7 +41,8 @@ internal class FaqContentManager(
             ],
             CreatedAt = now,
             LastModifiedAt = now,
-            InternalTitle = internalTitle ?? string.Empty
+            InternalTitle = internalTitle ?? string.Empty,
+            Author = "Anna Sas"
         };
         _logger.Information("Created new world rule stub {Id}.", rule.Id);
         return rule;

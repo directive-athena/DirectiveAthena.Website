@@ -40,7 +40,8 @@ internal class NoteContentManager(
             ],
             CreatedAt = now,
             LastModifiedAt = now,
-            InternalTitle = internalTitle ?? string.Empty
+            InternalTitle = internalTitle ?? string.Empty,
+            Author = "Anna Sas"
         };
         Logger.Information("Created new article stub {Id}.", article.Id);
         return article;
