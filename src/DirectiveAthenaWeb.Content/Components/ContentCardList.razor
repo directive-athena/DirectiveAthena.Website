@@ -21,11 +21,16 @@
 <MudGrid Spacing="6">
     @switch (ContentItems) {
         case null: {
-            <MudProgressCircular Color="Color.Secondary" Indeterminate="true" Size="Size.Large"/>
+            for (int i = 0; i < SkeletonCount; i++) {
+                <MudItem xs="12" md="6">
+                    <ContentCardSkeleton/>
+                </MudItem>
+            }
             break;
         }
 
         case { Length: 0 }: {
+            <EmptyWritingsState/>
             break;
         }
 
@@ -58,6 +63,7 @@
     [Parameter] public RenderFragment<TContent>? BodyExtras { get; set; }
     [Parameter] public RenderFragment<TContent>? FooterExtras { get; set; }
     [Parameter] public bool ShowInternalTitle { get; set; }
+    [Parameter] public int SkeletonCount { get; set; } = 4;
 
     // -----------------------------------------------------------------------------------------------------------------
     // Methods

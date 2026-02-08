@@ -1,4 +1,4 @@
-﻿@* ------------------------------------------------------------------------------------------------------------------ *@
+@* ------------------------------------------------------------------------------------------------------------------ *@
 @* Imports *@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 
@@ -40,16 +40,17 @@
             </div>
         </div>
 
-        <MudText Typo="Typo.h4"
-                 Class="mb-2 SpaceGrotesk">@ContentManager.GetLocalizedTitle(Content)</MudText>
+        <MudText Typo="Typo.h4" Class="mb-2 SpaceGrotesk">
+            @ContentManager.GetLocalizedTitle(Content)
+        </MudText>
+        
         <div class="d-flex flex-wrap align-center gap-2 mb-3">
             <MudText Typo="Typo.caption" Class="text-secondary">By @Content.Author</MudText>
-            @if (ShowInternalTitle) {
-                <MudText Typo="Typo.caption" Class="text-secondary">(@Content.GetReadableInternalTitle())</MudText>
-            }
+        
             @if (HasLastModified) {
                 <MudText Typo="Typo.caption" Class="text-secondary">Updated @FormatDate(Content.LastModifiedAt)</MudText>
             }
+            
             @if (MetaExtras is not null) {
                 @MetaExtras(Content)
             }
@@ -95,8 +96,7 @@
     [Parameter] public RenderFragment<TContent>? MetaExtras { get; set; }
     [Parameter] public RenderFragment<TContent>? BodyExtras { get; set; }
     [Parameter] public RenderFragment<TContent>? FooterExtras { get; set; }
-    [Parameter] public bool ShowInternalTitle { get; set; }
-
+    
     private bool HasTags => Content.Tags.Count > 0;
     private bool HasLastModified => Content.LastModifiedAt > DateTime.MinValue && Content.LastModifiedAt > Content.CreatedAt;
     private bool HasStatusBadges => Content.IsSoftDeleted || Content.IsHidden || Content.IsDevContent;
