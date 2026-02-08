@@ -205,5 +205,8 @@
     <data name="RestoreItemSuccess" xml:space="preserve">
         <value>Item has been restored</value>
     </data>
+    <data name="Author" xml:space="preserve">
+        <value>Author</value>
+    </data>
 </root>
 

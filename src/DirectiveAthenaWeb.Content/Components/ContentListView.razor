@@ -14,6 +14,8 @@
 @inject IContentRepository<TContent> ContentRepository
 @inject IContentManager<TContent> ContentManager
 @inject NavigationManager NavigationManager
+
+@inherits WebsiteComponentBase
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Html *@
 @* ------------------------------------------------------------------------------------------------------------------ *@
@@ -92,7 +94,4 @@
     private void ViewPost(Guid id) {
         NavigationManager.NavigateTo($"/notes/{id:D}");
     }
-
-    private static string FormatDate(DateTime date)
-        => date == DateTime.MinValue ? string.Empty : date.ToString("yyyy-MM-dd");
 }

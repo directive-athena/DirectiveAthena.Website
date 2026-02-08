@@ -19,6 +19,8 @@
 @inject NavigationManager NavigationManager
 @inject IStringLocalizer<Client> LocalizerShared
 @inject IStringLocalizer<Tags> LocalizerTags
+
+@inherits WebsiteComponentBase
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Html
 @* ------------------------------------------------------------------------------------------------------------------ *@
@@ -132,7 +134,4 @@
 
     private static bool HasDate(DateTime date)
         => date != DateTime.MinValue;
-
-    private static string FormatDate(DateTime date)
-        => HasDate(date) ? date.ToString("yyyy-MM-dd") : string.Empty;
 }

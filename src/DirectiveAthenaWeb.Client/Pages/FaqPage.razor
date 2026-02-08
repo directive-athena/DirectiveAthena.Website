@@ -2,7 +2,6 @@
 @* Imports
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @using DirectiveAthenaWeb.Content.Faq
-@using DirectiveAthenaWeb.Services.Localization
 @using Microsoft.Extensions.Localization
 @using DirectiveAthenaWeb.Client.Resources
 @using DirectiveAthenaWeb.Content.Resources
@@ -16,9 +15,10 @@
 
 @inject IFaqContentRepository FaqRepository
 @inject IFaqContentManager FaqManager
-@inject ILocalizationProvider LocalizationProvider
 @inject IStringLocalizer<Client> LocalizerShared
 @inject IStringLocalizer<Tags> LocalizerTags
+
+@inherits WebsiteComponentBase
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Html
 @* ------------------------------------------------------------------------------------------------------------------ *@
@@ -143,7 +143,4 @@
         public string Date => FormatDate(Faq.LastModifiedAt);
         public List<string> Tags => Faq.Tags.ToList();
     }
-
-    private static string FormatDate(DateTime date)
-        => date == default ? string.Empty : date.ToString("yyyy-MM-dd");
 }

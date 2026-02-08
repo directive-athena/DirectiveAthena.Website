@@ -62,6 +62,9 @@
                     <MudTextField Value="@Content.Id.ToString("D")" Label="@Localizer[Editor.UniqueId]"
                                   Required="true" ReadOnly="true"
                                   HelperText="@Localizer[Editor.IdHelperItem]"/>
+                    
+                    <MudTextField Value="@Content.Author" Label="@Localizer[Editor.Author]"
+                                  Required="true" ValueChanged="@OnAuthorChangedAsync"/>
 
                     <MudTextField Value="@FormatDate(Content.CreatedAt)" Label="@Localizer[Editor.CreatedAtLabel]"
                                   Required="true" ReadOnly="true"/>
@@ -132,6 +135,12 @@
     // -----------------------------------------------------------------------------------------------------------------
     // Methods
     // -----------------------------------------------------------------------------------------------------------------
+    private async Task OnAuthorChangedAsync(string author) {
+        Content.Author = author;
+        Content.LastModifiedAt = DateTime.UtcNow;
+        await OnSaveChangesAsync();
+    }
+    
     private async Task OnHiddenChangedAsync(bool value) {
         DateTime now = DateTime.UtcNow;
         Content.HiddenAt = value ? now : DateTime.MinValue;
@@ -188,9 +197,6 @@
         await Repository.SaveAsync();
         await OnContentChanged.InvokeAsync();
     }
-
-    private static string FormatDate(DateTime date)
-        => date == DateTime.MinValue ? string.Empty : date.ToString("yyyy-MM-dd");
 
     private async Task OnSaveChangesAsync() {
         var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
