@@ -37,6 +37,15 @@
       <EmbeddedResource Update="Resources\Tags.nl.resx">
         <DependentUpon>Tags.cs</DependentUpon>
       </EmbeddedResource>
+      <EmbeddedResource Update="Resources\Content.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>Content.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Resources\Content.nl.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>Content.Designer.cs</LastGenOutput>
+        <DependentUpon>Content.cs</DependentUpon>
+      </EmbeddedResource>
     </ItemGroup>
 
 </Project>

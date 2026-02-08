@@ -2,6 +2,7 @@
 @* Imports *@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @using DirectiveAthenaWeb.Services.Client
+@using DirectiveAthenaWeb.Content.Resources
 
 @* ReSharper disable once CheckNamespace *@
 @namespace DirectiveAthenaWeb.Components
@@ -12,6 +13,7 @@
 
 @inject IClientConfigFactory ClientConfigFactory
 @inject IContentRepository<TContent> ContentRepository
+@inject IStringLocalizer<Content> Localizer
 
 @inherits WebsiteComponentBase
 @* ------------------------------------------------------------------------------------------------------------------ *@
@@ -24,7 +26,7 @@
             <MudItem xs="12" md="4">
                 <MudTextField Value="@SearchText"
                               TextChanged="@OnSearchChanged"
-                              Placeholder="Search titles"
+                              Placeholder="@Localizer[Content.ListSearchPlaceholder]"
                               Immediate="true"
                               Adornment="Adornment.Start"
                               AdornmentIcon="@Icons.Material.Filled.Search"/>
@@ -32,8 +34,8 @@
             <MudItem xs="12" md="4">
                 <MudSelect T="string" Value="@SelectedTag"
                            ValueChanged="@OnTagChanged"
-                           Label="Tag" Dense="true">
-                    <MudSelectItem Value="@AllTagsValue">All tags</MudSelectItem>
+                           Label="@Localizer[Content.ListTagLabel]" Dense="true">
+                    <MudSelectItem Value="@AllTagsValue">@Localizer[Content.ListAllTags]</MudSelectItem>
                     @foreach (string tag in AvailableTags) {
                         <MudSelectItem Value="@tag">@tag</MudSelectItem>
                     }
@@ -42,13 +44,13 @@
             <MudItem xs="12" md="4">
                 <MudSelect T="SortMode" Value="@SelectedSort"
                            ValueChanged="@OnSortChanged"
-                           Label="Sort" Dense="true">
-                    <MudSelectItem Value="SortMode.CreatedNewest">Created (newest)</MudSelectItem>
-                    <MudSelectItem Value="SortMode.CreatedOldest">Created (oldest)</MudSelectItem>
-                    <MudSelectItem Value="SortMode.ModifiedNewest">Updated (newest)</MudSelectItem>
-                    <MudSelectItem Value="SortMode.ModifiedOldest">Updated (oldest)</MudSelectItem>
-                    <MudSelectItem Value="SortMode.TitleAsc">Title (A-Z)</MudSelectItem>
-                    <MudSelectItem Value="SortMode.TitleDesc">Title (Z-A)</MudSelectItem>
+                           Label="@Localizer[Content.ListSortLabel]" Dense="true">
+                    <MudSelectItem Value="SortMode.CreatedNewest">@Localizer[Content.ListSortCreatedNewest]</MudSelectItem>
+                    <MudSelectItem Value="SortMode.CreatedOldest">@Localizer[Content.ListSortCreatedOldest]</MudSelectItem>
+                    <MudSelectItem Value="SortMode.ModifiedNewest">@Localizer[Content.ListSortModifiedNewest]</MudSelectItem>
+                    <MudSelectItem Value="SortMode.ModifiedOldest">@Localizer[Content.ListSortModifiedOldest]</MudSelectItem>
+                    <MudSelectItem Value="SortMode.TitleAsc">@Localizer[Content.ListSortTitleAsc]</MudSelectItem>
+                    <MudSelectItem Value="SortMode.TitleDesc">@Localizer[Content.ListSortTitleDesc]</MudSelectItem>
                 </MudSelect>
             </MudItem>
         </MudGrid>
@@ -65,30 +67,30 @@
         else if (ContentItems.Length == 0) {
             <div>
                 <MudCard Class="card-glass pa-8 text-center border-dashed no-hover">
-                    <MudStack AlignItems="AlignItems.Center" Spacing="3">
-                        <MudIcon Icon="@Icons.Material.Filled.SearchOff" Class="text-secondary" Size="Size.Large"
-                                 Style="font-size: 3.5rem;"/>
-                        <MudText Typo="Typo.h6" Class="mb-1 text-secondary">No content found</MudText>
-                        <MudText Typo="Typo.body2" Class="text-secondary">
-                            Try adjusting filters or check back later.
-                        </MudText>
-                    </MudStack>
-                </MudCard>
-            </div>
+                        <MudStack AlignItems="AlignItems.Center" Spacing="3">
+                            <MudIcon Icon="@Icons.Material.Filled.SearchOff" Class="text-secondary" Size="Size.Large"
+                                     Style="font-size: 3.5rem;"/>
+                            <MudText Typo="Typo.h6" Class="mb-1 text-secondary">@Localizer[Content.ListEmptyTitle]</MudText>
+                            <MudText Typo="Typo.body2" Class="text-secondary">
+                                @Localizer[Content.ListEmptyBody]
+                            </MudText>
+                        </MudStack>
+                    </MudCard>
+                </div>
         }
         else if (VisibleItems.Count == 0) {
             <div>
                 <MudCard Class="card-glass pa-8 text-center border-dashed no-hover">
-                    <MudStack AlignItems="AlignItems.Center" Spacing="3">
-                        <MudIcon Icon="@Icons.Material.Filled.FilterAltOff" Class="text-secondary" Size="Size.Large"
-                                 Style="font-size: 3.5rem;"/>
-                        <MudText Typo="Typo.h6" Class="mb-1 text-secondary">No matches</MudText>
-                        <MudText Typo="Typo.body2" Class="text-secondary">
-                            Try a different search or tag filter.
-                        </MudText>
-                    </MudStack>
-                </MudCard>
-            </div>
+                        <MudStack AlignItems="AlignItems.Center" Spacing="3">
+                            <MudIcon Icon="@Icons.Material.Filled.FilterAltOff" Class="text-secondary" Size="Size.Large"
+                                     Style="font-size: 3.5rem;"/>
+                            <MudText Typo="Typo.h6" Class="mb-1 text-secondary">@Localizer[Content.ListNoMatchesTitle]</MudText>
+                            <MudText Typo="Typo.body2" Class="text-secondary">
+                                @Localizer[Content.ListNoMatchesBody]
+                            </MudText>
+                        </MudStack>
+                    </MudCard>
+                </div>
         }
         else {
             foreach (TContent content in VisibleItems) {

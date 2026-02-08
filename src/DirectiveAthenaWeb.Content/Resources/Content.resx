@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+        <xsd:import namespace="http://www.w3.org/XML/1998/namespace"/>
+        <xsd:element name="root" msdata:IsDataSet="true">
+            <xsd:complexType>
+                <xsd:choice maxOccurs="unbounded">
+                    <xsd:element name="metadata">
+                        <xsd:complexType>
+                            <xsd:sequence>
+                                <xsd:element name="value" type="xsd:string" minOccurs="0"/>
+                            </xsd:sequence>
+                            <xsd:attribute name="name" use="required" type="xsd:string"/>
+                            <xsd:attribute name="type" type="xsd:string"/>
+                            <xsd:attribute name="mimetype" type="xsd:string"/>
+                            <xsd:attribute ref="xml:space"/>
+                        </xsd:complexType>
+                    </xsd:element>
+                    <xsd:element name="assembly">
+                        <xsd:complexType>
+                            <xsd:attribute name="alias" type="xsd:string"/>
+                            <xsd:attribute name="name" type="xsd:string"/>
+                        </xsd:complexType>
+                    </xsd:element>
+                    <xsd:element name="data">
+                        <xsd:complexType>
+                            <xsd:sequence>
+                                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1"/>
+                                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2"/>
+                            </xsd:sequence>
+                            <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1"/>
+                            <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3"/>
+                            <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4"/>
+                            <xsd:attribute ref="xml:space"/>
+                        </xsd:complexType>
+                    </xsd:element>
+                    <xsd:element name="resheader">
+                        <xsd:complexType>
+                            <xsd:sequence>
+                                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1"/>
+                            </xsd:sequence>
+                            <xsd:attribute name="name" type="xsd:string" use="required"/>
+                        </xsd:complexType>
+                    </xsd:element>
+                </xsd:choice>
+            </xsd:complexType>
+        </xsd:element>
+    </xsd:schema>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>2.0</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral,
+            PublicKeyToken=b77a5c561934e089
+        </value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral,
+            PublicKeyToken=b77a5c561934e089
+        </value>
+    </resheader>
+    <data name="WritingsDetailBackBottom" xml:space="preserve">
+        <value>Back to all notes</value>
+    </data>
+    <data name="WritingsDetailCopyLink" xml:space="preserve">
+        <value>Copy link</value>
+    </data>
+    <data name="WritingsDetailError" xml:space="preserve">
+        <value>Unable to load the content of this post.</value>
+    </data>
+    <data name="WritingsDetailLinkCopied" xml:space="preserve">
+        <value>Link copied</value>
+    </data>
+    <data name="WritingsDetailReadTime" xml:space="preserve">
+        <value>{0} min read</value>
+    </data>
+    <data name="WritingsDetailShareBluesky" xml:space="preserve">
+        <value>Bluesky</value>
+    </data>
+    <data name="WritingsDetailShareLabel" xml:space="preserve">
+        <value>Share</value>
+    </data>
+    <data name="WritingsDetailShareReddit" xml:space="preserve">
+        <value>Reddit</value>
+    </data>
+    <data name="WritingsDetailShareTwitter" xml:space="preserve">
+        <value>Twitter</value>
+    </data>
+    <data name="WritingsUpdated" xml:space="preserve">
+        <value>Updated {0}</value>
+    </data>
+    <data name="CardStatusDeleted" xml:space="preserve">
+        <value>Deleted</value>
+    </data>
+    <data name="CardStatusHidden" xml:space="preserve">
+        <value>Hidden</value>
+    </data>
+    <data name="CardStatusDev" xml:space="preserve">
+        <value>Dev</value>
+    </data>
+    <data name="CardBy" xml:space="preserve">
+        <value>By {0}</value>
+    </data>
+    <data name="CardUpdated" xml:space="preserve">
+        <value>Updated {0}</value>
+    </data>
+    <data name="CardOpenToReadMore" xml:space="preserve">
+        <value>Open to read more</value>
+    </data>
+    <data name="ListSearchPlaceholder" xml:space="preserve">
+        <value>Search titles</value>
+    </data>
+    <data name="ListTagLabel" xml:space="preserve">
+        <value>Tag</value>
+    </data>
+    <data name="ListAllTags" xml:space="preserve">
+        <value>All tags</value>
+    </data>
+    <data name="ListSortLabel" xml:space="preserve">
+        <value>Sort</value>
+    </data>
+    <data name="ListSortCreatedNewest" xml:space="preserve">
+        <value>Created (newest)</value>
+    </data>
+    <data name="ListSortCreatedOldest" xml:space="preserve">
+        <value>Created (oldest)</value>
+    </data>
+    <data name="ListSortModifiedNewest" xml:space="preserve">
+        <value>Updated (newest)</value>
+    </data>
+    <data name="ListSortModifiedOldest" xml:space="preserve">
+        <value>Updated (oldest)</value>
+    </data>
+    <data name="ListSortTitleAsc" xml:space="preserve">
+        <value>Title (A-Z)</value>
+    </data>
+    <data name="ListSortTitleDesc" xml:space="preserve">
+        <value>Title (Z-A)</value>
+    </data>
+    <data name="ListEmptyTitle" xml:space="preserve">
+        <value>No content found</value>
+    </data>
+    <data name="ListEmptyBody" xml:space="preserve">
+        <value>Try adjusting filters or check back later.</value>
+    </data>
+    <data name="ListNoMatchesTitle" xml:space="preserve">
+        <value>No matches</value>
+    </data>
+    <data name="ListNoMatchesBody" xml:space="preserve">
+        <value>Try a different search or tag filter.</value>
+    </data>
+</root>

@@ -1,6 +1,7 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Imports *@
 @* ------------------------------------------------------------------------------------------------------------------ *@
+@using ContentResources = DirectiveAthenaWeb.Content.Resources.Content
 
 @* ReSharper disable once CheckNamespace *@
 @namespace DirectiveAthenaWeb.Components
@@ -11,12 +12,13 @@
 
 @inject IContentManager<TContent> ContentManager
 @inject NavigationManager NavigationManager
+@inject IStringLocalizer<ContentResources> Localizer
 
 @inherits WebsiteComponentBase
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Html *@
 @* ------------------------------------------------------------------------------------------------------------------ *@
-<MudCard Class="card-glass h-100 d-flex flex-column" @onclick="@ViewPost"
+<MudCard Class="card-glass no-hover h-100 d-flex flex-column" @onclick="@ViewPost"
          Style="cursor: pointer;">
     <MudCardContent Class="flex-grow-1 pa-8">
         <div class="d-flex justify-space-between align-center mb-3">
@@ -24,14 +26,20 @@
                      Style="letter-spacing: 0.1em; text-transform: uppercase;">@FormatDate(Content.CreatedAt)</MudText>
             <div class="d-flex align-center gap-2">
                 @if (HasStatusBadges) {
-                    @if (Content.IsSoftDeleted) {
-                        <MudChip T="string" Size="Size.Small" Variant="Variant.Outlined" Color="Color.Error" Label="true">Deleted</MudChip>
+                    if (Content.IsSoftDeleted) {
+                        <MudChip T="string" Size="Size.Small" Variant="Variant.Outlined" Color="Color.Error" Label="true">
+                            @Localizer[ContentResources.CardStatusDeleted]
+                        </MudChip>
                     }
-                    @if (Content.IsHidden) {
-                        <MudChip T="string" Size="Size.Small" Variant="Variant.Outlined" Color="Color.Warning" Label="true">Hidden</MudChip>
+                    if (Content.IsHidden) {
+                        <MudChip T="string" Size="Size.Small" Variant="Variant.Outlined" Color="Color.Warning" Label="true">
+                            @Localizer[ContentResources.CardStatusHidden]
+                        </MudChip>
                     }
-                    @if (Content.IsDevContent) {
-                        <MudChip T="string" Size="Size.Small" Variant="Variant.Outlined" Color="Color.Info" Label="true">Dev</MudChip>
+                    if (Content.IsDevContent) {
+                        <MudChip T="string" Size="Size.Small" Variant="Variant.Outlined" Color="Color.Info" Label="true">
+                            @Localizer[ContentResources.CardStatusDev]
+                        </MudChip>
                     }
                 }
                 @if (HeaderExtras is not null) {
@@ -45,10 +53,14 @@
         </MudText>
         
         <div class="d-flex flex-wrap align-center gap-2 mb-3">
-            <MudText Typo="Typo.caption" Class="text-secondary">By @Content.Author</MudText>
+            <MudText Typo="Typo.caption" Class="text-secondary">
+                @Localizer[ContentResources.CardBy, Content.Author]
+            </MudText>
         
             @if (HasLastModified) {
-                <MudText Typo="Typo.caption" Class="text-secondary">Updated @FormatDate(Content.LastModifiedAt)</MudText>
+                <MudText Typo="Typo.caption" Class="text-secondary">
+                    @Localizer[ContentResources.CardUpdated, FormatDate(Content.LastModifiedAt)]
+                </MudText>
             }
             
             @if (MetaExtras is not null) {
@@ -80,7 +92,7 @@
         @if (FooterExtras is not null) {
             @FooterExtras(Content)
         } else {
-            <MudText Typo="Typo.caption" Class="text-secondary">Open to read more</MudText>
+            <MudText Typo="Typo.caption" Class="text-secondary">@Localizer[ContentResources.CardOpenToReadMore]</MudText>
         }
         <MudIcon Icon="@Icons.Material.Filled.ArrowForward" Color="Color.Secondary"/>
     </MudCardActions>

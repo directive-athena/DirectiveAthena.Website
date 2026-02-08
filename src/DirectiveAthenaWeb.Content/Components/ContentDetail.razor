@@ -1,0 +1,204 @@
+﻿@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Imports
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@using System.Text.RegularExpressions
+@using DirectiveAthenaWeb.Content.Resources
+@using DirectiveAthenaWeb.Services.Client
+@using DirectiveAthenaWeb.Services.Js
+@using InfiniBlazor.Markdown
+@using Severity = MudBlazor.Severity
+
+@namespace DirectiveAthenaWeb.Client.Pages
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Descriptors
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@page "/notes/{Id:guid}"
+
+@inject IContentRepository<TContent> ContentRepository
+@inject IContentManager<TContent> ContentManager
+@inject HttpClient HttpClient
+@inject NavigationManager NavigationManager
+@inject IDirectiveAthenaWebJs WebJs
+@inject IStringLocalizer<Tags> LocalizerTags
+@inject IStringLocalizer<Content> Localizer
+@inject IClientConfigFactory ClientConfigFactory
+
+@inherits WebsiteComponentBase
+
+@typeparam TContent where TContent : ContentBase
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Html
+@* ------------------------------------------------------------------------------------------------------------------ *@
+<MudContainer MaxWidth="MaxWidth.Large">
+
+    @if (_loading || _currentPost is null) {
+        <div class="d-flex justify-center py-12">
+            <MudProgressCircular Color="Color.Secondary" Indeterminate="true" Size="Size.Large"/>
+        </div>
+    }
+    else if (_error) {
+        <MudAlert Severity="Severity.Error" Variant="Variant.Filled"
+                  Class="card-glass">@Localizer[Content.WritingsDetailError]
+        </MudAlert>
+    }
+    else {
+        <article class="fade-in">
+            <MudPaper elevation="12" Style="padding: 12px 24px; border-radius: 24px; margin-bottom: 24px;">
+                <div class="d-flex align-center flex-wrap gap-4 mb-2">
+                    <MudText Typo="Typo.caption" Color="Color.Secondary"
+                             Style="letter-spacing: 0.2em; text-transform: uppercase;">@FormatDate(_currentPost.CreatedAt)</MudText>
+                    @if (HasDate(_currentPost.LastModifiedAt)) {
+                        <MudText Typo="Typo.caption" Class="opacity-60">
+                            @Localizer[Content.WritingsUpdated, FormatDate(_currentPost.LastModifiedAt)]
+                        </MudText>
+                    }
+                    <MudText Typo="Typo.caption" Class="opacity-60">
+                        @Localizer[Content.WritingsDetailReadTime, _readTimeMinutes]
+                    </MudText>
+                    <MudButton Variant="Variant.Text" Color="Color.Secondary" Size="Size.Small"
+                               StartIcon="@(_isLinkCopied ? Icons.Material.Filled.Check : Icons.Material.Filled.ContentCopy)"
+                               OnClick="@CopyLinkAsync" Disabled="@_isCopyInProgress"
+                               Class="pa-0">
+                        @(_isLinkCopied
+                            ? Localizer[Content.WritingsDetailLinkCopied]
+                            : Localizer[Content.WritingsDetailCopyLink])
+                    </MudButton>
+                    <MudSpacer/>
+                    <div class="d-flex align-center gap-2">
+                        <MudText Typo="Typo.caption"
+                                 Class="opacity-60">@Localizer[Content.WritingsDetailShareLabel]</MudText>
+                        <MudTooltip Text="@Localizer[Content.WritingsDetailShareTwitter]">
+                            <MudIconButton Icon="@Icons.Custom.Brands.X" Color="Color.Secondary" Size="Size.Small"
+                                           Href="@_shareTwitterUrl" Target="_blank"/>
+                        </MudTooltip>
+                        <MudTooltip Text="@Localizer[Content.WritingsDetailShareBluesky]">
+                            <MudIconButton Icon="@CustomIcons.Bluesky" Color="Color.Secondary" Size="Size.Small"
+                                           Href="@_shareBlueskyUrl" Target="_blank"/>
+                        </MudTooltip>
+                        <MudTooltip Text="@Localizer[Content.WritingsDetailShareReddit]">
+                            <MudIconButton Icon="@Icons.Custom.Brands.Reddit" Color="Color.Secondary"
+                                           Size="Size.Small"
+                                           Href="@_shareRedditUrl" Target="_blank"/>
+                        </MudTooltip>
+                    </div>
+                </div>
+
+                <MudText Typo="Typo.h2"
+                         Class="mb-4 SpaceGrotesk">@ContentManager.GetLocalizedTitle(_currentPost)</MudText>
+                <div class="d-flex gap-2">
+                    @foreach (string tag in _currentPost.Tags) {
+                        <MudChip T="string" Size="Size.Small" Color="Color.Secondary"
+                                 Variant="Variant.Outlined">@LocalizerTags[tag]</MudChip>
+                    }
+                </div>
+            </MudPaper>
+
+            <MudPaper elevation="12" Style="padding: 12px;">
+                <InfiniMarkdownPreview Content="@_markdown"/>
+            </MudPaper>
+        </article>
+
+        <MudDivider Class="my-16 opacity-10"/>
+        <div class="d-flex justify-center">
+            <MudButton Variant="Variant.Outlined" Color="Color.Secondary"
+                       OnClick="@BackToList">@Localizer[Content.WritingsDetailBackBottom]
+            </MudButton>
+        </div>
+    }
+</MudContainer>
+
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Code
+@* ------------------------------------------------------------------------------------------------------------------ *@
+
+@code {
+    [Parameter] public Guid? Id { get; set; }
+
+    private TContent? _currentPost;
+    private string _markdown = "";
+    private int _readTimeMinutes = 1;
+    private bool _loading;
+    private bool _error;
+    private bool _isLinkCopied;
+    private bool _isCopyInProgress;
+    private string _shareTwitterUrl = "";
+    private string _shareBlueskyUrl = "";
+    private string _shareRedditUrl = "";
+
+    // -----------------------------------------------------------------------------------------------------------------
+    // Methods
+    // -----------------------------------------------------------------------------------------------------------------
+    protected override async Task OnParametersSetAsync() {
+        if (Id.HasValue) {
+            await LoadPost(Id.Value);
+        }
+    }
+
+    private async Task LoadPost(Guid id) {
+        ClientConfig clientConfig = await ClientConfigFactory.CreateAsync();
+        QueryConfig config = QueryConfigExtensions.AddClientConfigFlags(clientConfig);
+
+        _loading = true;
+        _error = false;
+        _currentPost = await ContentRepository.GetByIdAsync(id, config);
+
+        if (_currentPost is null) {
+            NavigationManager.NavigateTo("/not-found");
+            return;
+        }
+
+        try {
+            // string path = ContentManager.GetLocalizedFilePath(_currentPost);
+            // _markdown = await HttpClient.GetStringAsync(path);
+            UpdateReadTime();
+            UpdateShareLinks();
+        }
+        catch (Exception) {
+            _error = true;
+        }
+        finally {
+            _loading = false;
+        }
+    }
+
+    private void BackToList() {
+        NavigationManager.NavigateTo("/notes");
+    }
+
+    private void UpdateReadTime() {
+        int wordCount = Regex.Matches(_markdown, @"\b\w+\b").Count;
+        _readTimeMinutes = Math.Max(1, (int)Math.Ceiling(wordCount / 200.0));
+    }
+
+    private void UpdateShareLinks() {
+        if (_currentPost is null) return;
+
+        string title = ContentManager.GetLocalizedTitle(_currentPost);
+        string encodedTitle = Uri.EscapeDataString(title);
+        string encodedUrl = Uri.EscapeDataString(NavigationManager.Uri);
+        string blueskyText = Uri.EscapeDataString($"{title}\n{NavigationManager.Uri}\n");
+
+        _shareTwitterUrl = $"https://twitter.com/intent/tweet?text={encodedTitle}&url={encodedUrl}";
+        _shareBlueskyUrl = $"https://bsky.app/intent/compose?text={blueskyText}";
+        _shareRedditUrl = $"https://www.reddit.com/submit?url={encodedUrl}&title={encodedTitle}";
+    }
+
+    private async Task CopyLinkAsync() {
+        if (_isCopyInProgress) return;
+
+        _isCopyInProgress = true;
+        bool copied = await WebJs.CopyToClipboardAsync(NavigationManager.Uri);
+        _isLinkCopied = copied;
+        StateHasChanged();
+
+        if (copied) {
+            await Task.Delay(2000);
+            _isLinkCopied = false;
+        }
+
+        _isCopyInProgress = false;
+    }
+
+    private static bool HasDate(DateTime date)
+        => date != DateTime.MinValue;
+}
