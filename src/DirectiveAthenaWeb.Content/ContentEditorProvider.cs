@@ -36,7 +36,12 @@ public class ContentEditorProvider(IServiceProvider provider) : IContentEditorPr
         RegisteredEditors.Add(new ContentEditorInfo(normalizedType, normalizedFunc, icon));
     }
 
-    public IReadOnlyCollection<ContentEditorInfo> GetEditors() => RegisteredEditors.AsReadOnly();
-    public IEnumerable<Func<Task<IEnumerable<IContent>>>> GetTagRetrievers() => RegisteredTagRetrievers.Select(retriever => (Func<Task<IEnumerable<IContent>>>)(() => retriever(provider)));
+    public IReadOnlyCollection<ContentEditorInfo> GetEditors() 
+        => RegisteredEditors.AsReadOnly();
+    
+    public IEnumerable<Func<Task<IEnumerable<IContent>>>> GetTagRetrievers()
+        => RegisteredTagRetrievers.Select<Func<IServiceProvider, Task<IEnumerable<IContent>>>, Func<Task<IEnumerable<IContent>>>>(
+            retriever => () => retriever(provider)
+        );
 
 }
