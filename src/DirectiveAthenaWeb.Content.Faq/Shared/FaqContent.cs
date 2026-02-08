@@ -6,7 +6,7 @@ namespace DirectiveAthenaWeb.Content.Faq;
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
 public class FaqContent : ContentBase {
-    public Dictionary<string, string> Question { get; set; } = new();
-    public Dictionary<string, string> Answer { get; set; } = new();
+    public LocalizedDataHolder Question { get; set; } = new();
+    public LocalizedDataHolder Answer { get; set; } = new();
     public bool ShowOnHomepage { get; set; } = true;
 }

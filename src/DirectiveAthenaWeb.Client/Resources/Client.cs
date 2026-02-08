@@ -33,16 +33,5 @@ public class Client {
     public const string WritingsArchiveReadWriting = "WritingsArchiveReadWriting";
     public const string WritingsArchiveSubtitle = "WritingsArchiveSubtitle";
     public const string WritingsArchiveTitle = "WritingsArchiveTitle";
-    public const string WritingsDetailBack = "WritingsDetailBack";
-    public const string WritingsDetailBackBottom = "WritingsDetailBackBottom";
-    public const string WritingsDetailCopyLink = "WritingsDetailCopyLink";
-    public const string WritingsDetailError = "WritingsDetailError";
-    public const string WritingsDetailLinkCopied = "WritingsDetailLinkCopied";
-    public const string WritingsDetailReadTime = "WritingsDetailReadTime";
-    public const string WritingsDetailShareBluesky = "WritingsDetailShareBluesky";
-    public const string WritingsDetailShareLabel = "WritingsDetailShareLabel";
-    public const string WritingsDetailShareReddit = "WritingsDetailShareReddit";
-    public const string WritingsDetailShareTwitter = "WritingsDetailShareTwitter";
-    public const string WritingsTitle = "WritingsTitle";
 }
 

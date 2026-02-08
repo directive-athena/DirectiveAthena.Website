@@ -1,7 +1,6 @@
 ﻿@* ------------------------------------------------------------------------------------------------------------------ *@
 @* Imports
 @* ------------------------------------------------------------------------------------------------------------------ *@
-@using DirectiveAthenaWeb.Content.Components
 @using DirectiveAthenaWeb.Content.Story
 @using DirectiveAthenaWeb.Services.Localization
 
@@ -17,8 +16,8 @@
     <Fields Context="_">
                         
     </Fields>
-    <LocalizedFields Context="box">
-        @{ StoryContent content = box.Item1;LocalizationInfo culture = box.Item2; }
+    <LocalizedFields Context="context">
+        @{ StoryContent content = context.Content;LocalizationInfo culture = context.Culture; }
         <MudTextField Label="Title" Variant="Variant.Filled"
                       @bind-Value="@content.Title[culture.Code]"
                       Required="true"

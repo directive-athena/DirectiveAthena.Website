@@ -167,7 +167,4 @@
     private void ViewPost(Guid id) {
         Nav.NavigateTo($"/notes/{id:D}");
     }
-
-    private static string FormatDate(DateTime date)
-        => date == DateTime.MinValue ? string.Empty : date.ToString("yyyy-MM-dd");
 }

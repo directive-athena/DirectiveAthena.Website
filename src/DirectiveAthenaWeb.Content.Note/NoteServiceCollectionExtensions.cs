@@ -2,32 +2,34 @@
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
 using DirectiveAthenaWeb.Content;
-using DirectiveAthenaWeb.Content.Faq;
+using DirectiveAthenaWeb.Content.Note;
 using DirectiveAthenaWeb.DevServer.Pages;
-using DirectiveAthenaWeb.Content.Faq.Resources;
+using DirectiveAthenaWeb.Content.Note.Resources;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Localization;
 using MudBlazor;
+using System.Reflection;
 
 // ReSharper disable once CheckNamespace
 namespace Microsoft.Extensions.DependencyInjection;
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
-public static class ServiceCollectionExtensions {
+public static class NoteServiceCollectionExtensions {
     extension(IServiceCollection services) {
-        [UsedImplicitly] public IServiceCollection AddFaqContent() {
-            services.RegisterServicesFromDirectiveAthenaWebContentFaq();
+        [UsedImplicitly] public IServiceCollection AddNoteContent(out Assembly contentAssembly) {
+            services.RegisterServicesFromDirectiveAthenaWebContentNote();
 
-            services.AddR2Storage<FaqContent>("faq");
+            services.AddR2Storage<NoteContent>("note");
             
-            ContentEditorProvider.RegisterAtContentEditor<FaqContentEditor, IStringLocalizer<Faq>>(
-                localizer => localizer[Faq.ContentManagerTabFaq],
-                Icons.Material.Filled.Rule
+            ContentEditorProvider.RegisterAtContentEditor<NoteContentEditor, IStringLocalizer<Note>>(
+                localizer => localizer[Note.ContentManagerTabWritings],
+                Icons.Material.Filled.Article
             );
             
-            ContentEditorProvider.RegisterAtTagsEditor<FaqContent>();
-            
+            ContentEditorProvider.RegisterAtTagsEditor<NoteContent>();
+
+            contentAssembly = typeof(NoteServiceCollectionExtensions).Assembly;
             return services;
         }
     }

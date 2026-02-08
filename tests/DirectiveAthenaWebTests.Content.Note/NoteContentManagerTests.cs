@@ -34,7 +34,7 @@ public class NoteContentManagerTests {
         factory.ForCategory<NoteContent>().Returns(storage);
         services.AddSingleton(factory);
 
-        services.AddNoteContent();
+        services.AddNoteContent(out _);
 
         ServiceProvider provider = services.BuildServiceProvider();
         return provider.GetRequiredService<INoteContentManager>();
@@ -54,7 +54,7 @@ public class NoteContentManagerTests {
         string result = manager.GetLocalizedTitle(article);
 
         // Assert
-        await Assert.That(result).IsEqualTo(article.Title["en"]);
+        await Assert.That(result).IsEqualTo(article.LocalizedTitles["en"]);
     }
 
     [Test]
@@ -68,7 +68,7 @@ public class NoteContentManagerTests {
         string result = manager.GetLocalizedSummary(article);
 
         // Assert
-        await Assert.That(result).IsEqualTo(article.Summary["en"]);
+        await Assert.That(result).IsEqualTo(article.LocalizedSummaries["en"]);
     }
 
     [Test]
@@ -115,82 +115,9 @@ public class NoteContentManagerTests {
         HashSet<string> expected = TestLocalization.DefaultLocalizations().Select(c => c.Code).ToHashSet();
 
         // Assert
-        await Assert.That(article.Title.Keys.ToHashSet()).IsEquivalentTo(expected);
-        await Assert.That(article.Summary.Keys.ToHashSet()).IsEquivalentTo(expected);
+        await Assert.That(article.LocalizedTitles.Keys.ToHashSet()).IsEquivalentTo(expected);
+        await Assert.That(article.LocalizedSummaries.Keys.ToHashSet()).IsEquivalentTo(expected);
         await Assert.That(article.Id).IsNotEqualTo(Guid.Empty);
         await Assert.That(article.MarkdownFileName).IsNotNullOrWhiteSpace();
     }
-
-    [Test]
-    public async Task Validate_RejectsMissingId() {
-        // Arrange
-        NoteContent[] notes = [
-            new() {
-                Id = Guid.Empty,
-                InternalTitle = string.Empty
-            }
-        ];
-
-        INoteContentManager manager = CreateManager(TestLocalization.CreateLocalizationProvider());
-
-        // Act
-        bool result = manager.Validate(notes, out string? error);
-
-        // Assert
-        await Assert.That(result).IsFalse();
-        await Assert.That(error).IsEqualTo("Some posts have missing Id!");
-    }
-
-    [Test]
-    public async Task Validate_RejectsDuplicateIds() {
-        // Arrange
-        NoteContent[] notes = [
-            ContentFaker.CreateNote(140),
-            ContentFaker.CreateNote(141)
-        ];
-        notes[1].Id = notes[0].Id;
-
-        INoteContentManager manager = CreateManager(TestLocalization.CreateLocalizationProvider());
-
-        // Act
-        bool result = manager.Validate(notes, out string? error);
-
-        // Assert
-        await Assert.That(result).IsFalse();
-        await Assert.That(error).IsEqualTo("Duplicate IDs found!");
-    }
-
-    [Test]
-    public async Task Validate_RejectsMissingLocalizedTitles() {
-        // Arrange
-        NoteContent article = ContentFaker.CreateNote(200, includeNl: false);
-        NoteContent[] notes = [article];
-
-        INoteContentManager manager = CreateManager(TestLocalization.CreateLocalizationProvider());
-
-        // Act
-        bool result = manager.Validate(notes, out string? error);
-
-        // Assert
-        await Assert.That(result).IsFalse();
-        await Assert.That(error).IsEqualTo("Some posts have missing titles for one or more cultures!");
-    }
-
-    [Test]
-    public async Task Validate_RejectsMissingLocalizedSummaries() {
-        // Arrange
-        NoteContent article = ContentFaker.CreateNote(201);
-        article.Summary.Remove("nl");
-        NoteContent[] notes = [article];
-
-        INoteContentManager manager = CreateManager(TestLocalization.CreateLocalizationProvider());
-
-        // Act
-        bool result = manager.Validate(notes, out string? error);
-
-        // Assert
-        await Assert.That(result).IsFalse();
-        await Assert.That(error).IsEqualTo("Some posts have missing summaries for one or more cultures!");
-    }
-
 }

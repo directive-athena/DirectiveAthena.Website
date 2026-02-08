@@ -1,35 +1,31 @@
 ﻿@* ------------------------------------------------------------------------------------------------------------------ *@
 @* Imports
 @* ------------------------------------------------------------------------------------------------------------------ *@
-@using DirectiveAthenaWeb.Content.Faq
-@using DirectiveAthenaWeb.Services.Localization
+@using DirectiveAthenaWeb.Content.Note
+@using Microsoft.Extensions.Localization
+@using DirectiveAthenaWeb.Content.Note.Resources
 
-@namespace DirectiveAthenaWeb.DevServer.Pages
+@namespace DirectiveAthenaWeb.Client.Pages
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Descriptors
 @* ------------------------------------------------------------------------------------------------------------------ *@
-@inherits WebsiteComponentBase
+@page "/notes"
+
+@inject IStringLocalizer<Note> Localizer
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Html
 @* ------------------------------------------------------------------------------------------------------------------ *@
-<ContentEditor TContent="@FaqContent">
-    <Fields Context="content">
-        <MudSwitch T="bool" @bind-Value="@content.ShowOnHomepage"
-                   Label="Show On Homepage" Color="Color.Secondary"/>
-    </Fields>
-    <LocalizedFields Context="context">
-        @{ FaqContent content = context.Content;LocalizationInfo culture = context.Culture; }
-        <MudTextField Label="Title" Variant="Variant.Filled"
-                      @bind-Value="@content.Question[culture.Code]"
-                      Required="true"
-                      FullWidth="true"/>
-        <MudTextField Label="Summary" Variant="Variant.Filled"
-                      @bind-Value="@content.Answer[culture.Code]"
-                      FullWidth="true"/>
-    </LocalizedFields>
-</ContentEditor>
+<PageTitle>@Localizer[Note.ListViewPageTitle]</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.Large">
+    <ContentCardList TContent="NoteContent"/>
+</MudContainer>
+    
+
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Code
 @* ------------------------------------------------------------------------------------------------------------------ *@
+
 @code {
+   
 }

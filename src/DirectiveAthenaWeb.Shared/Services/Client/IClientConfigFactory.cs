@@ -7,5 +7,5 @@ namespace DirectiveAthenaWeb.Services.Client;
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
 public interface IClientConfigFactory {
-    ValueTask<ClientConfig> CreateAsync();
+    ValueTask<ClientConfig> CreateAsync(CancellationToken ct = default);
 }

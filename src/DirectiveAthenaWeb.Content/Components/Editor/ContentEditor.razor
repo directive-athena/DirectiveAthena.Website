@@ -1,14 +1,12 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Imports *@
 @* ------------------------------------------------------------------------------------------------------------------ *@
-@using DirectiveAthenaWeb.Components
 @using DirectiveAthenaWeb.Services.Js
 @using DirectiveAthenaWeb.Content.Resources
-@using DirectiveAthenaWeb.Services.Localization
-@using Microsoft.Extensions.Localization
-@using MudBlazor
+@using Severity = MudBlazor.Severity
 
-@namespace DirectiveAthenaWeb.Content.Components
+@* ReSharper disable once CheckNamespace *@
+@namespace DirectiveAthenaWeb.Components
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Descriptors *@
 @* ------------------------------------------------------------------------------------------------------------------ *@
@@ -17,8 +15,9 @@
 @inject ISnackbar Snackbar
 @inject IStringLocalizer<Editor> Localizer
 @inject IContentManager<TContent> ContentManager
+@inject IValidator<IEnumerable<TContent>> Validator
 
-@typeparam TContent where TContent : ContentBase
+@typeparam TContent where TContent : DirectiveAthenaWeb.Content.ContentBase
 @inherits WebsiteComponentBase
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Html *@
@@ -70,8 +69,8 @@
     private TContent[] Items { get; set; } = [];
     private TContent? SelectedItem { get; set; }
 
-    [Parameter] public RenderFragment<(TContent, LocalizationInfo)>? LocalizedFields { get; set; }
     [Parameter] public RenderFragment<TContent>? Fields { get; set; }
+    [Parameter] public RenderFragment<LocalizedFieldContext<TContent>>? LocalizedFields { get; set; }
 
     private const QueryConfig BaseConfig = QueryConfig.WithHidden | QueryConfig.WithSoftDeleted | QueryConfig.SortByCreatedAt;
     
@@ -107,11 +106,11 @@
     }
 
     private async Task<bool> SaveIndexInternalAsync(bool showFeedback) {
-        if (!ContentManager.Validate(Items, out string? errorMessage)) {
-            if (showFeedback) {
-                Snackbar.Add(errorMessage!, Severity.Error);
-            }
-            return false;
+        ValidationResult result = await Validator.ValidateAsync(Items);
+        if (!result.IsValid && !showFeedback) {
+            string? errorMessage = result.Errors.Select(x => x.ErrorMessage)
+                .Aggregate((x, y) => $"{x}\n{y}");
+            Snackbar.Add(errorMessage, Severity.Error);
         }
 
         await Repository.AddOrUpdateRangeAsync(Items);

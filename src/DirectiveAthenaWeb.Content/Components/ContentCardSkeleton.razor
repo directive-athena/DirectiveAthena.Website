@@ -1,0 +1,41 @@
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Imports *@
+@* ------------------------------------------------------------------------------------------------------------------ *@
+
+@* ReSharper disable once CheckNamespace *@
+@namespace DirectiveAthenaWeb.Components
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Html *@
+@* ------------------------------------------------------------------------------------------------------------------ *@
+<MudCard Class="card-glass h-100 d-flex flex-column">
+    <MudCardContent Class="flex-grow-1 pa-8">
+        <div class="d-flex justify-space-between align-center mb-3">
+            <MudSkeleton Width="120px" Height="14px"/>
+            <div class="d-flex align-center gap-2">
+                <MudSkeleton Width="56px" Height="22px"/>
+                <MudSkeleton Width="48px" Height="22px"/>
+            </div>
+        </div>
+
+        <MudSkeleton Width="70%" Height="28px" Class="mb-3"/>
+        <div class="d-flex flex-wrap align-center gap-2 mb-3">
+            <MudSkeleton Width="120px" Height="14px"/>
+            <MudSkeleton Width="160px" Height="14px"/>
+        </div>
+
+        <MudSkeleton Height="16px" Width="100%" Class="mb-2"/>
+        <MudSkeleton Height="16px" Width="92%" Class="mb-2"/>
+        <MudSkeleton Height="16px" Width="80%" Class="mb-4"/>
+
+        <div class="d-flex flex-wrap gap-2">
+            <MudSkeleton Width="64px" Height="22px"/>
+            <MudSkeleton Width="72px" Height="22px"/>
+            <MudSkeleton Width="56px" Height="22px"/>
+        </div>
+    </MudCardContent>
+
+    <MudCardActions Class="pt-0 px-8 pb-6 d-flex justify-space-between align-center">
+        <MudSkeleton Width="120px" Height="14px"/>
+        <MudSkeleton Width="20px" Height="20px" SkeletonType="SkeletonType.Circle"/>
+    </MudCardActions>
+</MudCard>

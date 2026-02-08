@@ -85,5 +85,44 @@
     <data name="HomeWritingsViewArchive" xml:space="preserve">
         <value>Bekijk Archief</value>
     </data>
+    <data name="ListViewPageTitle" xml:space="preserve">
+        <value>Notities</value>
+    </data>
+    <data name="WritingsDetailBack" xml:space="preserve">
+        <value>Terug naar Archief</value>
+    </data>
+    <data name="WritingsDetailBackBottom" xml:space="preserve">
+        <value>Terug naar alle geschriften</value>
+    </data>
+    <data name="WritingsDetailCopyLink" xml:space="preserve">
+        <value>Kopieer link</value>
+    </data>
+    <data name="WritingsDetailError" xml:space="preserve">
+        <value>Kan de inhoud van dit bericht niet laden.</value>
+    </data>
+    <data name="WritingsDetailLinkCopied" xml:space="preserve">
+        <value>Link gekopieerd</value>
+    </data>
+    <data name="WritingsDetailReadTime" xml:space="preserve">
+        <value>Leestijd {0} min</value>
+    </data>
+    <data name="WritingsDetailShareBluesky" xml:space="preserve">
+        <value>Bluesky</value>
+    </data>
+    <data name="WritingsDetailShareLabel" xml:space="preserve">
+        <value>Delen</value>
+    </data>
+    <data name="WritingsDetailShareReddit" xml:space="preserve">
+        <value>Reddit</value>
+    </data>
+    <data name="WritingsDetailShareTwitter" xml:space="preserve">
+        <value>Twitter</value>
+    </data>
+    <data name="WritingsTitle" xml:space="preserve">
+        <value>Geschriften - Directive Athena</value>
+    </data>
+    <data name="WritingsUpdated" xml:space="preserve">
+        <value>Bijgewerkt {0}</value>
+    </data>
 </root>
 

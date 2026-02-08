@@ -4,7 +4,6 @@
 using CodeOfChaos.Extensions.DependencyInjection;
 using DirectiveAthenaWeb.Services.Localization;
 using DirectiveAthenaWeb.Services.R2Storage;
-using FluentValidation;
 using Microsoft.Extensions.Logging;
 
 namespace DirectiveAthenaWeb.Content.Note.Services;
@@ -16,52 +15,35 @@ namespace DirectiveAthenaWeb.Content.Note.Services;
 internal class NoteContentManager(
     ILocalizationProvider localizationProvider,
     IR2Storage<NoteContent> storage,
-    IValidator<NoteContent> singleValidator,
-    IValidator<IEnumerable<NoteContent>> multipleValidator,
     ILogger<ContentManagerBase<NoteContent>> logger
-) : ContentManagerBase<NoteContent>(storage, singleValidator, multipleValidator, logger), INoteContentManager {
-    private readonly IR2Storage<NoteContent> _storage = storage;
-    private readonly ILogger<ContentManagerBase<NoteContent>> _logger = logger;
-
+) : ContentManagerBase<NoteContent>(localizationProvider, storage, logger), INoteContentManager {
     // -----------------------------------------------------------------------------------------------------------------
     // Methods
     // -----------------------------------------------------------------------------------------------------------------
-    public string GetLocalizedTitle(NoteContent article)
-        => GetLocalizedValue(article.Title);
-
-    public string GetLocalizedSummary(NoteContent article)
-        => GetLocalizedValue(article.Summary);
-
-    private string GetLocalizedValue(Dictionary<string, string> values) {
-        LocalizationInfo localization = localizationProvider.GetCurrentLocalization();
-        return !values.TryGetValue(localization.Code, out string? value)
-            ? values.GetValueOrDefault(localizationProvider.DefaultLocalization.Code, string.Empty)
-            : value;
-    }
-
     public string GetLocalizedFilePath(NoteContent article) {
-        LocalizationInfo localization = localizationProvider.GetCurrentLocalization();
-        return _storage.GetMarkdownContentPath(localization.Code, article.MarkdownFileName);
+        LocalizationInfo localization = LocalizationProvider.GetCurrentLocalization();
+        return Storage.GetMarkdownContentPath(localization.Code, article.MarkdownFileName);
     }
     
     public override NoteContent Create(Guid id = default, string? internalTitle = null) {
         if (id == Guid.Empty) id = Guid.CreateVersion7();
         DateTime now = DateTime.UtcNow;
-        IReadOnlyCollection<LocalizationInfo> locals = localizationProvider.GetSupportedLocalizations();
+        IReadOnlyCollection<LocalizationInfo> locals = LocalizationProvider.GetSupportedLocalizations();
 
         Dictionary<string, string> titles = locals.ToDictionary(c => c.Code, _ => "New Post");
         Dictionary<string, string> summaries = locals.ToDictionary(c => c.Code, c => $"{c.DisplayName} - Summary here");
         var article = new NoteContent {
             Id = id,
-            Title = titles,
-            Summary = summaries,
+            LocalizedTitles = LocalizedDataHolder.FromDictionary(titles),
+            LocalizedSummaries = LocalizedDataHolder.FromDictionary(summaries),
             Tags = [
             ],
             CreatedAt = now,
             LastModifiedAt = now,
-            InternalTitle = internalTitle ?? string.Empty
+            InternalTitle = internalTitle ?? string.Empty,
+            Author = "Anna Sas"
         };
-        _logger.Information("Created new article stub {Id}.", article.Id);
+        Logger.Information("Created new article stub {Id}.", article.Id);
         return article;
     }
 }

@@ -1,15 +1,13 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Imports *@
 @* ------------------------------------------------------------------------------------------------------------------ *@
-@using DirectiveAthenaWeb.Components
 @using DirectiveAthenaWeb.Content.Resources
 @using DirectiveAthenaWeb.Services.Js
 @using DirectiveAthenaWeb.Services.Localization
-@using Microsoft.Extensions.Localization
-@using Microsoft.Extensions.Logging
-@using MudBlazor
+@using Severity = MudBlazor.Severity
 
-@namespace DirectiveAthenaWeb.Content.Components
+@* ReSharper disable once CheckNamespace *@
+@namespace DirectiveAthenaWeb.Components
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Descriptors *@
 @* ------------------------------------------------------------------------------------------------------------------ *@
@@ -18,7 +16,7 @@
 @inject ISnackbar Snackbar
 @inject IStringLocalizer<Editor> Localizer
 
-@typeparam TContent where TContent : ContentBase
+@typeparam TContent where TContent : DirectiveAthenaWeb.Content.ContentBase
 @inherits WebsiteComponentBase
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Html *@
@@ -32,7 +30,7 @@
                            OnClick="@OnSaveChangesAsync">
                     @Localizer[Editor.SaveItemButton]
                 </MudButton>
-                
+
                 @if (!Content.IsSoftDeleted) {
                     <MudButton Variant="Variant.Outlined" Color="Color.Error" StartIcon="@Icons.Material.Filled.Delete"
                                OnClick="@SoftDeleteContentAsync">
@@ -40,12 +38,14 @@
                     </MudButton>
                 }
                 else {
-                    <MudButton Size="Size.Small" Variant="Variant.Outlined" Color="Color.Warning" StartIcon="@Icons.Material.Filled.Restore"
+                    <MudButton Size="Size.Small" Variant="Variant.Outlined" Color="Color.Warning"
+                               StartIcon="@Icons.Material.Filled.Restore"
                                OnClick="@RestoreContentAsync">
                         @Localizer[Editor.RestoreItemButton]
                     </MudButton>
-                    
-                    <MudButton Size="Size.Small" Variant="Variant.Filled" Color="Color.Error" StartIcon="@Icons.Material.Filled.Delete"
+
+                    <MudButton Size="Size.Small" Variant="Variant.Filled" Color="Color.Error"
+                               StartIcon="@Icons.Material.Filled.Delete"
                                OnClick="@HardDeleteContentAsync">
                         @Localizer[Editor.HardDeleteItemButton]
                     </MudButton>
@@ -56,11 +56,15 @@
         <MudTabs Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
             <MudTabPanel Text="Metadata">
                 <MudStack Spacing="8">
-                    <MudTextField T="string" @bind-Value="@Content.InternalTitle" Label="@Localizer[Editor.InternalTitle]" TextChanged="@OnInputChangedAsync"/>
+                    <MudTextField T="string" @bind-Value="@Content.InternalTitle"
+                                  Label="@Localizer[Editor.InternalTitle]" TextChanged="@OnInputChangedAsync"/>
 
                     <MudTextField Value="@Content.Id.ToString("D")" Label="@Localizer[Editor.UniqueId]"
                                   Required="true" ReadOnly="true"
                                   HelperText="@Localizer[Editor.IdHelperItem]"/>
+
+                    <MudTextField Value="@Content.Author" Label="@Localizer[Editor.Author]"
+                                  Required="true" TextChanged="@OnAuthorChangedAsync"/>
 
                     <MudTextField Value="@FormatDate(Content.CreatedAt)" Label="@Localizer[Editor.CreatedAtLabel]"
                                   Required="true" ReadOnly="true"/>
@@ -74,22 +78,38 @@
 
                     <MudSwitch T="bool" Value="@Content.IsDevContent" ValueChanged="@OnDevContentChangedAsync"
                                Label="@Localizer[Editor.DevContentLabel]" Color="Color.Primary"/>
-                    
+
                     @if (Fields is not null) {
+                        <MudText Typo="Typo.h4">
+                            Fields
+                        </MudText>
+
                         @Fields(Content)
                     }
 
-                    @if (LocalizedFields is not null) {
-                        foreach (LocalizationInfo culture in LocalizationProvider.GetSupportedLocalizations()) {
-                            <MudItem xs="12">
-                                <MudDivider Class="my-4"/>
-                                <MudText Typo="Typo.subtitle1" Color="Color.Primary">
-                                    @culture.DisplayName (@culture.Code)
-                                </MudText>
-                                @LocalizedFields((Content, culture))
-                            </MudItem>
+                    <MudText Typo="Typo.h4">
+                        Localized Fields
+                    </MudText>
+
+                    <MudStack>
+                        @foreach (LocalizationInfo culture in LocalizationProvider.GetSupportedLocalizations()) {
+                            <MudText Typo="Typo.subtitle1" Color="Color.Primary">
+                                @culture.DisplayName
+                            </MudText>
+
+                            <MudTextField Label="Title" Variant="Variant.Filled"
+                                          @bind-Value="@Content.LocalizedTitles[culture.Code]"
+                                          Required="true"
+                                          FullWidth="true"/>
+                            <MudTextField Label="Summary" Variant="Variant.Filled"
+                                          @bind-Value="@Content.LocalizedSummaries[culture.Code]"
+                                          FullWidth="true"/>
+                            
+                            if (LocalizedFields is not null) {
+                                @LocalizedFields(new LocalizedFieldContext<TContent>(Content, culture))
+                            }
                         }
-                    }
+                    </MudStack>
                 </MudStack>
 
                 <ContentEditorItemTags TContent="@TContent" OnTagsChanged="OnSaveChangesAsync"/>
@@ -108,20 +128,26 @@
 
 @code {
     [Parameter, EditorRequired] public TContent Content { get; set; } = null!;
-    [Parameter, EditorRequired] public RenderFragment<(TContent, LocalizationInfo)>? LocalizedFields { get; set; }
+    [Parameter, EditorRequired] public RenderFragment<LocalizedFieldContext<TContent>>? LocalizedFields { get; set; }
     [Parameter, EditorRequired] public RenderFragment<TContent>? Fields { get; set; }
     [Parameter] public EventCallback OnContentChanged { get; set; }
 
     // -----------------------------------------------------------------------------------------------------------------
     // Methods
     // -----------------------------------------------------------------------------------------------------------------
+    private async Task OnAuthorChangedAsync(string? author) {
+        Content.Author = author ?? string.Empty;
+        Content.LastModifiedAt = DateTime.UtcNow;
+        await OnSaveChangesAsync();
+    }
+
     private async Task OnHiddenChangedAsync(bool value) {
         DateTime now = DateTime.UtcNow;
         Content.HiddenAt = value ? now : DateTime.MinValue;
         Content.LastModifiedAt = now;
         await OnSaveChangesAsync();
     }
-    
+
     private async Task OnDevContentChangedAsync(bool value) {
         DateTime now = DateTime.UtcNow;
         Content.IsDevContent = value;
@@ -140,7 +166,7 @@
             Snackbar.Add(Localizer[Editor.DeleteItemSoftFailed], Severity.Warning);
             return;
         }
-        
+
         Snackbar.Add(Localizer[Editor.DeleteItemSoftSuccess], Severity.Success);
         await Repository.SaveAsync();
         await OnContentChanged.InvokeAsync();
@@ -152,28 +178,25 @@
             Snackbar.Add(Localizer[Editor.RestoreItemFailed], Severity.Warning);
             return;
         }
-        
+
         Snackbar.Add(Localizer[Editor.RestoreItemSuccess], Severity.Success);
         await Repository.SaveAsync();
         await OnContentChanged.InvokeAsync();
         await InvokeAsync(StateHasChanged);
     }
-    
+
     private async Task HardDeleteContentAsync() {
         if (!await WebJs.ConfirmAsync(Localizer[Editor.DeleteItemHardConfirm])) return;
-        
+
         if (!await Repository.HardDeleteByIdAsync(Content.Id)) {
             Snackbar.Add(Localizer[Editor.DeleteItemHardFailed], Severity.Warning);
             return;
         }
-        
+
         Snackbar.Add(Localizer[Editor.DeleteItemHardSuccess], Severity.Success);
         await Repository.SaveAsync();
         await OnContentChanged.InvokeAsync();
     }
-
-    private static string FormatDate(DateTime date)
-        => date == DateTime.MinValue ? string.Empty : date.ToString("yyyy-MM-dd");
 
     private async Task OnSaveChangesAsync() {
         var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
@@ -200,7 +223,7 @@
 
     private async Task OnInputChangedAsync(string obj) {
         if (Content.InternalTitle.Equals(obj, StringComparison.Ordinal)) return;
-        
+
         Content.InternalTitle = obj;
         await OnSaveChangesAsync();
     }

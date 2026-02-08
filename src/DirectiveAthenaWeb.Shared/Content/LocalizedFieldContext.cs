@@ -1,10 +1,14 @@
 ﻿// ---------------------------------------------------------------------------------------------------------------------
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
-namespace DirectiveAthenaWeb.Content.Story;
+using DirectiveAthenaWeb.Services.Localization;
+
+namespace DirectiveAthenaWeb.Content;
+
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
-public interface IStoryContentManager : IContentManager<StoryContent> {
-    string GetLocalizedFilePath(StoryContent article);
-}
+public record LocalizedFieldContext<TContent>(
+    TContent Content, 
+    LocalizationInfo Culture
+) where TContent : IContent;

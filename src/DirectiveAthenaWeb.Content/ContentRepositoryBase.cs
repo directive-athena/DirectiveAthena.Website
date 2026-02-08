@@ -18,15 +18,16 @@ public abstract class ContentRepositoryBase<TContent>(IR2Storage<TContent> conte
     where TContent : ContentBase, IContent {
     
     private ConcurrentDictionary<Guid, TContent> Items { get; set; } = [];
-    private bool _isFirstTimeLoaded; // TODO needs a semaphoreslim
+    private bool _isFirstTimeLoaded;
+    private readonly SemaphoreSlim _loadSemaphore = new(1, 1);
     
     private EntityTagHeaderValue? _etag;
     private DateTimeOffset? _lastModifiedUtc;
     private DateTimeOffset? _lastRefreshUtc;
     #if DEBUG
-    private readonly TimeSpan DevRefreshWindow = TimeSpan.FromSeconds(5);
+    private readonly TimeSpan RefreshWindow = TimeSpan.FromSeconds(5);
     #else
-    private readonly TimeSpan CacheRefreshWindow = TimeSpan.FromMinutes(5);
+    private readonly TimeSpan RefreshWindow = TimeSpan.FromMinutes(15);
     #endif
 
     protected abstract JsonTypeInfo<TContent[]> ContentListTypeInfo { get; }
@@ -51,6 +52,16 @@ public abstract class ContentRepositoryBase<TContent>(IR2Storage<TContent> conte
 
         IEnumerable<TContent> query = GetConfiguredQuery([item], config);
         return query.FirstOrDefault();
+    }
+
+    public async ValueTask<TContent[]> GetByFilterAsync(ContentFilter filter, QueryConfig config = default, CancellationToken ct = default) {
+        await EnsureDataIsLoadedAsync(ct);
+
+        IEnumerable<TContent> query = Items.Values;
+        query = ApplyFilter(query, filter);
+        query = GetConfiguredQuery(query, config);
+
+        return query.ToArray();
     }
 
     public async ValueTask<bool> SoftDeleteByIdAsync(Guid id, CancellationToken ct = default) {
@@ -216,21 +227,39 @@ public abstract class ContentRepositoryBase<TContent>(IR2Storage<TContent> conte
         return query;
     }
 
+    private static IEnumerable<TContent> ApplyFilter(IEnumerable<TContent> data, ContentFilter filter) {
+        if (filter.IsEmpty) return data;
+        IEnumerable<TContent> query = data;
+        
+        if (filter.TitleQuery.IsNotNullOrWhiteSpace()) {
+            string term = filter.TitleQuery.Trim();
+            query = query.Where(item => TitleMatches(item, term));
+        }
+
+        if (filter.Tags is { Count: > 0 }) {
+            HashSet<string> tagSet = new(filter.Tags, StringComparer.OrdinalIgnoreCase);
+            query = query.Where(item => item.Tags.Any(tag => tagSet.Contains(tag)));
+        }
+
+        return query;
+    }
+
+    private static bool TitleMatches(ContentBase item, string term) {
+        if (item.InternalTitle.Contains(term, StringComparison.OrdinalIgnoreCase)) return true;
+
+        return item.LocalizedTitles.Values.Values
+            .Where(value => value.IsNotNullOrWhiteSpace())
+            .Any(value => value.Contains(term, StringComparison.OrdinalIgnoreCase));
+    }
+
     private async ValueTask EnsureDataIsLoadedAsync(CancellationToken ct) {
+        await _loadSemaphore.WaitAsync(ct);
         try {
             DateTimeOffset now = DateTimeOffset.UtcNow;
 
-            #if DEBUG
-            // ReSharper disable once InlineTemporaryVariable
-            TimeSpan window = DevRefreshWindow;
-            #else
-            // ReSharper disable once InlineTemporaryVariable
-            TimeSpan window = CacheRefreshWindow;
-            #endif
-
             bool shouldRefresh;
             if (!_isFirstTimeLoaded || _lastRefreshUtc is null) shouldRefresh = true;
-            else shouldRefresh = now - _lastRefreshUtc.Value > window;
+            else shouldRefresh = now - _lastRefreshUtc.Value > RefreshWindow;
 
             if (_isFirstTimeLoaded && !shouldRefresh) {
                 logger.Debug("{ContentType} cache was refreshed by another caller.", typeof(TContent).Name);
@@ -278,6 +307,9 @@ public abstract class ContentRepositoryBase<TContent>(IR2Storage<TContent> conte
         catch (Exception ex) {
             logger.Error(ex, "Failed to refresh {ContentType} cache; clearing any cached data.", typeof(TContent).Name);
             SetItemsToFaultedState();
+        }
+        finally {
+            _loadSemaphore.Release();
         }
     }
 

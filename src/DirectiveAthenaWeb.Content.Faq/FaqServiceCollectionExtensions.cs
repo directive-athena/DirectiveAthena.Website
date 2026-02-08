@@ -2,32 +2,33 @@
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
 using DirectiveAthenaWeb.Content;
-using DirectiveAthenaWeb.Content.Note;
+using DirectiveAthenaWeb.Content.Faq;
 using DirectiveAthenaWeb.DevServer.Pages;
-using DirectiveAthenaWeb.Content.Note.Resources;
+using DirectiveAthenaWeb.Content.Faq.Resources;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Localization;
 using MudBlazor;
+using System.Reflection;
 
 // ReSharper disable once CheckNamespace
 namespace Microsoft.Extensions.DependencyInjection;
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
-public static class ServiceCollectionExtensions {
+public static class FaqServiceCollectionExtensions {
     extension(IServiceCollection services) {
-        [UsedImplicitly] public IServiceCollection AddNoteContent() {
-            services.RegisterServicesFromDirectiveAthenaWebContentNote();
+        [UsedImplicitly] public IServiceCollection AddFaqContent(out Assembly contentAssembly) {
+            services.RegisterServicesFromDirectiveAthenaWebContentFaq();
 
-            services.AddR2Storage<NoteContent>("note");
+            services.AddR2Storage<FaqContent>("faq");
             
-            ContentEditorProvider.RegisterAtContentEditor<NoteContentEditor, IStringLocalizer<Note>>(
-                localizer => localizer[Note.ContentManagerTabWritings],
-                Icons.Material.Filled.Article
+            ContentEditorProvider.RegisterAtContentEditor<FaqContentEditor, IStringLocalizer<Faq>>(
+                localizer => localizer[Faq.ContentManagerTabFaq],
+                Icons.Material.Filled.Rule
             );
             
-            ContentEditorProvider.RegisterAtTagsEditor<NoteContent>();
-
+            ContentEditorProvider.RegisterAtTagsEditor<FaqContent>();
+            contentAssembly = typeof(FaqServiceCollectionExtensions).Assembly;
             return services;
         }
     }

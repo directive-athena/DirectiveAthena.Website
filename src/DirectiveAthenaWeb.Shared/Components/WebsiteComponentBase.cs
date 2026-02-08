@@ -14,4 +14,10 @@ public class WebsiteComponentBase : ComponentBase {
     [Inject] public ILogger<WebsiteComponentBase> Logger { get; set; } = null!;
 
     protected LocalizationInfo CurrentCulture => LocalizationProvider.GetCurrentLocalization();
+
+    // -----------------------------------------------------------------------------------------------------------------
+    // Methods
+    // -----------------------------------------------------------------------------------------------------------------
+    protected static string FormatDate(DateTime date)
+        => date != DateTime.MinValue ? date.ToString("yyyy-MM-dd") : "####-##-##";
 }

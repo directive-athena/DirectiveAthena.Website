@@ -1,10 +1,13 @@
 ﻿// ---------------------------------------------------------------------------------------------------------------------
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
-namespace DirectiveAthenaWeb.Content.Story;
+using System.Reflection;
+
+namespace DirectiveAthenaWeb.Client;
+
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
-public interface IStoryContentManager : IContentManager<StoryContent> {
-    string GetLocalizedFilePath(StoryContent article);
+public class AdditionalAssembliesProvider {
+    public required Assembly[] Assemblies { get; init; }
 }

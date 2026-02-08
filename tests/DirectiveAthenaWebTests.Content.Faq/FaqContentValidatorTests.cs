@@ -1,6 +1,7 @@
 ﻿// ---------------------------------------------------------------------------------------------------------------------
 // Imports
 // ---------------------------------------------------------------------------------------------------------------------
+using DirectiveAthenaWeb;
 using DirectiveAthenaWeb.Content.Faq;
 using DirectiveAthenaWeb.Content.Faq.Services;
 using FluentValidation;
@@ -14,15 +15,16 @@ namespace DirectiveAthenaWebTests.Content.Faq;
 public class FaqContentValidatorTests {
     private static FaqContent CreateValidRule() => new() {
         Id = Guid.NewGuid(),
-        Question = new Dictionary<string, string> {
+        Question = new LocalizedDataHolder {
             ["en"] = "Question",
             ["nl"] = "Vraag"
         },
-        Answer = new Dictionary<string, string> {
+        Answer = new LocalizedDataHolder {
             ["en"] = "Answer",
             ["nl"] = "Antwoord"
         },
-        InternalTitle = string.Empty
+        InternalTitle = string.Empty,
+        Author = "Anna Sas",
     };
 
     [Test]

@@ -55,4 +55,5 @@ public class Editor {
     public const string TagsManagerTitle = "TagsManagerTitle";
     public const string TagsTitle = "TagsTitle";
     public const string UniqueId = "UniqueId";
+    public const string Author = "Author";
 }

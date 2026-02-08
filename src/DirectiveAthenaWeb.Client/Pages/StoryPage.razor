@@ -17,6 +17,8 @@
 @inject NavigationManager NavigationManager
 @inject IStringLocalizer<Client> LocalizerShared
 @inject IStringLocalizer<Tags> LocalizerTags
+
+@inherits WebsiteComponentBase
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Html
 @* ------------------------------------------------------------------------------------------------------------------ *@
@@ -114,9 +116,6 @@
 
     private void FilterByTag(string tag) => _selectedTag = tag;
     private void ClearTag() => _selectedTag = null;
-
-    private static string FormatDate(DateTime date)
-        => date == DateTime.MinValue ? string.Empty : date.ToString("yyyy-MM-dd");
 
     private void ViewStory(Guid id) {
         NavigationManager.NavigateTo($"/story/{id:D}");

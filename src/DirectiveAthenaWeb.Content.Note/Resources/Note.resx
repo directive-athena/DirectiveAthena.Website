@@ -85,5 +85,44 @@
     <data name="HomeWritingsViewArchive" xml:space="preserve">
         <value>View Note Archive</value>
     </data>
+    <data name="ListViewPageTitle" xml:space="preserve">
+        <value>Notes</value>
+    </data>
+    <data name="WritingsDetailBack" xml:space="preserve">
+        <value>Back to Archive</value>
+    </data>
+    <data name="WritingsDetailBackBottom" xml:space="preserve">
+        <value>Back to all notes</value>
+    </data>
+    <data name="WritingsDetailCopyLink" xml:space="preserve">
+        <value>Copy link</value>
+    </data>
+    <data name="WritingsDetailError" xml:space="preserve">
+        <value>Unable to load the content of this post.</value>
+    </data>
+    <data name="WritingsDetailLinkCopied" xml:space="preserve">
+        <value>Link copied</value>
+    </data>
+    <data name="WritingsDetailReadTime" xml:space="preserve">
+        <value>{0} min read</value>
+    </data>
+    <data name="WritingsDetailShareBluesky" xml:space="preserve">
+        <value>Bluesky</value>
+    </data>
+    <data name="WritingsDetailShareLabel" xml:space="preserve">
+        <value>Share</value>
+    </data>
+    <data name="WritingsDetailShareReddit" xml:space="preserve">
+        <value>Reddit</value>
+    </data>
+    <data name="WritingsDetailShareTwitter" xml:space="preserve">
+        <value>Twitter</value>
+    </data>
+    <data name="WritingsTitle" xml:space="preserve">
+        <value>Writings - Directive Athena</value>
+    </data>
+    <data name="WritingsUpdated" xml:space="preserve">
+        <value>Updated {0}</value>
+    </data>
 </root>
 

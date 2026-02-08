@@ -7,11 +7,13 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Descriptors
 @* ------------------------------------------------------------------------------------------------------------------ *@
-
+@inject AdditionalAssembliesProvider AdditionalAssembliesProvider
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Html
 @* ------------------------------------------------------------------------------------------------------------------ *@
-<Router AppAssembly="@typeof(App).Assembly" NotFoundPage="typeof(NotFoundPage)">
+<Router AppAssembly="@typeof(App).Assembly" 
+        AdditionalAssemblies="@AdditionalAssembliesProvider.Assemblies"
+        NotFoundPage="typeof(NotFoundPage)">
     <Found Context="routeData">
         <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)"/>
     </Found>
