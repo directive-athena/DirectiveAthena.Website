@@ -12,8 +12,6 @@
 
 @inject IClientConfigFactory ClientConfigFactory
 @inject IContentRepository<TContent> ContentRepository
-@inject IContentManager<TContent> ContentManager
-@inject NavigationManager NavigationManager
 
 @inherits WebsiteComponentBase
 @* ------------------------------------------------------------------------------------------------------------------ *@
@@ -34,31 +32,12 @@
         case { Length: > 0 } items: {
             foreach (TContent content in items) {
                 <MudItem xs="12" md="6">
-                    <MudCard Class="card-glass h-100 d-flex flex-column" @onclick="@(() => ViewPost(content.Id))"
-                             Style="cursor: pointer;">
-                        <MudCardContent Class="flex-grow-1 pa-8">
-                            <div class="d-flex justify-space-between align-center mb-4">
-                                <MudText Typo="Typo.caption" Color="Color.Secondary"
-                                         Style="letter-spacing: 0.1em; text-transform: uppercase;">@FormatDate(content.CreatedAt)</MudText>
-                                @* <div class="d-flex gap-1"> *@
-                                @*     @foreach (string tag in content.Tags) { *@
-                                @*         <span class="px-2 py-0 rounded" *@
-                                @*               style="background: rgba(0, 229, 255, 0.1); color: var(--neon-cyan); font-size: 0.7rem; border: 1px solid rgba(0, 229, 255, 0.2);">@LocalizerTags[tag]</span> *@
-                                @*     } *@
-                                @* </div> *@
-                            </div>
-                            <MudText Typo="Typo.h4"
-                                     Class="mb-4 SpaceGrotesk">@ContentManager.GetLocalizedTitle(content)</MudText>
-                            <MudText Typo="Typo.body2" Class="text-secondary mb-6"
-                                     Style="line-height: 1.6;">
-                                @ContentManager.GetLocalizedSummary(content)
-                            </MudText>
-                            @* <MudButton Variant="Variant.Text" Color="Color.Secondary" *@
-                            @*            EndIcon="@Icons.Material.Filled.ArrowForward" *@
-                            @*            Class="pa-0">@LocalizerShared[Client.WritingsArchiveReadWriting] *@
-                            @* </MudButton> *@
-                        </MudCardContent>
-                    </MudCard>
+                    <ContentCard TContent="TContent" Content="@content"
+                                 HeaderExtras="HeaderExtras"
+                                 MetaExtras="MetaExtras"
+                                 BodyExtras="BodyExtras"
+                                 FooterExtras="FooterExtras"
+                                 ShowInternalTitle="ShowInternalTitle"/>
                 </MudItem>
             }
 
@@ -74,6 +53,12 @@
 @code {
     private TContent[]? ContentItems { get; set; }
 
+    [Parameter] public RenderFragment<TContent>? HeaderExtras { get; set; }
+    [Parameter] public RenderFragment<TContent>? MetaExtras { get; set; }
+    [Parameter] public RenderFragment<TContent>? BodyExtras { get; set; }
+    [Parameter] public RenderFragment<TContent>? FooterExtras { get; set; }
+    [Parameter] public bool ShowInternalTitle { get; set; }
+
     // -----------------------------------------------------------------------------------------------------------------
     // Methods
     // -----------------------------------------------------------------------------------------------------------------
@@ -83,15 +68,11 @@
         ContentItems = (await FetchContentItemsAsync()).ToArray();
     }
 
-    protected async Task<IEnumerable<TContent>> FetchContentItemsAsync(CancellationToken ct = default) {
+    private async Task<IEnumerable<TContent>> FetchContentItemsAsync(CancellationToken ct = default) {
         ClientConfig clientConfig = await ClientConfigFactory.CreateAsync(ct);
         QueryConfig config = QueryConfigExtensions.AddClientConfigFlags(clientConfig);
 
         IEnumerable<TContent> content = await ContentRepository.GetAllAsync(config, ct);
         return content;
-    }
-    
-    private void ViewPost(Guid id) {
-        NavigationManager.NavigateTo($"/notes/{id:D}");
     }
 }

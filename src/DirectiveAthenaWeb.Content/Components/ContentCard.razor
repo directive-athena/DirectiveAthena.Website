@@ -1,0 +1,110 @@
+﻿@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Imports *@
+@* ------------------------------------------------------------------------------------------------------------------ *@
+
+@* ReSharper disable once CheckNamespace *@
+@namespace DirectiveAthenaWeb.Components
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Descriptors *@
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@typeparam TContent where TContent : ContentBase
+
+@inject IContentManager<TContent> ContentManager
+@inject NavigationManager NavigationManager
+
+@inherits WebsiteComponentBase
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Html *@
+@* ------------------------------------------------------------------------------------------------------------------ *@
+<MudCard Class="card-glass h-100 d-flex flex-column" @onclick="@ViewPost"
+         Style="cursor: pointer;">
+    <MudCardContent Class="flex-grow-1 pa-8">
+        <div class="d-flex justify-space-between align-center mb-3">
+            <MudText Typo="Typo.caption" Color="Color.Secondary"
+                     Style="letter-spacing: 0.1em; text-transform: uppercase;">@FormatDate(Content.CreatedAt)</MudText>
+            <div class="d-flex align-center gap-2">
+                @if (HasStatusBadges) {
+                    @if (Content.IsSoftDeleted) {
+                        <MudChip Size="Size.Small" Variant="Variant.Outlined" Color="Color.Error" Label="true">Deleted</MudChip>
+                    }
+                    @if (Content.IsHidden) {
+                        <MudChip Size="Size.Small" Variant="Variant.Outlined" Color="Color.Warning" Label="true">Hidden</MudChip>
+                    }
+                    @if (Content.IsDevContent) {
+                        <MudChip Size="Size.Small" Variant="Variant.Outlined" Color="Color.Info" Label="true">Dev</MudChip>
+                    }
+                }
+                @if (HeaderExtras is not null) {
+                    @HeaderExtras(Content)
+                }
+            </div>
+        </div>
+
+        <MudText Typo="Typo.h4"
+                 Class="mb-2 SpaceGrotesk">@ContentManager.GetLocalizedTitle(Content)</MudText>
+        <div class="d-flex flex-wrap align-center gap-2 mb-3">
+            <MudText Typo="Typo.caption" Class="text-secondary">By @Content.Author</MudText>
+            @if (ShowInternalTitle) {
+                <MudText Typo="Typo.caption" Class="text-secondary">(@Content.GetReadableInternalTitle())</MudText>
+            }
+            @if (HasLastModified) {
+                <MudText Typo="Typo.caption" Class="text-secondary">Updated @FormatDate(Content.LastModifiedAt)</MudText>
+            }
+            @if (MetaExtras is not null) {
+                @MetaExtras(Content)
+            }
+        </div>
+
+        <MudText Typo="Typo.body2" Class="text-secondary mb-4"
+                 Style="line-height: 1.6;">
+            @ContentManager.GetLocalizedSummary(Content)
+        </MudText>
+
+        @if (BodyExtras is not null) {
+            <div class="mb-4">
+                @BodyExtras(Content)
+            </div>
+        }
+
+        @if (HasTags) {
+            <div class="d-flex flex-wrap gap-2">
+                @foreach (string tag in Content.Tags) {
+                    <MudChip Size="Size.Small" Variant="Variant.Filled" Color="Color.Secondary">@tag</MudChip>
+                }
+            </div>
+        }
+    </MudCardContent>
+
+    <MudCardActions Class="pt-0 px-8 pb-6 d-flex justify-space-between align-center">
+        @if (FooterExtras is not null) {
+            @FooterExtras(Content)
+        } else {
+            <MudText Typo="Typo.caption" Class="text-secondary">Open to read more</MudText>
+        }
+        <MudIcon Icon="@Icons.Material.Filled.ArrowForward" Color="Color.Secondary"/>
+    </MudCardActions>
+</MudCard>
+
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Code *@
+@* ------------------------------------------------------------------------------------------------------------------ *@
+
+@code {
+    [Parameter, EditorRequired] public TContent Content { get; set; }
+    [Parameter] public RenderFragment<TContent>? HeaderExtras { get; set; }
+    [Parameter] public RenderFragment<TContent>? MetaExtras { get; set; }
+    [Parameter] public RenderFragment<TContent>? BodyExtras { get; set; }
+    [Parameter] public RenderFragment<TContent>? FooterExtras { get; set; }
+    [Parameter] public bool ShowInternalTitle { get; set; }
+
+    private bool HasTags => Content.Tags.Count > 0;
+    private bool HasLastModified => Content.LastModifiedAt > DateTime.MinValue && Content.LastModifiedAt > Content.CreatedAt;
+    private bool HasStatusBadges => Content.IsSoftDeleted || Content.IsHidden || Content.IsDevContent;
+
+    // -----------------------------------------------------------------------------------------------------------------
+    // Methods
+    // -----------------------------------------------------------------------------------------------------------------
+    private void ViewPost() {
+        NavigationManager.NavigateTo($"/notes/{Content.Id:D}");
+    }
+}
