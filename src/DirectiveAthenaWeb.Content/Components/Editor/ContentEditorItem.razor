@@ -105,8 +105,8 @@
                                           @bind-Value="@Content.LocalizedSummaries[culture.Code]"
                                           FullWidth="true"/>
                             
-                            @if (LocalizedFields is not null) {
-                                @LocalizedFields(new(Content, culture))
+                            if (LocalizedFields is not null) {
+                                @LocalizedFields(new LocalizedFieldContext<TContent>(Content, culture))
                             }
                         }
                     </MudStack>
