@@ -43,9 +43,9 @@ public static class Program {
         builder.Services.Configure<ContactInfoOptions>(builder.Configuration.GetSection("ContactInfo"));
         builder.Services.Configure<LocalizationOptions>(builder.Configuration.GetSection("Localization"));
         
-        builder.Services.AddNoteContent(out Assembly noteAssembly);
-        builder.Services.AddFaqContent(out Assembly faqAssembly);
-        builder.Services.AddStoryContent(out Assembly storyAssembly);
+        builder.Services.AddNoteContent(out Assembly _);
+        builder.Services.AddFaqContent(out Assembly _);
+        builder.Services.AddStoryContent(out Assembly _);
 
         // -------------------------------------------------------------------------------------------------------------
         // App
