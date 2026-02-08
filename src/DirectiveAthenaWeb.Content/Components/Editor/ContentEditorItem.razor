@@ -62,7 +62,7 @@
                     <MudTextField Value="@Content.Id.ToString("D")" Label="@Localizer[Editor.UniqueId]"
                                   Required="true" ReadOnly="true"
                                   HelperText="@Localizer[Editor.IdHelperItem]"/>
-                    
+
                     <MudTextField Value="@Content.Author" Label="@Localizer[Editor.Author]"
                                   Required="true" TextChanged="@OnAuthorChangedAsync"/>
 
@@ -83,21 +83,20 @@
                         <MudText Typo="Typo.h4">
                             Fields
                         </MudText>
-                        
+
                         @Fields(Content)
                     }
 
                     <MudText Typo="Typo.h4">
                         Localized Fields
                     </MudText>
-                    
+
                     <MudStack>
-                    @if (LocalizedFields is not null) {
-                        foreach (LocalizationInfo culture in LocalizationProvider.GetSupportedLocalizations()) {
+                        @foreach (LocalizationInfo culture in LocalizationProvider.GetSupportedLocalizations()) {
                             <MudText Typo="Typo.subtitle1" Color="Color.Primary">
                                 @culture.DisplayName
                             </MudText>
-                            
+
                             <MudTextField Label="Title" Variant="Variant.Filled"
                                           @bind-Value="@Content.LocalizedTitles[culture.Code]"
                                           Required="true"
@@ -106,9 +105,10 @@
                                           @bind-Value="@Content.LocalizedSummaries[culture.Code]"
                                           FullWidth="true"/>
                             
-                            @LocalizedFields(new (Content, culture))
+                            @if (LocalizedFields is not null) {
+                                @LocalizedFields(new(Content, culture))
+                            }
                         }
-                    }
                     </MudStack>
                 </MudStack>
 
@@ -140,7 +140,7 @@
         Content.LastModifiedAt = DateTime.UtcNow;
         await OnSaveChangesAsync();
     }
-    
+
     private async Task OnHiddenChangedAsync(bool value) {
         DateTime now = DateTime.UtcNow;
         Content.HiddenAt = value ? now : DateTime.MinValue;
