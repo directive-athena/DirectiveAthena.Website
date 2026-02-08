@@ -20,11 +20,6 @@ internal class NoteContentManager(
     // -----------------------------------------------------------------------------------------------------------------
     // Methods
     // -----------------------------------------------------------------------------------------------------------------
-    public string GetLocalizedFilePath(NoteContent article) {
-        LocalizationInfo localization = LocalizationProvider.GetCurrentLocalization();
-        return Storage.GetMarkdownContentPath(localization.Code, article.MarkdownFileName);
-    }
-    
     public override NoteContent Create(Guid id = default, string? internalTitle = null) {
         if (id == Guid.Empty) id = Guid.CreateVersion7();
         DateTime now = DateTime.UtcNow;

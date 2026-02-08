@@ -12,8 +12,6 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 @* Descriptors
 @* ------------------------------------------------------------------------------------------------------------------ *@
-@page "/notes/{Id:guid}"
-
 @inject IContentRepository<TContent> ContentRepository
 @inject IContentManager<TContent> ContentManager
 @inject HttpClient HttpClient
@@ -38,11 +36,11 @@
     }
     else if (_error) {
         <MudAlert Severity="Severity.Error" Variant="Variant.Filled"
-                  Class="card-glass">@Localizer[Content.WritingsDetailError]
+                  Class="card-glass no-hover">@Localizer[Content.WritingsDetailError]
         </MudAlert>
     }
     else {
-        <article class="fade-in">
+        <MudContainer MaxWidth="MaxWidth.Large">
             <MudPaper elevation="12" Style="padding: 12px 24px; border-radius: 24px; margin-bottom: 24px;">
                 <div class="d-flex align-center flex-wrap gap-4 mb-2">
                     <MudText Typo="Typo.caption" Color="Color.Secondary"
@@ -96,9 +94,11 @@
             <MudPaper elevation="12" Style="padding: 12px;">
                 <InfiniMarkdownPreview Content="@_markdown"/>
             </MudPaper>
-        </article>
+
+        </MudContainer>
 
         <MudDivider Class="my-16 opacity-10"/>
+        
         <div class="d-flex justify-center">
             <MudButton Variant="Variant.Outlined" Color="Color.Secondary"
                        OnClick="@BackToList">@Localizer[Content.WritingsDetailBackBottom]
@@ -112,7 +112,7 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 
 @code {
-    [Parameter] public Guid? Id { get; set; }
+    [Parameter, EditorRequired] public Guid? Id { get; set; }
 
     private TContent? _currentPost;
     private string _markdown = "";
@@ -148,8 +148,8 @@
         }
 
         try {
-            // string path = ContentManager.GetLocalizedFilePath(_currentPost);
-            // _markdown = await HttpClient.GetStringAsync(path);
+            string path = ContentManager.GetLocalizedMarkdownFilePath(_currentPost);
+            _markdown = await HttpClient.GetStringAsync(path);
             UpdateReadTime();
             UpdateShareLinks();
         }

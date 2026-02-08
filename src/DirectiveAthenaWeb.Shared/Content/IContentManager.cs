@@ -14,4 +14,5 @@ public interface IContentManager<TContent> where TContent : IContent {
     
     string GetLocalizedTitle(TContent content);
     string GetLocalizedSummary(TContent content);
+    string GetLocalizedMarkdownFilePath(TContent content);
 }

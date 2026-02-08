@@ -5,6 +5,4 @@ namespace DirectiveAthenaWeb.Content.Story;
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
-public interface IStoryContentManager : IContentManager<StoryContent> {
-    string GetLocalizedFilePath(StoryContent article);
-}
+public interface IStoryContentManager : IContentManager<StoryContent>;

@@ -54,6 +54,11 @@ public abstract class ContentManagerBase<TContent>(
     public virtual string GetLocalizedSummary(TContent content)
         => GetLocalizedValue(content.LocalizedSummaries);
 
+    public string GetLocalizedMarkdownFilePath(TContent content) {
+        LocalizationInfo localization = LocalizationProvider.GetCurrentLocalization();
+        return Storage.GetMarkdownContentPath(localization.Code, content.MarkdownFileName);
+    }
+
     protected string GetLocalizedValue(LocalizedDataHolder values) {
         LocalizationInfo localization = LocalizationProvider.GetCurrentLocalization();
         string code = localization.Code;

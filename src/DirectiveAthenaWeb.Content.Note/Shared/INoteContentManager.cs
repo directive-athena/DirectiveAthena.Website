@@ -5,6 +5,4 @@ namespace DirectiveAthenaWeb.Content.Note;
 // ---------------------------------------------------------------------------------------------------------------------
 // Code
 // ---------------------------------------------------------------------------------------------------------------------
-public interface INoteContentManager : IContentManager<NoteContent> {
-    string GetLocalizedFilePath(NoteContent article);
-}
+public interface INoteContentManager : IContentManager<NoteContent>;

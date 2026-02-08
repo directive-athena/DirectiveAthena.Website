@@ -82,7 +82,7 @@ public class NoteContentManagerTests {
         INoteContentManager manager = CreateManager(localizationProvider, storage);
 
         // Act
-        string result = manager.GetLocalizedFilePath(article);
+        string result = manager.GetLocalizedMarkdownFilePath(article);
 
         // Assert
         await Assert.That(result).IsEqualTo($"content/notes/nl/{article.MarkdownFileName}");

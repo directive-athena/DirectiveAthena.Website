@@ -117,7 +117,7 @@
         }
 
         try {
-            string path = StoryManager.GetLocalizedFilePath(_currentStory);
+            string path = StoryManager.GetLocalizedMarkdownFilePath(_currentStory);
             _markdown = await HttpClient.GetStringAsync(path);
         }
         catch (Exception) {

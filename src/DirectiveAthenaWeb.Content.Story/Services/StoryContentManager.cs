@@ -21,11 +21,6 @@ internal class StoryContentManager(
     // -----------------------------------------------------------------------------------------------------------------
     // Methods
     // -----------------------------------------------------------------------------------------------------------------
-    public string GetLocalizedFilePath(StoryContent article) {
-        LocalizationInfo localization = LocalizationProvider.GetCurrentLocalization();
-        return Storage.GetMarkdownContentPath(localization.Code, article.MarkdownFileName);
-    }
-
     public override StoryContent Create(Guid id = default, string? internalTitle = null) {
         if (id == Guid.Empty) id = Guid.CreateVersion7();
         DateTime now = DateTime.UtcNow;
