@@ -8,6 +8,7 @@ namespace DirectiveAthenaWeb.Content;
 public interface IContentRepository<T> where T : IContent {
     ValueTask<T[]> GetAllAsync(QueryConfig config = default, CancellationToken ct = default);
     ValueTask<T?> GetByIdAsync(Guid id, QueryConfig config = default, CancellationToken ct = default);
+    ValueTask<T[]> GetByFilterAsync(ContentFilter filter, QueryConfig config = default, CancellationToken ct = default);
     ValueTask<bool> SoftDeleteByIdAsync(Guid id, CancellationToken ct = default);
     ValueTask<bool> HardDeleteByIdAsync(Guid id, CancellationToken ct = default);
     ValueTask<bool> RestoreByIdAsync(Guid id, CancellationToken ct = default);

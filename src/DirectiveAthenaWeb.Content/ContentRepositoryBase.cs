@@ -54,6 +54,16 @@ public abstract class ContentRepositoryBase<TContent>(IR2Storage<TContent> conte
         return query.FirstOrDefault();
     }
 
+    public async ValueTask<TContent[]> GetByFilterAsync(ContentFilter filter, QueryConfig config = default, CancellationToken ct = default) {
+        await EnsureDataIsLoadedAsync(ct);
+
+        IEnumerable<TContent> query = Items.Values;
+        query = ApplyFilter(query, filter);
+        query = GetConfiguredQuery(query, config);
+
+        return query.ToArray();
+    }
+
     public async ValueTask<bool> SoftDeleteByIdAsync(Guid id, CancellationToken ct = default) {
         await EnsureDataIsLoadedAsync(ct);
 
@@ -215,6 +225,31 @@ public abstract class ContentRepositoryBase<TContent>(IR2Storage<TContent> conte
         query = ordered;
 
         return query;
+    }
+
+    private static IEnumerable<TContent> ApplyFilter(IEnumerable<TContent> data, ContentFilter filter) {
+        if (filter.IsEmpty) return data;
+        IEnumerable<TContent> query = data;
+        
+        if (filter.TitleQuery.IsNotNullOrWhiteSpace()) {
+            string term = filter.TitleQuery.Trim();
+            query = query.Where(item => TitleMatches(item, term));
+        }
+
+        if (filter.Tags is { Count: > 0 }) {
+            HashSet<string> tagSet = new(filter.Tags, StringComparer.OrdinalIgnoreCase);
+            query = query.Where(item => item.Tags.Any(tag => tagSet.Contains(tag)));
+        }
+
+        return query;
+    }
+
+    private static bool TitleMatches(ContentBase item, string term) {
+        if (item.InternalTitle.Contains(term, StringComparison.OrdinalIgnoreCase)) return true;
+
+        return item.LocalizedTitles.Values.Values
+            .Where(value => value.IsNotNullOrWhiteSpace())
+            .Any(value => value.Contains(term, StringComparison.OrdinalIgnoreCase));
     }
 
     private async ValueTask EnsureDataIsLoadedAsync(CancellationToken ct) {

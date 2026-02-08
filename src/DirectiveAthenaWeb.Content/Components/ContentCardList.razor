@@ -1,0 +1,218 @@
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Imports *@
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@using DirectiveAthenaWeb.Services.Client
+
+@* ReSharper disable once CheckNamespace *@
+@namespace DirectiveAthenaWeb.Components
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Descriptors *@
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@typeparam TContent where TContent : ContentBase
+
+@inject IClientConfigFactory ClientConfigFactory
+@inject IContentRepository<TContent> ContentRepository
+
+@inherits WebsiteComponentBase
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Html *@
+@* ------------------------------------------------------------------------------------------------------------------ *@
+
+<MudStack Spacing="4">
+    <MudPaper Class="card-glass no-hover pa-4">
+        <MudGrid Spacing="3">
+            <MudItem xs="12" md="4">
+                <MudTextField Value="@SearchText"
+                              TextChanged="@OnSearchChanged"
+                              Placeholder="Search titles"
+                              Immediate="true"
+                              Adornment="Adornment.Start"
+                              AdornmentIcon="@Icons.Material.Filled.Search"/>
+            </MudItem>
+            <MudItem xs="12" md="4">
+                <MudSelect T="string" Value="@SelectedTag"
+                           ValueChanged="@OnTagChanged"
+                           Label="Tag" Dense="true">
+                    <MudSelectItem Value="@AllTagsValue">All tags</MudSelectItem>
+                    @foreach (string tag in AvailableTags) {
+                        <MudSelectItem Value="@tag">@tag</MudSelectItem>
+                    }
+                </MudSelect>
+            </MudItem>
+            <MudItem xs="12" md="4">
+                <MudSelect T="SortMode" Value="@SelectedSort"
+                           ValueChanged="@OnSortChanged"
+                           Label="Sort" Dense="true">
+                    <MudSelectItem Value="SortMode.CreatedNewest">Created (newest)</MudSelectItem>
+                    <MudSelectItem Value="SortMode.CreatedOldest">Created (oldest)</MudSelectItem>
+                    <MudSelectItem Value="SortMode.ModifiedNewest">Updated (newest)</MudSelectItem>
+                    <MudSelectItem Value="SortMode.ModifiedOldest">Updated (oldest)</MudSelectItem>
+                    <MudSelectItem Value="SortMode.TitleAsc">Title (A-Z)</MudSelectItem>
+                    <MudSelectItem Value="SortMode.TitleDesc">Title (Z-A)</MudSelectItem>
+                </MudSelect>
+            </MudItem>
+        </MudGrid>
+    </MudPaper>
+
+    <MudGrid Spacing="6">
+        @if (ContentItems is null) {
+            for (int i = 0; i < SkeletonCount; i++) {
+                <MudItem xs="12" md="6">
+                    <ContentCardSkeleton/>
+                </MudItem>
+            }
+        }
+        else if (ContentItems.Length == 0) {
+            <MudItem xs="12">
+                <MudCard Class="card-glass pa-8 text-center border-dashed no-hover">
+                    <MudStack AlignItems="AlignItems.Center" Spacing="3">
+                        <MudIcon Icon="@Icons.Material.Filled.SearchOff" Class="text-secondary" Size="Size.Large"
+                                 Style="font-size: 3.5rem;"/>
+                        <MudText Typo="Typo.h6" Class="mb-1 text-secondary">No content found</MudText>
+                        <MudText Typo="Typo.body2" Class="text-secondary">
+                            Try adjusting filters or check back later.
+                        </MudText>
+                    </MudStack>
+                </MudCard>
+            </MudItem>
+        }
+        else if (VisibleItems.Count == 0) {
+            <MudItem xs="12">
+                <MudCard Class="card-glass pa-8 text-center border-dashed no-hover">
+                    <MudStack AlignItems="AlignItems.Center" Spacing="3">
+                        <MudIcon Icon="@Icons.Material.Filled.FilterAltOff" Class="text-secondary" Size="Size.Large"
+                                 Style="font-size: 3.5rem;"/>
+                        <MudText Typo="Typo.h6" Class="mb-1 text-secondary">No matches</MudText>
+                        <MudText Typo="Typo.body2" Class="text-secondary">
+                            Try a different search or tag filter.
+                        </MudText>
+                    </MudStack>
+                </MudCard>
+            </MudItem>
+        }
+        else {
+            foreach (TContent content in VisibleItems) {
+                <MudItem xs="12" md="6">
+                    <ContentCard TContent="TContent" Content="@content"
+                                 HeaderExtras="HeaderExtras"
+                                 MetaExtras="MetaExtras"
+                                 BodyExtras="BodyExtras"
+                                 FooterExtras="FooterExtras"
+                                 ShowInternalTitle="ShowInternalTitle"/>
+                </MudItem>
+            }
+        }
+    </MudGrid>
+</MudStack>
+
+@* ------------------------------------------------------------------------------------------------------------------ *@
+@* Code *@
+@* ------------------------------------------------------------------------------------------------------------------ *@
+
+@code {
+    [Parameter] public RenderFragment<TContent>? HeaderExtras { get; set; }
+    [Parameter] public RenderFragment<TContent>? MetaExtras { get; set; }
+    [Parameter] public RenderFragment<TContent>? BodyExtras { get; set; }
+    [Parameter] public RenderFragment<TContent>? FooterExtras { get; set; }
+    [Parameter] public bool ShowInternalTitle { get; set; }
+    [Parameter] public int SkeletonCount { get; set; } = 4;
+
+
+    private TContent[]? ContentItems { get; set; }
+    private List<TContent> VisibleItems { get; } = [];
+    private List<string> AvailableTags { get; } = [];
+    private string SearchText { get; set; } = string.Empty;
+    private const string AllTagsValue = "__all__";
+    private string SelectedTag { get; set; } = AllTagsValue;
+    private SortMode SelectedSort { get; set; } = SortMode.CreatedNewest;
+    private QueryConfig _baseConfig = QueryConfig.None;
+    // -----------------------------------------------------------------------------------------------------------------
+    // Methods
+    // -----------------------------------------------------------------------------------------------------------------
+    protected override async Task OnInitializedAsync() {
+        await base.OnInitializedAsync();
+
+        _baseConfig = await BuildBaseConfigAsync();
+        ContentItems = (await FetchContentItemsAsync(_baseConfig)).ToArray();
+        RebuildAvailableTags();
+        await RefreshVisibleItemsAsync();
+    }
+
+    private async Task<QueryConfig> BuildBaseConfigAsync(CancellationToken ct = default) {
+        ClientConfig clientConfig = await ClientConfigFactory.CreateAsync(ct);
+        return QueryConfigExtensions.AddClientConfigFlags(clientConfig);
+    }
+
+    private async Task<IEnumerable<TContent>> FetchContentItemsAsync(QueryConfig config, CancellationToken ct = default) {
+        IEnumerable<TContent> content = await ContentRepository.GetAllAsync(config, ct);
+        return content;
+    }
+
+    private void RebuildAvailableTags() {
+        AvailableTags.Clear();
+        if (ContentItems is null) return;
+
+        IEnumerable<string> tags = ContentItems
+            .SelectMany(item => item.Tags)
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .OrderBy(tag => tag, StringComparer.OrdinalIgnoreCase);
+
+        AvailableTags.AddRange(tags);
+    }
+
+    private async Task RefreshVisibleItemsAsync(CancellationToken ct = default) {
+        VisibleItems.Clear();
+        if (ContentItems is null || ContentItems.Length == 0) return;
+
+        ContentFilter filter = new() {
+            TitleQuery = string.IsNullOrWhiteSpace(SearchText) ? null : SearchText.Trim(),
+            Tags = SelectedTag == AllTagsValue ? null : [SelectedTag]
+        };
+
+        QueryConfig config = BuildSortConfig(_baseConfig, SelectedSort);
+        TContent[] results = await ContentRepository.GetByFilterAsync(filter, config, ct);
+        VisibleItems.AddRange(results);
+    }
+
+    private static QueryConfig BuildSortConfig(QueryConfig baseConfig, SortMode sortMode) {
+        QueryConfig sortConfig = sortMode switch {
+            SortMode.CreatedNewest => QueryConfig.SortByCreatedAt | QueryConfig.Reversed,
+            SortMode.CreatedOldest => QueryConfig.SortByCreatedAt,
+            SortMode.ModifiedNewest => QueryConfig.SortByModifiedAt | QueryConfig.Reversed,
+            SortMode.ModifiedOldest => QueryConfig.SortByModifiedAt,
+            SortMode.TitleAsc => QueryConfig.SortByInternalTitle,
+            SortMode.TitleDesc => QueryConfig.SortByInternalTitle | QueryConfig.Reversed,
+            _ => QueryConfig.None
+        };
+
+        return baseConfig | sortConfig;
+    }
+
+    private async Task OnSearchChanged(string? value) {
+        SearchText = value?.Trim() ?? string.Empty;
+        await RefreshVisibleItemsAsync();
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task OnTagChanged(string value) {
+        SelectedTag = value;
+        await RefreshVisibleItemsAsync();
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task OnSortChanged(SortMode value) {
+        SelectedSort = value;
+        await RefreshVisibleItemsAsync();
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private enum SortMode {
+        CreatedNewest,
+        CreatedOldest,
+        ModifiedNewest,
+        ModifiedOldest,
+        TitleAsc,
+        TitleDesc
+    }
+
+}
