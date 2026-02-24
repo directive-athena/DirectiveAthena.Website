@@ -77,7 +77,29 @@
     <span class="dismiss">🗙</span>
 </div>
 
-<script src="_framework/blazor.webassembly.js"></script>
+<script src="_framework/blazor.webassembly.js" autostart="false"></script>
+<script>
+    (async () => {
+        let version = "0";
+        try {
+            const response = await fetch("version.txt", { cache: "no-store" });
+            if (response.ok) {
+                version = (await response.text()).trim() || "0";
+            }
+        } catch (error) {
+            console.warn("Version fetch failed, continuing without cache buster.", error);
+        }
+
+        const manifestLink = document.querySelector('link[rel="manifest"]');
+        if (manifestLink && !manifestLink.href.includes("v=")) {
+            manifestLink.href = `${manifestLink.getAttribute("href")}?v=${encodeURIComponent(version)}`;
+        }
+
+        await Blazor.start({
+            loadBootResource: (type, name, defaultUri) => `${defaultUri}?v=${encodeURIComponent(version)}`
+        });
+    })();
+</script>
 <script src="_content/MudBlazor/MudBlazor.min.js"></script>
 <script src="js/interop.bundle.min.js"></script>
 </body>
