@@ -34,7 +34,7 @@
         <MudText Typo="Typo.h3">@Localizer[DevServer.EditorHeader]</MudText>
     </div>
 
-    <MudTabs Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6" @bind-ActivePanelIndex="_activeTab">
+    <MudTabs Rounded="true" ApplyEffectsToContainer="true" TabPanelsClass="pa-6" @bind-ActivePanelIndex="_activeTab">
         @foreach (ContentEditorInfo contentEditorInfo in ContentEditorProvider.GetEditors()) {
             <MudTabPanel Text="@contentEditorInfo.GetTitle(ServiceProvider)" Icon="@contentEditorInfo.Icon">
                 <DynamicComponent Type="@contentEditorInfo.Type"></DynamicComponent>
