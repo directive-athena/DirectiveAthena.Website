@@ -34,7 +34,7 @@
         @foreach (LocalizationInfo culture in LocalizationProvider.GetSupportedLocalizations()) {
             <MudMenuItem OnClick="@(() => ChangeCulture(culture.Code))">
                 <div class="d-flex align-center gap-2">
-                    @if (!string.IsNullOrEmpty(culture.FlagPath)) {
+                    @if (culture.FlagPath.IsNotNullOrWhiteSpace()) {
                         <img src="@culture.FlagPath" alt="@culture.DisplayName" style="width: 24px; height: auto;"/>
                     }
                     else {
