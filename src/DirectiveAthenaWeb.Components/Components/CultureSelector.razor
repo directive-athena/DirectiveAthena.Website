@@ -17,7 +17,7 @@
 @* ------------------------------------------------------------------------------------------------------------------ *@
 <MudMenu AnchorOrigin="Origin.BottomCenter" TransformOrigin="Origin.TopCenter" Dense="true" Class="ml-2">
     <ActivatorContent>
-        <MudButton Variant="Variant.Text" Color="Color.Inherit">
+        <MudButton Variant="Variant.Text" Color="Color.Inherit" OnClick="@context.ToggleAsync">
             <div class="d-flex align-center gap-2">
                 @if (!string.IsNullOrEmpty(CurrentCulture.FlagPath)) {
                     <img src="@CurrentCulture.FlagPath" alt="@CurrentCulture.Abbreviation"
