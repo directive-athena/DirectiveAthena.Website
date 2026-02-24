@@ -194,7 +194,9 @@
         await InvokeAsync(StateHasChanged);
     }
 
-    private async Task OnTagChanged(string value) {
+    private async Task OnTagChanged(string? value) {
+        if (value.IsNullOrWhiteSpace()) return;
+        
         SelectedTag = value;
         await RefreshVisibleItemsAsync();
         await InvokeAsync(StateHasChanged);

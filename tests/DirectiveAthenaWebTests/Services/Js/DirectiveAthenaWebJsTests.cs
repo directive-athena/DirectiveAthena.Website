@@ -63,7 +63,7 @@ public class DirectiveAthenaWebJsTests {
         bool result = await InvokeBool(service, methodName, arg1, arg2);
 
         // Assert
-        await Assert.That(result).IsEqualTo(expected);
+        await Assert.That(result).IsTrue();
         await VerifyBoolInvoke(jsRuntime, identifier, arg1, arg2);
     }
 

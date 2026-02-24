@@ -113,7 +113,8 @@
         await WebJs.DownloadFileAsync(path, Context.Content);
     }
 
-    private async Task OnLocaleChangedAsync(string newLocale) {
+    private async Task OnLocaleChangedAsync(string? newLocale) {
+        if (newLocale.IsNullOrWhiteSpace()) return;
         if (string.Equals(newLocale, _selectedLocale, StringComparison.OrdinalIgnoreCase)) return;
 
         _selectedLocale = newLocale;

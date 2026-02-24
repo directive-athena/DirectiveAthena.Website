@@ -221,7 +221,8 @@
         await InvokeAsync(StateHasChanged);
     }
 
-    private async Task OnInputChangedAsync(string obj) {
+    private async Task OnInputChangedAsync(string? obj) {
+        if (obj.IsNullOrWhiteSpace()) return;
         if (Content.InternalTitle.Equals(obj, StringComparison.Ordinal)) return;
 
         Content.InternalTitle = obj;
